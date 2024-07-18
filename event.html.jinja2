@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>{{evt.name}} Analysis</title>
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_180.png">
+<link rel="icon" href="/favicon_180.png" sizes="180x180">
+<link rel="icon" href="/favicon_32.png" sizes="32x32">
+<link rel="stylesheet" href="/style.css" />
+<script type="text/javascript" src="/ui.js"></script>
+</head>
+{% macro upset() %}
+<span class="upset" title="Upset: the other player has a 40+ Elo advantage">😮</span>
+{% endmacro %}
+{% macro pname_w_dl(p) %}
+<a class="playername" {% if p.deck %}href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')"{% endif %} title="Elo: {{p.elo}}">{{p.username}}</a>
+{% endmacro %}
+<body>
+<nav id="main_nav">
+
+</nav>
+
+<section id="evt_info">
+    <h1>{{evt.name}}</h1>
+    <ul>
+        <li><b>Date:</b> {{evt.date}}</li>
+        <li><b>Entrants:</b> {{evt.players|length}}</li>
+        <li><b>Location:</b> {{evt.evt.address}}</li>
+        <li><b>Omnidex ID:</b> <a href="https://omni.gatcg.com/events/{{evt.id}}">{{evt.id}}</a></li>
+    </ul>
+</section>
+
+<section id="players">
+    <h2>Players</h2>
+    <button onclick="toggle('#players > .togglable')">Show/Hide Player List</button>
+
+    <table class="collapse togglable">
+        <thead><tr>
+            <th>Rank</th><th>Player</th><th>Record</th><th>Deck</th>{#<th>Elo</th>#}<th>Elo Change</th><th>Matches</th>
+        </tr></thead>
+        <tbody>
+        {% for p in evt.players %}
+        <tr>
+            <td class="p_rank">{{loop.index}}</td>
+            <td class="p_name" title="Elo: {{p.elo}}">{{p}}</td>
+            <td class="p_record">{{p.record}}</td>
+            <td class="p_deck">{% if p.deck %}<a href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}</td>
+            {# <td class="elo">{{p.elo}}</td> #}
+            <td class="elodiff">{% if p.elo_diff > 0 %}+{% endif %}{{p.elo_diff|round|int}}</td>
+            <td class="showmatches">
+                <button onclick="showmatches({{p.id}})">Show Matches</button>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section id="meta_composition">
+    <h2>Meta Composition</h2>
+    <button onclick="toggle('#meta_composition > .togglable')">Show/Hide Meta Composition</button>
+    <table class="collapse togglable">
+        <thead><tr>
+            <th>Element</th>
+            <th>% of decks</th>
+        </tr></thead>
+        <tbody>
+            {% for el, pct in evt.elements %}
+            <tr>
+                <td>{{el}}</td>
+                <td>{{pct}}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {#<table class="collapse togglable">
+        <thead><tr>
+            <th>Archetype</th>
+            <th>% of all decks</th>
+            <th>Element Breakdown</th>
+        </tr></thead>
+        <tbody>
+            {% for archetype, pct, elpcts in evt.archedata %}
+            <tr>
+                <td>{{archetype}}</td>
+                <td>{{pct}}%</td>
+                <td>
+                    <ul>
+                        {% for el,elpct in elpcts.items() %}
+                        <li><b>{{el}}</b>: {{elpct}}%</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>#}
+    <div class="collapse togglable element-bars">
+        {% for archetype, pct, elpcts in evt.archedata %}
+            <div class="archetype">
+                <div class="el-pct">{{pct}}%</div>
+                <div class="arche-bar" style="height: {{4*pct}}px">
+                    {% for el,elpct in elpcts.items() %}
+                        <div class="el-bar {{el|lower}}" style="height: {{elpct+0.5}}%" title="{{elpct}}% {{el}}">&nbsp;</div>
+                    {% endfor %}
+                </div>
+            <h4>{{archetype}}</h4>
+            </div>
+        {% endfor %}
+    </div>
+    <p class="togglable collapse">Note archetypes don't sum to 100% because decks can be multiple archetypes.</p>
+</section>
+
+<section id="head_to_head">
+    <h2>Head-to-Head</h2>
+    <button onclick="toggle('#head_to_head > .togglable')">Show/Hide Head-to-Head Chart</button>
+    <table class="collapse togglable">
+        <thead><tr>
+            <th>Deck</th>
+        {% for archetype, records in evt.battlechart.items() %}
+            <th>{{archetype}}</th>
+        {% endfor %}
+        </tr></thead>
+        <tbody>
+            {% for archetype, records in evt.battlechart.items() %}
+            <tr>
+                <td>{{archetype}}</td>
+                {% for opp, r in records.items() %}
+                    <td class="{{r.rating}}">
+                        {% if r.rating == "no_data" %}
+                        (No data)
+                        {% else %}
+                        <div class="pct">{{r.pct}}%</div>
+                        <div class="matchcount">({{r.matches}} matches)</div>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{#    <h3 class="collapse togglable">(Same but top-250 players only)</h3>
+    <table class="collapse togglable">
+        <thead><tr>
+            <th>Deck</th>
+        {% for archetype, records in evt.battlechart_top.items() %}
+            <th>{{archetype}}</th>
+        {% endfor %}
+        </tr></thead>
+        <tbody>
+            {% for archetype, records in evt.battlechart_top.items() %}
+            <tr>
+                <td>{{archetype}}</td>
+                {% for opp, r in records.items() %}
+                    <td class="{{r.rating}}">
+                        {% if r.rating == "no_data" %}
+                        (No data)
+                        {% else %}
+                        <div class="pct">{{r.pct}}%</div>
+                        <div class="matchcount">({{r.matches}} matches)</div>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    #}
+
+</section>
+
+<section id="matches">
+    <h2>Matches</h2>
+    <button onclick="toggle('#matches > .togglable')">Show/Hide Matches</button>
+    <div class="stages togglable collapse">
+    <button id="matchreset" class="collapse" onclick="reset_matches()">Reset match filter</button>
+    {% for stage in evt.evt["stages"] %}
+    <h3>Stage {{stage["id"]}} ({{stage["type"]|title}})</h3>
+    <div class="rounds">
+        {% for rnd in stage["rounds"] %}
+            <h4>Round {{rnd["id"]}}</h4>
+            {% for match in rnd["matches"] %}
+                {% set p1 = evt.pdict[match["pairing"][0]["id"]] %}
+                {% if match["pairing"]|length > 1 %}
+                {% set p2 = evt.pdict[match["pairing"][1]["id"]] %}
+                {% else %}
+                {% set p2 = None %}
+                {% endif %}
+                <div class="match p_{{p1.id}} {% if p2 %}p_{{p2.id}}{% endif %}">
+                    <div class="player">
+                        {{pname_w_dl(p1)}}
+                        {% if p2 and p2.elo - 40 > p1.elo and match["pairing"][0]["score"] > match["pairing"][1]["score"] %}{{upset()}}{% endif %}
+                        <span class="matchscore {{match['pairing'][0]['status']}}">{{match["pairing"][0]["score"]}}</span>
+                    </div>
+                    {% if match["pairing"]|length > 1 %}
+                    <div class="player">
+                        {{pname_w_dl(p2)}}
+                        {% if p1.elo - 40 > p2.elo and match["pairing"][1]["score"] > match["pairing"][0]["score"] %}{{upset()}}{% endif %}
+                        <span class="matchscore {{match['pairing'][1]['status']}}">{{match["pairing"][1]["score"]}}</span>
+                    </div>
+                    {% else %}
+                    <div class="player bye">Bye</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+    </div><!--/.stages-->
+</section>
+
+<!-- DECKLISTS -->
+{% for p in evt.players %}
+{% if p.deck %}
+<div class="decklist collapse" id="deck_{{p.id}}">
+    <button class="closeX" onclick="closedecklist('#deck_{{p.id}}')">❌</button>
+    <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
+    <a class="permalink" href="#deck_{{p.id}}">🔗</a>
+    <h3>{{p.username}}'s {{p.deck}}</h3>
+    <h4>Materials <span class="cardcount">({{p.deck.dl["material"]|length}} cards)</span></h4>
+    <ul class="deck_txt collapse">
+        {% for card_o in p.deck.dl["material"] %}
+        <li>{{card_o["card"]}}</li>
+        {% endfor %}
+    </ul>
+    <div class="deck_gfx">
+        {% for card_o in p.deck.dl["material"] %}
+        <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /></div>
+        {% endfor %}
+    </div>
+    <h4>Maindeck <span class="cardcount">({{p.deck.main_total}} cards)</span></h4>
+    <ul class="deck_txt collapse">
+        {% for card_o in p.deck.dl["main"] %}
+        <li>{{card_o["quantity"]}}x {{card_o["card"]}}</li>
+        {% endfor %}
+    </ul>
+    <div class="deck_gfx">
+        {% for card_o in p.deck.dl["main"] %}
+        <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</div>
+        {% endfor %}
+    </div>
+    <h4>Sideboard <span class="cardcount">({{p.deck.side_total}} cards)</span></h4>
+    <ul class="deck_txt collapse">
+        {% for card_o in p.deck.dl["sideboard"] %}
+        <li>{{card_o["quantity"]}}x {{card_o["card"]}}</li>
+        {% endfor %}
+    </ul>
+    <div class="deck_gfx">
+        {% for card_o in p.deck.dl["sideboard"] %}
+        <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+<script type="text/javascript">
+// Open hash on page-load
+if (window.location.hash) {
+    //console.debug("hash:",window.location.hash)
+    const defaultobj = document.querySelector(window.location.hash)
+    if (defaultobj) {
+        defaultobj.classList.remove("collapse")
+    }
+}
+</script>
+</body>
+</html>
