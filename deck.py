@@ -134,6 +134,8 @@ class Deck:
             self.champs.sort(key=lambda x: rank_mat_card({"card":x}))
             champset = {lineage(c):True for c in self.champs}
             champstr = "/".join(champset.keys())
+        else:
+            champstr = ""
         if self.is_hybrid:
             champstr += " Hybrid"
 
