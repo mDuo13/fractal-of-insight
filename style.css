@@ -184,3 +184,10 @@ table, th, td {
 .nav-item {
     padding: 5px 15px 5px 0;
 }
+
+footer {
+    border-top: 1px solid #aaa;
+    padding-top: 5px;
+    font-size: 13px;
+    margin-top: 50px;
+}
