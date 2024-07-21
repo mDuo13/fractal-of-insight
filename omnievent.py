@@ -37,7 +37,7 @@ class OmniEvent:
     
     def analyze_elements(self):
         self.elements = []
-        for el in ELEMENTS+["Norm"]:
+        for el in ELEMENTS:
             nom = 0
             for p in self.players:
                 if p.deck and el in p.deck.els:
@@ -53,7 +53,7 @@ class OmniEvent:
             if pct > 0:
                 # calculate element breakdown of archetype
                 archetype_elements = {
-                    e: 0 for e in ELEMENTS+["Norm"]
+                    e: 0 for e in ELEMENTS
                 }
                 archetype_total = 0
                 for p in self.players:
@@ -80,6 +80,10 @@ class OmniEvent:
                 for match in rnd["matches"]:
                     if len(match["pairing"]) < 2:
                         #print("        And a bye")
+                        continue
+
+                    if match["status"] == "started":
+                        #print("         Match ongoing")
                         continue
 
                     p1r = match["pairing"][0]

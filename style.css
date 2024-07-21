@@ -93,6 +93,10 @@ table, th, td {
     padding: 5px;
 }
 
+.bye {
+    background-color: #bbb;
+}
+
 .matchscore {
     flex: 0;
     padding: 5px;

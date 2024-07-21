@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Fractal of Insight (Alpha)</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon_180.png">
+    <link rel="icon" href="/favicon_180.png" sizes="180x180">
+    <link rel="icon" href="/favicon_32.png" sizes="32x32">
+    <link rel="stylesheet" href="/style.css" />
+    <script type="text/javascript" src="/ui.js"></script>
+</head>
+<body>
+<nav id="main_nav">
+<a class="nav-item" href="/">⌂ Home</a>
+</nav>
+<h1>{{szn.name}} Season</h1>
+
+<section id="meta_composition">
+    <h2>Meta Composition</h2>
+    <button onclick="toggle('#meta_composition > .togglable')">Show/Hide Meta Composition</button>
+    <table class="collapse togglable">
+        <thead><tr>
+            <th>Element</th>
+            <th>% of decks</th>
+        </tr></thead>
+        <tbody>
+            {% for el, pct in szn.elements %}
+            <tr>
+                <td>{{el}}</td>
+                <td>{{pct}}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="collapse togglable element-bars">
+        {% for archetype, pct, elpcts in szn.archedata %}
+            {% if loop.index <= 8 %}
+            <div class="archetype">
+                <div class="el-pct">{{pct}}%</div>
+                <div class="arche-bar" style="height: {{4*pct}}px">
+                    {% for el,elpct in elpcts.items() %}
+                        <div class="el-bar {{el|lower}}" style="height: {{elpct+0.1}}%" title="{{elpct}}% {{el}}">&nbsp;</div>
+                    {% endfor %}
+                </div>
+            <h4>{{archetype}}</h4>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <p class="togglable collapse">Note archetypes don't sum to 100% because decks can be multiple archetypes.</p>
+</section>
+
+
+<section id="head_to_head">
+    <h2>Head-to-Head</h2>
+    <button onclick="toggle('#head_to_head > .togglable')">Show/Hide Head-to-Head Chart</button>
+    <p class="collapse togglable">Deck on the left's win rate vs deck on the top</p>
+    <table class="collapse togglable">
+        <thead><tr>
+            <th>Deck</th>
+        {% for archetype, records in szn.battlechart.items() %}
+            <th>{{archetype}}</th>
+        {% endfor %}
+        </tr></thead>
+        <tbody>
+            {% for archetype, records in szn.battlechart.items() %}
+            <tr>
+                <td>{{archetype}}</td>
+                {% for opp, r in records.items() %}
+                    <td class="{{r.rating}}">
+                        {% if r.rating == "no_data" %}
+                        (No data)
+                        {% else %}
+                        <div class="pct">{{r.pct}}%</div>
+                        <div class="matchcount">({{r.matches}} matches)</div>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+</body>
+</html>

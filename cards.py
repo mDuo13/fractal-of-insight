@@ -2,6 +2,7 @@ ELEMENTS = [
     "Fire",
     "Water",
     "Wind",
+    "Norm",
 ]
 
 LV0 = [
