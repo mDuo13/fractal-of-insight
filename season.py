@@ -7,6 +7,13 @@ class Season:
         self.code = season
         self.events = []
 
+    def analyze(self):
+        # Call after all events have been added & analyzed
+        self.events.sort(key=lambda x:x.date, reverse=True)
+        self.analyze_decks()
+        self.battlechart = self.calc_headtohead()
+        self.bc_top = self.calc_headtohead(True)
+
     def analyze_decks(self):
         szn_els = {el:0 for el in ELEMENTS}
         szn_arches = {a:0 for a in ARCHETYPES.keys()}
@@ -44,12 +51,17 @@ class Season:
             self.archedata.append( (a, a_pct, el_pcts) )
         self.archedata.sort(key=lambda x:x[1], reverse=True)
 
-    def calc_headtohead(self, threshold=None):
-        archetypes = ARCHETYPES.keys()
+    def calc_headtohead(self, use_top=False):
+        archetypes = [a[0] for a in self.archedata]
         bc = {a: {b:{"win":0,"draw":0,"matches":0} for b in archetypes} for a in archetypes}
         for e in self.events:
-            for as_deck in e.battlechart.keys():
-                for vs_deck, record in e.battlechart[as_deck].items():
+            if use_top:
+                event_bc = e.bc_top
+            else:
+                event_bc = e.battlechart
+
+            for as_deck in event_bc.keys():
+                for vs_deck, record in event_bc[as_deck].items():
                     bc[as_deck][vs_deck]["win"] += record["win"]
                     bc[as_deck][vs_deck]["draw"] += record["draw"]
                     bc[as_deck][vs_deck]["matches"] += record["matches"]
@@ -71,8 +83,7 @@ class Season:
                 else:
                     r["rating"] = "no_data"
         
-        self.battlechart = bc
-        print(bc)
+        return bc
 
     def __repr__(self):
         return f"{self.code} Season"

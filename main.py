@@ -9,6 +9,7 @@ import config
 from shared import slugify
 from omnievent import OmniEvent
 from season import Season
+from competition import SEASONS
 
 def main(args):
     if args.event_id:
@@ -17,36 +18,30 @@ def main(args):
     else:
         build_index(args.all)
 
-def write_event(e):
-    with open("event.html.jinja2", "r") as f:
+def render(template, write_to, **kwargs):
+    # TODO: setup a jinja env
+    with open(template, "r") as f:
         ts = f.read()
     t = jinja2.Template(ts)
-    evt_html = t.render(evt=e, slugify=slugify)
+    html = t.render(**kwargs, config=config, slugify=slugify)
 
-    chartpath = os.path.join(config.OUTDIR, e.season)
-    makedirs(chartpath, exist_ok=True)
-    chartfile = os.path.join(chartpath, str(e.id)+".html")
-    print("Writing to", chartfile)
+    out_dir, out_file = os.path.split(write_to)
+    whole_out_dir = os.path.join(config.OUTDIR, out_dir)
+    makedirs(whole_out_dir, exist_ok=True)
+    whole_out_file = os.path.join(whole_out_dir, out_file)
+    print("Writing to", whole_out_file)
+    with open(whole_out_file, "w") as f:
+        f.write(html)
 
-    with open(chartfile, "w") as f:
-        f.write(evt_html)
+def write_event(e):
+    e_path = f"{e.season}/{e.id}.html"
+    render("event.html.jinja2", e_path, evt=e)
 
 def sum_season(season):
-    season.analyze_decks()
-    season.calc_headtohead()
+    season.analyze()
+    szn_path = f"{season.code}/index.html"
+    render("season.html.jinja2", szn_path, szn=season)
     
-    with open("season.html.jinja2", "r") as f:
-        ts = f.read()
-    t = jinja2.Template(ts)
-    szn_html = t.render(szn=season)
-    chartpath = os.path.join(config.OUTDIR, season.code)
-    makedirs(chartpath, exist_ok=True)
-    chartfile = os.path.join(chartpath, "index.html")
-    print("Writing to", chartfile)
-
-    with open(chartfile, "w") as f:
-        f.write(szn_html)
-
 def build_index(rebuild_all):
     seasons = {}
     for entry in os.scandir("./data"):
@@ -62,16 +57,8 @@ def build_index(rebuild_all):
     if rebuild_all:
         for szn in seasons.values():
             sum_season(szn)
-
-    with open("index.html.jinja2", "r") as f:
-        ts = f.read()
-    t = jinja2.Template(ts)
-    s = t.render(seasons=seasons)
-
-    chartpath = os.path.join(config.OUTDIR)
-    indexfile = os.path.join(chartpath, "index.html")
-    with open(indexfile, "w") as f:
-        f.write(s)
+    seasons_sorted = {k:seasons[v] for k,v in SEASONS.items() if v in seasons.keys()}
+    render("index.html.jinja2", "index.html", seasons=seasons_sorted)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Summarize an Omnidex event (requires all decklists to be public)")

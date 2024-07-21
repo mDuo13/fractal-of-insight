@@ -4,7 +4,8 @@ from player import Player
 from datalayer import get_event
 from archetypes import ARCHETYPES
 from cards import ELEMENTS
-from competition import SEASONS
+from competition import SEASONS, EVENT_TYPES
+from config import TOP_CUTOFF
 
 def pct_with_archetype(players, arche):
     nom = 0
@@ -21,11 +22,13 @@ class OmniEvent:
         self.name = self.evt["name"]
         self.date = strftime(r"%Y-%m-%d", gmtime(self.evt["startAt"]/1000))
         self.season = SEASONS.get(self.evt["season"]["name"], "OTHER")
+        self.category = EVENT_TYPES.get(self.evt["category"], "Unknown")
 
         self.load_players() # populates self.players
         self.analyze_elements() # populates self.elements
         self.analyze_archetypes() # populates self.archedata
         self.battlechart = self.calc_headtohead()
+        self.bc_top = self.calc_headtohead(TOP_CUTOFF)
     
     def load_players(self):
         self.players = []
@@ -108,7 +111,8 @@ class OmniEvent:
                             # Match below ranking threshold; don't count it
                             continue
                         else:
-                            print("This is a match between two top-{threshold} players")
+                            #print(f"This is a match between two top-{threshold} players")
+                            pass
                     
                     if p1r["score"] > p2r["score"]:
                         outcome = "beats"

@@ -1,7 +1,7 @@
 SEASONS = {
+    "Mortal Ambition": "AMB",
     "Mercurial Heart": "MRC",
     "Alchemical Revolution": "ALC",
-    "Mortal Ambition": "AMB",
 }
 
 EVENT_TYPES = {

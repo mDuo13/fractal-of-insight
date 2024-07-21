@@ -1,3 +1,5 @@
+import re
+
 def slugify(s):
     unacceptable_chars = re.compile(r"[^A-Za-z0-9 -]+")
     whitespace_regex = re.compile(r"\s+")

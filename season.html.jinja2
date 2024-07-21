@@ -13,7 +13,30 @@
 <nav id="main_nav">
 <a class="nav-item" href="/">⌂ Home</a>
 </nav>
-<h1>{{szn.name}} Season</h1>
+<h1>{{szn}}</h1>
+
+<section id="events">
+    <h2>Events</h2>
+    <button onclick="toggle('#events > .togglable')">Show/Hide Event List</button>
+    <table class="collapse togglable event-list">
+        <thead><tr>
+            <th>Date</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th># Entrants</th>
+        </tr></thead>
+        <tbody>
+            {% for e in szn.events %}
+            <tr>
+                <td>{{e.date}}</td>
+                <td><a href="{{e.id}}.html">{{e.name}}</a></td>
+                <td>{{e.category["name"]}}</td>
+                <td>{{e.players|length}} players</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
 
 <section id="meta_composition">
     <h2>Meta Composition</h2>
@@ -48,23 +71,25 @@
             {% endif %}
         {% endfor %}
     </div>
-    <p class="togglable collapse">Note archetypes don't sum to 100% because decks can be multiple archetypes.</p>
+    <p class="togglable collapse">Only the top 8 archetypes are shown. Totals don't sum to 100% because decks can qualify as multiple archetypes.</p>
 </section>
 
 
 <section id="head_to_head">
     <h2>Head-to-Head</h2>
-    <button onclick="toggle('#head_to_head > .togglable')">Show/Hide Head-to-Head Chart</button>
+    <button onclick="toggle('#head_to_head > .togglable')">Show/Hide Head-to-Head Charts</button>
     <p class="collapse togglable">Deck on the left's win rate vs deck on the top</p>
+    <h3 class="collapse togglable">All Players:</h3>
+    {% macro battlechart(bc) %}
     <table class="collapse togglable">
         <thead><tr>
             <th>Deck</th>
-        {% for archetype, records in szn.battlechart.items() %}
+        {% for archetype, records in bc.items() %}
             <th>{{archetype}}</th>
         {% endfor %}
         </tr></thead>
         <tbody>
-            {% for archetype, records in szn.battlechart.items() %}
+            {% for archetype, records in bc.items() %}
             <tr>
                 <td>{{archetype}}</td>
                 {% for opp, r in records.items() %}
@@ -81,6 +106,12 @@
             {% endfor %}
         </tbody>
     </table>
+    {% endmacro %}
+    {{ battlechart(szn.battlechart) }}
+
+    <h3 class="collapse togglable">Top Players Only:</h3>
+    <p class="collapse togglable">This chart shows only matches between players ranked in the top {{config.TOP_CUTOFF}} globally by Elo.</p>
+    {{ battlechart(szn.bc_top) }}
 </section>
 
 </body>

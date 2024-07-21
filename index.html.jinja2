@@ -10,10 +10,10 @@
 </head>
 <body>
     <h1>Fractal of Insight (Alpha)</h1>
-    {% for seasonname, season in seasons.items()|reverse %}
-    <section class="season" id="{{season['name']}}">
-        <h2>{{season["name"]}}</h2>
-        {% for evt in season["events"]|reverse %}
+    {% for seasonname, season in seasons.items() %}
+    <section class="season" id="{{season['code']}}">
+        <h2><a href="{{season['code']}}/">{{season}}</a></h2>
+        {% for evt in season["events"] %}
         <a class="evt" href="{{evt.season}}/{{evt.id}}.html">
             <h3>{{evt.name}}</h3>
             <div class="date">{{evt.date}}</div>

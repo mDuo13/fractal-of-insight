@@ -10,7 +10,7 @@
 <script type="text/javascript" src="/ui.js"></script>
 </head>
 {% macro upset() %}
-<span class="upset" title="Upset: the other player has a 40+ Elo advantage">😮</span>
+<span class="upset" title="Upset: the other player has a {{config.UPSET_CUTOFF}}+ Elo advantage">😮</span>
 {% endmacro %}
 {% macro pname_w_dl(p) %}
 <a class="playername" {% if p.deck %}href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')"{% endif %} title="Elo: {{p.elo}}">{{p.username}}</a>
@@ -18,6 +18,7 @@
 <body>
 <nav id="main_nav">
 <a class="nav-item" href="/">⌂ Home</a>
+<a class="nav-item" href="/{{evt.season}}/">⮤ {{evt.season}} Season</a>
 </nav>
 
 <section id="evt_info">
@@ -192,13 +193,13 @@
                 <div class="match p_{{p1.id}} {% if p2 %}p_{{p2.id}}{% endif %}">
                     <div class="player">
                         {{pname_w_dl(p1)}}
-                        {% if p2 and p2.elo - 40 > p1.elo and match["pairing"][0]["score"] > match["pairing"][1]["score"] %}{{upset()}}{% endif %}
+                        {% if p2 and p2.elo - config.UPSET_CUTOFF > p1.elo and match["pairing"][0]["score"] > match["pairing"][1]["score"] %}{{upset()}}{% endif %}
                         <span class="matchscore {{match['pairing'][0]['status']}}">{{match["pairing"][0]["score"]}}</span>
                     </div>
                     {% if match["pairing"]|length > 1 %}
                     <div class="player">
                         {{pname_w_dl(p2)}}
-                        {% if p1.elo - 40 > p2.elo and match["pairing"][1]["score"] > match["pairing"][0]["score"] %}{{upset()}}{% endif %}
+                        {% if p1.elo - config.UPSET_CUTOFF > p2.elo and match["pairing"][1]["score"] > match["pairing"][0]["score"] %}{{upset()}}{% endif %}
                         <span class="matchscore {{match['pairing'][1]['status']}}">{{match["pairing"][1]["score"]}}</span>
                     </div>
                     {% else %}

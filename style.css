@@ -180,3 +180,7 @@ table, th, td {
     grid-gap: 10px;
     margin-bottom: 100px;
 }
+
+.nav-item {
+    padding: 5px 15px 5px 0;
+}
