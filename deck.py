@@ -19,7 +19,28 @@ def lineage(champname):
     return champname.split(",",1)[0]
 
 def fix_case(cardname):
-    return cardname.title().replace("'S","'s").replace(" Of "," of ").replace(" The "," the ").replace(" From ", " from ").replace(" In "," in ").replace(" And ", " and ")
+    repls = {
+        "'S":"'s",
+        "’S":"'s",
+        " And ": " and ",
+        " At ":" at ",
+        " By ": " by ",
+        " From ":" from ",
+        " In ":" in ",
+        " Into ":" into ",
+        " Of ": " of ",
+        "Mk Iii": "Mk III",
+        "Mk Ii": "Mk II",
+        " The ":" the ",
+        " To ":" to ",
+        " With ":" with ",
+        "\u2019S": "'s",
+    }
+    cardname = cardname.title()
+    for k,v in repls.items():
+        cardname = cardname.replace(k,v)
+
+    return cardname
 
 class Deck:
     def __init__(self, dl):

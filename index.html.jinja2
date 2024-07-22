@@ -15,9 +15,12 @@
         <h2><a href="{{season['code']}}/">{{season}}</a></h2>
         {% for evt in season["events"] %}
         <a class="evt" href="{{evt.season}}/{{evt.id}}.html">
-            <h3>{{evt.name}}</h3>
-            <div class="date">{{evt.date}}</div>
-            <div class="playercount">{{evt.players|length}} entrants</div>
+            <div class="evt-mainbox">
+                <h3>{{evt.name}}</h3>
+                <div class="date">{{evt.date}}</div>
+                <div class="playercount">{{evt.players|length}} entrants</div>
+            </div>
+            <div class="event-category {{slugify(evt.category['name'])}}">{{evt.category["name"]}}</div>
         </a>
         {% endfor %}
     </section>

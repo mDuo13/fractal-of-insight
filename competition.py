@@ -5,6 +5,16 @@ SEASONS = {
 }
 
 EVENT_TYPES = {
+    "worlds": {
+        "name": "Worlds",
+        "elo": "1.5x",
+        "ep": "1.5x",
+    },
+    "nationals": {
+        "name": "Nationals",
+        "elo": "1.25x",
+        "ep": "1.4x",
+    },
     "ascent": {
         "name": "Ascent",
         "elo": "1.25x",
@@ -16,12 +26,12 @@ EVENT_TYPES = {
         "ep": "1.1x",
     },
     "store-championships": {
-        "name": "Store Championships",
+        "name": "Store Champs",
         "elo": "1.0x",
         "ep": "1.1x",
     },
     "regular": {
-        "name": "Regular / Locals",
+        "name": "Regular",
         "elo": "0.2x",
         "ep": "1.0x",
     }
