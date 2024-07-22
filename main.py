@@ -13,7 +13,7 @@ from competition import SEASONS
 
 def main(args):
     if args.event_id:
-        e = OmniEvent(args.event_id)
+        e = OmniEvent(args.event_id, force_redownload=args.update)
         write_event(e)
     else:
         build_index(args.all)
@@ -64,5 +64,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Summarize an Omnidex event (requires all decklists to be public)")
     parser.add_argument("event_id", type=int, help="Omnidex event ID to look up", nargs="?", default=None)
     parser.add_argument("-a", "--all", action="store_true", help="Rebuild all cached events")
+    parser.add_argument("-u", "--update", action="store_true", help="Redownload the specified omnidex event")
     args = parser.parse_args()
     main(args)

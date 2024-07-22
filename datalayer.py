@@ -7,6 +7,9 @@ from shared import slugify
 
 API_DELAY = 0.5
 
+class ForceReDL(Exception):
+    pass
+
 def get_deck(p_id, evt_id):
     try:
         with open(f"data/event_{evt_id}/deck_{p_id}.json") as f:
@@ -53,12 +56,14 @@ def get_card_img(cardname):
         json.dump(carddata, f)
     return card_img
 
-def get_event(evt_id):
+def get_event(evt_id, force_redownload=False):
     makedirs(f"data/event_{evt_id}/", exist_ok=True)
     try:
+        if force_redownload:
+            raise ForceReDL
         with open(f"data/event_{evt_id}/event.json") as f:
             evt = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
+    except (FileNotFoundError, json.JSONDecodeError, ForceReDL):
         print("Downloading event JSON...")
         evt_raw = requests.get(f"https://omni.gatcg.com/api/events/event?id={evt_id}")
         print("...done.")

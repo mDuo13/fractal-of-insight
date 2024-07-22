@@ -16,9 +16,9 @@ def pct_with_archetype(players, arche):
     return round(dec*100, 1)
 
 class OmniEvent:
-    def __init__(self, evt_id):
+    def __init__(self, evt_id, force_redownload=False):
         self.id = evt_id
-        self.evt = get_event(self.id)
+        self.evt = get_event(self.id, force_redownload)
         self.name = self.evt["name"]
         self.date = strftime(r"%Y-%m-%d", gmtime(self.evt["startAt"]/1000))
         self.season = SEASONS.get(self.evt["season"]["name"], "OTHER")

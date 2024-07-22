@@ -18,17 +18,20 @@ def rank_mat_card(card_o):
 def lineage(champname):
     return champname.split(",",1)[0]
 
+def fix_case(cardname):
+    return cardname.title().replace("'S","'s").replace(" Of "," of ").replace(" The "," the ").replace(" From ", " from ").replace(" In "," in ").replace(" And ", " and ")
+
 class Deck:
     def __init__(self, dl):
         self.dl = dl
+        self.fix_dl()
         self.find_spirits()
         self.find_champs()
         self.find_archetypes()
         self.find_elements()
         self.count_cards()
-        self.sort_dl()
         self.cardlist_imgs()
-    
+
     def find_spirits(self):
         self.spirits = []
         for card_o in self.dl["material"]:
@@ -92,7 +95,14 @@ class Deck:
             els.append("Norm")
         self.els = els
     
-    def sort_dl(self):
+    def fix_dl(self):
+        # TODO: handle more cases where card name isn't properly cased
+        for card_o in self.dl["main"]:
+            card_o["card"] = fix_case(card_o["card"])
+        for card_o in self.dl["material"]:
+            card_o["card"] = fix_case(card_o["card"])
+        for card_o in self.dl["sideboard"]:
+            card_o["card"] = fix_case(card_o["card"])
         self.dl["main"].sort(key=lambda x:x["card"])
         self.dl["sideboard"].sort(key=lambda x:x["card"])
         self.dl["material"].sort(key=rank_mat_card)
