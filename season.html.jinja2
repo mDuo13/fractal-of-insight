@@ -85,14 +85,18 @@
         <thead><tr>
             <th>Deck</th>
         {% for archetype, records in bc.items() %}
+            {% if szn.archedata[loop.index0][1] > 0 %}
             <th>{{archetype}}</th>
+            {% endif %}
         {% endfor %}
         </tr></thead>
         <tbody>
             {% for archetype, records in bc.items() %}
+            {% if szn.archedata[loop.index0][1] > 0 %}
             <tr>
                 <td>{{archetype}}</td>
                 {% for opp, r in records.items() %}
+                    {% if szn.archedata[loop.index0][1] > 0 %}
                     <td class="{{r.rating}}">
                         {% if r.rating == "no_data" %}
                         (No data)
@@ -101,8 +105,10 @@
                         <div class="matchcount">({{r.matches}} matches)</div>
                         {% endif %}
                     </td>
+                    {% endif %}
                 {% endfor %}
             </tr>
+            {% endif %}
             {% endfor %}
         </tbody>
     </table>

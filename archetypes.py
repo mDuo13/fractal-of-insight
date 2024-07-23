@@ -46,15 +46,13 @@ ARCHETYPES = {
             "Hone by Fire",
         ]
     },
-    "Robo": {
+    "Second-Wind": {
         "mats": [],
         "main": [
-            "Manufacture Cell",
-            "Andronika, Eternal Herald",
-            "Charged Mannequin",
-        ]
+            "Second Wind",
+        ],
     },
-    "Allies": {
+    "Wind-Allies": {
         "mats": [],
         "main": [
             "Gildas, Chronicler of Aesa",
@@ -63,14 +61,26 @@ ARCHETYPES = {
             "Lurking Assailant",
             "Esteemed Knight",
             "Trained Sharpshooter",
+            "Vigilant Sentry",
+        ],
+        "element": "Wind",
+        "notmain": [
+            "Spirit Blade: Ascension",
+        ],
+        "shortname": "Allies"
+    },
+    "Water-Allies": {
+        "mats": [],
+        "main": [
+            "Gildas, Chronicler of Aesa",
+            "Lurking Assailant",
+            "Esteemed Knight",
+            "Trained Sharpshooter",
             "Corhazi Trapper",
             "Vigilant Sentry",
         ],
-        "notmain": [
-            "Arthur, Young Heir",
-            "Rococo, Explosive Maven",
-            "Spirit Blade: Ascension",
-        ]
+        "element": "Water",
+        "shortname": "Allies"
     },
     "Neos": {
         "mats": [],
@@ -158,6 +168,19 @@ ARCHETYPES = {
             "Cometfall",
             "Astra Sight",
             "Spellshield: Astra",
+        ]
+    },
+    "Tera-Beast": {
+        "mats": [],
+        "main": [
+            "Kraal, Stonescale Tyrant",
+            "Vertus, Gaia's Roar",
+        ],
+    },
+    "Overlord": {
+        "mats": [],
+        "main": [
+            "Overlord Mk III"
         ]
     }
 }

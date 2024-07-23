@@ -27,7 +27,7 @@ class OmniEvent:
         self.load_players() # populates self.players
         self.analyze_elements() # populates self.elements
         self.analyze_archetypes() # populates self.archedata
-        self.battlechart = self.calc_headtohead()
+        self.battlechart = self.calc_headtohead(track_elo=True)
         self.bc_top = self.calc_headtohead(TOP_CUTOFF)
     
     def load_players(self):
@@ -70,7 +70,7 @@ class OmniEvent:
         
         self.archedata.sort(key=lambda x:x[1], reverse=True)
     
-    def calc_headtohead(self, threshold=None):
+    def calc_headtohead(self, threshold=None, track_elo=False):
         use_archetypes = [a[0] for a in self.archedata]
         
         battlechart = {a: {b:{"win":0,"draw":0,"matches":0} for b in use_archetypes} for a in use_archetypes}
@@ -95,9 +95,9 @@ class OmniEvent:
                     p1 = self.pdict[p1r["id"]]
                     p2 = self.pdict[p2r["id"]]
 
-                    # Update player Elo changes
-                    p1.elo_diff += match["pairing"][0]["eloChange"]
-                    p2.elo_diff += match["pairing"][1]["eloChange"]
+                    if track_elo:
+                        p1.elo_diff += match["pairing"][0]["eloChange"]
+                        p2.elo_diff += match["pairing"][1]["eloChange"]
 
                     if p1r["score"] == p2r["score"] and p1r["score"] == 0:
                         #print(f"        intentional draw")

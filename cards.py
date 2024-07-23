@@ -51,7 +51,7 @@ LV2 = [
     "Tristan, Hired Blade",
     "Rai, Archmage",
     "Diana, Deadly Duelist",
-    "Silvie, With the Pack",
+    "Silvie, with the Pack",
     "Tonoris, Might of Humanity",
     "Vanitas, Convergent Ruin",
     "Zander, Deft Executor",

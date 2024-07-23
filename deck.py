@@ -48,8 +48,8 @@ class Deck:
         self.fix_dl()
         self.find_spirits()
         self.find_champs()
-        self.find_archetypes()
         self.find_elements()
+        self.find_archetypes()
         self.count_cards()
         self.cardlist_imgs()
 
@@ -75,6 +75,10 @@ class Deck:
     def find_archetypes(self):
         self.archetypes = []
         for archetype, acards in ARCHETYPES.items():
+            if acards.get("element"):
+                if acards["element"] not in self.els:
+                    #print(f"DQ'd from archetype: {acards['element']} not in {self.els}")
+                    continue
             cancel = False
             for anticard in acards.get("notmain",[]):
                 for card_o in self.dl["main"]:
@@ -158,12 +162,25 @@ class Deck:
             
             spiritstr += "/".join(self.els)
 
-        lineages = set([lineage(c) for c in self.champs])
+        # Check lineages for Lv3's that are only there to banish
+        lineages = []
+        for champ in self.champs:
+            if champ in LV3:
+                lv2_lineages = [lineage(c) for c in self.champs if c in LV2]
+                # Note: this assumes that there are no 
+                if lineage(champ) not in lv2_lineages:
+                    #print(f"Deck missing lineage to {champ} - excluding?")
+                    #print(self.dl["material"])
+                    continue
+            if lineage(champ) not in lineages:
+                lineages.append(lineage(champ))
+
+        #lineages = set([lineage(c) for c in self.champs])
         if len(lineages) == 1:
             champstr = list(lineages)[0]
         elif len(lineages) > 1:
             self.champs.sort(key=lambda x: rank_mat_card({"card":x}))
-            champset = {lineage(c):True for c in self.champs}
+            champset = {lineage(c):True for c in self.champs if lineage(c) in lineages}
             champstr = "/".join(champset.keys())
         else:
             champstr = ""
@@ -173,6 +190,9 @@ class Deck:
         if not self.archetypes:
             archetypestr = ""
         else:
-            archetypestr = " ".join(list(set(self.archetypes)))
+            archetype_list = []
+            for arche in self.archetypes:
+                archetype_list.append(ARCHETYPES[arche].get("shortname", arche))
+            archetypestr = " ".join(archetype_list)
 
         return " ".join((spiritstr, archetypestr, champstr)).replace("  "," ")

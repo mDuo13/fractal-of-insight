@@ -121,11 +121,14 @@
         <thead><tr>
             <th>Deck</th>
         {% for archetype, records in evt.battlechart.items() %}
+            {% if evt.archedata[loop.index0][1] > 0 %}
             <th>{{archetype}}</th>
+            {% endif %}
         {% endfor %}
         </tr></thead>
         <tbody>
             {% for archetype, records in evt.battlechart.items() %}
+            {% if evt.archedata[loop.index0][1] > 0 %}
             <tr>
                 <td>{{archetype}}</td>
                 {% for opp, r in records.items() %}
@@ -139,37 +142,10 @@
                     </td>
                 {% endfor %}
             </tr>
+            {% endif %}
             {% endfor %}
         </tbody>
     </table>
-
-{#    <h3 class="collapse togglable">(Same but top-250 players only)</h3>
-    <table class="collapse togglable">
-        <thead><tr>
-            <th>Deck</th>
-        {% for archetype, records in evt.battlechart_top.items() %}
-            <th>{{archetype}}</th>
-        {% endfor %}
-        </tr></thead>
-        <tbody>
-            {% for archetype, records in evt.battlechart_top.items() %}
-            <tr>
-                <td>{{archetype}}</td>
-                {% for opp, r in records.items() %}
-                    <td class="{{r.rating}}">
-                        {% if r.rating == "no_data" %}
-                        (No data)
-                        {% else %}
-                        <div class="pct">{{r.pct}}%</div>
-                        <div class="matchcount">({{r.matches}} matches)</div>
-                        {% endif %}
-                    </td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    #}
 
 </section>
 
