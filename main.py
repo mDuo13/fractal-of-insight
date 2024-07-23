@@ -12,11 +12,11 @@ from season import Season
 from competition import SEASONS
 
 def main(args):
-    if args.event_id:
-        e = OmniEvent(args.event_id, force_redownload=args.update)
+    for i in args.event_id:
+        e = OmniEvent(i, force_redownload=args.update)
         write_event(e)
-    else:
-        build_index(args.all)
+    
+    build_index(args.all)
 
 def render(template, write_to, **kwargs):
     # TODO: setup a jinja env
@@ -61,8 +61,8 @@ def build_index(rebuild_all):
     render("index.html.jinja2", "index.html", seasons=seasons_sorted)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Summarize an Omnidex event (requires all decklists to be public)")
-    parser.add_argument("event_id", type=int, help="Omnidex event ID to look up", nargs="?", default=None)
+    parser = argparse.ArgumentParser(description="Summarize an Omnidex event (works better if decklists are public)")
+    parser.add_argument("event_id", type=int, help="Omnidex event ID to look up", nargs="*", default=None)
     parser.add_argument("-a", "--all", action="store_true", help="Rebuild all cached events")
     parser.add_argument("-u", "--update", action="store_true", help="Redownload the specified omnidex event")
     args = parser.parse_args()
