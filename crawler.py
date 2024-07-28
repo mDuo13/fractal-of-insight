@@ -56,7 +56,7 @@ def main(args):
                 continue
 
             if evt.get("category") == "regular" and not evt.get("decklists"):
-                print(f"Big locals? #{i}: {evt['name']}")
+                print(f"Big locals? #{i} ({len(players)} players): {evt['name']}")
                 continue
 
             interesting_events.append(f"""
