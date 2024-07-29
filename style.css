@@ -178,6 +178,7 @@ table, th, td {
     display: flex;
     position: relative;
     padding-right: 25px;
+    min-height: 100px;
 }
 
 .evt-mainbox {
