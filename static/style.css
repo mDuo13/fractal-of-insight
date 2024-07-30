@@ -31,7 +31,10 @@ section {
 .unfavored{background-color: pink}
 .no_data{background-color:gray}
 .even{background-color: white;}
-.matchcount { font-size: small; }
+.matchcount {
+    font-size: 14px;
+    line-height: 12px;
+}
 table, th, td {
     border: 3px ridge black;
     border-collapse: collapse;
