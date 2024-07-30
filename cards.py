@@ -79,6 +79,15 @@ LV3 = [
     "Zander, Corhazi's Chosen",
 ]
 
+LINEAGE_BREAK = [
+    "Allen, Beast Beckoner",
+    "Polkhawk, Bombastic Shot",
+    "Merlin, Memory Thief",
+    "Nico, Whiplash Allure",
+    "Mordred, Flawless Blade",
+    "Tristan, Grim Stalker",
+]
+
 SPIRITTYPES = [
     "Serene",
     "Fragmented",

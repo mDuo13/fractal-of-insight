@@ -146,15 +146,6 @@ ARCHETYPES = {
             "The Eternal Kingdom",
         ]
     },
-    # "Stormless Slimes": {
-    #     "mats": [
-    #         "Silvie, Slime Sovereign"
-    #     ],
-    #     "main": [],
-    #     "notmain": [
-    #         "Storm Slime",
-    #     ]
-    # }
     "Ensoul": {
         "mats": [],
         "main": [

@@ -1,0 +1,552 @@
+@font-face {
+    font-family: "Linux-Biolinum";
+    src: url(./Linux-Biolinum.ttf.3f3934d.woff) format("woff");
+}
+@font-face {
+    font-family: "Adobe Garamod Pro Semibold";
+    src: url(./AGaramondPro-Semibold.otf);
+}
+body {
+    background: #c7c6c1;
+    color: black;
+    font-family: "Linux-Biolinum";
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+    padding: 20px;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: "Adobe Garamod Pro Semibold";
+}
+.collapse {
+    display: none !important;
+}
+
+section {
+    margin-bottom: 50px;
+}
+
+.favored{background-color:green; color: white;}
+.unfavored{background-color: pink}
+.no_data{background-color:gray}
+.even{background-color: white;}
+.matchcount { font-size: small; }
+table, th, td {
+    border: 3px ridge black;
+    border-collapse: collapse;
+}
+
+#players table, #players th, #players td {
+    border: none;
+    border-collapse: separate;
+}
+
+.p-row {
+    position: relative;
+    overflow: hidden;
+    height: 55px;
+    margin-bottom: 5px;
+}
+
+.p-row a,
+.p-row a:visited,
+.p-row a:active,
+.p-row a:hover {
+    color: black;
+}
+
+.p-row td {
+    padding: 5px;
+    text-shadow: white 1px 1px 2px,
+                  white -1px -1px 2px,
+                  white 1px -1px 2px,
+                  white -1px 1px 2px;
+}
+
+.deck-bgs {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    display: flex;
+}
+
+.deck-bg {
+    height: fit-content;
+    position: relative;
+    top: -100%;
+    filter: contrast(50%) brightness(120%);
+    mask-image: linear-gradient(to right, transparent, black 10%, transparent 90%);
+    margin-left: -10%;
+    margin-right: -10%;
+    animation: 4s infinite alternate bgimgmover;
+    animation-play-state: paused;
+}
+
+.p-row:hover .deck-bg {
+    animation-play-state: running;
+}
+
+@keyframes bgimgmover {
+    0% {
+        top: -100%;
+    }
+    50% {
+        top: -150%;
+    }
+    100% {
+        top: -50%;
+    }
+}
+
+.n-styles-1 .deck-bg {
+    width: 120%;
+}
+.n-styles-2 .deck-bg {
+    width: calc(100% / 2 + 20%);
+}
+.n-styles-3 .deck-bg {
+    width: calc(100% / 3 + 20%);
+}
+.n-styles-4 .deck-bg {
+    width: calc(100% / 4 + 20%);
+}
+.n-styles-5 .deck-bg {
+    width: calc(100% / 5 + 20%);
+}
+.n-styles-6 .deck-bg {
+    width: calc(100% / 6 + 20%);
+}
+.n-styles-7 .deck-bg {
+    width: calc(100% / 7 + 20%);
+}
+.n-styles-8 .deck-bg {
+    width: calc(100% / 8 + 20%);
+}
+
+.decklist {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: calc(100% - 20vh);
+    height: 80vh;
+    border: 10vh solid rgba(0,0,0,0.5);
+    background: white;
+    padding: 20px;
+    overflow: auto;
+    font-size: 14px;
+}
+
+.decklist .cardimg {
+    display: inline-block;
+    position: relative;
+}
+
+.decklist .cardimg > img {
+    display: inline-block;
+    width: 125px;
+    height: 175px;
+}
+.decklist .cardimg .quant {
+    position: absolute;
+    left: 0;
+    bottom: 5px;
+    padding: 5px;
+    margin-left: 25%;
+    margin-right: 25%;
+    width: calc(50% - 16px);
+    background: #333;
+    color: white;
+    font-weight: bold;
+    border-radius: 3px;
+    border: 2px solid white;
+    text-align: center;
+}
+.decklist .permalink {
+    float: right;
+    padding: 5px;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.permalink:hover {
+    text-shadow: #77a 1px 2px 5px
+}
+
+.closeX {
+    padding: 5px;
+    float:right;
+    font-size: 20px;
+}
+.toggle_gfx_btn {
+    margin-right: 5px;
+    padding: 5px;
+    float:right;
+    font-size: 20px;
+}
+.cardcount {
+    font-size: 12px;
+    font-weight: lighter;
+    margin-left: 20px;
+}
+
+.match {
+    display: inline-block;
+    width: 200px;
+    margin: 5px;
+    border: 2px solid #555;
+    border-radius: 3px;
+}
+
+.match .player {
+    display: flex;
+}
+
+.playername, .bye {
+    flex: 1;
+    padding: 5px;
+}
+
+.bye {
+    background-color: #bbb;
+}
+
+.matchscore {
+    flex: 0;
+    padding: 5px;
+    color: white;
+}
+
+.matchscore.winner {
+    background-color: #070;
+}
+.matchscore.loser {
+    background-color: #900;
+}
+.matchscore.tied {
+    background-color: #03B;
+}
+
+.match .player:first-child {
+    border-bottom: 1px solid black;
+}
+
+.upset {
+    padding: 5px;
+}
+
+.elodiff {
+    text-align: right;
+}
+
+.archetype {
+    position: relative;
+    display: inline-flex;
+    width: 100px;
+    flex-direction: column;
+    justify-content: end;
+    vertical-align: bottom;
+}
+.arche-bar {
+    display: inline-block;
+    width: 30%;
+    border: 2px solid black;
+    vertical-align: bottom;
+    margin-left: auto;
+    margin-right: auto;
+}
+.archetype h4 {
+    margin: 0;
+    text-align: center;
+}
+.el-pct {
+	text-align: center;
+	font-size: smaller;
+}
+
+.element-meta {
+    display: flex;
+    margin-bottom: 40px;
+}
+
+.element-table {
+    width: 200px;
+    margin-right: 0;
+}
+
+.pie-chart {
+    width: 200px;
+    height: 200px;
+    margin: 20px;
+    border-radius: 50%;
+    margin-left: 0;
+    border: 1px solid black;
+}
+
+.el-bar.fire {
+    background-color: #b30;
+}
+.el-bar.wind {
+    background-color: #6c3;
+}
+.el-bar.water {
+    background-color: #03d;
+}
+.el-bar.norm {
+    background-color: #ba9;
+}
+.evt {
+    border: 2px solid black;
+    border-radius: 3px;
+    padding: 5px;
+    text-decoration: none;
+    box-shadow: var(--main-shadow);
+    background: var(--ui-bg);
+    display: flex;
+    position: relative;
+    padding-right: 25px;
+    min-height: 100px;
+    color: black;
+}
+.evt:hover {
+    box-shadow: none;
+}
+.evt:visited {
+    background: var(--ui-bg-vis);
+    border-color: #666;
+}
+.evt:hover::after {
+    content:"";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+    background: linear-gradient(0deg, #6e498e, #fefefe);
+    background-size: 200% 200%;
+    filter: blur(5px);
+    transform: scale(1.05);
+    animation: rotateglow 2s ease infinite;
+}
+
+.evt h3 {
+    margin-top: 0;
+    margin-right: 5px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid #333;
+}
+
+.evt-mainbox {
+    flex-grow: 1;
+}
+
+.event-category {
+    width: 20px;
+    height: calc(100% - 8px);
+    writing-mode: vertical-rl;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 4px 2px 4px 3px;
+    color: white;
+    background-color: #333;
+    font-size: 14px;
+}
+
+.event-category.regular {
+    color: black;
+    background-color: #ccc;
+}
+.event-category.regionals {
+    background-color: #03B;
+}
+.event-category.store-champs {
+    background-color: #297;
+}
+.event-category.nationals {
+    background-color: #811;
+}
+.event-category.worlds {
+    background-color: #973;
+}
+
+.season {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 10px;
+    margin-bottom: 100px;
+}
+
+.season h2 {
+    text-align: center;
+    position: relative;
+}
+
+.season h2 a img {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    margin: auto;
+    transition: transform 0.5s ease;
+    max-width: 100%;
+}
+
+.season h2 a:hover img {
+    transform: scale(1.1);
+}
+
+#evt-info h1 {
+    background: var(--ui-bg);
+    padding: 15px;
+    margin-right: 20%;
+    position: relative;
+    clip-path: polygon(0% 0%, calc(100% - 20px) 0%, 100% 50%, calc(100% - 20px) 100%, 0% 100%);
+}
+
+#evt-info h1 img {
+    vertical-align: bottom;
+}
+
+#evt-info h1::before {
+    content: "";
+    background-color: black;
+    clip-path: polygon(0 0, 
+                       0 100%, 
+                       2px 100%, 
+                       2px 2px, 
+                       calc(100% - 21.5px) 2px, 
+                       calc(100% - 2.5px) 50%, 
+                       calc(100% - 21.5px) calc(100% - 2px), 
+                       2px calc(100% - 2px),
+                       2px 100%,
+                       calc(100% - 20px) 100%,
+                       100% 50%,
+                       calc(100% - 20px) 0,
+                       0 0);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#evt-info ul {
+    list-style-type: none;
+    margin: 0;
+    --scoop-radius: 10px;
+    --border-width: 2px;
+    --border-color: black;
+    --background: var(--ui-bg);
+    display: inline-block;
+    /* filter: drop-shadow(var(--main-shadow)); // doesn't work with evt-info clip-path */ 
+}
+
+.nav-item {
+    padding: 5px 15px 5px 0;
+}
+
+footer {
+    border-top: 1px solid #aaa;
+    padding-top: 5px;
+    font-size: 13px;
+    margin-top: 50px;
+}
+
+@keyframes rotateglow {
+    0% {
+        background-position: 10% 0%;
+    }
+    50% {
+        background-position: 51% 100%;
+    }
+    to {
+        background-position: 10% 0%;
+    }
+}
+
+:root {
+    --ui-bg: linear-gradient(0deg, #e1e0db, #f2efe5);
+    --ui-bg-vis: #dddcd7;
+    --main-shadow: 3px 3px 5px #55504d;
+}
+
+
+.scooped-corners {
+    /* https://codepen.io/MisterCurtis/pen/ExKPOYZ */
+    --scoop-radius: 20px;
+    --border-width: 2px;
+    --border-color: #000000;
+    --background-color: #ffffff;
+
+    --border-stop: calc(var(--scoop-radius) + var(--border-width));
+
+    --scoop-gradient: rgba(255, 255, 255, 0) var(--scoop-radius),
+        var(--border-color) calc(var(--scoop-radius) + 1px),
+        var(--border-color) var(--border-stop),
+        var(--background-color) calc(var(--border-stop) + 1px);
+
+    padding: var(--border-stop);
+
+    background: var(--background-color);
+    background: radial-gradient(circle at 0 0, var(--scoop-gradient)) top left,
+        radial-gradient(circle at 100% 0, var(--scoop-gradient)) top right,
+        radial-gradient(circle at 100% 100%, var(--scoop-gradient)) bottom right,
+        radial-gradient(circle at 0 100%, var(--scoop-gradient)) bottom left;
+    background-size: 50% 50%;
+    background-repeat: no-repeat;
+
+    background-image: linear-gradient(
+            to bottom,
+            var(--border-color) 0,
+            var(--border-color) var(--border-width)
+        ),
+        linear-gradient(
+            to left,
+            var(--border-color) 0,
+            var(--border-color) var(--border-width)
+        ),
+        linear-gradient(
+            to top,
+            var(--border-color) 0,
+            var(--border-color) var(--border-width)
+        ),
+        linear-gradient(
+            to right,
+            var(--border-color) 0,
+            var(--border-color) var(--border-width)
+        ),
+        radial-gradient(circle at 0 0, var(--scoop-gradient)),
+        radial-gradient(circle at 100% 0, var(--scoop-gradient)),
+        radial-gradient(circle at 100% 100%, var(--scoop-gradient)),
+        radial-gradient(circle at 0 100%, var(--scoop-gradient)),
+        linear-gradient(
+            to right,
+            var(--background-color) 0,
+            var(--background-color) 1px
+        ),
+        linear-gradient(
+            to right,
+            var(--background-color) 0,
+            var(--background-color) 1px
+        );
+
+    background-position: top center, right center, bottom center, left center,
+        top left, top right, bottom right, bottom left, top center, left center;
+
+    background-size: calc(100% - (var(--scoop-radius) + 1px) * 2)
+            var(--border-width),
+        var(--border-width) calc(100% - (var(--scoop-radius) + 1px) * 2),
+        calc(100% - (var(--scoop-radius) + 1px) * 2) var(--border-width),
+        var(--border-width) calc(100% - (var(--scoop-radius) + 1px) * 2),
+        var(--border-stop) var(--border-stop),
+        var(--border-stop) var(--border-stop),
+        var(--border-stop) var(--border-stop),
+        var(--border-stop) var(--border-stop),
+        calc(100% - var(--border-stop) * 2) 100%,
+        100% calc(100% - var(--border-stop) * 2);
+}

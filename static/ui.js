@@ -10,8 +10,8 @@ function opendecklist(q) {
 function closedecklist(q) {
     const deckoverlay = document.querySelector(q)
     deckoverlay.classList.add("collapse")
-    window.location.replace(window.location.pathname+window.location.search)
-    //history.pushState("", document.title, window.location.pathname+window.location.search)
+    //window.location.replace(window.location.pathname+window.location.search)
+    history.pushState("", document.title, window.location.pathname+window.location.search)
 }
 function togglegfx() {
     const gfx = document.querySelectorAll(".deck_gfx")

@@ -24,19 +24,28 @@ class OmniEvent:
         self.season = SEASONS.get(self.evt["season"]["name"], "OTHER")
         self.category = EVENT_TYPES.get(self.evt["category"], {"name": "Unknown"})
 
-        self.load_players() # populates self.players
+        self.load_players() # populates self.players, self.num_decklists, self.decklist_status
         self.analyze_elements() # populates self.elements
         self.analyze_archetypes() # populates self.archedata
         self.battlechart = self.calc_headtohead(track_elo=True)
         self.bc_top = self.calc_headtohead(TOP_CUTOFF)
     
     def load_players(self):
+        self.num_decklists = 0
         self.players = []
         for pdata in self.evt["players"]:
             p = Player(pdata, self.id)
             self.players.append(p)
+            if p.deck:
+                self.num_decklists += 1
         self.players.sort(key=lambda x:x.sortkey(), reverse=True)
         self.pdict = {p.id: p for p in self.players}
+        if self.num_decklists == len(self.players):
+            self.decklist_status = "full"
+        elif self.num_decklists == 0:
+            self.decklist_status = "none"
+        else:
+            self.decklist_status = "partial"
     
     def analyze_elements(self):
         self.elements = []

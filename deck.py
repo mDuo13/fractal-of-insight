@@ -1,6 +1,6 @@
 from shared import slugify
 from datalayer import get_card_img
-from cards import LV0, LV1, LV2, LV3, ELEMENTS, SPIRITTYPES
+from cards import LV0, LV1, LV2, LV3, ELEMENTS, SPIRITTYPES, LINEAGE_BREAK
 from archetypes import ARCHETYPES
 
 def rank_mat_card(card_o):
@@ -62,6 +62,7 @@ class Deck:
     
     def find_champs(self):
         self.champs = []
+        raw_lineages = []
         self.is_hybrid = False
         for card_o in self.dl["material"]:
             card = card_o["card"]
@@ -71,6 +72,13 @@ class Deck:
                     if existing_lv_champs and lineage(card) not in [lineage(c) for c in existing_lv_champs]:
                         self.is_hybrid = True
                     self.champs.append(card)
+                    if lv == LV1:
+                        raw_lineages.append(card)
+                    elif card in LINEAGE_BREAK:
+                        raw_lineages.append(card)
+        raw_lineages.sort(key=lambda x: rank_mat_card({"card":x}))
+        self.lineages = [lineage(c) for c in raw_lineages]
+
     
     def find_archetypes(self):
         self.archetypes = []
@@ -163,24 +171,24 @@ class Deck:
             spiritstr += "/".join(self.els)
 
         # Check lineages for Lv3's that are only there to banish
-        lineages = []
-        for champ in self.champs:
-            if champ in LV3:
-                lv2_lineages = [lineage(c) for c in self.champs if c in LV2]
-                # Note: this assumes that there are no 
-                if lineage(champ) not in lv2_lineages:
-                    #print(f"Deck missing lineage to {champ} - excluding?")
-                    #print(self.dl["material"])
-                    continue
-            if lineage(champ) not in lineages:
-                lineages.append(lineage(champ))
+        # lineages = []
+        # for champ in self.champs:
+        #     if champ in LV3:
+        #         lv2_lineages = [lineage(c) for c in self.champs if c in LV2]
+        #         # Note: this assumes that there are no 
+        #         if lineage(champ) not in lv2_lineages:
+        #             #print(f"Deck missing lineage to {champ} - excluding?")
+        #             #print(self.dl["material"])
+        #             continue
+        #     if lineage(champ) not in lineages:
+        #         lineages.append(lineage(champ))
 
         #lineages = set([lineage(c) for c in self.champs])
-        if len(lineages) == 1:
-            champstr = list(lineages)[0]
-        elif len(lineages) > 1:
+        if len(self.lineages) == 1:
+            champstr = list(self.lineages)[0]
+        elif len(self.lineages) > 1:
             self.champs.sort(key=lambda x: rank_mat_card({"card":x}))
-            champset = {lineage(c):True for c in self.champs if lineage(c) in lineages}
+            champset = {lineage(c):True for c in self.champs if lineage(c) in self.lineages}
             champstr = "/".join(champset.keys())
         else:
             champstr = ""

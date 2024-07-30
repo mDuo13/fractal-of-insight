@@ -2,23 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Fractal of Insight (Alpha)</title>
+    <title>Fractal of Insight</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon_180.png">
     <link rel="icon" href="/favicon_180.png" sizes="180x180">
     <link rel="icon" href="/favicon_32.png" sizes="32x32">
-    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
-    <h1>Fractal of Insight (Alpha)</h1>
+    <h1>Fractal of Insight</h1>
+    <p class="intro">Statistics for Grand Archive TCG competition</p>
     {% for seasonname, season in seasons.items() %}
     <section class="season" id="{{season['code']}}">
-        <h2><a href="{{season['code']}}/">{{season}}</a></h2>
+        <h2><a href="{{season['code']}}/"><img alt="{{season}}" src="/static/{{season['code']}}_logo.png" /></a></h2>
         {% for evt in season["events"] %}
         <a class="evt" href="{{evt.season}}/{{evt.id}}.html">
             <div class="evt-mainbox">
                 <h3>{{evt.name}}</h3>
                 <div class="date">{{evt.date}}</div>
                 <div class="playercount">{{evt.players|length}} entrants</div>
+                <div class="decklistcount">{% if evt.decklist_status == "full" %}All decklists{% elif evt.decklist_status == "partial" %}{{evt.num_decklists}} decklists{% endif %}</div>
             </div>
             <div class="event-category {{slugify(evt.category['name'])}}">{{evt.category["name"]}}</div>
         </a>
