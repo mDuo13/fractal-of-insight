@@ -35,6 +35,7 @@ section {
 table, th, td {
     border: 3px ridge black;
     border-collapse: collapse;
+    padding: 5px;
 }
 
 #players table, #players th, #players td {
