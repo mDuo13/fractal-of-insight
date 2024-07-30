@@ -56,6 +56,7 @@ ARCHETYPES = {
         "mats": [],
         "main": [
             "Gildas, Chronicler of Aesa",
+            "Aesan Protector",
             "Inspiring Call",
             "Woodland Squirrels",
             "Lurking Assailant",
