@@ -1,3 +1,5 @@
+from time import strftime, gmtime
+
 from archetypes import ARCHETYPES
 from cards import ELEMENTS
 from competition import SEASONS
@@ -6,6 +8,19 @@ class Season:
     def __init__(self, season):
         self.code = season
         self.events = []
+        self.data = {}
+
+    def add_event(self, e):
+        self.events.append(e)
+        if not self.data:
+            # There's no good API method to look up season data,
+            # but we can save it from the first event to get added
+            data = e.evt["season"]
+            self.name = data["name"]
+            self.id = data["id"]
+            self.start_time = strftime(r"%Y-%m-%d", gmtime(data["startsAt"]/1000))
+            self.end_time = strftime(r"%Y-%m-%d", gmtime(data["endsAt"]/1000))
+            self.season_guide = data["file"]
 
     def analyze(self):
         # Call after all events have been added & analyzed

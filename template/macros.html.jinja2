@@ -1,0 +1,82 @@
+{% macro elementpie(elements) %}
+    {% set el_colors = {"Norm": "#ba9", "Fire": "#b30", "Wind": "#6c3", "Water": "#03d", "Unknown": "#000"} %}
+    {% set ns = namespace(cumu = 0) %}
+    <div class="pie-chart" style="background: conic-gradient({% for el, pct in elements %}{{el_colors[el]}} {{ns.cumu}}%{% set ns.cumu = ns.cumu + pct %}, {{el_colors[el]}} {{ns.cumu}}%{% if not loop.last%}, {% endif %}{% endfor %})">&nbsp;</div>
+
+    <table class="element-table">
+        <thead><tr>
+            <th>Element</th>
+            <th>% of decks</th>
+        </tr></thead>
+        <tbody>
+            {% for el, pct in elements %}
+            <tr>
+                <th>{{el}}</td>
+                <td>{{pct}}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+
+
+{% macro upset(cutoff) %}
+<span class="upset" title="Upset: the other player has a {{config.UPSET_CUTOFF}}+ Elo advantage">😮</span>
+{% endmacro %}
+
+
+
+{% macro pname_w_dl(p) %}
+<a class="playername" {% if p.deck %}href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')"{% endif %} title="Elo: {{p.elo}}">{{p.username}}</a>
+{% endmacro %}
+
+
+
+{% macro eventbox(evt) %}
+<a class="evt" href="/{{evt.season}}/{{evt.id}}.html">
+    <div class="evt-mainbox">
+        <h3>{{evt.name}}</h3>
+        <div class="date">{{evt.date}}</div>
+        <div class="playercount">{{evt.players|length}} entrants</div>
+        <div class="decklistcount">{% if evt.decklist_status == "full" %}All decklists{% elif evt.decklist_status == "partial" %}{{evt.num_decklists}} decklists{% endif %}</div>
+    </div>
+    <div class="event-category {{slugify(evt.category['name'])}}">{{evt.category["name"]}}</div>
+</a>
+{% endmacro %}
+
+
+
+{% macro battlechart(bc, archedata) %}
+<table class="collapse togglable">
+    <thead><tr>
+        <th>Deck</th>
+    {% for archetype, records in bc.items() %}
+        {% if archedata[loop.index0][1] > 0 %}
+        <th>{{archetype}}</th>
+        {% endif %}
+    {% endfor %}
+    </tr></thead>
+    <tbody>
+        {% for archetype, records in bc.items() %}
+        {% if archedata[loop.index0][1] > 0 %}
+        <tr>
+            <th>{{archetype}}</th>
+            {% for opp, r in records.items() %}
+                {% if archedata[loop.index0][1] > 0 %}
+                <td class="{{r.rating}}">
+                    {% if r.rating == "no_data" %}
+                    (No data)
+                    {% else %}
+                    <div class="pct">{{r.pct}}%</div>
+                    <div class="matchcount">({{r.matches}} matches)</div>
+                    {% endif %}
+                </td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+{% endmacro %}

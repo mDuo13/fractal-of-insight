@@ -57,6 +57,11 @@ class OmniEvent:
             dec = nom / len(self.players)
             pct = round(dec*100, 1)
             self.elements.append( (el, pct) ) 
+        if self.decklist_status == "partial":
+            nom = len(self.players) - self.num_decklists
+            dec = nom / len(self.players)
+            pct = round(dec*100, 1)
+            self.elements.append( ("Unknown", pct) )
     
     def analyze_archetypes(self):
         self.archedata = []

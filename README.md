@@ -6,14 +6,13 @@ This site shows information and analysis of Grand Archive tournament results. It
 ## TODO / Planned Features
 
 - improved visual styles overall
-    - unify event list style across index and season pages
-    - add element pie chart to season landing (from event page)
-- filter events on landing page
-- replace obscure unicode symbols with things that work on devices without the right fonts
-- mobile-friendly tooltip alternative
+- allow filtering event lists
+- (partly done) mobile-friendly tooltip alternative
+    - works ok in player list, not so much in match list.
 - refine archetype classification
     - require card combos or density (i.e. % allies or % resemblance to a predefined list)
     - use machine-learning clustering to identify archetypes?
+- display archetype definitions to users
 - archetype overlap chart
 - archetype overall winrate stats
 - champion/class stats

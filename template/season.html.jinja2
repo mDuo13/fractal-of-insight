@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Fractal of Insight (Alpha)</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon_180.png">
+    <link rel="icon" href="/favicon_180.png" sizes="180x180">
+    <link rel="icon" href="/favicon_32.png" sizes="32x32">
+    <link rel="stylesheet" href="/static/style.css" />
+    <script type="text/javascript" src="/static/ui.js"></script>
+    {% import "macros.html.jinja2" as macros %}
+</head>
+<body>
+<nav id="main_nav">
+<a class="nav-item" href="/">⌂ Home</a>
+</nav>
+<section id="szn-info">
+<h1><img alt="{{szn.name}}" src="/static/{{szn.code}}_logo.png" /> <br />{{szn}}</h1>
+<ul class="scooped-corners">
+        <li><b>Season #:</b> {{szn.id}}</li>
+        <li><b>Timeframe:</b> {{szn.start_time}} to {{szn.end_time}}</li>
+        <li><b>Events Analyzed:</b> {{szn.events|length}}</li>
+        <li><b>Season Guide:</b> <a href="{{szn.season_guide}}">[PDF]</a></li>
+    </ul>
+</section>
+
+<section id="events">
+    <h2>Events</h2>
+    <button onclick="toggle('#events > .togglable')">Show/Hide Event List</button>
+    <div class="collapse togglable season">
+        {% for evt in szn.events %}
+        {{ macros.eventbox(evt) }}
+        {% endfor %}
+    </div>
+</section>
+
+<section id="meta_composition">
+    <h2>Meta Composition</h2>
+    <button onclick="toggle('#meta_composition > .togglable')">Show/Hide Meta Composition</button>
+
+    <p class="togglable collapse">Season breakdown only includes public decklists. This may bias the breakdown towards decks that made top cut.</p>
+    <div class="element-meta collapse togglable">
+        {{macros.elementpie(szn.elements)}}
+    </div>
+
+    <div class="collapse togglable element-bars">
+        {% for archetype, pct, elpcts in szn.archedata %}
+            {% if loop.index <= 8 %}
+            <div class="archetype">
+                <div class="el-pct">{{pct}}%</div>
+                <div class="arche-bar" style="height: {{4*pct}}px">
+                    {% for el,elpct in elpcts.items() %}
+                        <div class="el-bar {{el|lower}}" style="height: {% if elpct > 0 %}{{elpct+0.1}}{% else %}0{% endif %}%" title="{{elpct}}% {{el}}">&nbsp;</div>
+                    {% endfor %}
+                </div>
+            <h4>{{archetype}}</h4>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <p class="togglable collapse">Only the top 8 archetypes are shown. Totals don't sum to 100% because decks can qualify as multiple archetypes.</p>
+</section>
+
+
+<section id="head-to-head">
+    <h2>Head-to-Head</h2>
+    <button onclick="toggle('#head-to-head > .togglable')">Show/Hide Head-to-Head Charts</button>
+    <p class="collapse togglable">Deck on the left's win rate vs deck on the top</p>
+    <h3 class="collapse togglable">All Players:</h3>
+    
+    {{ macros.battlechart(szn.battlechart, szn.archedata) }}
+
+    <h3 class="collapse togglable">Top Players Only:</h3>
+    <p class="collapse togglable">This chart shows only matches between players ranked in the top {{config.TOP_CUTOFF}} globally by Elo.</p>
+    {{ macros.battlechart(szn.bc_top, szn.archedata) }}
+</section>
+
+<footer>
+    <a href="https://github.com/mDuo13/fractal-of-insight/">&copy; 2024 mDuo13. Open-source.</a>
+</footer>
+</body>
+</html>

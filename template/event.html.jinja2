@@ -8,17 +8,12 @@
 <link rel="icon" href="/favicon_32.png" sizes="32x32">
 <link rel="stylesheet" href="/static/style.css" />
 <script type="text/javascript" src="/static/ui.js"></script>
+{% import "macros.html.jinja2" as macros %}
 </head>
-{% macro upset() %}
-<span class="upset" title="Upset: the other player has a {{config.UPSET_CUTOFF}}+ Elo advantage">😮</span>
-{% endmacro %}
-{% macro pname_w_dl(p) %}
-<a class="playername" {% if p.deck %}href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')"{% endif %} title="Elo: {{p.elo}}">{{p.username}}</a>
-{% endmacro %}
 <body>
 <nav id="main_nav">
-<a class="nav-item" href="/">⌂ Home</a>
-<a class="nav-item" href="/{{evt.season}}/">⮤ {{evt.season}} Season</a>
+    <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/{{evt.season}}/">⮤ {{evt.season}} Season</a>
 </nav>
 
 <section id="evt-info">
@@ -45,7 +40,7 @@
         {% for p in evt.players %}
         <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}">
             <td class="p_rank">{{loop.index}}</td>
-            <td class="p_name" title="Elo: {{p.elo}}">{{p}}</td>
+            <td class="playername" title="Elo: {{p.elo}}">{{p}}</td>
             <td class="p_record">{{p.record}}</td>
             <td class="p_deck">{% if p.deck %}<a href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
                 <div class="deck-bgs">
@@ -76,57 +71,16 @@
     <h2>Meta Composition</h2>
     <button onclick="toggle('#meta_composition > .togglable')">Show/Hide Meta Composition</button>
     <div class="element-meta collapse togglable">
-
-        {% set el_colors = {"Norm": "#ba9", "Fire": "#b30", "Wind": "#6c3", "Water": "#03d"} %}
-        {% set ns = namespace(cumu = 0) %}
-        <div class="pie-chart" style="background: conic-gradient({% for el, pct in evt.elements %}{{el_colors[el]}} {{ns.cumu}}%{% set ns.cumu = ns.cumu + pct %}, {{el_colors[el]}} {{ns.cumu}}%{% if not loop.last%}, {% endif %}{% endfor %})">&nbsp;</div>
-
-        <table class="element-table">
-            <thead><tr>
-                <th>Element</th>
-                <th>% of decks</th>
-            </tr></thead>
-            <tbody>
-                {% for el, pct in evt.elements %}
-                <tr>
-                    <td>{{el}}</td>
-                    <td>{{pct}}%</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
+        {{macros.elementpie(evt.elements)}}
     </div>
 
-    {#<table class="collapse togglable">
-        <thead><tr>
-            <th>Archetype</th>
-            <th>% of all decks</th>
-            <th>Element Breakdown</th>
-        </tr></thead>
-        <tbody>
-            {% for archetype, pct, elpcts in evt.archedata %}
-            <tr>
-                <td>{{archetype}}</td>
-                <td>{{pct}}%</td>
-                <td>
-                    <ul>
-                        {% for el,elpct in elpcts.items() %}
-                        <li><b>{{el}}</b>: {{elpct}}%</li>
-                        {% endfor %}
-                    </ul>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>#}
     <div class="collapse togglable element-bars">
         {% for archetype, pct, elpcts in evt.archedata %}
             <div class="archetype">
                 <div class="el-pct">{{pct}}%</div>
                 <div class="arche-bar" style="height: {{4*pct}}px">
                     {% for el,elpct in elpcts.items() %}
-                        <div class="el-bar {{el|lower}}" style="height: {{elpct+0.5}}%" title="{{elpct}}% {{el}}">&nbsp;</div>
+                        <div class="el-bar {{el|lower}}" style="height: {% if elpct > 0 %}{{elpct+0.5}}{% else %}0{% endif %}%" title="{{elpct}}% {{el}}">&nbsp;</div>
                     {% endfor %}
                 </div>
             <h4>{{archetype}}</h4>
@@ -136,39 +90,12 @@
     <p class="togglable collapse">Note archetypes don't sum to 100% because decks can be multiple archetypes.</p>
 </section>
 
-<section id="head_to_head">
+<section id="head-to-head">
     <h2>Head-to-Head</h2>
-    <button onclick="toggle('#head_to_head > .togglable')">Show/Hide Head-to-Head Chart</button>
+    <button onclick="toggle('#head-to-head > .togglable')">Show/Hide Head-to-Head Chart</button>
     <p class="collapse togglable">Deck on the left's win rate vs deck on the top</p>
-    <table class="collapse togglable">
-        <thead><tr>
-            <th>Deck</th>
-        {% for archetype, records in evt.battlechart.items() %}
-            {% if evt.archedata[loop.index0][1] > 0 %}
-            <th>{{archetype}}</th>
-            {% endif %}
-        {% endfor %}
-        </tr></thead>
-        <tbody>
-            {% for archetype, records in evt.battlechart.items() %}
-            {% if evt.archedata[loop.index0][1] > 0 %}
-            <tr>
-                <td>{{archetype}}</td>
-                {% for opp, r in records.items() %}
-                    <td class="{{r.rating}}">
-                        {% if r.rating == "no_data" %}
-                        (No data)
-                        {% else %}
-                        <div class="pct">{{r.pct}}%</div>
-                        <div class="matchcount">({{r.matches}} matches)</div>
-                        {% endif %}
-                    </td>
-                {% endfor %}
-            </tr>
-            {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
+
+    {{ macros.battlechart(evt.battlechart, evt.archedata) }}
 
 </section>
 {% endif %}{# end num_decklists conditional#}
@@ -178,6 +105,7 @@
     <button onclick="toggle('#matches > .togglable')">Show/Hide Matches</button>
     <div class="stages togglable collapse">
     <button id="matchreset" class="collapse" onclick="reset_matches()">Reset match filter</button>
+    <p>😮 indicates an upset—the losing player had a {{config.UPSET_CUTOFF}}+ Elo advantage.</p>
     {% for stage in evt.evt["stages"] %}
     <h3>Stage {{stage["id"]}} ({{stage["type"]|title}})</h3>
     <div class="rounds">
@@ -192,14 +120,16 @@
                 {% endif %}
                 <div class="match p_{{p1.id}} {% if p2 %}p_{{p2.id}}{% endif %}">
                     <div class="player">
-                        {{pname_w_dl(p1)}}
-                        {% if p2 and p2.elo - config.UPSET_CUTOFF > p1.elo and match["pairing"][0]["score"] > match["pairing"][1]["score"] %}{{upset()}}{% endif %}
+                        {{macros.pname_w_dl(p1)}}
+                        {% if p2 and p2.elo - config.UPSET_CUTOFF > p1.elo and match["pairing"][0]["score"] > match["pairing"][1]["score"] %}{{macros.upset()}}{% endif %}
+                        {% if match["pairing"]|length > 1 %}
                         <span class="matchscore {{match['pairing'][0]['status']}}">{{match["pairing"][0]["score"]}}</span>
+                        {% endif %}
                     </div>
                     {% if match["pairing"]|length > 1 %}
                     <div class="player">
-                        {{pname_w_dl(p2)}}
-                        {% if p1.elo - config.UPSET_CUTOFF > p2.elo and match["pairing"][1]["score"] > match["pairing"][0]["score"] %}{{upset()}}{% endif %}
+                        {{macros.pname_w_dl(p2)}}
+                        {% if p1.elo - config.UPSET_CUTOFF > p2.elo and match["pairing"][1]["score"] > match["pairing"][0]["score"] %}{{macros.upset()}}{% endif %}
                         <span class="matchscore {{match['pairing'][1]['status']}}">{{match["pairing"][1]["score"]}}</span>
                     </div>
                     {% else %}
