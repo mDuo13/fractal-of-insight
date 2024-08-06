@@ -5,7 +5,7 @@ This site shows information and analysis of Grand Archive tournament results. It
 
 ## TODO / Planned Features
 
-- improved visual styles overall
+- (partly done) improved visual styles overall
 - allow filtering event lists
 - (partly done) mobile-friendly tooltip alternative
     - works ok in player list, not so much in match list.
@@ -17,10 +17,9 @@ This site shows information and analysis of Grand Archive tournament results. It
 - archetype overall winrate stats
 - champion/class stats
 - fix overlay effect for deck view (click shaded area should close, controls shouldn't scroll)
-- crawler: track which events have been checked, which events might need updates
 - handle team standard format (separately?)
 - add ability to sideload decklists (e.g. for old events)
-- parse single-elimination stages / overall winner
+- maybe show overal winner in event summaries?
 - add player profiles across events?
 - make dynamic sections, i.e. flask app or something, for showing individual events
 - stats on most-used cards, etc.

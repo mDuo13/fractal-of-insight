@@ -18,6 +18,8 @@ body {
 
 h1, h2, h3, h4, h5 {
     font-family: "Adobe Garamod Pro Semibold";
+    margin-top: 1.5em;
+    margin-bottom: .5em;
 }
 .collapse {
     display: none !important;
@@ -43,9 +45,11 @@ table, th, td {
     border-collapse: collapse;
     padding: 5px;
 }
+table {
+    padding: 0;
+}
 
-.element-table th,
-#head-to-head th {
+th {
     background: var(--ui-bg);
 }
 .element-table td {

@@ -29,6 +29,7 @@ class OmniEvent:
         self.analyze_archetypes() # populates self.archedata
         self.battlechart = self.calc_headtohead(track_elo=True)
         self.bc_top = self.calc_headtohead(TOP_CUTOFF)
+        self.parse_top_cut() # populates self.top_cut
     
     def load_players(self):
         self.num_decklists = 0
@@ -83,6 +84,82 @@ class OmniEvent:
                 self.archedata.append( (archetype, pct, el_pcts) )
         
         self.archedata.sort(key=lambda x:x[1], reverse=True)
+
+    def parse_top_cut(self):
+        self.top_cut = []
+        try:
+            cutsize = int(self.evt.get("cutSize", "0"))
+        except ValueError:
+            print("Unknown cutSize value:", self.evt.get("cutSize"))
+            cutsize = 0
+        if not cutsize:
+            return
+        
+        finalstage = self.evt["stages"][-1]
+        if finalstage["type"] != "single-elimination":
+            print("Final stage isn't single elim??", finalstage)
+            return
+        
+        for rnd in finalstage["rounds"]:
+            if rnd == finalstage["rounds"][-1]:
+                # Final stage of single elim needs special treatment
+                tier = []
+                matches = rnd["matches"]
+                if len(matches) > 1:
+                    if len(matches) > 2:
+                        print("WARNING: 3+ matches in final stage of single-elim?")
+                    
+                    bronze_contenders = [p.id for p in self.top_cut[-2:]]
+
+                    if matches[0]["pairing"][0]["id"] in bronze_contenders:
+                        bronze_match = matches[0]
+                        finals_match = matches[1]
+                    else:
+                        bronze_match = matches[1]
+                        finals_match = matches[0]
+
+                else:
+                    bronze_match = None
+                    finals_match = matches[0]
+                
+                if bronze_match:
+                    if bronze_match["pairing"][0]["status"] == "loser":
+                        place4_id = bronze_match["pairing"][0]["id"]
+                        place3_id = bronze_match["pairing"][1]["id"]
+                    else:
+                        place3_id = bronze_match["pairing"][0]["id"]
+                        place4_id = bronze_match["pairing"][1]["id"]
+                    tier.append(self.pdict[place4_id])
+                    tier.append(self.pdict[place3_id])
+                    # Remove 3rd/4th from top cut list so we can re-add them in
+                    # the correct order below
+                    self.top_cut = self.top_cut[:-2]
+                
+                if finals_match["pairing"][0]["status"] == "loser":
+                    place2_id = finals_match["pairing"][0]["id"]
+                    place1_id = finals_match["pairing"][1]["id"]
+                else:
+                    place1_id = finals_match["pairing"][0]["id"]
+                    place2_id = finals_match["pairing"][1]["id"]
+                tier.append(self.pdict[place2_id])
+                tier.append(self.pdict[place1_id])
+            
+            else:
+                tier = []
+                for match in rnd["matches"]:
+                    if match["pairing"][0]["status"] == "loser":
+                        loser_id = match["pairing"][0]["id"]
+                        tier.append(self.pdict[loser_id])
+                    elif match["pairing"][1]["status"] == "loser":
+                        loser_id = match["pairing"][1]["id"]
+                        tier.append(self.pdict[loser_id])
+                    else:
+                        print("No loser in single-elim match?", match)
+                tier.sort(key=lambda x:x.sortkey())
+
+            self.top_cut += tier
+            
+        self.top_cut.reverse()
     
     def calc_headtohead(self, threshold=None, track_elo=False):
         use_archetypes = [a[0] for a in self.archedata]

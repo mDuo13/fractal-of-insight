@@ -32,6 +32,31 @@
 {% endmacro %}
 
 
+{% macro p_row(p, loop) %}
+    <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}">
+        <td class="p_rank">{{loop.index}}</td>
+        <td class="playername" title="Elo: {{p.elo}}">{{p}}</td>
+        <td class="p_record">{{p.record}}</td>
+        <td class="p_deck">{% if p.deck %}<a href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
+            <div class="deck-bgs">
+            {% for el in p.deck.els %}
+                <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
+            {% endfor%}
+            {% for arche in p.deck.archetypes %}
+                <img class="deck-bg" src="/static/bg-{{slugify(arche)}}.jpg" alt="" />
+            {% endfor%}
+            {% for lineage in p.deck.lineages %}
+                <img class="deck-bg" src="/static/bg-{{slugify(lineage)}}.jpg" alt="" />
+            {% endfor%}
+            </div>
+        </td>
+        {# <td class="elo">{{p.elo}}</td> #}
+        <td class="elodiff">{% if p.elo_diff > 0 %}+{% endif %}{{p.elo_diff|round|int}}</td>
+        <td class="showmatches">
+            <button onclick="showmatches({{p.id}})">Show Matches</button>
+        </td>
+    </tr>
+{% endmacro %}
 
 {% macro eventbox(evt) %}
 <a class="evt" href="/{{evt.season}}/{{evt.id}}.html">
