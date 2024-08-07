@@ -64,36 +64,12 @@
     </div>
 
     <h3 class="togglable collapse">Archetypes</h3>
-    <div class="collapse togglable element-bars">
-        {% for archetype, pct, elpcts in evt.archedata %}
-            <div class="archetype">
-                <div class="el-pct">{{pct}}%</div>
-                <div class="arche-bar" style="height: {{4*pct}}px">
-                    {% for el,elpct in elpcts.items() %}
-                        <div class="el-bar {{el|lower}}" style="height: {% if elpct > 0 %}{{elpct+0.5}}{% else %}0{% endif %}%" title="{{elpct}}% {{el}}">&nbsp;</div>
-                    {% endfor %}
-                </div>
-            <h4>{{archetype}}</h4>
-            </div>
-        {% endfor %}
-    </div>
+    {{ macros.elementbars(evt.archedata) }}
     <p class="togglable collapse">Note archetypes don't sum to 100% because decks can be multiple archetypes.</p>
 
     <h3 class="togglable collapse">Champions</h3>
-    <div class="collapse togglable element-bars">
-        {% for champ, pct, elpcts in evt.champdata %}
-            <div class="archetype">
-                <div class="el-pct">{{pct}}%</div>
-                <div class="arche-bar" style="height: {{4*pct}}px">
-                    {% for el,elpct in elpcts.items() %}
-                        <div class="el-bar {{el|lower}}" style="height: {% if elpct > 0 %}{{elpct+0.5}}{% else %}0{% endif %}%" title="{{elpct}}% {{el}}">&nbsp;</div>
-                    {% endfor %}
-                </div>
-            <h4>{{champ}}</h4>
-            </div>
-        {% endfor %}
-        <p>This breakdown only shows the basic elements from the deck's spirit(s), not elements added by Lv1+ champions.</p>
-    </div>
+    {{ macros.elementbars(evt.champdata) }}
+    <p class="togglable collapse">This breakdown only shows the basic elements from the deck's spirit(s), not elements added by Lv1+ champions.</p>
 </section>
 
 <section id="head-to-head">
@@ -153,42 +129,46 @@
 {% for p in evt.players %}
 {% if p.deck %}
 <div class="decklist collapse" id="deck_{{p.id}}">
-    <button class="closeX" onclick="closedecklist('#deck_{{p.id}}')">❌</button>
-    <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
-    <a class="permalink" href="#deck_{{p.id}}">🔗</a>
-    <h3>{{p.username}}'s {{p.deck}}</h3>
-    <h4>Materials <span class="cardcount">({{p.deck.dl["material"]|length}} cards)</span></h4>
-    <ul class="deck_txt collapse">
-        {% for card_o in p.deck.dl["material"] %}
-        <li>{{card_o["card"]}}</li>
-        {% endfor %}
-    </ul>
-    <div class="deck_gfx">
-        {% for card_o in p.deck.dl["material"] %}
-        <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /></div>
-        {% endfor %}
-    </div>
-    <h4>Maindeck <span class="cardcount">({{p.deck.main_total}} cards)</span></h4>
-    <ul class="deck_txt collapse">
-        {% for card_o in p.deck.dl["main"] %}
-        <li>{{card_o["quantity"]}}x {{card_o["card"]}}</li>
-        {% endfor %}
-    </ul>
-    <div class="deck_gfx">
-        {% for card_o in p.deck.dl["main"] %}
-        <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</div>
-        {% endfor %}
-    </div>
-    <h4>Sideboard <span class="cardcount">({{p.deck.side_total}} cards)</span></h4>
-    <ul class="deck_txt collapse">
-        {% for card_o in p.deck.dl["sideboard"] %}
-        <li>{{card_o["quantity"]}}x {{card_o["card"]}}</li>
-        {% endfor %}
-    </ul>
-    <div class="deck_gfx">
-        {% for card_o in p.deck.dl["sideboard"] %}
-        <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</div>
-        {% endfor %}
+    <div class="decklist-inner">
+        <button class="closeX" onclick="closedecklist('#deck_{{p.id}}')">❌</button>
+        <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
+        <a class="permalink" href="#deck_{{p.id}}">🔗</a>
+        <h3>{{p.username}}'s {{p.deck}}</h3>
+        <div class="decklist-viewbox">
+            <h4>Materials <span class="cardcount">({{p.deck.dl["material"]|length}} cards)</span></h4>
+            <ul class="deck_txt collapse">
+                {% for card_o in p.deck.dl["material"] %}
+                <li>{{card_o["card"]}}</li>
+                {% endfor %}
+            </ul>
+            <div class="deck_gfx">
+                {% for card_o in p.deck.dl["material"] %}
+                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /></div>
+                {% endfor %}
+            </div>
+            <h4>Maindeck <span class="cardcount">({{p.deck.main_total}} cards)</span></h4>
+            <ul class="deck_txt collapse">
+                {% for card_o in p.deck.dl["main"] %}
+                <li>{{card_o["quantity"]}}x {{card_o["card"]}}</li>
+                {% endfor %}
+            </ul>
+            <div class="deck_gfx">
+                {% for card_o in p.deck.dl["main"] %}
+                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</div>
+                {% endfor %}
+            </div>
+            <h4>Sideboard <span class="cardcount">({{p.deck.side_total}} cards)</span></h4>
+            <ul class="deck_txt collapse">
+                {% for card_o in p.deck.dl["sideboard"] %}
+                <li>{{card_o["quantity"]}}x {{card_o["card"]}}</li>
+                {% endfor %}
+            </ul>
+            <div class="deck_gfx">
+                {% for card_o in p.deck.dl["sideboard"] %}
+                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 {% endif %}
@@ -203,6 +183,16 @@ if (window.location.hash) {
         defaultobj.classList.remove("collapse")
     }
 }
+document.querySelectorAll(".decklist").forEach(el => {
+    el.addEventListener("click", (evt) => {
+        if (!evt.target.classList.contains("decklist")) {
+            evt.preventDefault()
+        } else {
+            el.classList.add("collapse")
+            history.pushState("", document.title, window.location.pathname+window.location.search)
+        }
+    })
+})
 </script>
 
 {% endblock %}

@@ -35,22 +35,13 @@
         {{macros.elementpie(szn.elements)}}
     </div>
 
-    <div class="collapse togglable element-bars">
-        {% for archetype, pct, elpcts in szn.archedata %}
-            {% if loop.index <= 8 %}
-            <div class="archetype">
-                <div class="el-pct">{{pct}}%</div>
-                <div class="arche-bar" style="height: {{4*pct}}px">
-                    {% for el,elpct in elpcts.items() %}
-                        <div class="el-bar {{el|lower}}" style="height: {% if elpct > 0 %}{{elpct+0.1}}{% else %}0{% endif %}%" title="{{elpct}}% {{el}}">&nbsp;</div>
-                    {% endfor %}
-                </div>
-            <h4>{{archetype}}</h4>
-            </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-    <p class="togglable collapse">Only the top 8 archetypes are shown. Totals don't sum to 100% because decks can qualify as multiple archetypes.</p>
+    <h3 class="togglable collapse">Archetypes</h3>
+    {{ macros.elementbars(szn.archedata) }}
+    <p class="togglable collapse">Totals don't sum to 100% because decks can qualify as multiple archetypes.</p>
+
+    <h3 class="togglable collapse">Champions</h3>
+    {{ macros.elementbars(szn.champdata) }}
+    <p class="togglable collapse">This breakdown only shows the basic elements from a deck's spirit(s), not elements added by Lv1+ champions. Decks with multiple lineages count fractionally toward each (for example, a Lorraine/Merlin deck counts 50% towards Lorraine).</p>
 </section>
 
 

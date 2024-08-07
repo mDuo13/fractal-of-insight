@@ -1,7 +1,7 @@
 from time import strftime, gmtime
 
 from archetypes import ARCHETYPES
-from cards import ELEMENTS
+from cards import ELEMENTS, LINEAGES
 from competition import SEASONS
 
 class Season:
@@ -33,6 +33,8 @@ class Season:
         szn_els = {el:0 for el in ELEMENTS}
         szn_arches = {a:0 for a in ARCHETYPES.keys()}
         szn_arche_els = {a: {el:0 for el in ELEMENTS} for a in ARCHETYPES.keys()}
+        szn_champs = {c:0 for c in LINEAGES}
+        szn_champ_els = {c: {el:0 for el in ELEMENTS} for c in LINEAGES}
         self.decks = 0
         for e in self.events:
             for p in e.players:
@@ -45,9 +47,14 @@ class Season:
                         szn_arches[arche] += 1
                         for el in p.deck.els:
                             szn_arche_els[arche][el] += el_frac
+                    for c in p.deck.lineages:
+                        szn_champs[c] += 1/len(p.deck.lineages)
+                        for el in p.deck.els:
+                            szn_champ_els[c][el] += el_frac/len(p.deck.lineages)
         
         self.elements = []
         self.archedata = []
+        self.champdata = []
         if not self.decks:
             return
         for el, total in szn_els.items():
@@ -65,6 +72,17 @@ class Season:
                 el_pcts = {el: 0 for el in ELEMENTS}
             self.archedata.append( (a, a_pct, el_pcts) )
         self.archedata.sort(key=lambda x:x[1], reverse=True)
+
+        for c in LINEAGES:
+            c_decks = szn_champs[c]
+            c_pct = round(100*c_decks / self.decks, 1)
+            c_els = szn_champ_els[c]
+            if c_decks > 0:
+                el_pcts = {el: round(100*ev/c_decks, 1) for el,ev in c_els.items() }
+            else:
+                el_pcts = {el: 0 for el in ELEMENTS}
+            self.champdata.append( (c, c_pct, el_pcts) )
+        self.champdata.sort(key=lambda x:x[1], reverse=True)
 
     def calc_headtohead(self, use_top=False):
         archetypes = [a[0] for a in self.archedata]

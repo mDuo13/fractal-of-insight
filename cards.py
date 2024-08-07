@@ -79,6 +79,25 @@ LV3 = [
     "Zander, Corhazi's Chosen",
 ]
 
+LINEAGES = [
+    "Lorraine",
+    "Rai",
+    "Silvie",
+    "Zander",
+    "Allen",
+    "Merlin",
+    "Mordred",
+    "Tristan",
+    "Arisanna",
+    "Diana",
+    "Tonoris",
+    "Nico",
+    "Polkhawk",
+    "Vanitas",
+    "Kongming",
+    "Jin",
+]
+
 LINEAGE_BREAK = [
     "Allen, Beast Beckoner",
     "Polkhawk, Bombastic Shot",

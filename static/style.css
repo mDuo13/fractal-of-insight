@@ -164,13 +164,24 @@ th {
     position: fixed;
     left: 0;
     top: 0;
-    width: calc(100% - 20vh);
-    height: 80vh;
-    border: 10vh solid rgba(0,0,0,0.5);
-    background: white;
-    padding: 20px;
-    overflow: auto;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    padding: 10vh 10vw;
     font-size: 14px;
+}
+
+.decklist-inner {
+    background-color: white;
+    width: calc(80vw - 40px);
+    height: calc(80vh - 40px);
+    padding: 20px;
+}
+
+.decklist-viewbox {
+    width: calc(80vw - 40px);
+    height: calc(80vh - 100px);
+    overflow: auto;
 }
 
 .decklist .cardimg {
@@ -212,6 +223,10 @@ th {
     padding: 5px;
     text-decoration: none;
     font-size: 20px;
+}
+.deck_gfx:last-child {
+    /* Force scrollbar to leave room for expanded card view */
+    margin-bottom: 175px;
 }
 
 .permalink:hover {

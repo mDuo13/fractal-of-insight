@@ -58,6 +58,7 @@ ARCHETYPES = {
             "Esteemed Knight",
             "Trained Sharpshooter",
             "Vigilant Sentry",
+            "Shimmercloak Assassin",
         ],
         "element": "Wind",
         "notmain": [

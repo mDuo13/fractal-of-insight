@@ -14,9 +14,7 @@ This site shows information and analysis of Grand Archive tournament results. It
     - use machine-learning clustering to identify archetypes?
 - display archetype definitions to users
 - archetype overlap chart
-- archetype overall winrate stats
-- champion/class stats
-- fix overlay effect for deck view (click shaded area should close, controls shouldn't scroll)
+- archetype/champion overall winrate stats
 - handle team standard format (separately?)
 - add ability to sideload decklists (e.g. for old events)
 - add player profiles across events?
