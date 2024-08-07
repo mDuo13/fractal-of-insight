@@ -8,3 +8,5 @@ CRAWLER_FILE = "./data/crawler.json"
 INTERESTING_PLAYER_COUNT = 20 # Crawler skips events with less than this number
 REALLY_INTERESTING_PLAYER_COUNT = 60 # Crawler includes events with at least this many players even if they're "Regular" and have no decklists.
 CRAWL_SAVE_INTERVAL = 50
+EVT_MAX_LENGTH = 60*60*24*2 # Consider an event stale if it's "started" but at least this many seconds ago (2 days)
+MAX_404_STREAK = 5 # If there are this many 404s in a row it probably means we've hit the end of registered events

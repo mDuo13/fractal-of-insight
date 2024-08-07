@@ -4,6 +4,7 @@ from time import sleep
 from os import makedirs
 
 from shared import slugify
+from cards import ERRATA
 
 API_DELAY = 0.5
 
@@ -35,7 +36,13 @@ except FileNotFoundError:
     print("Didn't find cached card data")
     carddata = {}
 
-def get_card_img(cardname):
+def get_card_img(cardname, at=0):
+    # Special case for errata'd Proxia's Vault cards like Stonescale Band
+    if cardname in ERRATA.keys():
+        errata = ERRATA[cardname]
+        if errata.get("before") > at:
+            return errata["img"]
+
     card_info = carddata.get(cardname)
     if card_info and card_info.get("img"):
         return card_info["img"]

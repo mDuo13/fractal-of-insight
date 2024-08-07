@@ -7,25 +7,33 @@
     <link rel="icon" href="/favicon_180.png" sizes="180x180">
     <link rel="icon" href="/favicon_32.png" sizes="32x32">
     <link rel="stylesheet" href="/static/style.css" />
+    <script type="text/javascript" src="/static/ui.js"></script>
+
     {% import "macros.html.jinja2" as macros %}
 </head>
 <body>
     <h1>Fractal of Insight</h1>
     <p class="intro">Statistics for Grand Archive TCG competition</p>
+
+    <form>
+    <fieldset>
+        <legend>Filter events</legend>
+        <input type="checkbox" id="cb_decklists" value=0 onclick="update_evt_filtering()" />
+        <label for="cb_decklists">Only events with decklists</label>
+        <fieldset>
+            <legend>Event Category</legend>
+            {% for cat in EVENT_TYPES.values() %}
+            <input type="checkbox" name="category" id="cb_cat_{{cat.shortname}}" value="{{cat.shortname}}" checked="checked" onclick="update_evt_filtering()" />
+            <label for="cb_cat_{{cat.shortname}}">{{cat.name}}</label>
+            {% endfor %}
+        </fieldset>
+    </fieldset>
+    </form>
     {% for seasonname, season in seasons.items() %}
     <section class="season" id="{{season['code']}}">
         <h2><a href="{{season['code']}}/"><img alt="{{season}}" src="/static/{{season['code']}}_logo.png" /></a></h2>
         {% for evt in season["events"] %}
         {{ macros.eventbox(evt) }}
-        {# <a class="evt" href="{{evt.season}}/{{evt.id}}.html">
-            <div class="evt-mainbox">
-                <h3>{{evt.name}}</h3>
-                <div class="date">{{evt.date}}</div>
-                <div class="playercount">{{evt.players|length}} entrants</div>
-                <div class="decklistcount">{% if evt.decklist_status == "full" %}All decklists{% elif evt.decklist_status == "partial" %}{{evt.num_decklists}} decklists{% endif %}</div>
-            </div>
-            <div class="event-category {{slugify(evt.category['name'])}}">{{evt.category["name"]}}</div>
-        </a> #}
         {% endfor %}
     </section>
     {% endfor %}
@@ -33,5 +41,6 @@
 <footer>
     <a href="https://github.com/mDuo13/fractal-of-insight/">&copy; 2024 mDuo13. Open-source.</a>
 </footer>
+<script>update_evt_filtering()</script>
 </body>
 </html>

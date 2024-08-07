@@ -9,13 +9,13 @@ EVENT_TYPES = {
         "name": "Worlds",
         "elo": "1.5x",
         "ep": "1.5x",
-        "shortname": "world",
+        "shortname": "worlds",
     },
     "nationals": {
         "name": "Nationals",
         "elo": "1.25x",
         "ep": "1.4x",
-        "shortname": "national",
+        "shortname": "nationals",
     },
     "ascent": {
         "name": "Ascent",
@@ -27,13 +27,13 @@ EVENT_TYPES = {
         "name": "Regionals",
         "elo": "1.0x",
         "ep": "1.1x",
-        "shortname": "regional",
+        "shortname": "regionals",
     },
     "store-championships": {
         "name": "Store Champs",
         "elo": "1.0x",
         "ep": "1.1x",
-        "shortname": "store",
+        "shortname": "store-champs",
     },
     "regular": {
         "name": "Regular",

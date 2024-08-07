@@ -3,7 +3,7 @@ from deck import Deck
 from datalayer import get_deck
 
 class Player:
-    def __init__(self, data, evt_id):
+    def __init__(self, data, evt_id, evt_time=0):
         self.id = data["id"]
         self.wins = data["statsWins"]
         self.losses = data["statsLosses"]
@@ -21,7 +21,7 @@ class Player:
 
         if data.get("isDecklistPublic"):
             dl = get_deck(self.id, evt_id)
-            self.deck = Deck(dl)
+            self.deck = Deck(dl, evt_time)
         else:
             self.deck = None
     

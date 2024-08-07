@@ -43,8 +43,9 @@ def fix_case(cardname):
     return cardname
 
 class Deck:
-    def __init__(self, dl):
+    def __init__(self, dl, evt_time):
         self.dl = dl
+        self.evt_time = evt_time
         self.fix_dl()
         self.find_spirits()
         self.find_champs()
@@ -154,7 +155,7 @@ class Deck:
     def cardlist_imgs(self):
         for cat in ("material", "main", "sideboard"):
             for card_o in self.dl[cat]:
-                card_o["img"] = get_card_img(card_o["card"])
+                card_o["img"] = get_card_img(card_o["card"], at=self.evt_time)
     
     def __str__(self):
         spiritstr = ""

@@ -24,6 +24,9 @@ class OmniEvent:
         self.season = SEASONS.get(self.evt["season"]["name"], "OTHER")
         self.category = EVENT_TYPES.get(self.evt["category"], {"name": "Unknown"})
 
+        if self.evt["format"] == "team-standard-3v3":
+            raise NotImplementedError
+
         self.load_players() # populates self.players, self.num_decklists, self.decklist_status
         self.analyze_elements() # populates self.elements
         self.analyze_archetypes() # populates self.archedata
@@ -35,7 +38,7 @@ class OmniEvent:
         self.num_decklists = 0
         self.players = []
         for pdata in self.evt["players"]:
-            p = Player(pdata, self.id)
+            p = Player(pdata, self.id, evt_time=self.evt["startAt"])
             self.players.append(p)
             if p.deck:
                 self.num_decklists += 1

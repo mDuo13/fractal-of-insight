@@ -21,6 +21,9 @@ h1, h2, h3, h4, h5 {
     margin-top: 1.5em;
     margin-bottom: .5em;
 }
+h1 {
+    margin-top: .25em;
+}
 .collapse {
     display: none !important;
 }
@@ -173,12 +176,21 @@ th {
 .decklist .cardimg {
     display: inline-block;
     position: relative;
+    width: 125px;
+    height: 175px;
 }
-
 .decklist .cardimg > img {
     display: inline-block;
     width: 125px;
     height: 175px;
+}
+.decklist .cardimg:active > img {
+	position: absolute;
+	width: 250px;
+	height: 350px;
+	z-index: 2;
+	top: 0;
+	left: 0;
 }
 .decklist .cardimg .quant {
     position: absolute;
@@ -389,20 +401,20 @@ th {
     font-size: 14px;
 }
 
-.event-category.regular {
+.regular .event-category {
     color: black;
     background-color: #ccc;
 }
-.event-category.regionals {
+.regionals .event-category {
     background-color: #03B;
 }
-.event-category.store-champs {
+.store-champs .event-category {
     background-color: #297;
 }
-.event-category.nationals {
+.nationals .event-category {
     background-color: #811;
 }
-.event-category.worlds {
+.worlds .event-category {
     background-color: #973;
 }
 

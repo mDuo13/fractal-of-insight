@@ -9,7 +9,7 @@ import config
 from shared import slugify
 from omnievent import OmniEvent
 from season import Season
-from competition import SEASONS
+from competition import SEASONS, EVENT_TYPES
 
 class PageBuilder:
     def __init__(self):
@@ -57,7 +57,11 @@ class PageBuilder:
         seasons = {}
         for entry in os.scandir("./data"):
             if entry.is_dir() and entry.name[:6] == "event_":
-                e = OmniEvent(entry.name[6:])
+                try:
+                    e = OmniEvent(entry.name[6:])
+                except NotImplementedError:
+                    print(f"Skipping team standard event (#{entry.name[6:]})")
+                    continue
                 if not seasons.get(e.season):
                     seasons[e.season] = Season(e.season)
                 seasons[e.season].add_event(e)
@@ -69,7 +73,7 @@ class PageBuilder:
             for szn in seasons.values():
                 self.write_season(szn)
         seasons_sorted = {k:seasons[v] for k,v in SEASONS.items() if v in seasons.keys()}
-        self.render("index.html.jinja2", "index.html", seasons=seasons_sorted)
+        self.render("index.html.jinja2", "index.html", seasons=seasons_sorted, EVENT_TYPES=EVENT_TYPES)
 
 def main(args):
     builder = PageBuilder()
