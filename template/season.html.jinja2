@@ -1,16 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>Fractal of Insight (Alpha)</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon_180.png">
-    <link rel="icon" href="/favicon_180.png" sizes="180x180">
-    <link rel="icon" href="/favicon_32.png" sizes="32x32">
-    <link rel="stylesheet" href="/static/style.css" />
-    <script type="text/javascript" src="/static/ui.js"></script>
-    {% import "macros.html.jinja2" as macros %}
-</head>
-<body>
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}{{szn}} - {% endblock %}
+
+{% block body %}
 <nav id="main_nav">
 <a class="nav-item" href="/">⌂ Home</a>
 </nav>
@@ -75,8 +67,4 @@
     {{ macros.battlechart(szn.bc_top, szn.archedata) }}
 </section>
 
-<footer>
-    <a href="https://github.com/mDuo13/fractal-of-insight/">&copy; 2024 mDuo13. Open-source.</a>
-</footer>
-</body>
-</html>
+{% endblock %}
