@@ -30,6 +30,7 @@ class OmniEvent:
         self.load_players() # populates self.players, self.num_decklists, self.decklist_status
         self.analyze_elements() # populates self.elements
         self.analyze_archetypes() # populates self.archedata
+        self.champdata = self.analyze_champions()
         self.battlechart = self.calc_headtohead(track_elo=True)
         self.bc_top = self.calc_headtohead(TOP_CUTOFF)
         self.parse_top_cut() # populates self.top_cut
@@ -87,6 +88,43 @@ class OmniEvent:
                 self.archedata.append( (archetype, pct, el_pcts) )
         
         self.archedata.sort(key=lambda x:x[1], reverse=True)
+    
+    def analyze_champions(self):
+        champcount = {}
+        champelcount = {}
+        champelements = {}
+        for p in self.players:
+            if p.deck:
+                for c in p.deck.lineages:
+                    if c in champcount.keys():
+                        champcount[c] += 1/len(p.deck.lineages)
+                        champelcount[c] += 1
+                        for el in p.deck.els:
+                            champelements[c][el] += 1/len(p.deck.els)
+                    else:
+                        champcount[c] = 1/len(p.deck.lineages)
+                        champelcount[c] = 1
+                        champelements[c] = {e: 0 for e in ELEMENTS}
+                        for el in p.deck.els:
+                            champelements[c][el] += 1/len(p.deck.els)    
+            else:
+                if "Unknown" in champcount:
+                    champcount["Unknown"] += 1
+                    champelcount["Unknown"] += 1
+                else:
+                    champcount["Unknown"] = 1
+                    champelcount["Unknown"] = 1
+                    champelements["Unknown"] = {e: 0 for e in ELEMENTS}
+
+        champdata = []
+        for c,cc in champcount.items():
+            pct = round(100*cc/len(self.players), 1)
+            dec = champelcount[c]
+            el_pcts = {e: round(100*ev/dec, 1) for e,ev in champelements[c].items()}
+            champdata.append( (c, pct, el_pcts) )
+        champdata.sort(key=lambda x:x[1], reverse=True)
+
+        return champdata
 
     def parse_top_cut(self):
         self.top_cut = []
@@ -253,3 +291,6 @@ class OmniEvent:
                     r["rating"] = "no_data"
         
         return battlechart
+    
+    def __repr__(self):
+        return f"Event#{self.id}"

@@ -38,21 +38,16 @@ ARCHETYPES = {
             "Ravishing Finale",
         ]
     },
-    "Aggro": {
+    "Fire Aggro": {
         "mats": [],
         "main": [
             "Arthur, Young Heir",
             "Rococo, Explosive Maven",
             "Hone by Fire",
-        ]
-    },
-    "Second-Wind": {
-        "mats": [],
-        "main": [
-            "Second Wind",
         ],
+        "shortname": "Aggro",
     },
-    "Wind-Allies": {
+    "Wind Allies": {
         "mats": [],
         "main": [
             "Gildas, Chronicler of Aesa",
@@ -70,7 +65,7 @@ ARCHETYPES = {
         ],
         "shortname": "Allies"
     },
-    "Water-Allies": {
+    "Water Allies": {
         "mats": [],
         "main": [
             "Gildas, Chronicler of Aesa",
@@ -136,7 +131,8 @@ ARCHETYPES = {
             "Slice and Dice"
         ],
         "notmain": [
-            "Shadowstrike"
+            "Shadowstrike",
+            "Lightweaver's Assault"
         ]
     },
     "Domains": {
