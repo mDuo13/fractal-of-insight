@@ -1,6 +1,6 @@
 from time import strftime, gmtime
 
-from player import Player
+from player import Entrant
 from datalayer import get_event
 from archetypes import ARCHETYPES
 from cards import ELEMENTS
@@ -39,7 +39,7 @@ class OmniEvent:
         self.num_decklists = 0
         self.players = []
         for pdata in self.evt["players"]:
-            p = Player(pdata, self.id, evt_time=self.evt["startAt"])
+            p = Entrant(pdata, self.id, evt_time=self.evt["startAt"])
             self.players.append(p)
             if p.deck:
                 self.num_decklists += 1

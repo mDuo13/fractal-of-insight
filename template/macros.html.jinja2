@@ -35,7 +35,7 @@
 {% macro p_row(p, loop) %}
     <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}">
         <td class="p_rank">{{loop.index}}</td>
-        <td class="playername" title="Elo: {{p.elo}}">{{p}}</td>
+        <td class="playername" title="Elo: {{p.elo}}"><a href="/player/{{p.id}}.html">{{p}}</a></td>
         <td class="p_record">{{p.record}}</td>
         <td class="p_deck">{% if p.deck %}<a href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
             <div class="deck-bgs">
@@ -58,6 +58,29 @@
     </tr>
 {% endmacro %}
 
+{% macro p_row_profilepage(p, loop, event) %}
+    <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}">
+        <td class="p_date">{{event.date}}</td>
+        <td class="p_event"><a href="/{{event.season}}/{{event.id}}.html">{{event.name}}</a></td>
+        <td class="p_record">{{p.record}}</td>
+        <td class="p_deck">{% if p.deck %}<a href="#deck_{{event.id}}" onclick="opendecklist('#deck_{{event.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
+            <div class="deck-bgs">
+            {% for el in p.deck.els %}
+                <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
+            {% endfor%}
+            {% for arche in p.deck.archetypes %}
+                <img class="deck-bg" src="/static/bg-{{slugify(arche)}}.jpg" alt="" />
+            {% endfor%}
+            {% for lineage in p.deck.lineages %}
+                <img class="deck-bg" src="/static/bg-{{slugify(lineage)}}.jpg" alt="" />
+            {% endfor%}
+            </div>
+        </td>
+        {# <td class="elo">{{p.elo}}</td> #}
+        <td class="elodiff">{% if p.elo_diff > 0 %}+{% endif %}{{p.elo_diff|round|int}}</td>
+    </tr>
+{% endmacro %}
+
 {% macro eventbox(evt) %}
 <a class="evt {{slugify(evt.category['name'])}}" href="/{{evt.season}}/{{evt.id}}.html" data-decklists="{{evt.num_decklists}}" data-category="{{slugify(evt.category['name'])}}">
     <div class="evt-mainbox">
@@ -71,7 +94,22 @@
 </a>
 {% endmacro %}
 
-
+{% macro event_filters(event_types) %}
+<form>
+    <fieldset>
+        <legend>Filter events</legend>
+        <input type="checkbox" id="cb_decklists" value=0 onclick="update_evt_filtering()" />
+        <label for="cb_decklists">Only events with decklists</label>
+        <fieldset>
+            <legend>Event Category</legend>
+            {% for cat in event_types.values() %}
+            <input type="checkbox" name="category" id="cb_cat_{{cat.shortname}}" value="{{cat.shortname}}" checked="checked" onclick="update_evt_filtering()" />
+            <label for="cb_cat_{{cat.shortname}}">{{cat.name}}</label>
+            {% endfor %}
+        </fieldset>
+    </fieldset>
+</form>
+{% endmacro %}
 
 {% macro battlechart(bc, archedata) %}
 <table class="collapse togglable">
@@ -123,5 +161,62 @@
         </div>
     {% endif %}
     {% endfor %}
+</div>
+{% endmacro %}
+
+{% macro decklist(p, event=None) %}
+{% if event %}
+<div class="decklist collapse" id="deck_{{event.id}}">
+{% else %}
+<div class="decklist collapse" id="deck_{{p.id}}">
+{% endif %}
+    <div class="decklist-inner">
+    {% if event %}
+        <button class="closeX" onclick="closedecklist('#deck_{{event.id}}')">❌</button>
+        <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
+        <a class="permalink" href="#deck_{{event.id}}">🔗</a>
+        <h3>{{p.username}}'s {{p.deck}} ({{event.name}})</h3>
+    {% else %}
+        <button class="closeX" onclick="closedecklist('#deck_{{p.id}}')">❌</button>
+        <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
+        <a class="permalink" href="#deck_{{p.id}}">🔗</a>
+        <h3>{{p.username}}'s {{p.deck}}</h3>
+    {% endif %}
+        <div class="decklist-viewbox">
+            <h4>Materials <span class="cardcount">({{p.deck.dl["material"]|length}} cards)</span></h4>
+            <ul class="deck_txt collapse">
+                {% for card_o in p.deck.dl["material"] %}
+                <li>{{card_o["card"]}}</li>
+                {% endfor %}
+            </ul>
+            <div class="deck_gfx">
+                {% for card_o in p.deck.dl["material"] %}
+                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /></div>
+                {% endfor %}
+            </div>
+            <h4>Maindeck <span class="cardcount">({{p.deck.main_total}} cards)</span></h4>
+            <ul class="deck_txt collapse">
+                {% for card_o in p.deck.dl["main"] %}
+                <li>{{card_o["quantity"]}}x {{card_o["card"]}}</li>
+                {% endfor %}
+            </ul>
+            <div class="deck_gfx">
+                {% for card_o in p.deck.dl["main"] %}
+                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</div>
+                {% endfor %}
+            </div>
+            <h4>Sideboard <span class="cardcount">({{p.deck.side_total}} cards)</span></h4>
+            <ul class="deck_txt collapse">
+                {% for card_o in p.deck.dl["sideboard"] %}
+                <li>{{card_o["quantity"]}}x {{card_o["card"]}}</li>
+                {% endfor %}
+            </ul>
+            <div class="deck_gfx">
+                {% for card_o in p.deck.dl["sideboard"] %}
+                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
 {% endmacro %}

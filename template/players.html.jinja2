@@ -1,0 +1,32 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}Players - {% endblock %}
+
+{% block body %}
+<nav id="main_nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+</nav>
+
+<section id="player-list">
+    <h1>Grand Archive Players</h1>
+    <table class="togglable">
+        <thead><tr>
+            <th>Username</th>
+            <th>Events Recorded</th>
+            <th>Latest Event</th>
+            <th>Most-played Champion</th>
+        </tr></thead>
+        <tbody>
+        {% for p in players %}
+            {% set e = events[p.events[0].evt_id] %}
+            <tr>
+                <td><a href="/player/{{p.id}}.html">{{p.username}}</a></td>
+                <td>{{p.events|length}}</td>
+                <td><a href="/{{e.season}}/{{e.id}}.html">{{e.name}}</a></td>
+                <td>{{p.mostplayed()}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

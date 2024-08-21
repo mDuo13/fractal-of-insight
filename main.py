@@ -10,6 +10,7 @@ from shared import slugify
 from omnievent import OmniEvent
 from season import Season
 from competition import SEASONS, EVENT_TYPES
+from player import Player
 
 class PageBuilder:
     def __init__(self):
@@ -48,31 +49,53 @@ class PageBuilder:
         """
         season.analyze()
         szn_path = f"{season.code}/index.html"
-        self.render("season.html.jinja2", szn_path, szn=season)
+        self.render("season.html.jinja2", szn_path, szn=season, EVENT_TYPES=EVENT_TYPES)
+
+    def write_player(self, player, events):
+        player.analyze()
+        plr_path = f"player/{player.id}.html"
+        self.render("player.html.jinja2", plr_path, player=player, events=events)
+
+    def write_player_index(self, players=[], events={}):
+        self.render("players.html.jinja2", "player/index.html", players=players, events=events)
     
-    def write_index(self, rebuild_all=False):
+    def write_all(self):
         """
-        Write the homepage and possibly all known event pages.
+        Write all known event pages as well as homepage, season landings, and player profiles.
         """
         seasons = {}
+        known_players = {}
+        all_events = {}
         for entry in os.scandir("./data"):
             if entry.is_dir() and entry.name[:6] == "event_":
                 try:
                     e = OmniEvent(entry.name[6:])
+                    all_events[e.id] = e
                 except NotImplementedError:
                     print(f"Skipping team standard event (#{entry.name[6:]})")
                     continue
                 if not seasons.get(e.season):
                     seasons[e.season] = Season(e.season)
                 seasons[e.season].add_event(e)
+                for entrant in e.players:
+                    if entrant.id in known_players.keys():
+                        known_players[entrant.id].add_entry(entrant)
+                    else:
+                        known_players[entrant.id] = Player(entrant)
                 
-                if rebuild_all:
-                    self.write_event(e)
+                self.write_event(e)
         
-        if rebuild_all:
-            for szn in seasons.values():
-                self.write_season(szn)
         seasons_sorted = {k:seasons[v] for k,v in SEASONS.items() if v in seasons.keys()}
+
+        for szn in seasons.values():
+            self.write_season(szn)
+        
+        known_pids_sorted = [pid for pid, pl in known_players.items()]
+        known_pids_sorted.sort(key=lambda x: known_players[x].sortkey())
+        for pid in known_pids_sorted:
+            self.write_player(known_players[pid], events=all_events)
+        self.write_player_index(players=[known_players[pid] for pid in known_pids_sorted], events=all_events)
+
         self.render("index.html.jinja2", "index.html", seasons=seasons_sorted, EVENT_TYPES=EVENT_TYPES)
 
 def main(args):
@@ -80,7 +103,7 @@ def main(args):
     for i in args.event_id:
         e = OmniEvent(i, force_redownload=args.update)
         builder.write_event(e)
-    builder.write_index(args.all)
+    builder.write_all()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Summarize an Omnidex event (works better if decklists are public)")

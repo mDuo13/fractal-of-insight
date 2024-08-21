@@ -35,7 +35,7 @@ def save_crawldata():
 def due_for_update(evt_data):
     if not evt_data:
         return True
-    if evt_data.get("status") in ("started", "404"):
+    if evt_data.get("status") in ("started", "completable", "404"):
         return True
 
     if evt_data.get("status") == "rsvp":
@@ -90,7 +90,7 @@ def is_interesting(evt):
             print("Event is scheduled in the past; marking stale.")
             evt["status"] = "stale"
             return 0
-    if evt.get("status") == "started":
+    if evt.get("status") in ("started", "completable"):
         if time() - (evt["startAt"]/1000) > config.EVT_MAX_LENGTH:
             print("Event has been ongoing > 2 days; marking stale.")
             evt["status"] = "stale"

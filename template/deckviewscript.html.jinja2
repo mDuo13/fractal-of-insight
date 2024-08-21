@@ -1,0 +1,20 @@
+<script type="text/javascript">
+// Open hash on page-load
+if (window.location.hash) {
+    //console.debug("hash:",window.location.hash)
+    const defaultobj = document.querySelector(window.location.hash)
+    if (defaultobj) {
+        defaultobj.classList.remove("collapse")
+    }
+}
+document.querySelectorAll(".decklist").forEach(el => {
+    el.addEventListener("click", (evt) => {
+        if (!evt.target.classList.contains("decklist")) {
+            evt.preventDefault()
+        } else {
+            el.classList.add("collapse")
+            history.pushState("", document.title, window.location.pathname+window.location.search)
+        }
+    })
+})
+</script>

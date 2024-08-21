@@ -1,0 +1,63 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}{{player.username}} - {% endblock %}
+
+{% block body %}
+<nav id="main_nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/player/">⮤ Players</a>
+</nav>
+
+<section id="player-info">
+    <ul class="scooped-corners">
+        <li><b>Username</b>: {{player.username}}</li>
+        <li><b>Omnidex ID</b>: #{{player.id}}</li>
+        <li><b>Recent Elo</b>: {{player.events[0].elo}}</li>
+    </ul>
+</section>
+
+<section id="entered-events">
+    <h2>Events Entered</h2>
+    <button onclick="toggle('#entered-events > .togglable')">Show/Hide List</button>
+    <table class="togglable">
+        <thead><tr>
+            <th>Date</th><th>Event</th><th>Swiss Record</th><th>Deck</th><th>Elo Change</th>
+        </tr></thead>
+        <tbody>
+        {% for p in player.events %}
+            {{ macros.p_row_profilepage(p, loop, events[p.evt_id]) }}
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+{% if player.num_decklists %}
+<section id="deck-trends">
+    <h2>Deck Trends</h2>
+    <button onclick="toggle('#deck-trends > .togglable')">Show/Hide Deck Trends</button>
+    <h3 class="togglable collapse">Elements</h3>
+    <div class="element-meta collapse togglable">
+        {{macros.elementpie(player.elements)}}
+    </div>
+
+    {#<h3 class="togglable collapse">Archetypes</h3>
+    {{ macros.elementbars(player.archedata) }}
+    <p class="togglable collapse">Note archetypes don't sum to 100% because decks can be multiple archetypes.</p>#}
+
+    <h3 class="togglable collapse">Champions</h3>
+    {{ macros.elementbars(player.champdata) }}
+</section>
+
+{# TODO: archetype, element stats, maybe head-to-head stats vs various archetypes too? #}
+{% endif %}{# end num_decklists conditional#}
+
+<!-- DECKLISTS -->
+{% for p in player.events %}
+{% if p.deck %}
+{{ macros.decklist(p, events[p.evt_id]) }}
+{% endif %}
+{% endfor %}
+
+{% include "deckviewscript.html.jinja2" %}
+
+{% endblock %}

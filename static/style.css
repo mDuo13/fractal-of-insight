@@ -35,6 +35,10 @@ section > button {
     margin-bottom: 25px;
 }
 
+form > fieldset {
+    margin-bottom: 25px;
+}
+
 .favored{background-color:green; color: white;}
 .unfavored{background-color: pink}
 .no_data{background-color:gray}

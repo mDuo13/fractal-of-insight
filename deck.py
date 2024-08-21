@@ -123,7 +123,8 @@ class Deck:
         for spirit in self.spirits:
             for element in ELEMENTS:
                 if element in spirit:
-                    els.append(element)
+                    if element not in els:
+                        els.append(element)
                     break
         if not els:
             els.append("Norm")
@@ -162,7 +163,19 @@ class Deck:
         if len(self.spirits) < 1:
             spiritstr = "(Spiritless???) "
         elif len(self.spirits) > 1:
-            spiritstr = "(Multi-Spirit) "
+            if len(self.els) == 1:
+                spirittypes = []
+                for spirit in self.spirits:
+                    for keyword in SPIRITTYPES:
+                        if keyword in spirit:
+                            spirittypes.append(keyword)
+                            break
+                    else:
+                        spirittypes.append("Regular")
+                spirittypes.sort(key=lambda x: "zzz" if x=="Regular" else x) #Sort "Regular" last
+                spiritstr = "/".join(spirittypes) + " " + self.els[0]
+            else:
+                spiritstr = "(Multi-Element) "
         else:
             spirit = self.spirits[0]
             for keyword in SPIRITTYPES:
@@ -170,19 +183,6 @@ class Deck:
                     spiritstr += keyword + " "
             
             spiritstr += "/".join(self.els)
-
-        # Check lineages for Lv3's that are only there to banish
-        # lineages = []
-        # for champ in self.champs:
-        #     if champ in LV3:
-        #         lv2_lineages = [lineage(c) for c in self.champs if c in LV2]
-        #         # Note: this assumes that there are no 
-        #         if lineage(champ) not in lv2_lineages:
-        #             #print(f"Deck missing lineage to {champ} - excluding?")
-        #             #print(self.dl["material"])
-        #             continue
-        #     if lineage(champ) not in lineages:
-        #         lineages.append(lineage(champ))
 
         #lineages = set([lineage(c) for c in self.champs])
         if len(self.lineages) == 1:

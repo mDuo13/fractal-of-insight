@@ -4,20 +4,8 @@
     <h1>Fractal of Insight</h1>
     <p class="intro">Statistics for Grand Archive TCG competition</p>
 
-    <form>
-    <fieldset>
-        <legend>Filter events</legend>
-        <input type="checkbox" id="cb_decklists" value=0 onclick="update_evt_filtering()" />
-        <label for="cb_decklists">Only events with decklists</label>
-        <fieldset>
-            <legend>Event Category</legend>
-            {% for cat in EVENT_TYPES.values() %}
-            <input type="checkbox" name="category" id="cb_cat_{{cat.shortname}}" value="{{cat.shortname}}" checked="checked" onclick="update_evt_filtering()" />
-            <label for="cb_cat_{{cat.shortname}}">{{cat.name}}</label>
-            {% endfor %}
-        </fieldset>
-    </fieldset>
-    </form>
+    {{ macros.event_filters(EVENT_TYPES) }}
+
     {% for seasonname, season in seasons.items() %}
     <section class="season" id="{{season['code']}}">
         <h2><a href="{{season['code']}}/"><img alt="{{season}}" src="/static/{{season['code']}}_logo.png" /></a></h2>

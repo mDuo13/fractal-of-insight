@@ -63,6 +63,7 @@ ARCHETYPES = {
         "element": "Wind",
         "notmain": [
             "Spirit Blade: Ascension",
+            "Shadowstrike",
         ],
         "shortname": "Allies"
     },
@@ -75,6 +76,9 @@ ARCHETYPES = {
             "Trained Sharpshooter",
             "Corhazi Trapper",
             "Vigilant Sentry",
+        ],
+        "notmain": [
+            "Spirit Blade: Ensoul",
         ],
         "element": "Water",
         "shortname": "Allies"
@@ -126,16 +130,16 @@ ARCHETYPES = {
     #         "Geldus, Terror of Dorumegia"
     #     ]
     # },
-    "Slice&Dice": {
-        "mats": [],
-        "main": [
-            "Slice and Dice"
-        ],
-        "notmain": [
-            "Shadowstrike",
-            "Lightweaver's Assault"
-        ]
-    },
+    # "Slice&Dice": {
+    #     "mats": [],
+    #     "main": [
+    #         "Slice and Dice"
+    #     ],
+    #     "notmain": [
+    #         "Shadowstrike",
+    #         "Lightweaver's Assault"
+    #     ]
+    # },
     "Domains": {
         "mats": [
             "Wayfinder's Map"

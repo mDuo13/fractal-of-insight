@@ -19,6 +19,9 @@
 <section id="events">
     <h2>Events</h2>
     <button onclick="toggle('#events > .togglable')">Show/Hide Event List</button>
+    <div class="collapse togglable season-event-filters">
+        {{ macros.event_filters(EVENT_TYPES) }}
+    </div>
     <div class="collapse togglable season">
         {% for evt in szn.events %}
         {{ macros.eventbox(evt) }}

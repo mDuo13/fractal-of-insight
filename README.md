@@ -13,6 +13,7 @@ This site shows information and analysis of Grand Archive tournament results. It
     - require card combos or density (i.e. % allies or % resemblance to a predefined list)
     - use machine-learning clustering to identify archetypes?
 - display archetype definitions to users
+- calculate stats on upsets
 - archetype overlap chart
 - archetype/champion overall winrate stats
 - handle team standard format (separately?)
@@ -20,3 +21,4 @@ This site shows information and analysis of Grand Archive tournament results. It
 - add player profiles across events?
 - make dynamic sections, i.e. flask app or something, for showing individual events
 - stats on most-used cards, etc.
+- divide matchup stats by before/after banlist changes & balance errata
