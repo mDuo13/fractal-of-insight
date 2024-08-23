@@ -132,6 +132,8 @@ class Deck:
     
     def fix_dl(self):
         # TODO: handle more cases where card name isn't properly cased
+        if not self.dl.get("main"):
+            raise ValueError(f"Decklist has no maindeck? {self.dl}")
         for card_o in self.dl["main"]:
             card_o["card"] = fix_case(card_o["card"])
         for card_o in self.dl["material"]:

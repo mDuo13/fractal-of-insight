@@ -291,6 +291,6 @@ class OmniEvent:
                     r["rating"] = "no_data"
         
         return battlechart
-    
+
     def __repr__(self):
         return f"Event#{self.id}"

@@ -1,6 +1,6 @@
 from deck import Deck
 
-from datalayer import get_deck
+from datalayer import get_deck, NoDeck
 from cards import ELEMENTS
 
 class Entrant:
@@ -25,10 +25,13 @@ class Entrant:
 
         self.record = f"{self.wins + self.byes}-{self.losses}-{self.ties}"
 
-        if data.get("isDecklistPublic"):
-            dl = get_deck(self.id, evt_id)
+        # if data.get("isDecklistPublic"):
+        try:
+            is_public = data.get("isDecklistPublic")
+            dl = get_deck(self.id, evt_id, is_public)
             self.deck = Deck(dl, evt_time)
-        else:
+        # else:
+        except (NoDeck):
             self.deck = None
     
     def sortkey(self):

@@ -110,11 +110,11 @@ ARCHETYPES = {
         ],
         "primary": True
     },
-    "Taser": {
-        "mats": ["Tasershot"],
-        "main": []
-    },
-    "Curse": {
+    # "Taser": {
+    #     "mats": ["Tasershot"],
+    #     "main": []
+    # },
+    "Umbra Ranger": {
         "mats": [
             "Shadow's Twin"
         ],
@@ -122,7 +122,8 @@ ARCHETYPES = {
             "Carter, Synthetic Reaper",
             "Mindbreak Bullet",
             "Umbral Tithe",
-        ]
+        ],
+        "shortname": "Umbra",
     },
     # "Geldus": {
     #     "mats": [],
