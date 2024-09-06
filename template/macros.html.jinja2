@@ -81,11 +81,34 @@
     </tr>
 {% endmacro %}
 
+{% macro flag(countrycode) %}
+<span class="flag" 
+{% if countrycode == "" %}title="Online">🌐
+{% elif countrycode == "AE" %}title="United Arab Emirates">🇦🇪
+{% elif countrycode == "AU" %}title="Australia">🇦🇺
+{% elif countrycode == "BE" %}title="Belgium">🇧🇪
+{% elif countrycode == "BN" %}title="Brunei">🇧🇳
+{% elif countrycode == "CA" %}title="Canada">🇨🇦
+{% elif countrycode == "DE" %}title="Germany">🇩🇪
+{% elif countrycode == "GB" %}title="United Kingdom">🇬🇧
+{% elif countrycode == "HK" %}title="Hong Kong">🇭🇰
+{% elif countrycode == "MY" %}title="Malaysia">🇲🇾
+{% elif countrycode == "NL" %}title="Netherlands">🇳🇱
+{% elif countrycode == "NZ" %}title="New Zealand">🇳🇿
+{% elif countrycode == "PH" %}title="Philippines">🇵🇭
+{% elif countrycode == "SG" %}title="Singapore">🇸🇬
+{% elif countrycode == "TW" %}title="Taiwan">🇹🇼
+{% elif countrycode == "US" %}title="United States of America">🇺🇸
+{% else %}>{{countrycode}}
+{% endif %}
+</span>
+{% endmacro %}
+
 {% macro eventbox(evt) %}
 <a class="evt {{slugify(evt.category['name'])}}" href="/{{evt.season}}/{{evt.id}}.html" data-decklists="{{evt.num_decklists}}" data-category="{{slugify(evt.category['name'])}}">
     <div class="evt-mainbox">
         <h3>{{evt.name}}</h3>
-        <div class="date">{{evt.date}}</div>
+        <div class="date_loc">{{evt.date}} {{flag(evt.country)}}</div>
         <div class="playercount">{{evt.players|length}} entrants</div>
         <div class="decklistcount">{% if evt.decklist_status == "full" %}All decklists{% elif evt.decklist_status == "partial" %}{{evt.num_decklists}} decklists{% endif %}</div>
         <div class="winner">Winner: {% if evt.top_cut%}{{evt.top_cut[0].username}}{% else %}{{evt.players[0].username}}{% endif %}</div>

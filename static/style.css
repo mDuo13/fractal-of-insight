@@ -519,6 +519,10 @@ th {
     vertical-align: text-bottom;
 }
 
+.flag {
+    text-shadow: var(--main-shadow);
+}
+
 footer {
     border-top: 1px solid #aaa;
     padding-top: 5px;

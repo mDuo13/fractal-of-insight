@@ -23,6 +23,7 @@ class OmniEvent:
         self.date = strftime(r"%Y-%m-%d", gmtime(self.evt["startAt"]/1000))
         self.season = SEASONS.get(self.evt["season"]["name"], "OTHER")
         self.category = EVENT_TYPES.get(self.evt["category"], {"name": "Unknown"})
+        self.country = self.evt.get("addressCountryCode", "")
 
         if self.evt["format"] == "team-standard-3v3":
             raise NotImplementedError
