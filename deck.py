@@ -140,6 +140,13 @@ class Deck:
             card_o["card"] = fix_case(card_o["card"])
         for card_o in self.dl["sideboard"]:
             card_o["card"] = fix_case(card_o["card"])
+
+        # Special case for Yeti local 9/5 which used Gate of Alterity as a placeholder for Polaris, Twinkling Cauldron
+        if self.evt_time == 1725580800000:
+            for card_o in self.dl["material"]:
+                if card_o["card"] == "Gate of Alterity":
+                    card_o["card"] = "Polaris, Twinkling Cauldron"
+
         self.dl["main"].sort(key=lambda x:x["card"])
         self.dl["sideboard"].sort(key=lambda x:x["card"])
         self.dl["material"].sort(key=rank_mat_card)

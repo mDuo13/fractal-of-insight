@@ -30,6 +30,8 @@ ARCHETYPES = {
             "Arcane Blast",
             "Advent of the Stormcaller",
             "Erratic Bolt",
+            "Voltaic Sphere",
+            "Spellshield: Arcane",
         ]
     },
     "Mill": {
@@ -64,6 +66,7 @@ ARCHETYPES = {
         "notmain": [
             "Spirit Blade: Ascension",
             "Shadowstrike",
+            "Storm Slime",
         ],
         "shortname": "Allies"
     },
