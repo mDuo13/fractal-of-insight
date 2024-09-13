@@ -1,0 +1,43 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}{{arche.name}} - {% endblock %}
+
+{% block body %}
+<nav id="main_nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/decks/">⮤ Decks</a>
+</nav>
+
+<h1>Deck Archetype: {{arche.name}}</h1>
+
+<section id="arche-info">
+    <ul class="scooped-corners">
+        <li><b>Decks recorded</b>: {{deckcount}}</li>
+        <!-- TODO: earliest appearance? -->
+    </ul>
+</section>
+
+<section id="arche-def">
+    <h2>Definition</h2>
+    <button onclick="toggle('#arche-def > .togglable')">Show/Hide List</button>
+
+    TODO: cards that this tool uses to define the archetype
+</section>
+
+<section id="deck-composition">
+    <h2>Deck Composition</h2>
+
+    TODO: 
+    * element, spirit, and champion breakdown
+    * cards that are most often seen in the deck aside from the defining ones
+    * typical ratio of card types in maindeck (ally, action, attack, item, phantasia)
+    * average floating memory count?
+</section>
+
+<section id="arche-results">
+    <h2>Example Decks and Recent Results</h2>
+
+    TODO: top finishes / decks that won events overall
+
+    TODO: selection of recent decks
+</section>

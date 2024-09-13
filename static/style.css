@@ -420,6 +420,11 @@ th {
     font-size: 14px;
 }
 
+.rivalex {
+    font-size: 13px;
+    font-style: italic;
+}
+
 .regular .event-category {
     color: black;
     background-color: #ccc;

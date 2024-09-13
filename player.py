@@ -2,6 +2,7 @@ from deck import Deck
 
 from datalayer import get_deck, NoDeck
 from cards import ELEMENTS
+RIVAL_THRESHOLD = 3 # min losses to counta as a rival
 
 class Entrant:
     """
@@ -48,6 +49,7 @@ class Player:
         self.id = entrant.id
         self.username = entrant.username
         self.events = [entrant]
+        self.losses = {}
     
     def add_entry(self, entrant):
         self.events.append(entrant)
@@ -57,6 +59,7 @@ class Player:
         self.events.sort(key=lambda x: x.evt_time, reverse=True)
         self.num_decklists = len([e for e in self.events if e.deck])
         self.analyze_champions()
+        self.analyze_rivals()
         
     def analyze_champions(self):
         champcount = {}
@@ -104,6 +107,32 @@ class Player:
         self.champdata.sort(key=lambda x:x[1], reverse=True)
         
         #TODO: implement more stuff like archetype analysis
+
+    def track_rivals_for_event(self, e):
+        for stage in e.evt["stages"]:
+            for rnd in stage["rounds"]:
+                for match in rnd["matches"]:
+                    for mpl in match["pairing"]:
+                        if mpl["id"] == self.id and mpl["status"] == "loser":
+                            oppid = rnd["pairings"][str(self.id)]
+                            if oppid in self.losses.keys():
+                                self.losses[oppid] += 1
+                            else:
+                                self.losses[oppid] = 1
+    
+    def analyze_rivals(self):
+        max_l = 0
+        max_l_ps = []
+        for p,l in self.losses.items():
+            if l > RIVAL_THRESHOLD and l >= max_l:
+                if l > max_l:
+                    max_l_ps = [int(p)]
+                elif l == max_l:
+                    max_l_ps.append(int(p))
+        self.rivals = max_l_ps
+        # if self.rivals:
+        #     print(f"{self.username} rivals: {self.rivals}")
+
 
     def mostplayed(self):
         if not self.champdata:

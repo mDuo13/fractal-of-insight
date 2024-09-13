@@ -51,10 +51,10 @@ class PageBuilder:
         szn_path = f"{season.code}/index.html"
         self.render("season.html.jinja2", szn_path, szn=season, EVENT_TYPES=EVENT_TYPES)
 
-    def write_player(self, player, events):
+    def write_player(self, player, events, known_players):
         player.analyze()
         plr_path = f"player/{player.id}.html"
-        self.render("player.html.jinja2", plr_path, player=player, events=events)
+        self.render("player.html.jinja2", plr_path, player=player, events=events, players=known_players)
 
     def write_player_index(self, players=[], events={}):
         self.render("players.html.jinja2", "player/index.html", players=players, events=events)
@@ -82,6 +82,7 @@ class PageBuilder:
                         known_players[entrant.id].add_entry(entrant)
                     else:
                         known_players[entrant.id] = Player(entrant)
+                    known_players[entrant.id].track_rivals_for_event(e)
                 
                 self.write_event(e)
         
@@ -93,7 +94,7 @@ class PageBuilder:
         known_pids_sorted = [pid for pid, pl in known_players.items()]
         known_pids_sorted.sort(key=lambda x: known_players[x].sortkey())
         for pid in known_pids_sorted:
-            self.write_player(known_players[pid], events=all_events)
+            self.write_player(known_players[pid], all_events, known_players)
         self.write_player_index(players=[known_players[pid] for pid in known_pids_sorted], events=all_events)
 
         self.render("index.html.jinja2", "index.html", seasons=seasons_sorted, EVENT_TYPES=EVENT_TYPES)
