@@ -30,9 +30,26 @@ function showmatches(pid) {
     matchreset.classList.remove("collapse")
     window.location.hash = "#matches"
 }
+function show_key_matches() {
+    const keymatchbutton = document.querySelector("#keymatches")
+    keymatchbutton.classList.add("collapse")
+    const matchreset = document.querySelector("#matchreset")
+    matchreset.classList.remove("collapse")
+
+    const all_matches = document.querySelectorAll("#matches .match")
+    const matchsection = document.querySelector("#matches > .togglable")
+    matchsection.classList.remove("collapse")
+    all_matches.forEach(el => {el.classList.add("collapse")})
+    const matching_matches = document.querySelectorAll("#matches .keymatch")
+    matching_matches.forEach(el => {el.classList.remove("collapse")})
+    
+
+}
 function reset_matches() {
     const matchreset = document.querySelector("#matchreset")
     matchreset.classList.add("collapse")
+    const keymatchbutton = document.querySelector("#keymatches")
+    keymatchbutton.classList.remove("collapse")
     const all_matches = document.querySelectorAll("#matches .match")
     all_matches.forEach(el => {el.classList.remove("collapse")})
 }

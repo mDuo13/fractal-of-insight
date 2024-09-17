@@ -13,7 +13,7 @@
         <li><b>Username</b>: {{player.username}}</li>
         <li><b>Omnidex ID</b>: #{{player.id}}</li>
         <li><b>Recent Elo</b>: {{player.events[0].elo}}</li>
-        {% if player.rivals %}<li><b>Rival(s)</b>: {% for r in player.rivals %}<a href="/player/{{r}}.html">{{players[r].username}} #{{r}}</a> ({{player.losses[r]}} losses){% endfor %}<br><span class="rivalex">(Your rival is the player who has beaten you the most times in tracked events, minimum 3 times.)</span>{% endif %}
+        {% if player.rivals %}<li><b>Rival(s)</b>: {% for r in player.rivals %}<a href="/player/{{r}}.html">{{players[r].username}} #{{r}}</a> ({{player.losses[r]}} losses){% endfor %}<br><span class="explanation">(Your rival is the player who has beaten you the most times in tracked events, minimum 3 times.)</span>{% endif %}
     </ul>
 </section>
 

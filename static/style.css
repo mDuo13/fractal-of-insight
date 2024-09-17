@@ -420,9 +420,13 @@ th {
     font-size: 14px;
 }
 
-.rivalex {
+.explanation {
     font-size: 13px;
     font-style: italic;
+}
+
+.noem {
+    font-style: normal;
 }
 
 .regular .event-category {

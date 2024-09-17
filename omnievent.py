@@ -24,6 +24,9 @@ class OmniEvent:
         self.season = SEASONS.get(self.evt["season"]["name"], "OTHER")
         self.category = EVENT_TYPES.get(self.evt["category"], {"name": "Unknown"})
         self.country = self.evt.get("addressCountryCode", "")
+        # At 3pts/win and 1pt/draw, anyone with over 1.5 points/rnd
+        # has a theoretical "win rate" of > 50%
+        self.fiftypct_points = self.evt["rounds"] * 1.5
 
         if self.evt["format"] == "team-standard-3v3":
             raise NotImplementedError

@@ -86,8 +86,10 @@
     <h2>Matches</h2>
     <button onclick="toggle('#matches > .togglable')">Show/Hide Matches</button>
     <div class="stages togglable collapse">
+    <button id="keymatches" class="togglable" onclick="show_key_matches()">Show Key Matches Only</button>
+    <p class="explanation togglable">(Key matches are ones between players who both finished with a winning record in Swiss, excluding intentional draws.)</p>
     <button id="matchreset" class="collapse" onclick="reset_matches()">Reset match filter</button>
-    <p>😮 indicates an upset—the losing player had a {{config.UPSET_CUTOFF}}+ Elo advantage.</p>
+    <p class="explanation togglable">(<span class="noem">😮</span> indicates an upset—the losing player had a {{config.UPSET_CUTOFF}}+ Elo advantage.)</p>
     {% for stage in evt.evt["stages"] %}
     <h3>Stage {{stage["id"]}} ({{stage["type"]|title}})</h3>
     <div class="rounds">
@@ -97,10 +99,14 @@
                 {% set p1 = evt.pdict[match["pairing"][0]["id"]] %}
                 {% if match["pairing"]|length > 1 %}
                 {% set p2 = evt.pdict[match["pairing"][1]["id"]] %}
+                    {% set iskeymatch="" %}
+                    {% if p1.score > evt.fiftypct_points and p2.score > evt.fiftypct_points and match["pairing"][0]["score"]+match["pairing"][1]["score"] > 0 %}
+                    {% set iskeymatch="keymatch" %}
+                    {% endif %}
                 {% else %}
                 {% set p2 = None %}
                 {% endif %}
-                <div class="match p_{{p1.id}} {% if p2 %}p_{{p2.id}}{% endif %}">
+                <div class="match p_{{p1.id}} {% if p2 %}p_{{p2.id}} {{iskeymatch}} {% endif %}">
                     <div class="player">
                         {{macros.pname_w_dl(p1)}}
                         {% if p2 and p2.elo - config.UPSET_CUTOFF > p1.elo and match["pairing"][0]["score"] > match["pairing"][1]["score"] %}{{macros.upset()}}{% endif %}
