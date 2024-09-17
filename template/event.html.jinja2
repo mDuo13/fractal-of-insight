@@ -87,7 +87,8 @@
     <button onclick="toggle('#matches > .togglable')">Show/Hide Matches</button>
     <div class="stages togglable collapse">
     <button id="keymatches" class="togglable" onclick="show_key_matches()">Show Key Matches Only</button>
-    <p class="explanation togglable">(Key matches are ones between players who both finished with a winning record in Swiss, excluding intentional draws.)</p>
+    <p id="keymatch-expl" class="explanation togglable">(Key matches are ones between players who both finished with a high Swiss score, excluding intentional draws.)</p>
+    <p id="keymatch-showing" class="togglable collapse">Showing only matches between players who both scored over {{evt.fiftypct_points}} points in Swiss.</p>
     <button id="matchreset" class="collapse" onclick="reset_matches()">Reset match filter</button>
     <p class="explanation togglable">(<span class="noem">😮</span> indicates an upset—the losing player had a {{config.UPSET_CUTOFF}}+ Elo advantage.)</p>
     {% for stage in evt.evt["stages"] %}

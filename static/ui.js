@@ -28,6 +28,10 @@ function showmatches(pid) {
     matchsection.classList.remove("collapse")
     const matchreset = document.querySelector("#matchreset")
     matchreset.classList.remove("collapse")
+    const keymatch_expl = document.querySelector("#keymatch-expl")
+    const keymatch_showing = document.querySelector("#keymatch-showing")
+    keymatch_expl.classList.remove("collapse")
+    keymatch_showing.classList.add("collapse")
     window.location.hash = "#matches"
 }
 function show_key_matches() {
@@ -35,6 +39,12 @@ function show_key_matches() {
     keymatchbutton.classList.add("collapse")
     const matchreset = document.querySelector("#matchreset")
     matchreset.classList.remove("collapse")
+    
+    // Switch the labels
+    const keymatch_expl = document.querySelector("#keymatch-expl")
+    const keymatch_showing = document.querySelector("#keymatch-showing")
+    keymatch_expl.classList.add("collapse")
+    keymatch_showing.classList.remove("collapse")
 
     const all_matches = document.querySelectorAll("#matches .match")
     const matchsection = document.querySelector("#matches > .togglable")
