@@ -83,39 +83,42 @@ class Deck:
     
     def find_archetypes(self):
         self.archetypes = []
-        for archetype, acards in ARCHETYPES.items():
-            if acards.get("element"):
-                if acards["element"] not in self.els:
-                    #print(f"DQ'd from archetype: {acards['element']} not in {self.els}")
-                    continue
-            cancel = False
-            for anticard in acards.get("notmain",[]):
-                for card_o in self.dl["main"]:
-                    if card_o["card"] == anticard:
-                        cancel = True
-                        break
-            if cancel:
-                continue
+        for archetype in ARCHETYPES.values():
+            if archetype.match(self):
+                self.archetypes.append( archetype.name )
+        # for archetype, acards in ARCHETYPES.items():
+        #     if acards.get("element"):
+        #         if acards["element"] not in self.els:
+        #             #print(f"DQ'd from archetype: {acards['element']} not in {self.els}")
+        #             continue
+        #     cancel = False
+        #     for anticard in acards.get("notmain",[]):
+        #         for card_o in self.dl["main"]:
+        #             if card_o["card"] == anticard:
+        #                 cancel = True
+        #                 break
+        #     if cancel:
+        #         continue
 
-            for matcard in acards["mats"]:
-                for card_o in self.dl["material"]:
-                    if card_o["card"] == matcard:
-                        self.archetypes.append( archetype )
-                        cancel = True
-                        break
-                if cancel:
-                    break
-            if archetype in self.archetypes:
-                continue
+        #     for matcard in acards["mats"]:
+        #         for card_o in self.dl["material"]:
+        #             if card_o["card"] == matcard:
+        #                 self.archetypes.append( archetype )
+        #                 cancel = True
+        #                 break
+        #         if cancel:
+        #             break
+        #     if archetype in self.archetypes:
+        #         continue
 
-            for maincard in acards["main"]:
-                for card_o in self.dl["main"]:
-                    if card_o["card"] == maincard:
-                        self.archetypes.append( archetype )
-                        cancel = True
-                        break
-                if cancel:
-                    break
+        #     for maincard in acards["main"]:
+        #         for card_o in self.dl["main"]:
+        #             if card_o["card"] == maincard:
+        #                 self.archetypes.append( archetype )
+        #                 cancel = True
+        #                 break
+        #         if cancel:
+        #             break
     
     def find_elements(self):
         # Doesn't include advanced elements or basic-elemental champs
@@ -210,7 +213,13 @@ class Deck:
         else:
             archetype_list = []
             for arche in self.archetypes:
-                archetype_list.append(ARCHETYPES[arche].get("shortname", arche))
+                archetype_list.append(ARCHETYPES[arche].shortname)
             archetypestr = " ".join(archetype_list)
 
         return " ".join((spiritstr, archetypestr, champstr)).replace("  "," ")
+    
+    def __iter__(self):
+        for card_o in self.dl["material"]:
+            yield card_o["card"]
+        for card_o in self.dl["main"]:
+            yield card_o["card"]
