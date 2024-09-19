@@ -197,12 +197,12 @@
     {% if event %}
         <button class="closeX" onclick="closedecklist('#deck_{{event.id}}')">❌</button>
         <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
-        <a class="permalink" href="#deck_{{event.id}}">🔗</a>
+        <a class="permalink" href="#deck_{{event.id}}" onclick="copypermalink()">🔗</a>
         <h3>{{p.username}}'s {{p.deck}} ({{event.name}})</h3>
     {% else %}
         <button class="closeX" onclick="closedecklist('#deck_{{p.id}}')">❌</button>
         <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
-        <a class="permalink" href="#deck_{{p.id}}">🔗</a>
+        <a class="permalink" href="#deck_{{p.id}}" onclick="copypermalink()">🔗</a>
         <h3>{{p.username}}'s {{p.deck}}</h3>
     {% endif %}
         <div class="decklist-viewbox">

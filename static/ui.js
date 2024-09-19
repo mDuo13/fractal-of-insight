@@ -85,3 +85,9 @@ function update_evt_filtering() {
         }
     })
 }
+
+function copypermalink() {
+    if (window.isSecureContext) {
+        navigator.clipboard.writeText(window.location);
+    }
+}
