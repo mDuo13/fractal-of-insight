@@ -199,7 +199,8 @@ th {
     width: 125px;
     height: 175px;
 }
-.decklist .cardimg:active > img {
+.decklist .cardimg:active > img,
+.decklist .cardimg.dblclicked > img {
 	position: absolute;
 	width: 250px;
 	height: 350px;

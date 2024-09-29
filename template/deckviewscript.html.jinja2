@@ -17,4 +17,9 @@ document.querySelectorAll(".decklist").forEach(el => {
         }
     })
 })
+document.querySelectorAll(".decklist .cardimg").forEach(el => {
+    el.addEventListener("dblclick", (evt) => {
+        el.classList.toggle("dblclicked")
+    })
+})
 </script>
