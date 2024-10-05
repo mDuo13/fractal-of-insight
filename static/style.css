@@ -63,7 +63,7 @@ th {
     background: white;
 }
 
-#players table, #players th, #players td {
+#players table, #players th, #players td, table.archetypes, .archetypes th, .archetypes td {
     border: none;
     border-collapse: separate;
 }
@@ -188,13 +188,14 @@ th {
     overflow: auto;
 }
 
-.decklist .cardimg {
+.decklist .cardimg, .top-cards .cardimg {
     display: inline-block;
     position: relative;
     width: 125px;
     height: 175px;
 }
-.decklist .cardimg > img {
+.decklist .cardimg > img,
+.top-cards .cardimg > img {
     display: inline-block;
     width: 125px;
     height: 175px;
@@ -208,7 +209,8 @@ th {
 	top: 0;
 	left: 0;
 }
-.decklist .cardimg .quant {
+.decklist .cardimg .quant,
+.top-cards .cardimg .quant {
     position: absolute;
     left: 0;
     bottom: 5px;
@@ -454,6 +456,12 @@ th {
     margin-bottom: 100px;
 }
 
+.season-chunk {
+    border-bottom: 3px groove black;
+    padding: 0 0 20px 0;
+    margin: 0 0 20px 0;
+}
+
 .season h2 {
     text-align: center;
     position: relative;
@@ -471,8 +479,7 @@ th {
     transform: scale(1.1);
 }
 
-#evt-info h1,
-#szn-info h1 {
+h1 {
     background: var(--ui-bg);
     padding: 15px;
     margin-right: 20%;
@@ -485,8 +492,7 @@ th {
     vertical-align: bottom;
 }
 
-#evt-info h1::before,
-#szn-info h1::before {
+h1::before {
     content: "";
     background-color: black;
     clip-path: polygon(0 0, 
@@ -519,6 +525,10 @@ th {
     --background: var(--ui-bg);
     display: inline-block;
     /* filter: drop-shadow(var(--main-shadow)); // doesn't work with evt-info clip-path */ 
+}
+
+#main-nav {
+    margin: 5px 0 15px 0;
 }
 
 .nav-item {

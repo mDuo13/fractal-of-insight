@@ -1,0 +1,37 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}Decks - {% endblock %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+</nav>
+
+<section id="arche-list">
+<h1>Deck Archetypes</h1>
+
+<table class="archetypes">
+    <thead><tr>
+        <th>Name</th>
+        <th>Appearances</th>
+        <th>Overall win rate</th>
+        <th>Events won</th>
+    </tr></thead>
+    <tbody>
+    {% for arche in archetypes %}
+    <tr class="p-row">
+        <td>
+            <a href="/deck/{{slugify(arche.name)}}.html">{{arche.name}}</a>
+            <div class="deck-bgs">
+                <img class="deck-bg" src="/static/bg-{{slugify(arche.name)}}.jpg" alt="" />
+            </div>
+        </td>
+        <td>{{arche.matched_decks|length}}</td>
+        <td>{{arche.winrate}}%</td>
+        <td>{{aew[arche.name]|length}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</section>
+{% endblock %}

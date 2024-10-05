@@ -3,41 +3,119 @@
 {% block subtitle %}{{arche.name}} - {% endblock %}
 
 {% block body %}
-<nav id="main_nav">
+<nav id="main-nav">
     <a class="nav-item" href="/">⌂ Home</a>
-    <a class="nav-item" href="/decks/">⮤ Decks</a>
+    <a class="nav-item" href="/deck/">⮤ Decks</a>
 </nav>
 
 <h1>Deck Archetype: {{arche.name}}</h1>
 
 <section id="arche-info">
     <ul class="scooped-corners">
-        <li><b>Decks recorded</b>: {{deckcount}}</li>
-        <!-- TODO: earliest appearance? -->
+        <li><b>Appearances recorded</b>: {{arche.matched_decks|length}}</li>
+        <li><b>Earliest appearance</b>: {{arche.earliest}}</li>
+        <li><b>Overall win rate</b>: {{arche.winrate}}%</li>
+        <li><b>Total events won</b>: {{wins|length}}</li>
     </ul>
 </section>
 
 <section id="arche-def">
     <h2>Definition</h2>
-    <button onclick="toggle('#arche-def > .togglable')">Show/Hide List</button>
+    <button onclick="toggle('#arche-def > .togglable')">Show/Hide Definition</button>
 
-    TODO: cards that this tool uses to define the archetype
+    <div class="togglable collapse">
+    <p>To qualify as this archetype, a deck must meet the following conditions:</p>
+    <ul>
+        <li><b>Basic Element:</b> {% if arche.require_element %}{{arche.require_element}}{% else %}(Any){% endif %}</li>
+        <li><b>At least one of the following cards (excluding sideboard):</b>
+            <ul>
+                {% for card in arche.require %}
+                <li>{{card}}</li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% if arche.exclude %}<li><b>None of the following cards:</b>
+            <ul>
+                {% for card in arche.exclude %}
+                <li>{{card}}</li>
+                {% endfor %}
+            </ul>
+        </li>{% endif %}
+    </ul>
+    </div>
 </section>
 
 <section id="deck-composition">
     <h2>Deck Composition</h2>
+    <button onclick="toggle('#deck-composition > .togglable')">Show/Hide Deck Composition</button>
+    
+    {% if not arche.require_element %}
+    <h3 class="togglable collapse">Elements</h3>
+    <div class="element-meta collapse togglable">
+        {{macros.elementpie(arche.elements)}}
+    </div>
+    {% endif %}
 
-    TODO: 
-    * element, spirit, and champion breakdown
-    * cards that are most often seen in the deck aside from the defining ones
-    * typical ratio of card types in maindeck (ally, action, attack, item, phantasia)
-    * average floating memory count?
+    <h3 class="togglable collapse">Champions</h3>
+    {{ macros.elementbars(arche.champdata) }}
+
+    <h3 class="togglable collapse">Top Cards</h3>
+    <p class="explanation togglable collapse">(Excluding champions. Showing the percentage of decks containing at least 1 copy in main or material deck.)</p>
+    <div class="top-cards togglable collapse">
+        {% for card_o in arche.card_freq.values() %}
+            {% if loop.index0 < 20 %}
+            <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%</div>
+            {% endif %}
+        {% endfor %}
+    </div>
 </section>
 
 <section id="arche-results">
-    <h2>Example Decks and Recent Results</h2>
+    <h2>Results By Season</h2>
+    <button onclick="toggle('#arche-results > .togglable')">Show/Hide Results</button>
 
-    TODO: top finishes / decks that won events overall
-
-    TODO: selection of recent decks
+    {% for season, szn in seasons.items() %}
+    {% if szn.archedata.exists_for(arche.name) %}
+    <div id="season-{{szn.code}}" class="togglable collapse season-chunk">
+        <h3>{{szn.name}}</h3>
+        <ul>
+            <li><b>Share of meta</b>: {{szn.archedata[arche.name][1]}}%</li>
+            <li><b>Events won</b>: 
+                {% if szn.arche_wins[arche.name]|length %}
+                {{szn.arche_wins[arche.name]|length}} events
+                {% else %}None{% endif %}
+            </li>
+        </ul>
+        <h4>Matchups</h4>
+        {{ macros.battlechart(szn.battlechart, szn.archedata, only_show=arche.name) }}
+    </div>
+    {% endif %}
+    {% endfor %}
 </section>
+
+<section id="sightings">
+    <h2>Sightings</h2>
+    <button onclick="toggle('#sightings > .togglable')">Show/Hide List</button>
+    <button id="wins-filter" class="togglable collapse" onclick="show_wins()">Show event winners only</button>
+    <p id="wins-expl" class="explanation collapse">Showing only events where the deck won overall</p>
+    <button id="sightingsreset" class="collapse" onclick="reset_sightings()">Reset filter</button>
+    <table class="togglable collapse">
+        <thead><tr>
+            <th>Date</th><th>Player</th><th>Event</th><th>Deck</th><th>Swiss Record</th>
+        </tr></thead>
+        <tbody>
+        {% for deck in arche.matched_decks %}
+            {{ macros.p_row_arche(deck, loop, events) }}
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<!-- DECKLISTS -->
+{% for d in arche.matched_decks %}
+{{ macros.decklist(d.entrant, "deck_"~d.entrant.evt_id~"_"~d.entrant.id, events[d.entrant.evt_id]) }}
+{% endfor %}
+
+{% include "deckviewscript.html.jinja2" %}
+
+{% endblock %}

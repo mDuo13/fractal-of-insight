@@ -1,3 +1,19 @@
+from collections import defaultdict
+
+from shared import ElementStats, ChampStats
+from datalayer import get_card_img
+from cards import LV0, LV1, LV2, LV3
+
+EXCLUDE_LIST = LV0+LV1+LV2+LV3#+[
+#     "Grand Crusader's Ring",
+#     "Quicksilver Grail",
+#     "Dungeon Guide",
+# ]
+def card_freq_exclude(cardname):
+    if cardname in EXCLUDE_LIST:
+        return True
+    return False
+
 class Archetype:
     def __init__(self, name, require_cards, exclude_cards=[], require_element=None, shortname=None):
         self.name = name
@@ -8,10 +24,11 @@ class Archetype:
         else:
             self.shortname = name
         self.require_element = require_element
+        self.earliest = None
 
-        # TODO: save instances of archetype,
-        # track and record them;
+        # TODO: 
         # record card frequency stats
+        self.matched_decks = []
     
     def match(self, deck):
         """
@@ -32,8 +49,52 @@ class Archetype:
         
         # TODO: consider using "found_cards" count for better matching
         if found_cards:
+            self.matched_decks.append(deck)
             return True
         return False
+    
+    def analyze(self):
+        self.matched_decks.sort(key=lambda d: d.entrant.evt_time, reverse=True)
+        if self.matched_decks:
+            self.earliest = self.matched_decks[-1].date
+        
+        self.elements = ElementStats()
+        self.champdata = ChampStats()
+        wins = 0
+        matches = 0
+        for d in self.matched_decks:
+            self.elements.add_deck(d)
+            self.champdata.add_deck(d)
+            wins += d.entrant.wins
+            wins += d.entrant.ties/2
+            matches += d.entrant.wins+d.entrant.losses+d.entrant.ties
+        
+        if matches:
+            self.winrate = round(100*wins/matches, 1)
+        
+        self.analyze_card_freq()
+        
+    def analyze_card_freq(self):
+        card_freq = defaultdict(int)
+        for deck in self.matched_decks:
+            for cardname in deck:
+                if not card_freq_exclude(cardname):
+                    card_freq[cardname] += 1
+                else:
+                    #print("excluding", cardname)
+                    pass
+        cf_sorted = list(card_freq.items())
+        cf_sorted.sort(key=lambda x:x[1], reverse=True)
+        total_decks = len(self.matched_decks)
+        self.card_freq = {
+            c: {
+                "card": c,
+                "pct": round(100*f/total_decks, 1),
+                "img": get_card_img(c)
+            } for c,f in cf_sorted
+        }
+        
+    
 
 ARCHETYPES = {}
 def add_archetype(*args,**kwargs):
@@ -87,6 +148,7 @@ add_archetype(
         "Rococo, Explosive Maven",
         "Hone by Fire",
     ],
+    require_element="Fire",
     shortname="Aggro"
 )
 
@@ -111,7 +173,6 @@ add_archetype(
 add_archetype(
     "Umbra Ranger",
     [
-        "Shadow's Twin"
         "Carter, Synthetic Reaper",
         "Mindbreak Bullet",
         "Umbral Tithe",

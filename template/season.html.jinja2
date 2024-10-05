@@ -3,7 +3,7 @@
 {% block subtitle %}{{szn}} - {% endblock %}
 
 {% block body %}
-<nav id="main_nav">
+<nav id="main-nav">
 <a class="nav-item" href="/">⌂ Home</a>
 </nav>
 <section id="szn-info">
@@ -39,12 +39,12 @@
     </div>
 
     <h3 class="togglable collapse">Archetypes</h3>
-    {{ macros.elementbars(szn.archedata) }}
+    {{ macros.elementbars(szn.archedata, True) }}
     <p class="togglable collapse">Totals don't sum to 100% because decks can qualify as multiple archetypes.</p>
 
     <h3 class="togglable collapse">Champions</h3>
     {{ macros.elementbars(szn.champdata) }}
-    <p class="togglable collapse">This breakdown only shows the basic elements from a deck's spirit(s), not elements added by Lv1+ champions. Decks with multiple lineages count fractionally toward each (for example, a Tonoris/Nico deck counts 50% towards Tonoris).</p>
+    <p class="togglable collapse">This breakdown only shows the basic elements from a deck's spirit(s), not elements added by Lv1+ champions. Decks with multiple lineages count fully toward each, which can cause the total to be over 100%.</p>
 </section>
 
 

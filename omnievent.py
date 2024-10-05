@@ -5,6 +5,7 @@ from datalayer import get_event
 from archetypes import ARCHETYPES
 from cards import ELEMENTS
 from competition import SEASONS, EVENT_TYPES
+from shared import ElementStats, ArcheStats, ChampStats
 from config import TOP_CUTOFF
 
 def pct_with_archetype(players, arche):
@@ -33,9 +34,7 @@ class OmniEvent:
             raise NotImplementedError
 
         self.load_players() # populates self.players, self.num_decklists, self.decklist_status
-        self.analyze_elements() # populates self.elements
-        self.analyze_archetypes() # populates self.archedata
-        self.champdata = self.analyze_champions()
+        self.analyze() #populates self.elements, archedata, champdata
         self.battlechart = self.calc_headtohead(track_elo=True)
         self.bc_top = self.calc_headtohead(TOP_CUTOFF)
         self.parse_top_cut() # populates self.top_cut
@@ -57,79 +56,18 @@ class OmniEvent:
         else:
             self.decklist_status = "partial"
     
-    def analyze_elements(self):
-        self.elements = []
-        for el in ELEMENTS:
-            nom = 0
-            for p in self.players:
-                if p.deck and el in p.deck.els:
-                    nom += 1
-            dec = nom / len(self.players)
-            pct = round(dec*100, 1)
-            self.elements.append( (el, pct) ) 
-        if self.decklist_status == "partial":
-            nom = len(self.players) - self.num_decklists
-            dec = nom / len(self.players)
-            pct = round(dec*100, 1)
-            self.elements.append( ("Unknown", pct) )
-    
-    def analyze_archetypes(self):
-        self.archedata = []
-        for archetype in ARCHETYPES.keys():
-            pct = pct_with_archetype(self.players, archetype)
-            if pct > 0:
-                # calculate element breakdown of archetype
-                archetype_elements = {
-                    e: 0 for e in ELEMENTS
-                }
-                archetype_total = 0
-                for p in self.players:
-                    if p.deck and archetype in p.deck.archetypes:
-                        el_quant = 1/len(p.deck.els)
-                        for el in p.deck.els:
-                            archetype_elements[el] += el_quant
-                        archetype_total += 1
-                el_pcts = {e: round(100*ev/archetype_total,1) for e,ev in archetype_elements.items()}
-                self.archedata.append( (archetype, pct, el_pcts) )
-        
-        self.archedata.sort(key=lambda x:x[1], reverse=True)
-    
-    def analyze_champions(self):
-        champcount = {}
-        champelcount = {}
-        champelements = {}
+    def analyze(self):
+        self.elements = ElementStats()
+        self.archedata = ArcheStats()
+        self.champdata = ChampStats()
         for p in self.players:
             if p.deck:
-                for c in p.deck.lineages:
-                    if c in champcount.keys():
-                        champcount[c] += 1/len(p.deck.lineages)
-                        champelcount[c] += 1
-                        for el in p.deck.els:
-                            champelements[c][el] += 1/len(p.deck.els)
-                    else:
-                        champcount[c] = 1/len(p.deck.lineages)
-                        champelcount[c] = 1
-                        champelements[c] = {e: 0 for e in ELEMENTS}
-                        for el in p.deck.els:
-                            champelements[c][el] += 1/len(p.deck.els)    
+                self.elements.add_deck(p.deck)
+                self.archedata.add_deck(p.deck)
+                self.champdata.add_deck(p.deck)
             else:
-                if "Unknown" in champcount:
-                    champcount["Unknown"] += 1
-                    champelcount["Unknown"] += 1
-                else:
-                    champcount["Unknown"] = 1
-                    champelcount["Unknown"] = 1
-                    champelements["Unknown"] = {e: 0 for e in ELEMENTS}
-
-        champdata = []
-        for c,cc in champcount.items():
-            pct = round(100*cc/len(self.players), 1)
-            dec = champelcount[c]
-            el_pcts = {e: round(100*ev/dec, 1) for e,ev in champelements[c].items()}
-            champdata.append( (c, pct, el_pcts) )
-        champdata.sort(key=lambda x:x[1], reverse=True)
-
-        return champdata
+                self.elements.add_unknown()
+                self.champdata.add_unknown()
 
     def parse_top_cut(self):
         self.top_cut = []
@@ -139,6 +77,7 @@ class OmniEvent:
             print("Unknown cutSize value:", self.evt.get("cutSize"))
             cutsize = 0
         if not cutsize:
+            self.winner = self.players[0]
             return
         
         finalstage = self.evt["stages"][-1]
@@ -206,6 +145,7 @@ class OmniEvent:
             self.top_cut += tier
             
         self.top_cut.reverse()
+        self.winner = self.top_cut[0]
     
     def calc_headtohead(self, threshold=None, track_elo=False):
         use_archetypes = [a[0] for a in self.archedata]

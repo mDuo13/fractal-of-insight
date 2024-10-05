@@ -11,6 +11,7 @@ from omnievent import OmniEvent
 from season import Season
 from competition import SEASONS, EVENT_TYPES
 from player import Player
+from archetypes import ARCHETYPES
 
 class PageBuilder:
     def __init__(self):
@@ -58,6 +59,15 @@ class PageBuilder:
 
     def write_player_index(self, players=[], events={}):
         self.render("players.html.jinja2", "player/index.html", players=players, events=events)
+
+    def write_archetype(self, archetype, players=[], events=[], seasons=[], wins=0):
+        archetype.analyze()
+        slug = slugify(archetype.name)
+        arche_path = f"deck/{slug}.html"
+        self.render("archetype.html.jinja2", arche_path, arche=archetype, players=players, events=events, seasons=seasons, wins=wins)
+
+    def write_archetype_index(self, archetypes, aew):
+        self.render("archetypes.html.jinja2", "deck/index.html", archetypes=archetypes, aew=aew)
     
     def write_all(self):
         """
@@ -96,6 +106,23 @@ class PageBuilder:
         for pid in known_pids_sorted:
             self.write_player(known_players[pid], all_events, known_players)
         self.write_player_index(players=[known_players[pid] for pid in known_pids_sorted], events=all_events)
+
+        aew = {} #archetype event wins
+        for szn in seasons.values():
+            for arche,wins in szn.arche_wins.items():
+                if arche in aew.keys():
+                    aew[arche] += wins
+                else:
+                    aew[arche] = wins
+
+        for a in ARCHETYPES.values():
+            if a.name not in aew.keys():
+                aew[a.name] = []
+            self.write_archetype(a, known_players, all_events, seasons_sorted, aew[a.name])
+
+        arches_sorted = [a for a in ARCHETYPES.values()]
+        arches_sorted.sort(key=lambda x: len(x.matched_decks), reverse=True)
+        self.write_archetype_index(arches_sorted, aew)
 
         self.render("index.html.jinja2", "index.html", seasons=seasons_sorted, EVENT_TYPES=EVENT_TYPES)
 

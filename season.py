@@ -3,6 +3,7 @@ from time import strftime, gmtime
 from archetypes import ARCHETYPES
 from cards import ELEMENTS, LINEAGES
 from competition import SEASONS
+from shared import ElementStats, ArcheStats, ChampStats
 
 class Season:
     def __init__(self, season):
@@ -28,61 +29,20 @@ class Season:
         self.analyze_decks()
         self.battlechart = self.calc_headtohead()
         self.bc_top = self.calc_headtohead(True)
+        self.analyze_finishes()
 
     def analyze_decks(self):
-        szn_els = {el:0 for el in ELEMENTS}
-        szn_arches = {a:0 for a in ARCHETYPES.keys()}
-        szn_arche_els = {a: {el:0 for el in ELEMENTS} for a in ARCHETYPES.keys()}
-        szn_champs = {c:0 for c in LINEAGES}
-        szn_champ_els = {c: {el:0 for el in ELEMENTS} for c in LINEAGES}
+        self.elements = ElementStats()
+        self.archedata = ArcheStats()
+        self.champdata = ChampStats()
         self.decks = 0
         for e in self.events:
             for p in e.players:
                 if p.deck:
                     self.decks += 1
-                    el_frac =  1/len(p.deck.els)
-                    for el in p.deck.els:
-                        szn_els[el] += el_frac
-                    for arche in p.deck.archetypes:
-                        szn_arches[arche] += 1
-                        for el in p.deck.els:
-                            szn_arche_els[arche][el] += el_frac
-                    for c in p.deck.lineages:
-                        szn_champs[c] += 1/len(p.deck.lineages)
-                        for el in p.deck.els:
-                            szn_champ_els[c][el] += el_frac/len(p.deck.lineages)
-        
-        self.elements = []
-        self.archedata = []
-        self.champdata = []
-        if not self.decks:
-            return
-        for el, total in szn_els.items():
-            dec = szn_els[el] / self.decks
-            pct = round(dec*100, 1)
-            self.elements.append( (el, pct) )
-        
-        for a in ARCHETYPES.keys():
-            a_decks = szn_arches[a]
-            a_pct = round(100*a_decks / self.decks, 1)
-            a_els = szn_arche_els[a]
-            if a_decks > 0:
-                el_pcts = {el: round(100*ev/a_decks, 1) for el,ev in a_els.items() }
-            else:
-                el_pcts = {el: 0 for el in ELEMENTS}
-            self.archedata.append( (a, a_pct, el_pcts) )
-        self.archedata.sort(key=lambda x:x[1], reverse=True)
-
-        for c in LINEAGES:
-            c_decks = szn_champs[c]
-            c_pct = round(100*c_decks / self.decks, 1)
-            c_els = szn_champ_els[c]
-            if c_decks > 0:
-                el_pcts = {el: round(100*ev/c_decks, 1) for el,ev in c_els.items() }
-            else:
-                el_pcts = {el: 0 for el in ELEMENTS}
-            self.champdata.append( (c, c_pct, el_pcts) )
-        self.champdata.sort(key=lambda x:x[1], reverse=True)
+                    self.elements.add_deck(p.deck)
+                    self.archedata.add_deck(p.deck)
+                    self.champdata.add_deck(p.deck)
 
     def calc_headtohead(self, use_top=False):
         archetypes = [a[0] for a in self.archedata]
@@ -117,6 +77,16 @@ class Season:
                     r["rating"] = "no_data"
         
         return bc
+    
+    def analyze_finishes(self):
+        self.arche_wins = {}
+        for e in self.events:
+            if e.winner.deck:
+                for arche in e.winner.deck.archetypes:
+                    if arche in self.arche_wins.keys():
+                        self.arche_wins[arche].append(e)
+                    else:
+                        self.arche_wins[arche] = [e]
 
     def __repr__(self):
         return f"{self.code} Season"

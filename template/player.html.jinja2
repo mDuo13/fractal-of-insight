@@ -3,16 +3,17 @@
 {% block subtitle %}{{player.username}} - {% endblock %}
 
 {% block body %}
-<nav id="main_nav">
+<nav id="main-nav">
     <a class="nav-item" href="/">⌂ Home</a>
     <a class="nav-item" href="/player/">⮤ Players</a>
 </nav>
 
 <section id="player-info">
+    <h1>Player: {{player.username}}</h1>
     <ul class="scooped-corners">
-        <li><b>Username</b>: {{player.username}}</li>
         <li><b>Omnidex ID</b>: #{{player.id}}</li>
         <li><b>Recent Elo</b>: {{player.events[0].elo}}</li>
+        <li><b>Recorded events</b>: {{player.events|length}}</li>
         {% if player.rivals %}<li><b>Rival(s)</b>: {% for r in player.rivals %}<a href="/player/{{r}}.html">{{players[r].username}} #{{r}}</a> ({{player.losses[r]}} losses){% endfor %}<br><span class="explanation">(Your rival is the player who has beaten you the most times in tracked events, minimum 3 times.)</span>{% endif %}
     </ul>
 </section>
@@ -41,12 +42,11 @@
         {{macros.elementpie(player.elements)}}
     </div>
 
-    {#<h3 class="togglable collapse">Archetypes</h3>
-    {{ macros.elementbars(player.archedata) }}
-    <p class="togglable collapse">Note archetypes don't sum to 100% because decks can be multiple archetypes.</p>#}
-
     <h3 class="togglable collapse">Champions</h3>
     {{ macros.elementbars(player.champdata) }}
+
+    <h3 class="togglable collapse">Archetypes</h3>
+    {{ macros.elementbars(player.archedata, True) }}
 </section>
 
 {# TODO: archetype, element stats, maybe head-to-head stats vs various archetypes too? #}
@@ -55,7 +55,7 @@
 <!-- DECKLISTS -->
 {% for p in player.events %}
 {% if p.deck %}
-{{ macros.decklist(p, events[p.evt_id]) }}
+{{ macros.decklist(p, "deck_"~p.evt_id, events[p.evt_id]) }}
 {% endif %}
 {% endfor %}
 

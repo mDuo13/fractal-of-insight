@@ -3,7 +3,7 @@
 {% block subtitle %}{{evt.name}} Analysis - {% endblock %}
 
 {% block body %}
-<nav id="main_nav">
+<nav id="main-nav">
     <a class="nav-item" href="/">⌂ Home</a>
     <a class="nav-item" href="/{{evt.season}}/">⮤ {{evt.season}} Season</a>
 </nav>
@@ -64,7 +64,7 @@
     </div>
 
     <h3 class="togglable collapse">Archetypes</h3>
-    {{ macros.elementbars(evt.archedata) }}
+    {{ macros.elementbars(evt.archedata, True) }}
     <p class="togglable collapse">Note archetypes don't sum to 100% because decks can be multiple archetypes.</p>
 
     <h3 class="togglable collapse">Champions</h3>
@@ -135,7 +135,7 @@
 <!-- DECKLISTS -->
 {% for p in evt.players %}
 {% if p.deck %}
-{{ macros.decklist(p) }}
+{{ macros.decklist(p, "deck_"~p.id) }}
 {% endif %}
 {% endfor %}
 

@@ -1,3 +1,5 @@
+from time import strftime, gmtime
+
 from shared import slugify
 from datalayer import get_card_img
 from cards import LV0, LV1, LV2, LV3, ELEMENTS, SPIRITTYPES, LINEAGE_BREAK
@@ -43,9 +45,10 @@ def fix_case(cardname):
     return cardname
 
 class Deck:
-    def __init__(self, dl, evt_time):
+    def __init__(self, dl, entrant):
         self.dl = dl
-        self.evt_time = evt_time
+        self.entrant = entrant
+        self.date = strftime(r"%Y-%m-%d", gmtime(self.entrant.evt_time/1000))
         self.fix_dl()
         self.find_spirits()
         self.find_champs()
@@ -86,39 +89,7 @@ class Deck:
         for archetype in ARCHETYPES.values():
             if archetype.match(self):
                 self.archetypes.append( archetype.name )
-        # for archetype, acards in ARCHETYPES.items():
-        #     if acards.get("element"):
-        #         if acards["element"] not in self.els:
-        #             #print(f"DQ'd from archetype: {acards['element']} not in {self.els}")
-        #             continue
-        #     cancel = False
-        #     for anticard in acards.get("notmain",[]):
-        #         for card_o in self.dl["main"]:
-        #             if card_o["card"] == anticard:
-        #                 cancel = True
-        #                 break
-        #     if cancel:
-        #         continue
 
-        #     for matcard in acards["mats"]:
-        #         for card_o in self.dl["material"]:
-        #             if card_o["card"] == matcard:
-        #                 self.archetypes.append( archetype )
-        #                 cancel = True
-        #                 break
-        #         if cancel:
-        #             break
-        #     if archetype in self.archetypes:
-        #         continue
-
-        #     for maincard in acards["main"]:
-        #         for card_o in self.dl["main"]:
-        #             if card_o["card"] == maincard:
-        #                 self.archetypes.append( archetype )
-        #                 cancel = True
-        #                 break
-        #         if cancel:
-        #             break
     
     def find_elements(self):
         # Doesn't include advanced elements or basic-elemental champs
@@ -145,7 +116,7 @@ class Deck:
             card_o["card"] = fix_case(card_o["card"])
 
         # Special case for Yeti local 9/5 which used Gate of Alterity as a placeholder for Polaris, Twinkling Cauldron
-        if self.evt_time == 1725580800000:
+        if self.entrant.evt_time == 1725580800000:
             for card_o in self.dl["material"]:
                 if card_o["card"] == "Gate of Alterity":
                     card_o["card"] = "Polaris, Twinkling Cauldron"
@@ -168,7 +139,7 @@ class Deck:
     def cardlist_imgs(self):
         for cat in ("material", "main", "sideboard"):
             for card_o in self.dl[cat]:
-                card_o["img"] = get_card_img(card_o["card"], at=self.evt_time)
+                card_o["img"] = get_card_img(card_o["card"], at=self.entrant.evt_time)
     
     def __str__(self):
         spiritstr = ""

@@ -34,6 +34,31 @@ function showmatches(pid) {
     keymatch_showing.classList.add("collapse")
     window.location.hash = "#matches"
 }
+function show_wins() {
+    const all_sightings = document.querySelectorAll("#sightings tbody tr")
+    all_sightings.forEach(el => {el.classList.add("collapse")})
+    const wins = document.querySelectorAll("#sightings .winner")
+    wins.forEach(el => {el.classList.remove("collapse")})
+    const sightingsection = document.querySelectorAll("#sightings > .togglable")
+    sightingsection.forEach(el => {el.classList.remove("collapse")})
+    const sightingsreset = document.querySelector("#sightingsreset")
+    sightingsreset.classList.remove("collapse")
+    const winsexpl = document.querySelector("#wins-expl")
+    winsexpl.classList.remove("collapse")
+    const winsfilter = document.querySelector("#wins-filter")
+    winsfilter.classList.add("collapse")
+    window.location.hash = "#sightings"
+}
+function reset_sightings() {
+    const all_sightings = document.querySelectorAll("#sightings tr")
+    all_sightings.forEach(el => {el.classList.remove("collapse")})
+    const sightingsreset = document.querySelector("#sightingsreset")
+    sightingsreset.classList.add("collapse")
+    const winsexpl = document.querySelector("#wins-expl")
+    winsexpl.classList.add("collapse")
+    const winsfilter = document.querySelector("#wins-filter")
+    winsfilter.classList.remove("collapse")
+}
 function show_key_matches() {
     const keymatchbutton = document.querySelector("#keymatches")
     keymatchbutton.classList.add("collapse")

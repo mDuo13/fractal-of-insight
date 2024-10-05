@@ -1,17 +1,19 @@
 {% macro elementpie(elements) %}
     {% set el_colors = {"Norm": "#ba9", "Fire": "#b30", "Wind": "#6c3", "Water": "#03d", "Unknown": "#000"} %}
     {% set ns = namespace(cumu = 0) %}
-    <div class="pie-chart" style="background: conic-gradient({% for el, pct in elements %}{{el_colors[el]}} {{ns.cumu}}%{% set ns.cumu = ns.cumu + pct %}, {{el_colors[el]}} {{ns.cumu}}%{% if not loop.last%}, {% endif %}{% endfor %})">&nbsp;</div>
+    <div class="pie-chart" style="background: conic-gradient({% for el, quant, pct in elements %}{{el_colors[el]}} {{ns.cumu}}%{% set ns.cumu = ns.cumu + pct %}, {{el_colors[el]}} {{ns.cumu}}%{% if not loop.last%}, {% endif %}{% endfor %})">&nbsp;</div>
 
     <table class="element-table">
         <thead><tr>
             <th>Element</th>
-            <th>% of decks</th>
+            <th># of decks</th>
+            <th>%</th>
         </tr></thead>
         <tbody>
-            {% for el, pct in elements %}
+            {% for el, quant, pct in elements %}
             <tr>
                 <th>{{el}}</td>
+                <td>{{quant|int}}</td>
                 <td>{{pct}}%</td>
             </tr>
             {% endfor %}
@@ -81,6 +83,32 @@
     </tr>
 {% endmacro %}
 
+{% macro winner() %}<span class="win_icon" title="This player won the event">👑</span>{% endmacro %}
+
+{% macro p_row_arche(deck, loop, events) %}
+    {% set event = events[deck.entrant.evt_id] %}
+    <tr class="p-row n-styles-{{deck.els|length+deck.archetypes|length+deck.lineages|length}}{% if event.winner.deck == deck %} winner{% endif %}">
+        <td class="p_date">{{deck.date}}</td>
+        <td class="playername" title="Elo: {{deck.entrant.elo}}"><a href="/player/{{deck.entrant.id}}.html">{{deck.entrant}}</a></td>
+        
+        <td class="p_event"><a href="/{{event.season}}/{{event.id}}.html">{{event.name}}</a></td>
+        <td class="p_deck"><a href="#deck_{{event.id}}_{{deck.entrant.id}}" onclick="opendecklist('#deck_{{event.id}}_{{deck.entrant.id}}')">{{deck}}</a>
+            <div class="deck-bgs">
+            {% for el in deck.els %}
+                <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
+            {% endfor%}
+            {% for arche in deck.archetypes %}
+                <img class="deck-bg" src="/static/bg-{{slugify(arche)}}.jpg" alt="" />
+            {% endfor%}
+            {% for lineage in deck.lineages %}
+                <img class="deck-bg" src="/static/bg-{{slugify(lineage)}}.jpg" alt="" />
+            {% endfor%}
+            </div>
+        </td>
+        <td class="p_record">{% if event.winner.deck == deck %}{{winner()}} {% endif %}{{deck.entrant.record}}</td>
+    </tr>
+{% endmacro %}
+
 {% macro flag(countrycode) %}
 <span class="flag" 
 {% if countrycode == "" %}title="Online">🌐
@@ -113,7 +141,7 @@
         <div class="date_loc">{{evt.date}} {{flag(evt.country)}}</div>
         <div class="playercount">{{evt.players|length}} entrants</div>
         <div class="decklistcount">{% if evt.decklist_status == "full" %}All decklists{% elif evt.decklist_status == "partial" %}{{evt.num_decklists}} decklists{% endif %}</div>
-        <div class="winner">Winner: {% if evt.top_cut%}{{evt.top_cut[0].username}}{% else %}{{evt.players[0].username}}{% endif %}</div>
+        <div class="winner">Winner: {{evt.winner.username}}</div>
     </div>
     <div class="event-category">{{evt.category["name"]}}</div>
 </a>
@@ -136,23 +164,24 @@
 </form>
 {% endmacro %}
 
-{% macro battlechart(bc, archedata) %}
-<table class="collapse togglable">
+{% macro battlechart(bc, archedata, only_show=False) %}
+<table class="{% if not only_show %}collapse togglable{% endif %}">
     <thead><tr>
         <th>Deck</th>
     {% for archetype, records in bc.items() %}
-        {% if archedata[loop.index0][1] > 0 %}
-        <th>{{archetype}}</th>
+        {% if archedata.exists_for(archetype) > 0 %}
+        <th><a href="/deck/{{slugify(archetype)}}.html">{{archetype}}</a></th>
         {% endif %}
     {% endfor %}
     </tr></thead>
     <tbody>
         {% for archetype, records in bc.items() %}
-        {% if archedata[loop.index0][1] > 0 %}
+        {% if not only_show or only_show == archetype %}
+        {% if archedata.exists_for(archetype) > 0 %}
         <tr>
-            <th>{{archetype}}</th>
+            <th><a href="/deck/{{slugify(archetype)}}.html">{{archetype}}</a></th>
             {% for opp, r in records.items() %}
-                {% if archedata[loop.index0][1] > 0 %}
+                {% if archedata.exists_for(archetype) > 0 %}
                 <td class="{{r.rating}}">
                     {% if r.rating == "no_data" %}
                     (No data)
@@ -165,48 +194,38 @@
             {% endfor %}
         </tr>
         {% endif %}
+        {% endif %}
         {% endfor %}
     </tbody>
 </table>
 {% endmacro %}
 
 
-{% macro elementbars(data) %}
+{% macro elementbars(data, link=False) %}
 <div class="collapse togglable element-bars">
     {% for label, pct, elpcts in data %}
     {% if pct > 0 %}
         <div class="archetype">
             <div class="el-pct">{{pct}}%</div>
             <div class="arche-bar" style="height: {{4*pct}}px">
-                {% for el,elpct in elpcts.items() %}
+                {% for el,quant,elpct in elpcts %}
                     <div class="el-bar {{el|lower}}" style="height: {% if elpct > 0 %}{{elpct+0.1}}{% else %}0{% endif %}%" title="{{elpct}}% {{el}}">&nbsp;</div>
                 {% endfor %}
             </div>
-        <h4>{{label}}</h4>
+        <h4>{% if link %}<a href="/deck/{{slugify(label)}}.html">{{label}}</a>{% else %}{{label}}{% endif %}</h4>
         </div>
     {% endif %}
     {% endfor %}
 </div>
 {% endmacro %}
 
-{% macro decklist(p, event=None) %}
-{% if event %}
-<div class="decklist collapse" id="deck_{{event.id}}">
-{% else %}
-<div class="decklist collapse" id="deck_{{p.id}}">
-{% endif %}
+{% macro decklist(p, id, event=None) %}
+<div class="decklist collapse" id="{{id}}">
     <div class="decklist-inner">
-    {% if event %}
-        <button class="closeX" onclick="closedecklist('#deck_{{event.id}}')">❌</button>
+        <button class="closeX" onclick="closedecklist('#{{id}}')">❌</button>
         <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
-        <a class="permalink" href="#deck_{{event.id}}" onclick="copypermalink()">🔗</a>
-        <h3>{{p.username}}'s {{p.deck}} ({{event.name}})</h3>
-    {% else %}
-        <button class="closeX" onclick="closedecklist('#deck_{{p.id}}')">❌</button>
-        <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
-        <a class="permalink" href="#deck_{{p.id}}" onclick="copypermalink()">🔗</a>
-        <h3>{{p.username}}'s {{p.deck}}</h3>
-    {% endif %}
+        <a class="permalink" href="#{{id}}" onclick="copypermalink()">🔗</a>
+        <h3>{{p.username}}'s {{p.deck}}{% if event %} ({{event.name}}){% endif %}</h3>
         <div class="decklist-viewbox">
             <h4>Materials <span class="cardcount">({{p.deck.dl["material"]|length}} cards)</span></h4>
             <ul class="deck_txt collapse">

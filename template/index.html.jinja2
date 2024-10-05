@@ -4,6 +4,13 @@
     <h1>Fractal of Insight</h1>
     <p class="intro">Statistics for Grand Archive TCG competition</p>
 
+    <nav id="main-nav">
+        <span class="nav-item">See all:</span>
+        <b class="nav-item">↓ Events</b>
+        <a class="nav-item" href="/player/">→ Players</a>
+        <a class="nav-item" href="/deck/">→ Decks</a>
+    </nav>
+
     {{ macros.event_filters(EVENT_TYPES) }}
 
     {% for seasonname, season in seasons.items() %}
