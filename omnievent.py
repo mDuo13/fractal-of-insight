@@ -22,7 +22,12 @@ class OmniEvent:
         self.evt = get_event(self.id, force_redownload)
         self.name = self.evt["name"]
         self.date = strftime(r"%Y-%m-%d", gmtime(self.evt["startAt"]/1000))
-        self.season = SEASONS.get(self.evt["season"]["name"], "OTHER")
+        if "season" in self.evt:
+            self.season = SEASONS.get(self.evt["season"]["name"], "OTHER")
+            self.track_elo = True
+        else:
+            self.season = "OFF"
+            self.track_elo = False
         self.category = EVENT_TYPES.get(self.evt["category"], {"name": "Unknown"})
         self.country = self.evt.get("addressCountryCode", "")
         # At 3pts/win and 1pt/draw, anyone with over 1.5 points/rnd
@@ -35,7 +40,7 @@ class OmniEvent:
 
         self.load_players() # populates self.players, self.num_decklists, self.decklist_status
         self.analyze() #populates self.elements, archedata, champdata
-        self.battlechart = self.calc_headtohead(track_elo=True)
+        self.battlechart = self.calc_headtohead(track_elo=self.track_elo)
         self.bc_top = self.calc_headtohead(TOP_CUTOFF)
         self.parse_top_cut() # populates self.top_cut
     
@@ -48,6 +53,8 @@ class OmniEvent:
             if p.deck:
                 self.num_decklists += 1
         self.players.sort(key=lambda x:x.sortkey(), reverse=True)
+        for i,p in enumerate(self.players):
+            p.placement = i+1
         self.pdict = {p.id: p for p in self.players}
         if self.num_decklists == len(self.players):
             self.decklist_status = "full"
@@ -145,6 +152,9 @@ class OmniEvent:
             self.top_cut += tier
             
         self.top_cut.reverse()
+        # Correct placement for top cut
+        for i,p in enumerate(self.top_cut):
+            p.placement = i+1
         self.winner = self.top_cut[0]
     
     def calc_headtohead(self, threshold=None, track_elo=False):

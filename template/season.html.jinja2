@@ -7,12 +7,12 @@
 <a class="nav-item" href="/">⌂ Home</a>
 </nav>
 <section id="szn-info">
-<h1><img alt="{{szn.name}}" src="/static/{{szn.code}}_logo.png" /> <br />{{szn}}</h1>
+<h1>{% if szn.name != "Offseason" %}<img alt="{{szn.name}}" src="/static/{{szn.code}}_logo.png" /> <br />{% endif %}{{szn}}</h1>
 <ul class="scooped-corners">
         <li><b>Season #:</b> {{szn.id}}</li>
         <li><b>Timeframe:</b> {{szn.start_time}} to {{szn.end_time}}</li>
         <li><b>Events Analyzed:</b> {{szn.events|length}}</li>
-        <li><b>Season Guide:</b> <a href="{{szn.season_guide}}">[PDF]</a></li>
+        {% if szn.season_guide %}<li><b>Season Guide:</b> <a href="{{szn.season_guide}}">[PDF]</a></li>{% endif %}
     </ul>
 </section>
 

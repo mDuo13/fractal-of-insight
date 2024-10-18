@@ -283,3 +283,34 @@ add_archetype(
         "The Eternal Kingdom",
     ]
 )
+
+add_archetype(
+    "Exia",
+    [
+        "Enrage",
+        "Relentless Outburst",
+        "Exia Sight",
+        "Mend Flesh",
+        "Proof of Life",
+        "Seize Fate",
+    ]
+)
+
+add_archetype(
+    "Tera Mage",
+    [
+        "Leeching Bolt",
+        "Yudi, Gossamer Jade",
+        "Ruinous Pillars of Qidao",
+        "Semiternal Sage",
+        "Spellshield: Tera",
+        "Conduit of Seasons",
+        "Sempiternal Sage",
+    ],
+    exclude_cards=[
+        "Silvie, Loved by All",
+        "Silvie, Earth's Tune",
+        "Silvie, Slime Sovereign",
+    ],
+    shortname = "Tera",
+)

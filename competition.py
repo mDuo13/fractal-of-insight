@@ -1,5 +1,6 @@
 SEASONS = {
     "Mortal Ambition": "AMB",
+    "Offseason": "OFF",
     "Mercurial Heart": "MRC",
     "Alchemical Revolution": "ALC",
 }

@@ -61,9 +61,10 @@
 {% endmacro %}
 
 {% macro p_row_profilepage(p, loop, event) %}
-    <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}">
+    <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}" data-decklists="{% if p.deck %}1{% else %}0{% endif %}" data-category="{{slugify(event.category['name'])}}">
         <td class="p_date">{{event.date}}</td>
         <td class="p_event"><a href="/{{event.season}}/{{event.id}}.html">{{event.name}}</a></td>
+        <td class="p_placement">{% if event.winner == p %}{{winner()}} {% endif %}{{p.placement}}/{{event.players|length}}</td>
         <td class="p_record">{{p.record}}</td>
         <td class="p_deck">{% if p.deck %}<a href="#deck_{{event.id}}" onclick="opendecklist('#deck_{{event.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
             <div class="deck-bgs">
@@ -87,7 +88,7 @@
 
 {% macro p_row_arche(deck, loop, events) %}
     {% set event = events[deck.entrant.evt_id] %}
-    <tr class="p-row n-styles-{{deck.els|length+deck.archetypes|length+deck.lineages|length}}{% if event.winner.deck == deck %} winner{% endif %}">
+    <tr class="p-row n-styles-{{deck.els|length+deck.archetypes|length+deck.lineages|length}}{% if event.winner.deck == deck %} winner{% endif %}" data-decklists="{{event.num_decklists}}" data-category="{{slugify(event.category['name'])}}">
         <td class="p_date">{{deck.date}}</td>
         <td class="playername" title="Elo: {{deck.entrant.elo}}"><a href="/player/{{deck.entrant.id}}.html">{{deck.entrant}}</a></td>
         
@@ -105,7 +106,8 @@
             {% endfor%}
             </div>
         </td>
-        <td class="p_record">{% if event.winner.deck == deck %}{{winner()}} {% endif %}{{deck.entrant.record}}</td>
+        <td class="p_placement">{% if event.winner == deck.entrant %}{{winner()}} {% endif %}{{deck.entrant.placement}}/{{event.players|length}}</td>
+        <td class="p_record">{{deck.entrant.record}}</td>
     </tr>
 {% endmacro %}
 
@@ -147,19 +149,23 @@
 </a>
 {% endmacro %}
 
-{% macro event_filters(event_types) %}
+{% macro event_filters(event_types, lesser=False) %}
 <form>
     <fieldset>
         <legend>Filter events</legend>
+        {% if not lesser %}
         <input type="checkbox" id="cb_decklists" value=0 onclick="update_evt_filtering()" />
         <label for="cb_decklists">Only events with decklists</label>
         <fieldset>
             <legend>Event Category</legend>
+        {% endif %}
             {% for cat in event_types.values() %}
             <input type="checkbox" name="category" id="cb_cat_{{cat.shortname}}" value="{{cat.shortname}}" checked="checked" onclick="update_evt_filtering()" />
             <label for="cb_cat_{{cat.shortname}}">{{cat.name}}</label>
             {% endfor %}
+        {% if not lesser %}
         </fieldset>
+        {% endif %}
     </fieldset>
 </form>
 {% endmacro %}

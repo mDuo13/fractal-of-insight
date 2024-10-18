@@ -20,6 +20,7 @@ class PageBuilder:
         )
         self.env.globals["slugify"] = slugify
         self.env.globals["config"] = config
+        self.env.globals["EVENT_TYPES"] = EVENT_TYPES
     
     def render(self, template, write_to, **kwargs):
         """
@@ -50,7 +51,7 @@ class PageBuilder:
         """
         season.analyze()
         szn_path = f"{season.code}/index.html"
-        self.render("season.html.jinja2", szn_path, szn=season, EVENT_TYPES=EVENT_TYPES)
+        self.render("season.html.jinja2", szn_path, szn=season)
 
     def write_player(self, player, events, known_players):
         player.analyze()
@@ -124,7 +125,7 @@ class PageBuilder:
         arches_sorted.sort(key=lambda x: len(x.matched_decks), reverse=True)
         self.write_archetype_index(arches_sorted, aew)
 
-        self.render("index.html.jinja2", "index.html", seasons=seasons_sorted, EVENT_TYPES=EVENT_TYPES)
+        self.render("index.html.jinja2", "index.html", seasons=seasons_sorted)
 
 def main(args):
     builder = PageBuilder()

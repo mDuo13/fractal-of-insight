@@ -37,6 +37,8 @@ LV1 = [
     "Tonoris, Lone Mercenary", 
     "Zander, Prepared Scout",
     "Vanitas, Obliviate Schemer",
+    "Jin, Fate Defiant",
+    "Kongming, Wayward Maven",
 ]
 
 LV2 = [
@@ -56,6 +58,8 @@ LV2 = [
     "Vanitas, Convergent Ruin",
     "Zander, Deft Executor",
     "Zander, Always Watching",
+    "Jin, Zealous Maverick",
+    "Kongming, Ascetic Vice",
 ]
 
 LV3 = [
@@ -77,6 +81,8 @@ LV3 = [
     "Tonoris, Creation's Will",
     "Tonoris, Genesis Aegis",
     "Zander, Corhazi's Chosen",
+    "Jin, Undying Resolve",
+    "Kongming, Fel Eidolon",
 ]
 
 LINEAGES = [

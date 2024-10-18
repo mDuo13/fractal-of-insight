@@ -96,12 +96,15 @@
 <section id="sightings">
     <h2>Sightings</h2>
     <button onclick="toggle('#sightings > .togglable')">Show/Hide List</button>
+    <div class="togglable collapse event-filters">
+        {{ macros.event_filters(EVENT_TYPES, lesser=True) }}
+    </div>
     <button id="wins-filter" class="togglable collapse" onclick="show_wins()">Show event winners only</button>
     <p id="wins-expl" class="explanation collapse">Showing only events where the deck won overall</p>
     <button id="sightingsreset" class="collapse" onclick="reset_sightings()">Reset filter</button>
     <table class="togglable collapse">
         <thead><tr>
-            <th>Date</th><th>Player</th><th>Event</th><th>Deck</th><th>Swiss Record</th>
+            <th>Date</th><th>Player</th><th>Event</th><th>Deck</th><th>Placement</th><th>Swiss Record</th>
         </tr></thead>
         <tbody>
         {% for deck in arche.matched_decks %}

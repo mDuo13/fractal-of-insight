@@ -15,7 +15,7 @@
 
     {% for seasonname, season in seasons.items() %}
     <section class="season" id="{{season['code']}}">
-        <h2><a href="{{season['code']}}/"><img alt="{{season}}" src="/static/{{season['code']}}_logo.png" /></a></h2>
+        <h2><a href="{{season['code']}}/">{% if season.name == "Offseason" %}Offseason{% else %}<img alt="{{season}}" src="/static/{{season['code']}}_logo.png" />{% endif %}</a></h2>
         {% for evt in season["events"] %}
         {{ macros.eventbox(evt) }}
         {% endfor %}

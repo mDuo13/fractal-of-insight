@@ -13,15 +13,23 @@ class Season:
 
     def add_event(self, e):
         self.events.append(e)
+        
         if not self.data:
-            # There's no good API method to look up season data,
-            # but we can save it from the first event to get added
-            data = e.evt["season"]
-            self.name = data["name"]
-            self.id = data["id"]
-            self.start_time = strftime(r"%Y-%m-%d", gmtime(data["startsAt"]/1000))
-            self.end_time = strftime(r"%Y-%m-%d", gmtime(data["endsAt"]/1000))
-            self.season_guide = data["file"]
+            if self.code == "OFF":
+                self.name = "Offseason"
+                self.id = 0
+                self.start_time = "N/A"
+                self.end_time = "N/A"
+                self.season_guide = None
+            else:
+                # There's no good API method to look up season data,
+                # but we can save it from the first event to get added
+                data = e.evt["season"]
+                self.name = data["name"]
+                self.id = data["id"]
+                self.start_time = strftime(r"%Y-%m-%d", gmtime(data["startsAt"]/1000))
+                self.end_time = strftime(r"%Y-%m-%d", gmtime(data["endsAt"]/1000))
+                self.season_guide = data["file"]
 
     def analyze(self):
         # Call after all events have been added & analyzed
@@ -89,4 +97,6 @@ class Season:
                         self.arche_wins[arche] = [e]
 
     def __repr__(self):
+        if self.name == "Offseason":
+            return "Offseason"
         return f"{self.code} Season"

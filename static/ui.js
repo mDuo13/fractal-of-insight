@@ -2,103 +2,98 @@ function toggle(q) {
     const togtarget = document.querySelectorAll(q)
     togtarget.forEach(el => {el.classList.toggle("collapse") })
 }
+function show(q) {
+    const els = document.querySelectorAll(q)
+    els.forEach(el => {el.classList.remove("collapse")})
+}
+function hide(q) {
+    const els = document.querySelectorAll(q)
+    els.forEach(el => {el.classList.add("collapse")})
+}
 function opendecklist(q) {
-    const deckoverlay = document.querySelector(q)
-    deckoverlay.classList.remove("collapse")
+    show(q)
     window.location.replace(window.location.pathname+window.location.search+q)
 }
 function closedecklist(q) {
-    const deckoverlay = document.querySelector(q)
-    deckoverlay.classList.add("collapse")
+    hide(q)
     //window.location.replace(window.location.pathname+window.location.search)
     history.pushState("", document.title, window.location.pathname+window.location.search)
 }
 function togglegfx() {
-    const gfx = document.querySelectorAll(".deck_gfx")
-    gfx.forEach(el => {el.classList.toggle("collapse")})
-    const txt = document.querySelectorAll(".deck_txt")
-    txt.forEach(el => {el.classList.toggle("collapse")})
+    toggle(".deck_gfx")
+    toggle(".deck_txt")
 }
 function showmatches(pid) {
-    const all_matches = document.querySelectorAll("#matches .match")
-    all_matches.forEach(el => {el.classList.add("collapse")})
-    const matching_matches = document.querySelectorAll(`#matches .p_${pid}`)
-    matching_matches.forEach(el => {el.classList.remove("collapse")})
-    const matchsection = document.querySelector("#matches > .togglable")
-    matchsection.classList.remove("collapse")
-    const matchreset = document.querySelector("#matchreset")
-    matchreset.classList.remove("collapse")
-    const keymatch_expl = document.querySelector("#keymatch-expl")
-    const keymatch_showing = document.querySelector("#keymatch-showing")
-    keymatch_expl.classList.remove("collapse")
-    keymatch_showing.classList.add("collapse")
+    hide("#matches .match") // hide all
+    show(`#matches .p_${pid}`) // show matching
+    
+    show("#matches > .togglable")
+    show("#matchreset")
+    show("#keymatch-expl")
+    hide("#keymatch-showing")
     window.location.hash = "#matches"
 }
 function show_wins() {
-    const all_sightings = document.querySelectorAll("#sightings tbody tr")
-    all_sightings.forEach(el => {el.classList.add("collapse")})
-    const wins = document.querySelectorAll("#sightings .winner")
-    wins.forEach(el => {el.classList.remove("collapse")})
-    const sightingsection = document.querySelectorAll("#sightings > .togglable")
-    sightingsection.forEach(el => {el.classList.remove("collapse")})
-    const sightingsreset = document.querySelector("#sightingsreset")
-    sightingsreset.classList.remove("collapse")
-    const winsexpl = document.querySelector("#wins-expl")
-    winsexpl.classList.remove("collapse")
-    const winsfilter = document.querySelector("#wins-filter")
-    winsfilter.classList.add("collapse")
+    hide("#sightings tbody tr")
+    show("#sightings .winner")
+    show("#sightings > .togglable")
+    show("#sightingsreset")
+    show("#wins-expl")
+    hide("#wins-filter")
+    hide(".event-filters")
     window.location.hash = "#sightings"
 }
 function reset_sightings() {
-    const all_sightings = document.querySelectorAll("#sightings tr")
-    all_sightings.forEach(el => {el.classList.remove("collapse")})
-    const sightingsreset = document.querySelector("#sightingsreset")
-    sightingsreset.classList.add("collapse")
-    const winsexpl = document.querySelector("#wins-expl")
-    winsexpl.classList.add("collapse")
-    const winsfilter = document.querySelector("#wins-filter")
-    winsfilter.classList.remove("collapse")
+    show("#sightings tr")
+    hide("#sightingsreset")
+    hide("#wins-expl")
+    show("#wins-filter")
+    show(".event-filters")
+    update_evt_filtering()
 }
 function show_key_matches() {
-    const keymatchbutton = document.querySelector("#keymatches")
-    keymatchbutton.classList.add("collapse")
-    const matchreset = document.querySelector("#matchreset")
-    matchreset.classList.remove("collapse")
+    hide("#keymatches")
+    show("#matchreset")
     
     // Switch the labels
-    const keymatch_expl = document.querySelector("#keymatch-expl")
-    const keymatch_showing = document.querySelector("#keymatch-showing")
-    keymatch_expl.classList.add("collapse")
-    keymatch_showing.classList.remove("collapse")
-
-    const all_matches = document.querySelectorAll("#matches .match")
-    const matchsection = document.querySelector("#matches > .togglable")
-    matchsection.classList.remove("collapse")
-    all_matches.forEach(el => {el.classList.add("collapse")})
-    const matching_matches = document.querySelectorAll("#matches .keymatch")
-    matching_matches.forEach(el => {el.classList.remove("collapse")})
+    hide("#keymatch-expl")
+    show("#keymatch-showing")
     
-
+    hide("#matches .match")
+    show("#matches > .togglable")
+    show("#matches .keymatch")
 }
 function reset_matches() {
-    const matchreset = document.querySelector("#matchreset")
-    matchreset.classList.add("collapse")
-    const keymatchbutton = document.querySelector("#keymatches")
-    keymatchbutton.classList.remove("collapse")
-    const all_matches = document.querySelectorAll("#matches .match")
-    all_matches.forEach(el => {el.classList.remove("collapse")})
+    hide("#matchreset")
+    show("#keymatches")
+    show("#matches .match")
 }
 
 function update_evt_filtering() {
-    const decklists_only = document.getElementById("cb_decklists").checked
+    const decklist_cb = document.getElementById("cb_decklists")
+    let decklists_only = false
+    if (decklist_cb) {
+        decklists_only = decklist_cb.checked
+    }
     const show_cats = []
     document.querySelectorAll('input[name="category"]').forEach( el => {
         if (el.checked) {
             show_cats.push(el.value)
         }
     })
-    console.log("show_cats", show_cats)
+    //console.log("show_cats", show_cats)
     document.querySelectorAll('.evt').forEach( el => {
+        if (decklists_only && el.dataset["decklists"] == "0") {
+            el.classList.add("collapse")
+        } else {
+            if ( show_cats.includes(el.dataset["category"]) ) {
+                el.classList.remove("collapse")
+            } else {
+                el.classList.add("collapse")
+            }
+        }
+    })
+    document.querySelectorAll('.p-row').forEach( el => {
         if (decklists_only && el.dataset["decklists"] == "0") {
             el.classList.add("collapse")
         } else {
