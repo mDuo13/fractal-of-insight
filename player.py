@@ -20,12 +20,23 @@ class Entrant:
         self.score = data["statsScore"]
         self.omw = data["statsPercentOMW"]
         self.gwp = data["statsPercentGW"]
+        self.ogw = data["statsPercentOGW"]
         self.username = data["username"]
         self.elo = round(data["scoreElo"]) # seems this is the player's "current" elo at the time of looking up the event??
         self.elo_diff = 0 # modified when analyzing matchups
         self.rank_elo = data["rankElo"]
 
-        self.record = f"{self.wins + self.byes}-{self.losses}-{self.ties}"
+        # At some point Omnidex changed from the "wins" number being inclusive of byes
+        # to it not being.
+        if self.evt_time >= 1715745600000 or evt_id == "1687":
+            self.record = f"{self.wins + self.byes}-{self.losses}-{self.ties}"
+            if 3*(self.wins + self.byes) + self.ties > self.score:
+                print(f"event {evt_id}: byes counted in wins when not expected")
+        else:
+            self.record = f"{self.wins}-{self.losses}-{self.ties}"
+            if 3*(self.wins + self.byes) + self.ties <= self.score and self.byes > 0:
+                print(f"event {evt_id}: byes NOT counted in wins when expected")
+            
 
         # if data.get("isDecklistPublic"):
         try:
@@ -37,7 +48,7 @@ class Entrant:
             self.deck = None
     
     def sortkey(self):
-        return self.score + (self.omw/100) + (self.gwp / 100000)
+        return self.score + (self.omw/100) + (self.gwp / 100000) + (self.ogw / 10000000)
     
     def __str__(self):
         return f'{self.username} #{self.id}'
