@@ -43,13 +43,17 @@ class TypeStats:
         self.item_elements = {}
     
     def add_unknown(self):
-        if "Unknown" in self.items:
-            self.items["Unknown"] += 1
-            self.item_elements["Unknown"].add_unknown()
-        else:
-            self.items["Unknown"] = 1
-            self.item_elements["Unknown"] = ElementStats()
-            self.item_elements["Unknown"].add_unknown()
+        self.total_items += 1
+
+        ## Don't actually add explicit "Unknown" entries for archetypes;
+        ## the bar charts are better without them.
+        # if "Unknown" in self.items:
+        #     self.items["Unknown"] += 1
+        #     self.item_elements["Unknown"].add_unknown()
+        # else:
+        #     self.items["Unknown"] = 1
+        #     self.item_elements["Unknown"] = ElementStats()
+        #     self.item_elements["Unknown"].add_unknown()
     
     def exists_for(self, item):
         if item in self.items.keys():
@@ -60,6 +64,10 @@ class TypeStats:
     def __iter__(self):
         typedata = [(i,q) for i,q in self.items.items()]
         typedata.sort(key=lambda x:x[1], reverse=True)
+        if typedata and self.total_items == 0:
+            print(f"Total item count mismatch: {len(typedata)} vs {self.total_items}")
+            print(typedata)
+            exit(1)
         for t, quant in typedata:
             pct = round(100*quant/self.total_items, 1)
             yield (t, pct, self.item_elements[t])
@@ -111,4 +119,3 @@ class ArcheStats(TypeStats):
                 self.items[arche] = 1
                 self.item_elements[arche] = ElementStats()
                 self.item_elements[arche].add_deck(deck)
-    

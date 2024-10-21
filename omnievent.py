@@ -74,6 +74,7 @@ class OmniEvent:
                 self.champdata.add_deck(p.deck)
             else:
                 self.elements.add_unknown()
+                self.archedata.add_unknown()
                 self.champdata.add_unknown()
 
     def parse_top_cut(self):
