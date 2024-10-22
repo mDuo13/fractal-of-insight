@@ -1,7 +1,8 @@
 from time import strftime, gmtime
+from collections import defaultdict
 
-from shared import slugify
-from datalayer import get_card_img
+from shared import slugify, fix_case
+from datalayer import get_card_img, carddata, card_is_floating
 from cards import LV0, LV1, LV2, LV3, ELEMENTS, SPIRITTYPES, LINEAGE_BREAK
 from archetypes import ARCHETYPES
 
@@ -20,30 +21,6 @@ def rank_mat_card(card_o):
 def lineage(champname):
     return champname.split(",",1)[0]
 
-def fix_case(cardname):
-    repls = {
-        "'S":"'s",
-        "’S":"'s",
-        " And ": " and ",
-        " At ":" at ",
-        " By ": " by ",
-        " From ":" from ",
-        " In ":" in ",
-        " Into ":" into ",
-        " Of ": " of ",
-        "Mk Iii": "Mk III",
-        "Mk Ii": "Mk II",
-        " The ":" the ",
-        " To ":" to ",
-        " With ":" with ",
-        "\u2019S": "'s",
-    }
-    cardname = cardname.title()
-    for k,v in repls.items():
-        cardname = cardname.replace(k,v)
-
-    return cardname
-
 class Deck:
     def __init__(self, dl, entrant):
         self.dl = dl
@@ -54,7 +31,7 @@ class Deck:
         self.find_champs()
         self.find_elements()
         self.find_archetypes()
-        self.count_cards()
+        self.count_cards() # populates self.card_types and self.floating
         self.cardlist_imgs()
 
     def find_spirits(self):
@@ -126,15 +103,37 @@ class Deck:
         self.dl["material"].sort(key=rank_mat_card)
     
     def count_cards(self):
+        card_types = defaultdict(int)
+        self.floating = 0
         n = 0
-        for card in self.dl["main"]:
-            n += card["quantity"]
+        for card_o in self.dl["main"]:
+            n += card_o["quantity"]
+            card = carddata[card_o["card"]]
+            for cardtype in card["types"]:
+                card_types[cardtype] += card_o["quantity"]
+            if card_is_floating(card, self.champs):
+                self.floating += card_o["quantity"]
         self.main_total = n
+        card_types_sorted = [(k,v) for k,v in card_types.items()]
+        card_types_sorted.sort(key=lambda x:x[0])
+        self.card_types = {k:v for k,v in card_types_sorted}
 
         b = 0
         for card in self.dl["sideboard"]:
             b += card["quantity"]
         self.side_total = b
+    
+    def quantity_of(self, cardname):
+        """
+        Count how many copies of a card are in the mainboard/materials for the deck.
+        """
+        n = 0
+        for cat in ("material", "main"):
+            for card_o in self.dl[cat]:
+                if card_o["card"] == cardname:
+                    n += card_o["quantity"]
+        return n
+        
 
     def cardlist_imgs(self):
         for cat in ("material", "main", "sideboard"):

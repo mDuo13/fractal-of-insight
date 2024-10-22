@@ -266,6 +266,14 @@
                 <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</div>
                 {% endfor %}
             </div>
+            <h4>Card Counts</h4>
+            <p class="explanation">(Maindeck cards only. Cards with multiple types count for each type. Floating memory counts if the deck has any champion that can use it.)</p>
+            <ul class="deck-stats">
+                <li><b>Floating Memory</b>: {{p.deck.floating}}</li>
+                {% for cardtype,cardcount in p.deck.card_types.items() %}
+                <li><b>{{cardtype|title}} Cards:</b> {{cardcount}}</li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </div>

@@ -68,6 +68,17 @@
             {% endif %}
         {% endfor %}
     </div>
+
+    <h3 class="togglable collapse">Averages</h3>
+    <p class="explanation togglable collapse">(Maindeck cards only. Cards with multiple types count for each type. Floating memory counts if a deck has any champion that can use it.)</p>
+    <ul class="averages togglable collapse">
+        <li><b>Average Floating Memory:</b> {{arche.average_floating|int}}</li>
+        {% for cardtype,avg in arche.average_of_type.items() %}
+        {% if avg|int > 0 %}
+        <li><b>Average {{cardtype|title}} Cards:</b> {{avg|int}}</li>
+        {% endif %}
+        {% endfor %}
+    </ul>
 </section>
 
 <section id="arche-results">

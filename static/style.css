@@ -515,8 +515,7 @@ h1::before {
     height: 100%;
 }
 
-#evt-info ul,
-#szn-info ul {
+ul.scooped-corners {
     list-style-type: none;
     margin: 0;
     --scoop-radius: 10px;

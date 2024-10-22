@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 from shared import ElementStats, ChampStats
-from datalayer import get_card_img
+from datalayer import get_card_img, carddata
 from cards import LV0, LV1, LV2, LV3
 
 EXCLUDE_LIST = LV0+LV1+LV2+LV3#+[
@@ -73,6 +73,7 @@ class Archetype:
             self.winrate = round(100*wins/matches, 1)
         
         self.analyze_card_freq()
+        self.analyze_card_stats()
         
     def analyze_card_freq(self):
         card_freq = defaultdict(int)
@@ -93,6 +94,35 @@ class Archetype:
                 "img": get_card_img(c)
             } for c,f in cf_sorted
         }
+    
+    def analyze_card_stats(self):
+        total_decks = 0
+        total_floating = 0
+        total_of_type = defaultdict(int)
+        for deck in self.matched_decks:
+            # floating = 0
+            # allies = 0
+            # for cardname in deck:
+            #     card = carddata.get(cardname, None)
+            #     if not card:
+            #         print("No data saved for card:", cardname)
+            #         continue
+            #     card_quantity = deck.quantity_of(cardname)
+            #     if is_floating(card):
+            #         floating += card_quantity
+            #     card_types = card["types"]
+            #     if "ALLY" in card_types:
+            #         allies += card_quantity
+            # print("This deck has", floating, "floating memory.")
+            total_decks += 1
+            total_floating += deck.floating
+            for k,v in deck.card_types.items():
+                total_of_type[k] += v
+        # print("Average floating memory for", self.name, "decks:", (total_floating/total_decks))
+        self.average_floating = round(total_floating / total_decks, 0)
+        total_of_type_sorted = [(k,v) for k,v in total_of_type.items()]
+        total_of_type_sorted.sort(key=lambda x:x[1], reverse=True)
+        self.average_of_type = {k: round(v / total_decks, 0) for k,v in total_of_type_sorted}
         
     
 

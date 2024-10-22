@@ -10,6 +10,33 @@ def slugify(s):
         s = "_"
     return s.lower()
 
+def fix_case(cardname):
+    repls = {
+        "'S":"'s",
+        "’S":"'s",
+        " And ": " and ",
+        " At ":" at ",
+        " By ": " by ",
+        " De ": " de ",
+        " For ": " for ",
+        " From ":" from ",
+        " In ":" in ",
+        " Into ":" into ",
+        " Of ": " of ",
+        "Mk Iii": "Mk III",
+        "Mk Ii": "Mk II",
+        " The ":" the ",
+        " To ":" to ",
+        " With ":" with ",
+        ", with ": ", With ", # "Silvie, With the Pack" vs "Smack with Flute"
+        "\u2019S": "'s",
+    }
+    cardname = cardname.title()
+    for k,v in repls.items():
+        cardname = cardname.replace(k,v)
+
+    return cardname
+
 class ElementStats:
     def __init__(self):
         self.elements = {el: 0 for el in ELEMENTS}

@@ -67,6 +67,10 @@ function reset_matches() {
     hide("#matchreset")
     show("#keymatches")
     show("#matches .match")
+
+    // Switch the labels
+    show("#keymatch-expl")
+    hide("#keymatch-showing")
 }
 
 function update_evt_filtering() {

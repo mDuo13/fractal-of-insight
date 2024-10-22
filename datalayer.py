@@ -2,14 +2,15 @@ import json
 import re
 import requests
 from time import sleep
-from os import makedirs
+from os import makedirs, scandir
 
-from shared import slugify
+from shared import slugify, fix_case
 from cards import ERRATA
 
 API_DELAY = 0.5
 COMMENT_REGEX = re.compile(r"# (?P<comment>.*)$")
 CARD_REGEX = re.compile(r"(?P<quantity>[0-9]+) (?P<card>.*)$")
+CARDS_FOLDER = "./data/index/"
 
 class ForceReDL(Exception):
     pass
@@ -76,11 +77,38 @@ def sideload_deck(p_id, evt_id):
             
 
 try:
-    with open(f"data/cards.json") as f:
-        carddata = json.load(f)
+    carddata = {}
+    for entry in scandir(CARDS_FOLDER):
+        if entry.is_file() and entry.name[-5:] == ".json":
+            with open(entry) as f:
+                setlist = json.load(f)
+            for card in setlist:
+                cardname = fix_case(card["name"])
+                if cardname not in carddata.keys():
+                    carddata[cardname] = card
+                else:
+                    carddata[cardname]["result_editions"] += card["result_editions"]
+                    
+    # with open(f"data/cards.json") as f:
+    #     carddata = json.load(f)
 except FileNotFoundError:
     print("Didn't find cached card data")
     carddata = {}
+
+for cardname, card in carddata.items():
+    # possibly change card image for a lower rarity one?
+    lowest_rarity = 99
+    for ced in carddata[cardname]["result_editions"]:
+        if ced["set"]["name"][:14] == "Supporter Pack":
+            # Skip supporter pack editions since they're always reprints
+            continue
+        if ced["rarity"] < lowest_rarity:
+            lowest_rarity = ced["rarity"]
+            lowest_ced = ced
+    if lowest_rarity == 99:
+        exit(f"Error finding lowest rarity for {cardname}.")
+    ed_slug = lowest_ced["slug"]
+    card["img"] = f"https://ga-index-public.s3.us-west-2.amazonaws.com/cards/{ed_slug}.jpg"
 
 def get_card_img(cardname, at=0):
     # Special case for errata'd Proxia's Vault cards like Stonescale Band
@@ -103,14 +131,35 @@ def get_card_img(cardname, at=0):
         exit()
     ed_slug = index_json["result_editions"][0]["slug"]
     card_img = f"https://ga-index-public.s3.us-west-2.amazonaws.com/cards/{ed_slug}.jpg"
-    print("Saving card data to cache...")
-    makedirs("data/", exist_ok=True)
-    carddata[cardname] = {
-        "img": card_img
-    }
-    with open(f"data/cards.json", "w") as f:
-        json.dump(carddata, f)
+    # print("Saving card data to cache...")
+    # makedirs("data/", exist_ok=True)
+    # carddata[cardname] = {
+    #     "img": card_img
+    # }
+    # with open(f"data/cards.json", "w") as f:
+    #     json.dump(carddata, f)
     return card_img
+
+FM_EFFECT = '<span class=\"effect__label\">Floating Memory</span>'
+CB_FM = '<span class=\"effect__bubble\">Class Bonus</span><span class=\"effect__label\">Floating Memory'
+def card_is_floating(card, champs=[]):
+    """
+    Given a card data object and a list of champion card names, return True if the card
+    (a) is unconditional floating memory, or
+    (b) is floating memory for any class any of the champs have
+    """
+    card_effect = card["effect"] or ""
+    if FM_EFFECT in card_effect:
+        if CB_FM in card_effect:
+            for champ in champs:
+                champcard = carddata[champ]
+                for champclass in champcard["classes"]:
+                    if champclass in card["classes"]:
+                        return True
+            return False
+        else:
+            return True
+    return False
 
 def get_event(evt_id, force_redownload=False, save=True):
     try:
