@@ -4,9 +4,12 @@ from player import Entrant
 from datalayer import get_event
 from archetypes import ARCHETYPES
 from cards import ELEMENTS
-from competition import SEASONS, EVENT_TYPES
+from competition import SEASONS, EVENT_TYPES, TEAM_STANDARD
 from shared import ElementStats, ArcheStats, ChampStats
 from config import TOP_CUTOFF
+
+class IsTeamEvent(Exception):
+    pass
 
 def pct_with_archetype(players, arche):
     nom = 0
@@ -20,6 +23,9 @@ class OmniEvent:
     def __init__(self, evt_id, force_redownload=False):
         self.id = evt_id
         self.evt = get_event(self.id, force_redownload)
+        if self.evt["format"] == TEAM_STANDARD and not isinstance(self, Team3v3Event):
+            raise IsTeamEvent
+        self.format = self.evt["format"]
         self.name = self.evt["name"]
         self.date = strftime(r"%Y-%m-%d", gmtime(self.evt["startAt"]/1000))
         if "season" in self.evt:
@@ -35,14 +41,14 @@ class OmniEvent:
         # (e.g. missing day 2 is like losing all your day 2 games)
         self.fiftypct_points = self.evt["rounds"] * 1.5
 
-        if self.evt["format"] == "team-standard-3v3":
-            raise NotImplementedError
 
         self.load_players() # populates self.players, self.num_decklists, self.decklist_status
         self.analyze() #populates self.elements, archedata, champdata
         self.battlechart = self.calc_headtohead(track_elo=self.track_elo)
         self.bc_top = self.calc_headtohead(TOP_CUTOFF)
-        self.parse_top_cut() # populates self.top_cut
+        if not isinstance(self, Team3v3Event):
+            self.parse_top_cut() # populates self.top_cut
+            # For Team3v3, this needs to happen after parse_teams()
     
     def load_players(self):
         self.num_decklists = 0
@@ -85,7 +91,8 @@ class OmniEvent:
             print("Unknown cutSize value:", self.evt.get("cutSize"))
             cutsize = 0
         if not cutsize:
-            self.winner = self.players[0]
+            if self.format != TEAM_STANDARD:
+                self.winner = self.players[0]
             return
         
         finalstage = self.evt["stages"][-1]
@@ -102,9 +109,16 @@ class OmniEvent:
                     if len(matches) > 2:
                         print("WARNING: 3+ matches in final stage of single-elim?")
                     
-                    bronze_contenders = [p.id for p in self.top_cut[-2:]]
+                    if self.format == TEAM_STANDARD:
+                        bronze_contenders = [t.name.lower() for t in self.top_cut[-2:]]
+                    else:
+                        bronze_contenders = [p.id for p in self.top_cut[-2:]]
 
-                    if matches[0]["pairing"][0]["id"] in bronze_contenders:
+                    m0p0id = matches[0]["pairing"][0]["id"]
+                    if self.format == TEAM_STANDARD:
+                        # team standard IDs are inconsistently cased strings, so fix.
+                        m0p0id = m0p0id.lower()
+                    if m0p0id in bronze_contenders:
                         bronze_match = matches[0]
                         finals_match = matches[1]
                     else:
@@ -122,8 +136,13 @@ class OmniEvent:
                     else:
                         place3_id = bronze_match["pairing"][0]["id"]
                         place4_id = bronze_match["pairing"][1]["id"]
-                    tier.append(self.pdict[place4_id])
-                    tier.append(self.pdict[place3_id])
+                    
+                    if self.format == TEAM_STANDARD:
+                        tier.append(self.teams[place4_id.lower()])
+                        tier.append(self.teams[place3_id.lower()])
+                    else:
+                        tier.append(self.pdict[place4_id])
+                        tier.append(self.pdict[place3_id])
                     # Remove 3rd/4th from top cut list so we can re-add them in
                     # the correct order below
                     self.top_cut = self.top_cut[:-2]
@@ -134,18 +153,28 @@ class OmniEvent:
                 else:
                     place1_id = finals_match["pairing"][0]["id"]
                     place2_id = finals_match["pairing"][1]["id"]
-                tier.append(self.pdict[place2_id])
-                tier.append(self.pdict[place1_id])
+                if self.format == TEAM_STANDARD:
+                    tier.append(self.teams[place2_id.lower()])
+                    tier.append(self.teams[place1_id.lower()])
+                else:
+                    tier.append(self.pdict[place2_id])
+                    tier.append(self.pdict[place1_id])
             
             else:
                 tier = []
                 for match in rnd["matches"]:
                     if match["pairing"][0]["status"] == "loser":
                         loser_id = match["pairing"][0]["id"]
-                        tier.append(self.pdict[loser_id])
+                        if self.format == TEAM_STANDARD:
+                            tier.append(self.teams[loser_id.lower()])
+                        else:
+                            tier.append(self.pdict[loser_id])
                     elif match["pairing"][1]["status"] == "loser":
                         loser_id = match["pairing"][1]["id"]
-                        tier.append(self.pdict[loser_id])
+                        if self.format == TEAM_STANDARD:
+                            tier.append(self.teams[loser_id.lower()])
+                        else:
+                            tier.append(self.pdict[loser_id])
                     else:
                         print("No loser in single-elim match?", match)
                 tier.sort(key=lambda x:x.sortkey())
@@ -157,6 +186,8 @@ class OmniEvent:
         for i,p in enumerate(self.top_cut):
             p.placement = i+1
         self.winner = self.top_cut[0]
+        if self.format == TEAM_STANDARD:
+            self.winner = None # use self.winning_team instead
     
     def calc_headtohead(self, threshold=None, track_elo=False):
         use_archetypes = [a[0] for a in self.archedata]
@@ -250,3 +281,57 @@ class OmniEvent:
 
     def __repr__(self):
         return f"Event#{self.id}"
+
+class Team:
+    def __init__(self, data):
+        self.data = data
+        self.name = data["name"]
+        self.members = []
+
+        self.wins = data["statsWins"]
+        self.losses = data["statsLosses"]
+        self.ties = data["statsTies"]
+        self.byes = data["statsByes"]
+        self.score = data["statsScore"]
+        self.omw = data["statsPercentOMW"]
+        self.gwp = data["statsPercentGW"]
+        self.ogw = data["statsPercentOGW"]
+        self.record = f"{self.wins + self.byes}-{self.losses}-{self.ties}"
+    
+    def sortkey(self):
+        return self.score + (self.omw/100) + (self.gwp / 100000) + (self.ogw / 10000000)
+
+
+class Team3v3Event(OmniEvent):
+    def __init__(self, evt_id, force_redownload=False):
+        super().__init__(evt_id, force_redownload)
+        self.parse_teams()
+        self.fix_placement()
+        self.parse_top_cut()
+
+    def parse_teams(self):
+        teams = []
+        for teamdata in self.evt["teams"]:
+            team = Team(teamdata)
+            teamplayers = []
+            for p in self.players:
+                if p.team == team.name:
+                    teamplayers.append(p)
+            teamplayers.sort(key=lambda x:x.seat)
+            team.members = teamplayers
+            teams.append(team)
+
+        teams.sort(key=lambda x:x.sortkey(), reverse=True)
+        self.teams = {t.name.lower(): t for t in teams}
+        self.winning_team = teams[0]
+    
+    def fix_placement(self):
+        for i, team in enumerate(self.teams.values()):
+            team.placement = i+1
+            for p in team.members:
+                p.placement = i+1
+
+    def calc_headtohead(self, threshold=None, track_elo=False):
+        # Nah, it's just team standard.
+        return {}
+    

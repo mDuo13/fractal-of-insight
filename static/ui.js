@@ -33,6 +33,16 @@ function showmatches(pid) {
     hide("#keymatch-showing")
     window.location.hash = "#matches"
 }
+function showteammatches(tslug) {
+    hide("#matches .match") // hide all
+    show(`#matches .t_${tslug}`) // show matching
+    
+    show("#matches > .togglable")
+    show("#matchreset")
+    show("#keymatch-expl")
+    hide("#keymatch-showing")
+    window.location.hash = "#matches"
+}
 function show_wins() {
     hide("#sightings tbody tr")
     show("#sightings .winner")

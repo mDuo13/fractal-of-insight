@@ -7,9 +7,9 @@ import os.path
 
 import config
 from shared import slugify
-from omnievent import OmniEvent
+from omnievent import OmniEvent, Team3v3Event, IsTeamEvent
 from season import Season
-from competition import SEASONS, EVENT_TYPES
+from competition import SEASONS, EVENT_TYPES, TEAM_STANDARD
 from player import Player
 from archetypes import ARCHETYPES
 
@@ -21,6 +21,7 @@ class PageBuilder:
         self.env.globals["slugify"] = slugify
         self.env.globals["config"] = config
         self.env.globals["EVENT_TYPES"] = EVENT_TYPES
+        self.env.globals["TEAM_STANDARD"] = TEAM_STANDARD
     
     def render(self, template, write_to, **kwargs):
         """
@@ -43,7 +44,11 @@ class PageBuilder:
         Write an Omnidex event page.
         """
         e_path = f"{e.season}/{e.id}.html"
-        self.render("event.html.jinja2", e_path, evt=e)
+        if e.format == TEAM_STANDARD:
+            template = "teamevent.html.jinja2"
+        else:
+            template = "event.html.jinja2"
+        self.render(template, e_path, evt=e)
     
     def write_season(self, season):
         """
@@ -82,9 +87,11 @@ class PageBuilder:
                 try:
                     e = OmniEvent(entry.name[6:])
                     all_events[e.id] = e
-                except NotImplementedError:
-                    print(f"Skipping team standard event (#{entry.name[6:]})")
-                    continue
+                except IsTeamEvent:
+                    e = Team3v3Event(entry.name[6:])
+                    all_events[e.id] = e
+                    #print(f"Skipping team standard event (#{entry.name[6:]})")
+                    #continue
                 if not seasons.get(e.season):
                     seasons[e.season] = Season(e.season)
                 seasons[e.season].add_event(e)
@@ -130,7 +137,10 @@ class PageBuilder:
 def main(args):
     builder = PageBuilder()
     for i in args.event_id:
-        e = OmniEvent(i, force_redownload=args.update)
+        try:
+            e = OmniEvent(i, force_redownload=args.update)
+        except IsTeamEvent:
+            e = Team3v3Event(i, force_redownload=args.update)
         builder.write_event(e)
     builder.write_all()
 

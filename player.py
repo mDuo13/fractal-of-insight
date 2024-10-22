@@ -25,6 +25,9 @@ class Entrant:
         self.elo = round(data["scoreElo"]) # seems this is the player's "current" elo at the time of looking up the event??
         self.elo_diff = 0 # modified when analyzing matchups
         self.rank_elo = data["rankElo"]
+        if "team" in data:
+            self.team = data["team"]
+            self.seat = data["teamSlot"]
 
         # At some point Omnidex changed from the "wins" number being inclusive of byes
         # to it not being.

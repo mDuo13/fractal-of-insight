@@ -1,0 +1,158 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}{{evt.name}} Analysis - {% endblock %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/{{evt.season}}/">⮤ {{evt.season}} Season</a>
+</nav>
+
+<section id="evt-info">
+    <h1>
+    <img src="/static/{{evt.category['shortname']}}.svg" alt="({{evt.category['name']}})" title="Event category: ({{evt.category['name']}})" width="30" height="35" />
+    {{evt.name}}</h1>
+    <ul class="scooped-corners">
+        <li><b>Date:</b> {{evt.date}}</li>
+        <li><b>Format:</b> Team Standard (3v3)</li>
+        <li><b>Entrants:</b> {{evt.players|length}}</li>
+        {% if evt.evt.address %}<li><b>Location:</b> {{evt.evt.address}}</li>{% endif %}
+        <li><b>Omnidex ID:</b> <a href="https://omni.gatcg.com/events/{{evt.id}}">{{evt.id}}</a></li>
+    </ul>
+</section>
+
+<section id="teams">
+    <h2>Teams</h2>
+    <button onclick="toggle('#teams > .togglable')">Show/Hide Player List</button>
+
+    {% if evt.top_cut|length %}
+    <h3 class="collapse togglable" id="topcut">Single Elimination Top Cut</h3>
+    <table class="collapse togglable">
+         <thead><tr>
+            <th>Rank</th><th>Team</th><th>Record</th><th>Player A</th><th>Player B</th><th>Player C</th><th>Matches</th>
+        </tr></thead>
+        <tbody>
+        {% for t in evt.top_cut %}
+            <tr>
+                <td>{{loop.index}}</td>
+                <td>{{t.name}}</td>
+                <td>{{t.record}}</td>
+                {% for member in t.members %}
+                {{macros.team_member_cell(member)}}
+                {% endfor %}
+                <td class="showmatches">
+                    <button onclick="showteammatches('{{slugify(t.name)}}')">Show Matches</button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h3 class="collapse togglable">Below Top Cut</h3>
+    {% endif %}
+
+    <table class="collapse togglable">
+        <thead><tr>
+            <th>Rank</th><th>Team</th><th>Record</th><th>Player A</th><th>Player B</th><th>Player C</th><th>Matches</th>
+        </tr></thead>
+        <tbody>
+        {% for t in evt.teams.values() %}
+            {% if not evt.top_cut|length or loop.index > evt.top_cut|length %}
+            <tr>
+                <td>{{loop.index}}</td>
+                <td>{{t.name}}</td>
+                <td>{{t.record}}</td>
+                {% for member in t.members %}
+                {{macros.team_member_cell(member)}}
+                {% endfor %}
+                <td class="showmatches">
+                    <button onclick="showteammatches('{{slugify(t.name)}}')">Show Matches</button>
+                </td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+{% if evt.num_decklists %}
+<section id="meta_composition">
+    <h2>Meta Composition</h2>
+    <button onclick="toggle('#meta_composition > .togglable')">Show/Hide Meta Composition</button>
+    <h3 class="togglable collapse">Elements</h3>
+    <div class="element-meta collapse togglable">
+        {{macros.elementpie(evt.elements)}}
+    </div>
+
+    <h3 class="togglable collapse">Archetypes</h3>
+    {{ macros.elementbars(evt.archedata, True) }}
+    <p class="togglable collapse">Note archetypes don't sum to 100% because decks can be multiple archetypes.</p>
+
+    <h3 class="togglable collapse">Champions</h3>
+    {{ macros.elementbars(evt.champdata) }}
+    <p class="togglable collapse">This breakdown only shows the basic elements from the deck's spirit(s), not elements added by Lv1+ champions.</p>
+</section>
+{% endif %}{# end num_decklists conditional#}
+
+<section id="matches">
+    <h2>Matches</h2>
+    <button onclick="toggle('#matches > .togglable')">Show/Hide Matches</button>
+    <div class="stages togglable collapse">
+    {#<button id="keymatches" class="togglable" onclick="show_key_matches()">Show Key Matches Only</button>
+    <p id="keymatch-expl" class="explanation togglable">(Key matches are ones between players who both finished with a high Swiss score, excluding intentional draws.)</p>
+    <p id="keymatch-showing" class="togglable collapse">Showing only matches between players who both scored over {{evt.fiftypct_points}} points in Swiss.</p>#}
+    <button id="matchreset" class="collapse" onclick="reset_matches()">Reset match filter</button>
+    
+    {% for stage in evt.evt["stages"] %}
+    <h3>Stage {{stage["id"]}} ({{stage["type"]|title}})</h3>
+    <div class="rounds">
+        {% for rnd in stage["rounds"] %}
+            <h4>Round {{rnd["id"]}}</h4>
+            {% for match in rnd["matches"] %}
+                {% set t1 = evt.teams[match["pairing"][0]["id"]|lower] %}
+                {% if match["pairing"]|length > 1 %}
+                    {% set t2 = evt.teams[match["pairing"][1]["id"]|lower] %}
+                    {% set iskeymatch="" %}
+                    {#{% if t1.score > evt.fiftypct_points and t2.score > evt.fiftypct_points and match["pairing"][0]["score"]+match["pairing"][1]["score"] > 0 %}
+                    {% set iskeymatch="keymatch" %}
+                    {% endif %}#}
+                {% else %}
+                {% set t2 = None %}
+                {% endif %}
+                <div class="match team-match t_{{slugify(t1.name)}} {% if t2 %}t_{{slugify(t2.name)}} {{iskeymatch}} {% endif %}">
+                    <div class="team">
+                        {% for member in t1.members %}
+                            {{macros.pname_w_dl(member)}}
+                        {% endfor %}
+                        {% if match["pairing"]|length > 1 %}
+                        <span class="matchscore {{match['pairing'][0]['status']}}">{{match["pairing"][0]["score"]}}</span>
+                        {% endif %}
+                    </div>
+                    {% if match["pairing"]|length > 1 %}
+                    <div class="team">
+                        {% for member in t2.members %}
+                            {{macros.pname_w_dl(member)}}
+                        {% endfor %}
+                        <span class="matchscore {{match['pairing'][1]['status']}}">{{match["pairing"][1]["score"]}}</span>
+                    </div>
+                    {% else %}
+                    <div class="player bye">Bye</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+    </div><!--/.stages-->
+</section>
+
+<!-- DECKLISTS -->
+{% for p in evt.players %}
+{% if p.deck %}
+{{ macros.decklist(p, "deck_"~p.id) }}
+{% endif %}
+{% endfor %}
+
+{% include "deckviewscript.html.jinja2" %}
+
+{% endblock %}

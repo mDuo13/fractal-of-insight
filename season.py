@@ -89,7 +89,7 @@ class Season:
     def analyze_finishes(self):
         self.arche_wins = {}
         for e in self.events:
-            if e.winner.deck:
+            if e.winner and e.winner.deck:
                 for arche in e.winner.deck.archetypes:
                     if arche in self.arche_wins.keys():
                         self.arche_wins[arche].append(e)

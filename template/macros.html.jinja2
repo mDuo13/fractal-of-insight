@@ -33,6 +33,25 @@
 <a class="playername" {% if p.deck %}href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')"{% endif %} title="Elo: {{p.elo}}">{{p.username}}</a>
 {% endmacro %}
 
+{% macro team_member_cell(p) %}
+<td class="team-member n-styles-{{p.deck.els|length+p.deck.lineages|length}}">
+    <a href="/player/{{p.id}}.html" title="Elo: {{p.elo}}">{{p}}</a>
+    <div class="p_deck">
+        {% if p.deck %}<a href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
+            <div class="deck-bgs">
+            {% for el in p.deck.els %}
+                <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
+            {% endfor%}
+            {#{% for arche in p.deck.archetypes %}
+                <img class="deck-bg" src="/static/bg-{{slugify(arche)}}.jpg" alt="" />
+            {% endfor%}#}
+            {% for lineage in p.deck.lineages %}
+                <img class="deck-bg" src="/static/bg-{{slugify(lineage)}}.jpg" alt="" />
+            {% endfor%}
+            </div>
+    </div>
+</td>
+{% endmacro %}
 
 {% macro p_row(p, loop) %}
     <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}">
@@ -64,8 +83,14 @@
     <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}" data-decklists="{% if p.deck %}1{% else %}0{% endif %}" data-category="{{slugify(event.category['name'])}}">
         <td class="p_date">{{event.date}}</td>
         <td class="p_event"><a href="/{{event.season}}/{{event.id}}.html">{{event.name}}</a></td>
+        {% if event.format == TEAM_STANDARD %}
+        {% set t = event.teams[p.team|lower] %}
+        <td class="p_placement">{% if event.winning_team == t %}{{winner()}} {% endif %}{{t.placement}}/{{event.teams|length}} teams</td>
+        <td class="p_record">{{t.record}}</td>
+        {% else %}
         <td class="p_placement">{% if event.winner == p %}{{winner()}} {% endif %}{{p.placement}}/{{event.players|length}}</td>
         <td class="p_record">{{p.record}}</td>
+        {% endif %}
         <td class="p_deck">{% if p.deck %}<a href="#deck_{{event.id}}" onclick="opendecklist('#deck_{{event.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
             <div class="deck-bgs">
             {% for el in p.deck.els %}
@@ -143,7 +168,7 @@
         <div class="date_loc">{{evt.date}} {{flag(evt.country)}}</div>
         <div class="playercount">{{evt.players|length}} entrants</div>
         <div class="decklistcount">{% if evt.decklist_status == "full" %}All decklists{% elif evt.decklist_status == "partial" %}{{evt.num_decklists}} decklists{% endif %}</div>
-        <div class="winner">Winner: {{evt.winner.username}}</div>
+        <div class="winner">Winner: {% if evt.winner %}{{evt.winner.username}}{% elif evt.winning_team %}{{evt.winning_team.name}}{% endif %}</div>
     </div>
     <div class="event-category">{{evt.category["name"]}}</div>
 </a>

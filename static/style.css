@@ -77,7 +77,7 @@ th {
     box-shadow: var(--main-shadow);
 }
 
-.p-row {
+.p-row, .team-member {
     position: relative;
     overflow: hidden;
     height: 55px;
@@ -87,11 +87,15 @@ th {
 .p-row a,
 .p-row a:visited,
 .p-row a:active,
-.p-row a:hover {
+.p-row a:hover,
+.team-member a,
+.team-member a:visited,
+.team-member a:active,
+.team-member a:hover {
     color: black;
 }
 
-.p-row td {
+.p-row td, .team-member {
     font-size: 23px;
     padding: 5px;
     text-shadow: white 1px 1px 2px,
@@ -125,6 +129,15 @@ th {
 
 .p-row:hover .deck-bg {
     animation-play-state: running;
+}
+
+.team-member .p_deck {
+    margin-top: 5px;
+}
+
+.team-member .deck-bg {
+    animation: unset;
+    top: 0;
 }
 
 @keyframes bgimgmover {
@@ -265,7 +278,12 @@ th {
     border-radius: 3px;
 }
 
-.match .player {
+.team-match {
+    width: 600px;
+}
+
+.match .player,
+.team-match .team {
     display: flex;
     background: var(--ui-bg);
 }
