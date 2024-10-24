@@ -59,7 +59,10 @@ class ElementStats:
     
     def __iter__(self):
         for el,quant in self.elements.items():
-            dec = quant / self.total_items
+            if self.total_items:
+                dec = quant / self.total_items
+            else:
+                dec = 0
             pct = round(dec*100, 1)
             yield (el, quant, pct)
 

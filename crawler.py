@@ -95,6 +95,9 @@ def is_interesting(evt):
             print("Event has been ongoing > 2 days; marking stale.")
             evt["status"] = "stale"
             return 0
+        else:
+            print("Ongoing...")
+            return 0
     if evt.get("status") in ("rsvp", "canceled", "started", "stale", "deleted"):
         print("Status:",evt.get("status"))
         return 0

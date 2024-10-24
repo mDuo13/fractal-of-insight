@@ -170,7 +170,7 @@ def get_event(evt_id, force_redownload=False, save=True):
     except (FileNotFoundError, json.JSONDecodeError, ForceReDL):
         print(f"Downloading event #{evt_id} JSON...")
         evt_raw = requests.get(f"https://omni.gatcg.com/api/events/event?id={evt_id}")
-        print("...done.")
+        #print("...done.")
         if evt_raw.status_code == 404:
             raise EventNotFound
         evt = evt_raw.json()

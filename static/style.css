@@ -24,6 +24,17 @@ h1, h2, h3, h4, h5 {
 h1 {
     margin-top: .25em;
 }
+.flavor {
+    display: block;
+    font-size: 14px;
+    font-family: "Fracturized-Biolinum";
+    font-style: italic;
+    line-height: 14px;
+    font-weight: normal;
+    margin-top: 6px;
+    margin-bottom: -4px;
+}
+
 .collapse {
     display: none !important;
 }

@@ -16,3 +16,4 @@ This site shows information and analysis of Grand Archive tournament results. It
 - divide matchup stats by before/after banlist changes & balance errata
 - track seasonal invites, if possible? (might require sideloading number of invites per event)
 - two-way rivalry stats?
+- crawler: consider medium-sized events not interesting if they require decklists but no decklists are public
