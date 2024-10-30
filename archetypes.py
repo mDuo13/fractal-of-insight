@@ -152,7 +152,6 @@ add_archetype(
     "Wind Allies",
     [
         "Gildas, Chronicler of Aesa",
-        "Aesan Protector",
         "Inspiring Call",
         "Woodland Squirrels",
         "Lurking Assailant",
@@ -160,12 +159,17 @@ add_archetype(
         "Trained Sharpshooter",
         "Vigilant Sentry",
         "Shimmercloak Assassin",
+        "Dilu, Auspicious Charger",
+        "Oath of the Sakura",
+        "Guan Yu, Prime Exemplar",
+        "Liu Bei, Oathkeeper",
     ],
     exclude_cards=[
         "Spirit Blade: Ascension",
         "Shadowstrike",
         "Storm Slime",
         "Baby Gray Slime",
+        "Razorgale Calling",
     ],
     require_element="Wind",
     shortname="Allies"
@@ -343,4 +347,11 @@ add_archetype(
         "Silvie, Slime Sovereign",
     ],
     shortname = "Tera",
+)
+
+add_archetype(
+    "Razorgale",
+    [
+        "Razorgale Calling",
+    ],
 )
