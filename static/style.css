@@ -251,7 +251,7 @@ th {
 }
 .decklist .permalink {
     float: right;
-    padding: 5px;
+    padding: 7px 5px;
     text-decoration: none;
     font-size: 20px;
 }
@@ -274,6 +274,18 @@ th {
     padding: 5px;
     float:right;
     font-size: 20px;
+}
+.omniexport_btn {
+    margin-right: 5px;
+    padding: 5px;
+    float: right;
+    font-size: 20px;
+}
+.omniexport_btn > img {
+    vertical-align: bottom;
+}
+.omniexport {
+    display: none;
 }
 .cardcount {
     font-size: 12px;

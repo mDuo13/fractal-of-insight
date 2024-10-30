@@ -141,6 +141,13 @@ function update_evt_filtering() {
 
 function copypermalink() {
     if (window.isSecureContext) {
-        navigator.clipboard.writeText(window.location);
+        navigator.clipboard.writeText(window.location)
+    }
+}
+
+function omnidexexport(q) {
+    if (window.isSecureContext) {
+        const textarea = document.querySelector(q)
+        navigator.clipboard.writeText(textarea.textContent)
     }
 }
