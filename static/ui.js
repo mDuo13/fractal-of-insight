@@ -23,16 +23,6 @@ function togglegfx() {
     toggle(".deck_gfx")
     toggle(".deck_txt")
 }
-function showmatches(pid) {
-    hide("#matches .match") // hide all
-    show(`#matches .p_${pid}`) // show matching
-    
-    show("#matches > .togglable")
-    show("#matchreset")
-    show("#keymatch-expl")
-    hide("#keymatch-showing")
-    window.location.hash = "#matches"
-}
 function showteammatches(tslug) {
     hide("#matches .match") // hide all
     show(`#matches .t_${tslug}`) // show matching
@@ -60,6 +50,35 @@ function reset_sightings() {
     show("#wins-filter")
     show(".event-filters")
     update_evt_filtering()
+}
+// match filtering
+function showmatches(pid) {
+    // show all matches with a given player
+    hide("#matches .match")
+    show(`#matches .p_${pid}`)
+    
+    show("#matches > .togglable")
+    show("#matchreset")
+    hide("#keymatch-expl")
+    hide("#keymatch-showing")
+    hide("#keymatches")
+    window.location.hash = "#matches"
+}
+function show_matchup_matches(arche1, arche2) {
+    // show all matches between two archetypes
+    // (Note: it's structured as p1/p2 instead of generally a list of
+    // archetypes is because some decks can be multi-archetypes and I
+    // don't want a search for, for example, Water Allies vs Crux to
+    // return for example a Water Crux Allies vs [some rando] match.)
+    hide("#matches .match")
+    show(`[data-p1-archetypes*="${arche1}"][data-p2-archetypes*="${arche2}"]`)
+    show(`[data-p1-archetypes*="${arche2}"][data-p2-archetypes*="${arche1}"]`)
+
+    show("#matches > .togglable")
+    show("#matchreset")
+    hide("#keymatch-expl")
+    hide("#keymatch-showing")
+    hide("#keymatches")
 }
 function show_key_matches() {
     hide("#keymatches")

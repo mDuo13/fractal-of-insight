@@ -22,6 +22,7 @@ class PageBuilder:
         self.env.globals["config"] = config
         self.env.globals["EVENT_TYPES"] = EVENT_TYPES
         self.env.globals["TEAM_STANDARD"] = TEAM_STANDARD
+        self.env.filters["slugify"] = slugify
     
     def render(self, template, write_to, **kwargs):
         """

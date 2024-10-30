@@ -77,7 +77,7 @@
     <button onclick="toggle('#head-to-head > .togglable')">Show/Hide Head-to-Head Chart</button>
     <p class="collapse togglable">Deck on the left's win rate vs deck on the top</p>
 
-    {{ macros.battlechart(evt.battlechart, evt.archedata) }}
+    {{ macros.battlechart(evt.battlechart, evt.archedata, link_matches=True) }}
 
 </section>
 {% endif %}{# end num_decklists conditional#}
@@ -98,16 +98,26 @@
             <h4>Round {{rnd["id"]}}</h4>
             {% for match in rnd["matches"] %}
                 {% set p1 = evt.pdict[match["pairing"][0]["id"]] %}
+                {% if p1.deck %}
+                    {% set p1_archetypes = p1.deck.archetypes|map('slugify')|join(" ") %}
+                {% else %}
+                    {% set p1_archetypes = "" %}
+                {% endif %}
                 {% if match["pairing"]|length > 1 %}
-                {% set p2 = evt.pdict[match["pairing"][1]["id"]] %}
+                    {% set p2 = evt.pdict[match["pairing"][1]["id"]] %}
                     {% set iskeymatch="" %}
                     {% if p1.score > evt.fiftypct_points and p2.score > evt.fiftypct_points and match["pairing"][0]["score"]+match["pairing"][1]["score"] > 0 %}
-                    {% set iskeymatch="keymatch" %}
+                        {% set iskeymatch="keymatch" %}
+                    {% endif %}
+                    {% if p2.deck %}
+                        {% set p2_archetypes = p2.deck.archetypes|map('slugify')|join(" ") %}
+                    {% else %}
+                        {% set p2_archetypes = "" %}
                     {% endif %}
                 {% else %}
                 {% set p2 = None %}
                 {% endif %}
-                <div class="match p_{{p1.id}} {% if p2 %}p_{{p2.id}} {{iskeymatch}} {% endif %}">
+                <div class="match p_{{p1.id}} {% if p2 %}p_{{p2.id}} {{iskeymatch}} {% endif %}" data-p1-archetypes="{{p1_archetypes}}" data-p2-archetypes="{{p2_archetypes}}">
                     <div class="player">
                         {{macros.pname_w_dl(p1)}}
                         {% if p2 and p2.elo - config.UPSET_CUTOFF > p1.elo and match["pairing"][0]["score"] > match["pairing"][1]["score"] %}{{macros.upset()}}{% endif %}

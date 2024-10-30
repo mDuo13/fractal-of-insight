@@ -140,6 +140,8 @@ add_archetype(
         "Esteemed Knight",
         "Trained Sharpshooter",
         "Corhazi Trapper",
+        "Halocline Scout",
+        "Sword Saint of Eventide",
     ],
     exclude_cards=[
         "Spirit Blade: Ensoul",
@@ -234,6 +236,7 @@ add_archetype(
     [
         "Magebane Lash",
         "Ravishing Finale",
+        "Fractal of Polar Depths",
     ]
 )
 

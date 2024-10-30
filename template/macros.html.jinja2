@@ -195,7 +195,7 @@
 </form>
 {% endmacro %}
 
-{% macro battlechart(bc, archedata, only_show=False) %}
+{% macro battlechart(bc, archedata, only_show=False, link_matches=False) %}
 <table class="{% if not only_show %}collapse togglable{% endif %}">
     <thead><tr>
         <th>Deck</th>
@@ -218,7 +218,15 @@
                     (No data)
                     {% else %}
                     <div class="pct">{{r.pct}}%</div>
-                    <div class="matchcount">({{r.matches}} matches)</div>
+                    <div class="matchcount">
+                    {% if link_matches %}
+                        <a href="#matches" onclick="show_matchup_matches('{{slugify(archetype)}}', '{{slugify(opp)}}')">
+                        ({{r.matches}} matches)
+                        </a>
+                    {% else %}
+                        ({{r.matches}} matches)
+                    {% endif %}
+                    </div>
                     {% endif %}
                 </td>
                 {% endif %}
