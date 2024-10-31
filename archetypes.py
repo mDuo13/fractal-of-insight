@@ -54,7 +54,7 @@ class Archetype:
         return False
     
     def analyze(self):
-        self.matched_decks.sort(key=lambda d: d.entrant.evt_time, reverse=True)
+        self.matched_decks.sort(key=lambda d: d.entrant.evt_time *1000 + 9999-d.entrant.placement, reverse=True)
         if self.matched_decks:
             self.earliest = self.matched_decks[-1].date
         

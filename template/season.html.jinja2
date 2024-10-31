@@ -13,6 +13,9 @@
         <li><b>Timeframe:</b> {{szn.start_time}} to {{szn.end_time}}</li>
         <li><b>Events Analyzed:</b> {{szn.events|length}}</li>
         {% if szn.season_guide %}<li><b>Season Guide:</b> <a href="{{szn.season_guide}}">[PDF]</a></li>{% endif %}
+        <li><b>Draw Rate:</b> {{szn.draw_pct}}% {% if szn.nat_draw_pct != szn.draw_pct %}({{szn.nat_draw_pct}}% natural)
+            <p class="explanation">(Assuming matches with a 0-0 score are intentional draws.)</p>{% endif %}
+        </li>
     </ul>
 </section>
 

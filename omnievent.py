@@ -41,9 +41,8 @@ class OmniEvent:
         # (e.g. missing day 2 is like losing all your day 2 games)
         self.fiftypct_points = self.evt["rounds"] * 1.5
 
-
         self.load_players() # populates self.players, self.num_decklists, self.decklist_status
-        self.analyze() #populates self.elements, archedata, champdata
+        self.analyze() #populates self.elements, archedata, champdata, draw_pct, nat_draw_pct
         self.battlechart = self.calc_headtohead(track_elo=self.track_elo)
         self.bc_top = self.calc_headtohead(TOP_CUTOFF)
         if not isinstance(self, Team3v3Event):
@@ -82,6 +81,7 @@ class OmniEvent:
                 self.elements.add_unknown()
                 self.archedata.add_unknown()
                 self.champdata.add_unknown()
+        self.calc_draw_pct()
 
     def parse_top_cut(self):
         self.top_cut = []
@@ -189,6 +189,27 @@ class OmniEvent:
         if self.format == TEAM_STANDARD:
             self.winner = None # use self.winning_team instead
     
+    def calc_draw_pct(self):
+        total_matches = 0
+        ties = 0
+        ties_not_00 = 0
+        for stage in self.evt["stages"]:
+            for rnd in stage["rounds"]:
+                for match in rnd["matches"]:
+                    if match["status"] == "started" or len(match["pairing"]) < 2:
+                        # bye or ongoing match. Don't count it.
+                        continue
+                    total_matches += 1
+                    if match["pairing"][0]["score"] == match["pairing"][1]["score"]:
+                        ties += 1
+                        if match["pairing"][0]["score"] != 0:
+                            ties_not_00 += 1
+        self.total_matches = total_matches
+        self.draws = ties
+        self.nat_draws = ties_not_00
+        self.draw_pct = round(100*ties/total_matches, 1)
+        self.nat_draw_pct = round(100*ties_not_00/total_matches, 1)
+
     def calc_headtohead(self, threshold=None, track_elo=False):
         use_archetypes = [a[0] for a in self.archedata]
         

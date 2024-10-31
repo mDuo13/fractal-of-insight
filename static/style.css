@@ -469,6 +469,10 @@ th {
     font-style: italic;
 }
 
+.scooped-corners .explanation {
+    margin: 0 0 0 20px;
+}
+
 .noem {
     font-style: normal;
 }

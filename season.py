@@ -38,6 +38,7 @@ class Season:
         self.battlechart = self.calc_headtohead()
         self.bc_top = self.calc_headtohead(True)
         self.analyze_finishes()
+        self.analyze_draws()
 
     def analyze_decks(self):
         self.elements = ElementStats()
@@ -95,6 +96,19 @@ class Season:
                         self.arche_wins[arche].append(e)
                     else:
                         self.arche_wins[arche] = [e]
+    
+    def analyze_draws(self):
+        total_matches = 0
+        draws = 0
+        nat_draws = 0
+        for e in self.events:
+            total_matches += e.total_matches
+            draws += e.draws
+            nat_draws += e.nat_draws
+        self.draws = draws
+        self.nat_draws = nat_draws
+        self.draw_pct = round(100*draws/total_matches, 1)
+        self.nat_draw_pct = round(100*nat_draws/total_matches, 1)
 
     def __repr__(self):
         if self.name == "Offseason":
