@@ -1,7 +1,8 @@
+from collections import defaultdict
 from time import strftime, gmtime
 
 from player import Entrant
-from datalayer import get_event
+from datalayer import get_event, get_card_img
 from archetypes import ARCHETYPES
 from cards import ELEMENTS
 from competition import SEASONS, EVENT_TYPES, TEAM_STANDARD
@@ -82,6 +83,7 @@ class OmniEvent:
                 self.archedata.add_unknown()
                 self.champdata.add_unknown()
         self.calc_draw_pct()
+        self.calc_sideboards()
 
     def parse_top_cut(self):
         self.top_cut = []
@@ -209,6 +211,23 @@ class OmniEvent:
         self.nat_draws = ties_not_00
         self.draw_pct = round(100*ties/total_matches, 1)
         self.nat_draw_pct = round(100*ties_not_00/total_matches, 1)
+    
+    def calc_sideboards(self):
+        total_decks = 0
+        sb_cards = defaultdict(int)
+        for p in self.players:
+            if p.deck:
+                total_decks += 1
+                for card_o in p.deck.dl["sideboard"]:
+                    sb_cards[card_o["card"]] += 1
+        sb_cards_sorted = []
+        self.sideboard_stats = [{
+                            "card": card, 
+                            "pct": round(100*cc/total_decks,1),
+                            "img": get_card_img(card),
+                           } for card, cc in sb_cards.items()]
+        self.sideboard_stats.sort(key=lambda x:x["pct"], reverse=True)
+        
 
     def calc_headtohead(self, threshold=None, track_elo=False):
         use_archetypes = [a[0] for a in self.archedata]

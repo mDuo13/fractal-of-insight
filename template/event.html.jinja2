@@ -73,6 +73,16 @@
     <h3 class="togglable collapse">Champions</h3>
     {{ macros.elementbars(evt.champdata) }}
     <p class="togglable collapse">This breakdown only shows the basic elements from the deck's spirit(s), not elements added by Lv1+ champions.</p>
+
+    <h3 class="togglable collapse">Sideboards</h3>
+    <div class="top-cards togglable collapse">
+        <p>Top 10 most sideboarded cards:</p>
+    {% for card_o in evt.sideboard_stats %}
+        {% if loop.index0 < 10 %}
+        <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%</div>
+        {% endif %}
+    {% endfor %}
+    </div>
 </section>
 
 <section id="head-to-head">
