@@ -3,7 +3,7 @@ from time import strftime, gmtime
 from archetypes import ARCHETYPES
 from cards import ELEMENTS, LINEAGES
 from competition import SEASONS
-from shared import ElementStats, ArcheStats, ChampStats
+from shared import ElementStats, ArcheStats, ChampStats, OVERALL
 
 class Season:
     def __init__(self, season):
@@ -55,7 +55,7 @@ class Season:
 
     def calc_headtohead(self, use_top=False):
         archetypes = [a[0] for a in self.archedata]
-        bc = {a: {b:{"win":0,"draw":0,"matches":0} for b in archetypes} for a in archetypes}
+        bc = {a: {b:{"win":0,"draw":0,"matches":0,"mirror":0} for b in archetypes+[OVERALL]} for a in archetypes}
         for e in self.events:
             if use_top:
                 event_bc = e.bc_top
@@ -67,6 +67,7 @@ class Season:
                     bc[as_deck][vs_deck]["win"] += record["win"]
                     bc[as_deck][vs_deck]["draw"] += record["draw"]
                     bc[as_deck][vs_deck]["matches"] += record["matches"]
+                    bc[as_deck][vs_deck]["mirror"] += record["mirror"]
         
         # Calculate win% and favored/unfavored status
         for as_type, records in bc.items():

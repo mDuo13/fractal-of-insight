@@ -50,13 +50,23 @@ form > fieldset {
     margin-bottom: 25px;
 }
 
-.favored{background-color:green; color: white;}
+.favored { background-color:green; color: white;}
 .unfavored{background-color: pink}
 .no_data{background-color:gray}
 .even{background-color: white;}
+
+#head-to-head td a,
+#head-to-head td a:visited {
+    color: inherit;
+}
 .matchcount {
     font-size: 14px;
     line-height: 12px;
+}
+.arche-overall {
+    font-size: 16px;
+    line-height: 14px;
+    font-weight: normal;
 }
 table, th, td {
     border: 3px ridge black;

@@ -1,6 +1,8 @@
 import re
 from cards import ELEMENTS
 
+OVERALL = "__overall__"
+
 def slugify(s):
     unacceptable_chars = re.compile(r"[^A-Za-z0-9 -]+")
     whitespace_regex = re.compile(r"\s+")
@@ -86,6 +88,8 @@ class TypeStats:
         #     self.item_elements["Unknown"].add_unknown()
     
     def exists_for(self, item):
+        if item == OVERALL:
+            return False
         if item in self.items.keys():
             if self.items[item] > 0:
                 return True

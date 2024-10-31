@@ -210,9 +210,19 @@
         {% if not only_show or only_show == archetype %}
         {% if archedata.exists_for(archetype) > 0 %}
         <tr>
-            <th><a href="/deck/{{slugify(archetype)}}.html">{{archetype}}</a></th>
+            <th><a href="/deck/{{slugify(archetype)}}.html">{{archetype}}</a>
+            <div class="arche-overall">{{records[OVERALL].pct}}%
+                <div class="matchcount">{% if link_matches %}
+                    <a href="#matches" class="matches" onclick="show_arche_matches('{{slugify(archetype)}}')">
+                    ({{records[OVERALL].matches}} matches)
+                    </a>
+                {% else %}
+                    <div class="matches">({{records[OVERALL].matches}} matches)</div>
+                {% endif %}
+                </div>
+            </div></th>
             {% for opp, r in records.items() %}
-                {% if archedata.exists_for(archetype) > 0 %}
+                {% if archedata.exists_for(archetype) > 0 and opp != OVERALL %}
                 <td class="{{r.rating}}">
                     {% if r.rating == "no_data" %}
                     (No data)
@@ -221,10 +231,10 @@
                     <div class="matchcount">
                     {% if link_matches %}
                         <a href="#matches" onclick="show_matchup_matches('{{slugify(archetype)}}', '{{slugify(opp)}}')">
-                        ({{r.matches}} matches)
+                        ({{r.matches - r.mirror}} matches)
                         </a>
                     {% else %}
-                        ({{r.matches}} matches)
+                        ({{r.matches - r.mirror}} matches)
                     {% endif %}
                     </div>
                     {% endif %}
@@ -237,6 +247,7 @@
         {% endfor %}
     </tbody>
 </table>
+<p class="explanation{% if not only_show %} collapse togglable{% endif %}">(Match counts may not sum as expected because some decks count towards multiple archetypes. Head-to-head stats exclude byes and intentional draws.)</p>
 {% endmacro %}
 
 

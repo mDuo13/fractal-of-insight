@@ -6,7 +6,7 @@ from os import makedirs
 import os.path
 
 import config
-from shared import slugify
+from shared import slugify, OVERALL
 from omnievent import OmniEvent, Team3v3Event, IsTeamEvent
 from season import Season
 from competition import SEASONS, EVENT_TYPES, TEAM_STANDARD
@@ -22,6 +22,7 @@ class PageBuilder:
         self.env.globals["config"] = config
         self.env.globals["EVENT_TYPES"] = EVENT_TYPES
         self.env.globals["TEAM_STANDARD"] = TEAM_STANDARD
+        self.env.globals["OVERALL"] = OVERALL
         self.env.filters["slugify"] = slugify
     
     def render(self, template, write_to, **kwargs):

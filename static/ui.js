@@ -80,6 +80,18 @@ function show_matchup_matches(arche1, arche2) {
     hide("#keymatch-showing")
     hide("#keymatches")
 }
+function show_arche_matches(arche1) {
+    // show all matches involving an archetype
+    hide("#matches .match")
+    show(`[data-p1-archetypes*="${arche1}"]`)
+    show(`[data-p2-archetypes*="${arche1}"]`)
+
+    show("#matches > .togglable")
+    show("#matchreset")
+    hide("#keymatch-expl")
+    hide("#keymatch-showing")
+    hide("#keymatches")
+}
 function show_key_matches() {
     hide("#keymatches")
     show("#matchreset")

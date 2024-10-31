@@ -5,7 +5,7 @@ from datalayer import get_event
 from archetypes import ARCHETYPES
 from cards import ELEMENTS
 from competition import SEASONS, EVENT_TYPES, TEAM_STANDARD
-from shared import ElementStats, ArcheStats, ChampStats
+from shared import ElementStats, ArcheStats, ChampStats, OVERALL
 from config import TOP_CUTOFF
 
 class IsTeamEvent(Exception):
@@ -213,7 +213,7 @@ class OmniEvent:
     def calc_headtohead(self, threshold=None, track_elo=False):
         use_archetypes = [a[0] for a in self.archedata]
         
-        battlechart = {a: {b:{"win":0,"draw":0,"matches":0} for b in use_archetypes} for a in use_archetypes}
+        battlechart = {a: {b:{"win":0,"draw":0,"matches":0,"mirror":0} for b in use_archetypes+[OVERALL]} for a in use_archetypes}
         
         for stage in self.evt["stages"]:
             #print(f"Stage {stage['id']} ({stage['type']})")
@@ -255,31 +255,55 @@ class OmniEvent:
                             pass
                     
                     if p1r["score"] > p2r["score"]:
-                        outcome = "beats"
+                        # outcome = "beats"
                         for as_t in p1.deck.archetypes:
+                            battlechart[as_t][OVERALL]["win"] += 1
+                            battlechart[as_t][OVERALL]["matches"] += 1
                             for vs_t in p2.deck.archetypes:
                                 battlechart[as_t][vs_t]["win"] += 1
                                 battlechart[as_t][vs_t]["matches"] += 1
                                 battlechart[vs_t][as_t]["matches"] += 1
+                                if as_t == vs_t:
+                                    # Note it was a mirror match so we can count the total
+                                    # number of matches more accurately
+                                    battlechart[as_t][vs_t]["mirror"] += 1
+                        for vs_t in p2.deck.archetypes:
+                            if vs_t not in p1.deck.archetypes:
+                                battlechart[vs_t][OVERALL]["matches"] += 1
 
                     elif p1r["score"] < p2r["score"]:
-                        outcome = "loses to"
+                        # outcome = "loses to"
                         for as_t in p1.deck.archetypes:
+                            battlechart[as_t][OVERALL]["matches"] += 1
                             for vs_t in p2.deck.archetypes:
                                 battlechart[vs_t][as_t]["win"] += 1
                                 battlechart[as_t][vs_t]["matches"] += 1
                                 battlechart[vs_t][as_t]["matches"] += 1
+                                if as_t == vs_t:
+                                    battlechart[as_t][vs_t]["mirror"] += 1
+                        for vs_t in p2.deck.archetypes:
+                            if vs_t not in p1.deck.archetypes:
+                                battlechart[vs_t][OVERALL]["win"] += 1
+                                battlechart[vs_t][OVERALL]["matches"] += 1
 
                     else:
-                        outcome = "ties"
+                        # outcome = "ties"
                         for as_t in p1.deck.archetypes:
+                            battlechart[as_t][OVERALL]["draw"] += 1
+                            battlechart[as_t][OVERALL]["matches"] += 1
                             for vs_t in p2.deck.archetypes:
                                 battlechart[as_t][vs_t]["draw"] += 1
                                 battlechart[vs_t][as_t]["draw"] += 1
                                 battlechart[as_t][vs_t]["matches"] += 1
                                 battlechart[vs_t][as_t]["matches"] += 1
+                                if as_t == vs_t:
+                                    battlechart[as_t][vs_t]["mirror"] += 1
+                        for vs_t in p2.deck.archetypes:
+                            if vs_t not in p1.deck.archetypes:
+                                battlechart[vs_t][OVERALL]["draw"] += 1
+                                battlechart[vs_t][OVERALL]["matches"] += 1
 
-                    #print(f"        {p1.deck} {outcome} {p2.deck}")
+                    # print(f"        {p1.deck} {outcome} {p2.deck}")
         
         # Calculate win% and favored/unfavored status
         for as_type, records in battlechart.items():
