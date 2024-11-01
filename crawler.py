@@ -119,6 +119,11 @@ def is_interesting(evt):
             return 1
         return 0
     
+    total_public_dls = sum([1 for p in evt["players"] if p.get("isDecklistPublic", False)])
+    if total_public_dls < 1 and evt.get("category") == "regular":
+        print(f"Private decklists only. Mid-size online event?")
+        return 0
+
     return 1
     
 
