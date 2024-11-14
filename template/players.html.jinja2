@@ -20,7 +20,7 @@
         {% for p in players %}
             {% set e = events[p.events[0].evt_id] %}
             <tr>
-                <td><a href="/player/{{p.id}}.html">{{p.username}}</a></td>
+                <td><a href="/player/{{p.id}}.html">{{p.username}} #{{p.id}}</a></td>
                 <td>{{p.events|length}}</td>
                 <td><a href="/{{e.season}}/{{e.id}}.html">{{e.name}}</a></td>
                 <td>{{p.mostplayed()}}</td>
