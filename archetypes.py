@@ -145,6 +145,7 @@ add_archetype(
     ],
     exclude_cards=[
         "Spirit Blade: Ensoul",
+        "Revitalizing Cleanse",
     ],
     require_element="Water",
     shortname="Allies"
@@ -172,6 +173,7 @@ add_archetype(
         "Storm Slime",
         "Baby Gray Slime",
         "Razorgale Calling",
+        "Wildgrowth Feline",
     ],
     require_element="Wind",
     shortname="Allies"
@@ -183,9 +185,14 @@ add_archetype(
         "Arthur, Young Heir",
         "Rococo, Explosive Maven",
         "Hone by Fire",
+        "Fang of Dragon's Breath",
     ],
     require_element="Fire",
-    shortname="Aggro"
+    shortname="Aggro",
+    exclude_cards=[
+        "Vanitas, Obliviate Schemer",
+        "Relentless Outburst",
+    ]
 )
 
 add_archetype(
@@ -357,4 +364,12 @@ add_archetype(
     [
         "Razorgale Calling",
     ],
+)
+
+add_archetype(
+    "Cats",
+    [
+        "Wildgrowth Feline",
+        "Tempus Stalker",
+    ]
 )

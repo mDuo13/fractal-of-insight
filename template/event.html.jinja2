@@ -20,6 +20,7 @@
         <li><b>Draw Rate:</b> {{evt.draw_pct}}% {% if evt.nat_draw_pct != evt.draw_pct %}({{evt.nat_draw_pct}}% natural)
             <p class="explanation">(Assuming matches with a 0-0 score are intentional draws.)</p>{% endif %}
         </li>
+        {% if evt.track_elo %}<li><b>Average Elo:</b> {{evt.average_elo}}</li>{% endif %}
     </ul>
 </section>
 

@@ -68,6 +68,8 @@ class OmniEvent:
             self.decklist_status = "none"
         else:
             self.decklist_status = "partial"
+        if self.track_elo:
+            self.average_elo = round(sum([p.elo for p in self.players]) / len(self.players), 1)
     
     def analyze(self):
         self.elements = ElementStats()
