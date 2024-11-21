@@ -274,6 +274,9 @@ add_archetype(
         "Prismatic Edge",
         "Ghosts of Pendragon",
         "Spirit Blade Ascension",
+    ],
+    exclude_cards=[
+        "Rai, Mana Weaver"
     ]
 )
 

@@ -105,7 +105,7 @@ class Player:
         max_l = 0
         max_l_ps = []
         for p,l in self.losses.items():
-            if l > RIVAL_THRESHOLD and l >= max_l:
+            if l >= RIVAL_THRESHOLD and l >= max_l:
                 if l > max_l:
                     max_l_ps = [int(p)]
                 elif l == max_l:
