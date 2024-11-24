@@ -1,0 +1,66 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}Formats - {% endblock %}
+
+
+{% block body %}
+<nav id="main-nav">
+<a class="nav-item" href="/">⌂ Home</a>
+</nav>
+
+<h1>Standard Formats</h1>
+
+Compare data for standard formats split by card legality changes including cards being banned (Category 3) or added to Proxia's Vault, excluding April Fools changes.
+
+
+
+<div id="elements">
+    <h2>Elements</h2>
+    <button onclick="toggle('#elements > .togglable')">Show/Hide Element Breakdown</button>
+
+    {% for fmt in formats %}
+    <h3 class="collapse togglable">{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time}})</span></h3>
+    <p class="explanation collapse togglable">{{fmt.desc}}</p>
+    <div class="element-meta collapse togglable">
+        {{macros.elementpie(fmt.elements)}}
+    </div>
+    {% endfor %}
+
+</div>
+
+
+<div id="champions">
+    <h2>Champions</h2>
+    <button onclick="toggle('#champions > .togglable')">Show/Hide Element Breakdown</button>
+
+    {% for fmt in formats %}
+    <h3 class="collapse togglable">{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time}})</span></h3>
+    <p class="explanation collapse togglable">{{fmt.desc}}</p>
+    {{ macros.elementbars(fmt.champdata) }}
+    {% endfor %}
+</div>
+
+
+<div id="archetypes">
+    <h2>Archetypes</h2>
+    <button onclick="toggle('#archetypes > .togglable')">Show/Hide Element Breakdown</button>
+
+    {% for fmt in formats %}
+    <h3 class="collapse togglable">{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time}})</span></h3>
+    <p class="explanation collapse togglable">{{fmt.desc}}</p>
+    {{ macros.elementbars(fmt.archedata) }}
+    {% endfor %}
+</div>
+
+<div id="head-to-head">
+    <h2>Head-to-Head</h2>
+    <button onclick="toggle('#head-to-head > .togglable')">Show/Hide Element Breakdown</button>
+
+    {% for fmt in formats %}
+    <h3 class="collapse togglable">{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time}})</span></h3>
+    <p class="collapse togglable">Deck on the left's win rate vs deck on the top</p>
+    {{ macros.battlechart(fmt.battlechart, fmt.archedata) }}
+    {% endfor %}
+</div>
+
+{% endblock %}

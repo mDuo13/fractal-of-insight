@@ -5,7 +5,8 @@ from player import Entrant
 from datalayer import get_event, get_card_img
 from archetypes import ARCHETYPES
 from cards import ELEMENTS
-from competition import SEASONS, EVENT_TYPES, TEAM_STANDARD
+from competition import EVENT_TYPES, TEAM_STANDARD
+from season import SEASONS
 from shared import ElementStats, ArcheStats, ChampStats, OVERALL
 from config import TOP_CUTOFF
 
@@ -42,6 +43,7 @@ class OmniEvent:
         # (e.g. missing day 2 is like losing all your day 2 games)
         self.fiftypct_points = self.evt["rounds"] * 1.5
 
+        self.winner = None
         self.load_players() # populates self.players, self.num_decklists, self.decklist_status
         self.analyze() #populates self.elements, archedata, champdata, draw_pct, nat_draw_pct
         self.battlechart = self.calc_headtohead(track_elo=self.track_elo)

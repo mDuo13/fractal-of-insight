@@ -168,7 +168,7 @@
         <div class="date_loc">{{evt.date}} {{flag(evt.country)}}</div>
         <div class="playercount">{{evt.players|length}} entrants</div>
         <div class="decklistcount">{% if evt.decklist_status == "full" %}All decklists{% elif evt.decklist_status == "partial" %}{{evt.num_decklists}} decklists{% endif %}</div>
-        <div class="winner">Winner: {% if evt.winner %}{{evt.winner.username}}{% elif evt.winning_team %}{{evt.winning_team.name}}{% endif %}</div>
+        <div class="winner">Winner: {% if evt.winner %}{{evt.winner.username}}{% elif evt.winning_team %}{{evt.winning_team.name}}{% else %}(Ongoing){% endif %}</div>
     </div>
     <div class="event-category">{{evt.category["name"]}}</div>
 </a>

@@ -8,8 +8,8 @@ import os.path
 import config
 from shared import slugify, OVERALL
 from omnievent import OmniEvent, Team3v3Event, IsTeamEvent
-from season import Season
-from competition import SEASONS, EVENT_TYPES, TEAM_STANDARD
+from season import Season, SEASONS, Format, FORMATS
+from competition import EVENT_TYPES, TEAM_STANDARD
 from player import Player
 from archetypes import ARCHETYPES
 
@@ -60,6 +60,15 @@ class PageBuilder:
         szn_path = f"{season.code}/index.html"
         self.render("season.html.jinja2", szn_path, szn=season)
 
+    def write_formats(self, formats):
+        """
+        Write a summary of different formats (by card legality)
+        """
+        for fmt in formats:
+            fmt.analyze()
+        fmt_path = "formats/index.html"
+        self.render("formats.html.jinja2", fmt_path, formats=formats)
+
     def write_player(self, player, events, known_players):
         player.analyze()
         plr_path = f"player/{player.id}.html"
@@ -97,6 +106,12 @@ class PageBuilder:
                 if not seasons.get(e.season):
                     seasons[e.season] = Season(e.season)
                 seasons[e.season].add_event(e)
+
+                for fmt in FORMATS.values():
+                    if fmt.should_include(e):
+                        fmt.add_event(e)
+                        break
+
                 for entrant in e.players:
                     if entrant.id in known_players.keys():
                         known_players[entrant.id].add_entry(entrant)
@@ -110,6 +125,9 @@ class PageBuilder:
 
         for szn in seasons.values():
             self.write_season(szn)
+
+        formats_desc = list(reversed(FORMATS.values()))
+        self.write_formats(formats_desc)
         
         known_pids_sorted = [pid for pid, pl in known_players.items()]
         known_pids_sorted.sort(key=lambda x: known_players[x].sortkey())
@@ -143,7 +161,7 @@ def main(args):
             e = OmniEvent(i, force_redownload=args.update)
         except IsTeamEvent:
             e = Team3v3Event(i, force_redownload=args.update)
-        builder.write_event(e)
+        #builder.write_event(e)
     builder.write_all()
 
 if __name__ == "__main__":

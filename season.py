@@ -1,9 +1,8 @@
-from time import strftime, gmtime
+from time import strftime, strptime, gmtime
 
-from archetypes import ARCHETYPES
-from cards import ELEMENTS, LINEAGES
-from competition import SEASONS
 from shared import ElementStats, ArcheStats, ChampStats, OVERALL
+
+ISOFMT = r"%Y-%m-%d"
 
 class Season:
     def __init__(self, season):
@@ -27,8 +26,8 @@ class Season:
                 data = e.evt["season"]
                 self.name = data["name"]
                 self.id = data["id"]
-                self.start_time = strftime(r"%Y-%m-%d", gmtime(data["startsAt"]/1000))
-                self.end_time = strftime(r"%Y-%m-%d", gmtime(data["endsAt"]/1000))
+                self.start_time = strftime(ISOFMT, gmtime(data["startsAt"]/1000))
+                self.end_time = strftime(ISOFMT, gmtime(data["endsAt"]/1000))
                 self.season_guide = data["file"]
 
     def analyze(self):
@@ -115,3 +114,83 @@ class Season:
         if self.name == "Offseason":
             return "Offseason"
         return f"{self.code} Season"
+
+class Format(Season):
+    def __init__(self, name, start, end=None, desc=""):
+        self.name = name
+        self.start_time = start
+        self.end_time = end
+        if not end:
+            self.end_time = strftime(ISOFMT, gmtime())
+        self.season_guide = None
+        self.desc = desc
+        self.events = []
+        self.data = None
+    
+    def add_event(self, e):
+        self.events.append(e)
+    
+    def should_include(self, evt):
+        """
+        Returns True if evt occurs during this format's timeframe.
+        """
+        if evt.evt["format"] != "standard":
+            return False
+        fmt_start = strptime(self.start_time, ISOFMT)
+        fmt_end = strptime(self.end_time, ISOFMT)
+        evt_start = gmtime(evt.evt["startAt"]/1000)
+        if fmt_start < evt_start < fmt_end:
+            return True
+        return False
+    
+    def __repr__(self):
+        return self.name
+
+
+SEASONS = {
+    "Mortal Ambition": "AMB",
+    "Offseason": "OFF",
+    "Mercurial Heart": "MRC",
+    "Alchemical Revolution": "ALC",
+}
+
+FORMATS = {}
+def add_format(*args,**kwargs):
+    f = Format(*args, **kwargs)
+    FORMATS[f.name] = f
+
+add_format("ALC Release",
+    start="2024-02-04",
+    end="2024-02-16",
+    desc="Start of Omnidex and Alchemical Revolution season."
+)
+add_format("ALC Post-Ontario",
+    start="2024-02-16",
+    end="2024-05-17",
+    desc="Crystal of Empowerment banned."
+)
+# Technically the 2024 April Fools champions were legal for one day, but I don't care.
+add_format("MRC Release",
+    start="2024-05-17",
+    end="2024-08-05",
+    desc="Mercurial Heart released alongside Silvie, Slime Sovereign and Tristan, Shadowdancer Re:Collection decks."
+)
+add_format("MRC Post-Chicago",
+    start="2024-08-05",
+    end="2024-09-02",
+    desc="Stonescale Band received errata."
+)
+add_format("MRC Post-Outlook",
+    start="2024-09-02",
+    end="2024-10-11",
+    desc="Corhazi Outlook banned; Polaris, Twinkling Cauldron added to Proxia's Vault."
+)
+add_format("AMB Release",
+    start="2024-10-11",
+    end="2024-10-28",
+    desc="Mortal Ambition released; Erupting Rhapsody banned."
+)
+add_format("AMB Post-Toronto",
+    start="2024-10-28",
+    desc="Three Visits received errata; Nullifying Mirror added to Proxia's Vault."
+)

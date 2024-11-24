@@ -1,10 +1,3 @@
-SEASONS = {
-    "Mortal Ambition": "AMB",
-    "Offseason": "OFF",
-    "Mercurial Heart": "MRC",
-    "Alchemical Revolution": "ALC",
-}
-
 TEAM_STANDARD = "team-standard-3v3"
 
 EVENT_TYPES = {
