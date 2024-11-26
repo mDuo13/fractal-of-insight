@@ -153,3 +153,67 @@ class ArcheStats(TypeStats):
                 self.items[arche] = 1
                 self.item_elements[arche] = ElementStats()
                 self.item_elements[arche].add_deck(deck)
+
+class RegionStats:
+    def __init__(self):
+        self.total_items = 0
+        self.items = {}
+
+    def add_player(self, player):
+        self.total_items += 1
+        region = player.region or "Unknown"
+        if region in self.items.keys():
+            self.items[region] += 1
+        else:
+            self.items[region] = 1
+    
+    def __iter__(self):
+        regdata = [(i,q) for i,q in self.items.items()]
+        regdata.sort(key=lambda x:x[1], reverse=True)
+        for reg,quant in regdata:
+            if self.total_items:
+                dec = quant / self.total_items
+            else:
+                dec = 0
+            pct = round(dec*100, 1)
+            yield (reg, quant, pct)
+
+REGIONS = {
+    "":   {"name": "Online", "flag": "🌐"},
+    "AE": {"name": "United Arab Emirates","flag": "🇦🇪"},
+    "AU": {"name": "Australia","flag": "🇦🇺"},
+    "BE": {"name": "Belgium","flag": "🇧🇪"},
+    "BN": {"name": "Brunei","flag": "🇧🇳"},
+    "CA": {"name": "Canada","flag": "🇨🇦"},
+    "CH": {"name": "Switzerland","flag": "🇨🇭"},
+    "CR": {"name": "Costa Rica", "flag": "🇨🇷"},
+    "CZ": {"name": "Czech Republic","flag":"🇨🇿"},
+    "DE": {"name": "Germany","flag": "🇩🇪"},
+    "DK": {"name": "Denmark","flag": "🇩🇰"},
+    "ES": {"name": "Spain","flag": "🇪🇸"},
+    "FI": {"name": "Finland","flag":"🇫🇮"},
+    "GB": {"name": "United Kingdom","flag": "🇬🇧"},
+    "GR": {"name": "Greece","flag": "🇬🇷"},
+    "HK": {"name": "Hong Kong","flag": "🇭🇰"},
+    "HR": {"name": "Croatia","flag": "🇭🇷"},
+    "HU": {"name": "Hungary","flag": "🇭🇺"},
+    "ID": {"name": "Indonesia","flag": "🇮🇩"},
+    "IT": {"name": "Italy","flag": "🇮🇹"},
+    "JP": {"name": "Japan","flag": "🇯🇵"},
+    "KR": {"name": "South Korea","flag": "🇰🇷"},
+    "KW": {"name": "Kuwait","flag": "🇰🇼"},
+    "MX": {"name": "Mexico","flag": "🇲🇽"},
+    "MY": {"name": "Malaysia","flag": "🇲🇾"},
+    "NL": {"name": "Netherlands","flag": "🇳🇱"},
+    "NZ": {"name": "New Zealand","flag": "🇳🇿"},
+    "PH": {"name": "Philippines","flag": "🇵🇭"},
+    "PL": {"name": "Poland","flag": "🇵🇱"},
+    "PR": {"name": "Puerto Rico","flag": "🇵🇷"},
+    "PT": {"name": "Portugal","flag":"🇵🇹"},
+    "SE": {"name": "Sweden","flag": "🇸🇪"},
+    "SG": {"name": "Singapore","flag": "🇸🇬"},
+    "SI": {"name": "Slovenia","flag":"🇸🇮"},
+    "SK": {"name": "Slovakia","flag":"🇸🇰"},
+    "TW": {"name": "Taiwan","flag": "🇹🇼"},
+    "US": {"name": "United States of America","flag": "🇺🇸"},
+}

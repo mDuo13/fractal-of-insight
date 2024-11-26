@@ -46,7 +46,7 @@
 
     <table class="collapse togglable">
         <thead><tr>
-            <th>Rank</th><th>Player</th><th>Record</th><th>Deck</th>{#<th>Elo</th>#}<th>Elo Change</th><th>Matches</th>
+            <th>Rank</th><th>Player</th><th>Record</th><th>Deck</th><th>Elo Change</th><th>Matches</th>
         </tr></thead>
         <tbody>
         {% for p in evt.players %}
@@ -56,6 +56,26 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <div class="player-regions">
+        <h3>Home Region Breakdown</h3>
+        <button onclick="toggle('.player-regions > .togglable')">Show/Hide Region Data</button>
+
+        <table class="collapse togglable">
+            <thead><tr>
+                <th>Region</th><th># Entrants</th><th>%</th>
+            </tr></thead>
+            <tbody>
+                {% for region, quant, pct in evt.regiondata %}
+                <tr>
+                    <td>{{macros.flag(region, True)}}</td>
+                    <td>{{quant}}</td>
+                    <td>{{pct}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </section>
 
 {% if evt.num_decklists %}

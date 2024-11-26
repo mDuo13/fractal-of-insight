@@ -7,7 +7,7 @@ from archetypes import ARCHETYPES
 from cards import ELEMENTS
 from competition import EVENT_TYPES, TEAM_STANDARD
 from season import SEASONS
-from shared import ElementStats, ArcheStats, ChampStats, OVERALL
+from shared import ElementStats, ArcheStats, ChampStats, RegionStats, OVERALL
 from config import TOP_CUTOFF
 
 class IsTeamEvent(Exception):
@@ -77,6 +77,7 @@ class OmniEvent:
         self.elements = ElementStats()
         self.archedata = ArcheStats()
         self.champdata = ChampStats()
+        self.regiondata = RegionStats()
         for p in self.players:
             if p.deck:
                 self.elements.add_deck(p.deck)
@@ -86,6 +87,7 @@ class OmniEvent:
                 self.elements.add_unknown()
                 self.archedata.add_unknown()
                 self.champdata.add_unknown()
+            self.regiondata.add_player(p)
         self.calc_draw_pct()
         self.calc_sideboards()
 

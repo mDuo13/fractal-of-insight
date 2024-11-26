@@ -25,6 +25,7 @@ class Entrant:
         self.elo = round(data["scoreElo"]) # seems this is the player's "current" elo at the time of looking up the event??
         self.elo_diff = 0 # modified when analyzing matchups
         self.rank_elo = data["rankElo"]
+        self.region = data.get("addressCountryCode")
         if "team" in data:
             self.team = data["team"]
             self.seat = data["teamSlot"]
@@ -65,6 +66,7 @@ class Player:
         self.username = entrant.username
         self.events = [entrant]
         self.losses = {}
+        self.region = entrant.region
     
     def add_entry(self, entrant):
         self.events.append(entrant)

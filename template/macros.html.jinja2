@@ -136,29 +136,10 @@
     </tr>
 {% endmacro %}
 
-{% macro flag(countrycode) %}
-<span class="flag" 
-{% if countrycode == "" %}title="Online">🌐
-{% elif countrycode == "AE" %}title="United Arab Emirates">🇦🇪
-{% elif countrycode == "AU" %}title="Australia">🇦🇺
-{% elif countrycode == "BE" %}title="Belgium">🇧🇪
-{% elif countrycode == "BN" %}title="Brunei">🇧🇳
-{% elif countrycode == "CA" %}title="Canada">🇨🇦
-{% elif countrycode == "DE" %}title="Germany">🇩🇪
-{% elif countrycode == "GB" %}title="United Kingdom">🇬🇧
-{% elif countrycode == "HK" %}title="Hong Kong">🇭🇰
-{% elif countrycode == "HU" %}title="Hungary">🇭🇺
-{% elif countrycode == "JP" %}title="Japan">🇯🇵
-{% elif countrycode == "MY" %}title="Malaysia">🇲🇾
-{% elif countrycode == "NL" %}title="Netherlands">🇳🇱
-{% elif countrycode == "NZ" %}title="New Zealand">🇳🇿
-{% elif countrycode == "PH" %}title="Philippines">🇵🇭
-{% elif countrycode == "SG" %}title="Singapore">🇸🇬
-{% elif countrycode == "TW" %}title="Taiwan">🇹🇼
-{% elif countrycode == "US" %}title="United States of America">🇺🇸
-{% else %}>{{countrycode}}
-{% endif %}
-</span>
+{% macro flag(countrycode, full=False) %}
+{% set region = REGIONS[countrycode]|default({"name": "", "flag": countrycode}) %}
+{#{% set region = REGIONS[countrycode] %}#}
+<span class="flag" title="{{region.name}}">{{region.flag}}</span>{% if full %} {{region.name}}{% endif %}
 {% endmacro %}
 
 {% macro eventbox(evt) %}
