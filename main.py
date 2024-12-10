@@ -102,8 +102,6 @@ class PageBuilder:
                 except IsTeamEvent:
                     e = Team3v3Event(entry.name[6:])
                     all_events[e.id] = e
-                    #print(f"Skipping team standard event (#{entry.name[6:]})")
-                    #continue
                 if not seasons.get(e.season):
                     seasons[e.season] = Season(e.season)
                 seasons[e.season].add_event(e)
@@ -158,10 +156,11 @@ class PageBuilder:
 def main(args):
     builder = PageBuilder()
     for i in args.event_id:
+        i_s = str(i)
         try:
-            e = OmniEvent(i, force_redownload=args.update)
+            e = OmniEvent(i_s, force_redownload=args.update)
         except IsTeamEvent:
-            e = Team3v3Event(i, force_redownload=args.update)
+            e = Team3v3Event(i_s, force_redownload=args.update)
         #builder.write_event(e)
     builder.write_all()
 

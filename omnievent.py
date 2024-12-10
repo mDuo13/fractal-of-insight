@@ -261,8 +261,8 @@ class OmniEvent:
                     p2 = self.pdict[p2r["id"]]
 
                     if track_elo:
-                        p1.elo_diff += match["pairing"][0]["eloChange"]
-                        p2.elo_diff += match["pairing"][1]["eloChange"]
+                        p1.elo_diff += match["pairing"][0].get("eloChange", 0)
+                        p2.elo_diff += match["pairing"][1].get("eloChange", 0)
 
                     if p1r["score"] == p2r["score"] and p1r["score"] == 0:
                         #print(f"        intentional draw")
