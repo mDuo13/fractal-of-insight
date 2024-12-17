@@ -29,6 +29,7 @@ class OmniEvent:
             raise IsTeamEvent
         self.format = self.evt["format"]
         self.name = self.evt["name"]
+        self.fix_generic_name()
         self.date = strftime(r"%Y-%m-%d", gmtime(self.evt["startAt"]/1000))
         if "season" in self.evt:
             self.season = SEASONS.get(self.evt["season"]["name"], "OTHER")
@@ -51,6 +52,32 @@ class OmniEvent:
         if not isinstance(self, Team3v3Event):
             self.parse_top_cut() # populates self.top_cut
             # For Team3v3, this needs to happen after parse_teams()
+    
+    def fix_generic_name(self):
+        GENERIC_WORDS = [
+            "Grand",
+            "Archive",
+            "Store",
+            "Championship",
+            "Championships",
+            "Champs",
+            "Regional",
+            "Regionals",
+            "Event",
+            "DOA", "FTC", "ALC", "MRC", "AMB", "HVN",
+            "Mercurial Heart",
+            "Mortal Ambition",
+            "Standard",
+            "Constructed",
+        ]
+        testname = self.name.lower()
+        for word in GENERIC_WORDS:
+            testname = testname.replace(word.lower(), "")
+        testname = testname.strip()
+        if not testname:
+            #print(f"Fixing generic event name (remaining testname was '{testname}')")
+            # it's a generic name, add the store name
+            self.name = self.evt["store"]["name"] + " " + self.name
     
     def load_players(self):
         self.num_decklists = 0
