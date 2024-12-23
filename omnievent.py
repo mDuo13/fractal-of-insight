@@ -57,6 +57,7 @@ class OmniEvent:
         GENERIC_WORDS = [
             "Grand",
             "Archive",
+            "TCG",
             "Store",
             "Championship",
             "Championships",
@@ -83,7 +84,7 @@ class OmniEvent:
         self.num_decklists = 0
         self.players = []
         for pdata in self.evt["players"]:
-            p = Entrant(pdata, self.id, evt_time=self.evt["startAt"])
+            p = Entrant(pdata, self.id, self.season, evt_time=self.evt["startAt"])
             self.players.append(p)
             if p.deck:
                 self.num_decklists += 1

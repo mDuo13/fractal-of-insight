@@ -9,7 +9,11 @@ if (window.location.hash) {
 }
 document.querySelectorAll(".decklist").forEach(el => {
     el.addEventListener("click", (evt) => {
-        if (!evt.target.classList.contains("decklist")) {
+        if (evt.target.href) {
+            // is a link, do the default after closing this
+            el.classList.add("collapse")
+        }
+        else if (!evt.target.classList.contains("decklist")) {
             evt.preventDefault()
         } else {
             el.classList.add("collapse")

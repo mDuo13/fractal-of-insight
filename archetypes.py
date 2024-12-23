@@ -1,4 +1,5 @@
 from collections import defaultdict
+from bisect import insort
 
 from shared import ElementStats, ChampStats
 from datalayer import get_card_img, carddata
@@ -9,6 +10,9 @@ EXCLUDE_LIST = LV0+LV1+LV2+LV3#+[
 #     "Quicksilver Grail",
 #     "Dungeon Guide",
 # ]
+
+SIMILAR_DECKS_CUTOFF = 90
+
 def card_freq_exclude(cardname):
     if cardname in EXCLUDE_LIST:
         return True
@@ -25,9 +29,8 @@ class Archetype:
             self.shortname = name
         self.require_element = require_element
         self.earliest = None
+        self.subtypes = []
 
-        # TODO: 
-        # record card frequency stats
         self.matched_decks = []
     
     def match(self, deck):
@@ -49,6 +52,17 @@ class Archetype:
         
         # TODO: consider using "found_cards" count for better matching
         if found_cards:
+            for d in self.matched_decks:
+                sim = deck.similarity_to(d)
+                if sim >= SIMILAR_DECKS_CUTOFF:
+                    #print(f"Similarity: {sim}% ({deck.entrant} {deck.date} vs {d.entrant} {d.date})")
+                    # if (d in [x[1] for x in deck.similar_decks]):
+                    #     print(f"Inserting duplicate similar_deck?? {d} vs {deck}")
+                    #     exit(1)
+                    insort(deck.similar_decks, [d, sim], key=lambda x:x[0].date)
+                    #deck.similar_decks.append([d, sim])
+                    insort(d.similar_decks, [deck, sim], key=lambda x:x[0].date)
+                    #d.similar_decks.append([deck, sim])
             self.matched_decks.append(deck)
             return True
         return False
@@ -123,13 +137,16 @@ class Archetype:
         total_of_type_sorted = [(k,v) for k,v in total_of_type.items()]
         total_of_type_sorted.sort(key=lambda x:x[1], reverse=True)
         self.average_of_type = {k: round(v / total_decks, 0) for k,v in total_of_type_sorted}
-        
-    
+
+    def add_subtype(self, st):
+        self.subtypes.append(st)
+
 
 ARCHETYPES = {}
 def add_archetype(*args,**kwargs):
     a = Archetype(*args, **kwargs)
     ARCHETYPES[a.name] = a
+    return a
 
 
 add_archetype(
@@ -151,7 +168,7 @@ add_archetype(
     shortname="Allies"
 )
 
-add_archetype(
+wind_allies = add_archetype(
     "Wind Allies",
     [
         "Gildas, Chronicler of Aesa",
@@ -178,6 +195,20 @@ add_archetype(
     require_element="Wind",
     shortname="Allies"
 )
+
+wind_allies.add_subtype(Archetype(
+    "Unique",
+    [
+        "Mortal Ambition",
+        "Dilu, Auspicious Charger",
+    ]
+))
+wind_allies.add_subtype(Archetype(
+    "Robo",
+    [
+        "Manufacture Cell",
+    ]
+))
 
 add_archetype(
     "Fire Aggro",
@@ -239,12 +270,22 @@ add_archetype(
 )
 
 add_archetype(
-    "Mill",
+    "Ravishing Mill",
     [
-        "Magebane Lash",
         "Ravishing Finale",
+    ],
+    shortname="Mill"
+)
+
+add_archetype(
+    "Penguin Mill",
+    [
         "Fractal of Polar Depths",
-    ]
+    ],
+    exclude_cards=[
+        "Ravishing Finale",
+    ],
+    shortname="Mill"
 )
 
 add_archetype(

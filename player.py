@@ -9,9 +9,10 @@ class Entrant:
     """
     Represents one player's entry into one event
     """
-    def __init__(self, data, evt_id, evt_time=0):
+    def __init__(self, data, evt_id, season, evt_time=0):
         self.id = data["id"]
         self.evt_id = evt_id
+        self.season = season
         self.evt_time = evt_time
         self.wins = data["statsWins"]
         self.losses = data["statsLosses"]

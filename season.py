@@ -98,6 +98,8 @@ class Season:
                         self.arche_wins[arche] = [e]
     
     def analyze_draws(self):
+        if not self.events:
+            return
         total_matches = 0
         draws = 0
         nat_draws = 0
@@ -139,7 +141,7 @@ class Format(Season):
         fmt_start = strptime(self.start_time, ISOFMT)
         fmt_end = strptime(self.end_time, ISOFMT)
         evt_start = gmtime(evt.evt["startAt"]/1000)
-        if fmt_start < evt_start < fmt_end:
+        if fmt_start <= evt_start < fmt_end:
             return True
         return False
     
@@ -192,5 +194,10 @@ add_format("AMB Release",
 )
 add_format("AMB Post-Toronto",
     start="2024-10-28",
+    end="2025-01-10",
     desc="Three Visits received errata; Nullifying Mirror added to Proxia's Vault."
 )
+# add_format("AMB + ALC Alter",
+#     start="2025-01-10",
+#     desc="Alchemical Revolution Alter released."
+# )

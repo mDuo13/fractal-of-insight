@@ -250,16 +250,16 @@
 </div>
 {% endmacro %}
 
-{% macro decklist(p, id, event=None) %}
+{% macro decklist(p, id, event, external=False) %}
 <div class="decklist collapse" id="{{id}}">
     <div class="decklist-inner">
         <button class="closeX" onclick="closedecklist('#{{id}}')">❌</button>
         <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
         <button class="omniexport_btn" onclick="omnidexexport('#{{id}} .omniexport')"><img alt="Export" title="Omnidex Export (copy to clipboard)" src="/static/export.svg" width="24" height="24" /></button>
         <a class="permalink" href="#{{id}}" onclick="copypermalink()">🔗</a>
-        <h3>{{p.username}}'s {{p.deck}}{% if event %} ({{event.name}}){% endif %}</h3>
+        <h3>{{p.username}}'s {{p.deck}}{% if external %} ({{event.name}}){% endif %}</h3>
         <div class="decklist-viewbox">
-            <h4>Materials <span class="cardcount">({{p.deck.dl["material"]|length}} cards)</span></h4>
+            <h4>Materials <span class="cardcount">({{p.deck.mat_total}} cards)</span></h4>
             <ul class="deck_txt collapse">
                 {% for card_o in p.deck.dl["material"] %}
                 <li>{{card_o["card"]}}</li>
@@ -267,7 +267,7 @@
             </ul>
             <div class="deck_gfx">
                 {% for card_o in p.deck.dl["material"] %}
-                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /></div>
+                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" />{% if card_o["quantity"] != 1 %}<span class="quant">{{card_o["quantity"]}}</span>{% endif %}</div>
                 {% endfor %}
             </div>
             <h4>Maindeck <span class="cardcount">({{p.deck.main_total}} cards)</span></h4>
@@ -278,10 +278,10 @@
             </ul>
             <div class="deck_gfx">
                 {% for card_o in p.deck.dl["main"] %}
-                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</div>
+                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</span></div>
                 {% endfor %}
             </div>
-            <h4>Sideboard <span class="cardcount">({{p.deck.side_total}} cards)</span></h4>
+            <h4>Sideboard <span class="cardcount">({{p.deck.side_total}} cards, {{p.deck.side_points}} points)</span></h4>
             <ul class="deck_txt collapse">
                 {% for card_o in p.deck.dl["sideboard"] %}
                 <li>{{card_o["quantity"]}}x {{card_o["card"]}}</li>
@@ -289,7 +289,7 @@
             </ul>
             <div class="deck_gfx">
                 {% for card_o in p.deck.dl["sideboard"] %}
-                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</div>
+                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</span></div>
                 {% endfor %}
             </div>
             <textarea class="omniexport">
@@ -316,6 +316,44 @@
                 <li><b>{{cardtype|title}} Cards:</b> {{cardcount}}</li>
                 {% endfor %}
             </ul>
+
+            <div class="similar-decks">
+            <h4>Similar Decks</h4>
+            <p class="explanation">(Similar decks are calculated on a point system where maindeck cards are worth 1 point, material deck cards are 4 points, and sideboards are discounted by ⅓. Only decks with at least 90% overlap are listed.)</p>
+            {% if p.deck.similar_decks %}
+                {% set before,sameday,after = p.deck.split_similar_decks() %}
+                {% if before %}
+                <h5>Before this</h5>
+                <ul>
+                {% for otherdeck, sim in before %}
+                    <li><a href="/{{otherdeck.entrant.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} on {{otherdeck.date}} ({{sim}}%)</a></li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+                {% if sameday %}
+                <h5>Same day</h5>
+                <ul>
+                {% for otherdeck, sim in sameday %}
+                    {% if not external and event.id == otherdeck.entrant.evt_id %}
+                    <li><a href="#deck_{{otherdeck.entrant.id}}" onclick="opendecklist('#deck_{{otherdeck.entrant.id}}')">{{otherdeck.entrant.username}} in this event ({{sim}}%)</a></li>
+                    {% else %}
+                    <li><a href="/{{otherdeck.entrant.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in event #{{otherdeck.entrant.evt_id}} ({{sim}}%)</a></li>
+                    {% endif %}
+                {% endfor%}
+                </ul>
+                {% endif %}
+                {% if after %}
+                <h5>After this</h5>
+                <ul>
+                {% for otherdeck, sim in p.deck.similar_decks %}
+                    <li><a href="/{{otherdeck.entrant.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} on {{otherdeck.date}} ({{sim}}%)</a></li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+            {% else %}
+            <p>None.</p>
+            {% endif %}
+            </div>
         </div>
     </div>
 </div>

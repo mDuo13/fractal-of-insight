@@ -127,7 +127,7 @@
 
 <!-- DECKLISTS -->
 {% for d in arche.matched_decks %}
-{{ macros.decklist(d.entrant, "deck_"~d.entrant.evt_id~"_"~d.entrant.id, events[d.entrant.evt_id]) }}
+{{ macros.decklist(d.entrant, "deck_"~d.entrant.evt_id~"_"~d.entrant.id, events[d.entrant.evt_id], True) }}
 {% endfor %}
 
 {% include "deckviewscript.html.jinja2" %}

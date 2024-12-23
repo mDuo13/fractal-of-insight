@@ -96,6 +96,7 @@ class PageBuilder:
         all_events = {}
         for entry in os.scandir("./data"):
             if entry.is_dir() and entry.name[:6] == "event_":
+                print("Reading event#",entry.name[6:])
                 try:
                     e = OmniEvent(entry.name[6:])
                     all_events[e.id] = e
@@ -117,7 +118,8 @@ class PageBuilder:
                     else:
                         known_players[entrant.id] = Player(entrant)
                     known_players[entrant.id].track_rivals_for_event(e)
-                
+        
+        for e in all_events.values():
                 self.write_event(e)
         
         seasons_sorted = {k:seasons[v] for k,v in SEASONS.items() if v in seasons.keys()}

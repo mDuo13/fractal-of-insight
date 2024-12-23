@@ -179,7 +179,7 @@
 <!-- DECKLISTS -->
 {% for p in evt.players %}
 {% if p.deck %}
-{{ macros.decklist(p, "deck_"~p.id) }}
+{{ macros.decklist(p, "deck_"~p.id, evt) }}
 {% endif %}
 {% endfor %}
 

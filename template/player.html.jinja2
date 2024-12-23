@@ -59,7 +59,7 @@
 <!-- DECKLISTS -->
 {% for p in player.events %}
 {% if p.deck %}
-{{ macros.decklist(p, "deck_"~p.evt_id, events[p.evt_id]) }}
+{{ macros.decklist(p, "deck_"~p.evt_id, events[p.evt_id], True) }}
 {% endif %}
 {% endfor %}
 
