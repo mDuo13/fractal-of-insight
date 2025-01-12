@@ -217,6 +217,9 @@ add_archetype(
         "Rococo, Explosive Maven",
         "Hone by Fire",
         "Fang of Dragon's Breath",
+        "Flamewing Fowl",
+        "Heated Vengeance",
+        "Rending Flames",
     ],
     require_element="Fire",
     shortname="Aggro",
@@ -305,6 +308,19 @@ add_archetype(
     [
         "Storm Slime",
         "Ethereal Slime",
+    ]
+)
+
+add_archetype(
+    "Slice & Dice",
+    [
+        "Slice and Dice",
+    ],
+    exclude_cards=[
+        "Shadowstrike",
+        "Corhazi Trapper",
+        "Lurking Assailant",
+        "Lightweaver's Assault",
     ]
 )
 

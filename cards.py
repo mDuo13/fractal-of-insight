@@ -25,6 +25,8 @@ LV0 = [
     "Priscilla, Lost Spirit",
     "Vyra, Spirit of Fire",
     "Shira, Lost Spirit",
+    "Minthe, Spirit of Water",
+    "Brissa, Spirit of Wind",
 ]
 
 LV1 = [

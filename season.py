@@ -197,7 +197,7 @@ add_format("AMB Post-Toronto",
     end="2025-01-10",
     desc="Three Visits received errata; Nullifying Mirror added to Proxia's Vault."
 )
-# add_format("AMB + ALC Alter",
-#     start="2025-01-10",
-#     desc="Alchemical Revolution Alter released."
-# )
+add_format("AMB + ALC Alter",
+    start="2025-01-10",
+    desc="Alchemical Revolution Alter released."
+)

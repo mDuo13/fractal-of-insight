@@ -134,7 +134,7 @@ class Deck:
             card = carddata[card_o["card"]]
             b += card_o["quantity"]
             if "CHAMPION" in card["types"] or "REGALIA" in card["types"]:
-                p += 4 * card_o["quantity"]
+                p += 3 * card_o["quantity"]
             else:
                 p += 1 * card_o["quantity"]
         self.side_total = b
