@@ -3,23 +3,33 @@ from collections import defaultdict
 
 from shared import slugify, fix_case
 from datalayer import get_card_img, carddata, card_is_floating
-from cards import LV0, LV1, LV2, LV3, ELEMENTS, SPIRITTYPES, LINEAGE_BREAK
+from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK
 from archetypes import ARCHETYPES
 
 def rank_mat_card(card_o):
-    card = card_o["card"]
-    if card in LV0:
-        return "0"+card
-    if card in LV1:
-        return "1"+card
-    if card in LV2:
-        return "2"+card
-    if card in LV3:
-        return "3"+card
-    return card
+    cardname = card_o["card"]
+    return rank_mat_cardname(cardname)
+def rank_mat_cardname(cardname):
+    card = carddata[cardname]
+    if card["level"] is not None:
+        return str(card["level"]) + cardname
+    return cardname
 
 def lineage(champname):
     return champname.split(",",1)[0]
+
+def trim_similar(dlist, limit):
+    """
+    Given a list of (d,sim) tuples where d is a deck,
+    return the limit most similar decks, ordered by date
+    """
+    if len(dlist) > limit:
+        dlist2 = [x for x in dlist]
+        dlist2.sort(key=lambda x:x[1], reverse=True)
+        dlist2 = dlist2[:limit]
+        dlist2.sort(key=lambda x:x[0].date)
+        return dlist2
+    return dlist
 
 class Deck:
     def __init__(self, dl, entrant):
@@ -34,33 +44,36 @@ class Deck:
         self.count_cards() # populates self.card_types and self.floating as well as total counts
         self.find_archetypes()
         self.cardlist_imgs()
-        #self.similar_decks.sort(key=lambda x:x[0].date)
 
     def find_spirits(self):
         self.spirits = []
         for card_o in self.dl["material"]:
-            card = card_o["card"]
-            if card in LV0:
-                self.spirits.append(card)
+            cardname = card_o["card"]
+            card = carddata[cardname]
+            if card.get("level") == 0:
+                self.spirits.append(cardname)
     
     def find_champs(self):
         self.champs = []
-        raw_lineages = []
+        lineages = []
+        levels = set()
         self.is_hybrid = False
         for card_o in self.dl["material"]:
-            card = card_o["card"]
-            for lv in [LV1,LV2,LV3]:
-                if card in lv:
-                    existing_lv_champs = set(self.champs) & set(lv)
-                    if existing_lv_champs and lineage(card) not in [lineage(c) for c in existing_lv_champs]:
+            cardname = card_o["card"]
+            card = carddata[cardname]
+            
+            if "CHAMPION" in card.get("types", []):
+                if card["level"] == 1 or cardname in LINEAGE_BREAK:
+                    lineages.append(lineage(cardname))
+                    if card["level"] in levels:
                         self.is_hybrid = True
-                    self.champs.append(card)
-                    if lv == LV1:
-                        raw_lineages.append(card)
-                    elif card in LINEAGE_BREAK:
-                        raw_lineages.append(card)
-        raw_lineages.sort(key=lambda x: rank_mat_card({"card":x}))
-        self.lineages = [lineage(c) for c in raw_lineages]
+                    self.champs.append(cardname)
+                    levels.add(card["level"])
+                elif lineage(cardname) in lineages:
+                    self.champs.append(cardname)
+                    levels.add(card["level"])
+
+        self.lineages = list(dict.fromkeys(lineages)) # Uniquified
 
     
     def find_archetypes(self):
@@ -163,7 +176,7 @@ class Deck:
         S = total points in common and
         T = total points in the larger deck.
         Points are calculated as follows:
-        Material deck cards are 4 points
+        Material deck cards are 3 points
         Main deck cards are 1 point per copy of a card
         Sideboard cards are scored the same except at ⅔ value since
             they're available for 2 games in a best of 3.
@@ -171,12 +184,12 @@ class Deck:
         Returned as a percentage rounded to 1 decimal point.
         """
         
-        total_me = 4*self.mat_total + self.main_total + ((2/3)*self.side_points)
-        total_them = 4*other_deck.mat_total + other_deck.main_total + ((2/3)*other_deck.side_points)
+        total_me = 3*self.mat_total + self.main_total + ((2/3)*self.side_points)
+        total_them = 3*other_deck.mat_total + other_deck.main_total + ((2/3)*other_deck.side_points)
         t = max(total_me, total_them)
 
         s = 0
-        for sect,mult in (("material", 4), ("main", 1), ("sideboard", 1)):
+        for sect,mult in (("material", 3), ("main", 1), ("sideboard", 1)):
             # Optimization since comparing deck similarity is pretty slow:
             # iterate both lists in parallel (they should be sorted at this point)
             # which should cut down on the calls to quantity_of on maindeck
@@ -184,53 +197,38 @@ class Deck:
             j = 0
             imax = len(self.dl[sect])
             jmax = len(other_deck.dl[sect])
-            them_o = {"card": "","quantity":0}
             while i < imax and j < jmax:
                 # TODO: make prize spirits to count the same as basic spirits?
                 card_o = self.dl[sect][i]
                 them_o = other_deck.dl[sect][j]
-                if card_o["card"] < them_o["card"]:
+                # Use rank_mat_card instead of comparing names so sure prize spirits don't screw up the ordering
+                if rank_mat_card(card_o) < rank_mat_card(them_o):
                     i += 1
                     continue
-                elif card_o["card"] > them_o["card"]:
+                elif rank_mat_card(card_o) > rank_mat_card(them_o):
                     j += 1
                     continue
                 # Else the names match, compare quantities
-            
-                # TODO: optimize sideboard checking
-                # q_me = card_o["quantity"] + ((2/3) * self.quantity_of(card_o["card"], search_sections=["sideboard"]))
-                # # q_them = other_deck.quantity_of(cardname, search_sections=[sect]) + (
-                # #             (2/3) * other_deck.quantity_of(cardname, search_sections=["sideboard"]))
-                # q_them = them_o["quantity"] + ((2/3) * other_deck.quantity_of(card_o["card"], search_sections=["sideboard"]))
+                # TODO: look at sideboard in parallel for better matching
                 q_me = card_o["quantity"]
                 q_them = them_o["quantity"]
                 if sect == "sideboard":
                     card = carddata[card_o["card"]]
                     if "CHAMPION" in card["types"] or "REGALIA" in card["types"]:
-                        mult = 8/3
+                        use_mult = 2 # ⅔ * 3
                     else:
-                        mult = 2/3
+                        use_mult = 2/3
+                else:
+                    use_mult = mult
                     
-                s += mult * min(q_me, q_them)
+                s += use_mult * min(q_me, q_them)
 
                 i+=1
                 j+=1
         
-        # for card_o in self.dl["sideboard"]:
-        #     cardname = card_o["card"]
-        #     #if self.quantity_of(cardname, search_sections=["material","main"]) == 0:
-        #     if True:
-        #         q_me = card_o["quantity"]
-        #         q_them = other_deck.quantity_of(cardname, search_sections=["sideboard"])
-        #         card = carddata[cardname]
-        #         if "CHAMPION" in card["types"] or "REGALIA" in card["types"]:
-        #             pointmult = 4
-        #         else:
-        #             pointmult = 1
-        #         s += (2/3) * pointmult * min(q_me, q_them)
         return round(100*s/t, 1)
     
-    def split_similar_decks(self):
+    def split_similar_decks(self, limit=10):
         decks_before = []
         decks_sameday = []
         decks_after = []
@@ -241,7 +239,8 @@ class Deck:
                 decks_sameday.append([d,sim])
             else:
                 decks_after.append([d,sim])
-        return decks_before, decks_sameday, decks_after
+        
+        return trim_similar(decks_before, limit), trim_similar(decks_sameday, limit), trim_similar(decks_after, limit)
     
     def __str__(self):
         spiritstr = ""
@@ -269,11 +268,9 @@ class Deck:
             
             spiritstr += "/".join(self.els)
 
-        #lineages = set([lineage(c) for c in self.champs])
         if len(self.lineages) == 1:
             champstr = list(self.lineages)[0]
         elif len(self.lineages) > 1:
-            self.champs.sort(key=lambda x: rank_mat_card({"card":x}))
             champset = {lineage(c):True for c in self.champs if lineage(c) in self.lineages}
             champstr = "/".join(champset.keys())
         else:

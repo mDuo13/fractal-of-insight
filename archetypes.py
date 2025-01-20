@@ -3,18 +3,12 @@ from bisect import insort
 
 from shared import ElementStats, ChampStats
 from datalayer import get_card_img, carddata
-from cards import LV0, LV1, LV2, LV3
 
-EXCLUDE_LIST = LV0+LV1+LV2+LV3#+[
-#     "Grand Crusader's Ring",
-#     "Quicksilver Grail",
-#     "Dungeon Guide",
-# ]
-
-SIMILAR_DECKS_CUTOFF = 90
+SIMILAR_DECKS_CUTOFF = 85
 
 def card_freq_exclude(cardname):
-    if cardname in EXCLUDE_LIST:
+    card = carddata[cardname]
+    if "CHAMPION" in card.get("types",[]):
         return True
     return False
 
@@ -133,6 +127,8 @@ class Archetype:
             for k,v in deck.card_types.items():
                 total_of_type[k] += v
         # print("Average floating memory for", self.name, "decks:", (total_floating/total_decks))
+        if total_decks == 0:
+            raise ZeroDivisionError(f"No decks for archetype {self.name}")
         self.average_floating = round(total_floating / total_decks, 0)
         total_of_type_sorted = [(k,v) for k,v in total_of_type.items()]
         total_of_type_sorted.sort(key=lambda x:x[1], reverse=True)
@@ -253,6 +249,8 @@ add_archetype(
         "Carter, Synthetic Reaper",
         "Mindbreak Bullet",
         "Umbral Tithe",
+        "False Step",
+        "Gloamspire Wraith",
     ],
     shortname="Umbra"
 )

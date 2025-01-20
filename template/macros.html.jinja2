@@ -319,7 +319,7 @@
 
             <div class="similar-decks">
             <h4>Similar Decks</h4>
-            <p class="explanation">(Similar decks are calculated on a point system where maindeck cards are worth 1 point, material deck cards are 4 points, and sideboards are discounted by ⅓. Only decks with at least 90% overlap are listed.)</p>
+            <p class="explanation">(Similar decks are calculated on a point system where maindeck cards are worth 1 point, material deck cards are 4 points, and sideboards are discounted by ⅓. Only decks with at least 85% overlap are listed, max 10 each before/during/after this event.)</p>
             {% if p.deck.similar_decks %}
                 {% set before,sameday,after = p.deck.split_similar_decks() %}
                 {% if before %}
@@ -345,7 +345,7 @@
                 {% if after %}
                 <h5>After this</h5>
                 <ul>
-                {% for otherdeck, sim in p.deck.similar_decks %}
+                {% for otherdeck, sim in after %}
                     <li><a href="/{{otherdeck.entrant.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} on {{otherdeck.date}} ({{sim}}%)</a></li>
                 {% endfor %}
                 </ul>

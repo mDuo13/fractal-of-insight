@@ -1,6 +1,7 @@
 import json
 import re
 import requests
+from requests.adapters import HTTPAdapter, Retry
 from time import sleep
 from os import makedirs, scandir
 
@@ -21,6 +22,18 @@ class EventNotFound(Exception):
 class NoDeck(Exception):
     pass
 
+MAX_RETRIES = 3
+TIMEOUT_SECONDS = 3
+def fetch(url):
+    """
+    Get with timeouts, automatic backoff, etc.
+    """
+    s = requests.Session()
+    retries = Retry(total=MAX_RETRIES, backoff_factor=1, status_forcelist=[ 502, 503, 504 ])
+    s.mount('https://', HTTPAdapter(max_retries=retries))
+    return s.get(url, timeout=TIMEOUT_SECONDS)
+
+
 def get_deck(p_id, evt_id, public_on_omni):
     try:
         with open(f"data/event_{evt_id}/deck_{p_id}.json") as f:
@@ -32,7 +45,7 @@ def get_deck(p_id, evt_id, public_on_omni):
             if not public_on_omni:
                 raise NoDeck()
             print(f"Downloading #{p_id}'s decklist...")
-            dl_raw = requests.get(f"https://omni.gatcg.com/api/events/decklist?id={evt_id}&player={p_id}")
+            dl_raw = fetch(f"https://omni.gatcg.com/api/events/decklist?id={evt_id}&player={p_id}")
             print("...done.")
             dl = dl_raw.json()
             if dl_raw.status_code != 200 or dl.get("error"):
@@ -122,7 +135,7 @@ def get_card_img(cardname, at=0):
         return card_info["img"]
 
     print("looking up img for",cardname)
-    index_lookup = requests.get(f"https://api.gatcg.com/cards/{slugify(cardname)}")
+    index_lookup = fetch(f"https://api.gatcg.com/cards/{slugify(cardname)}")
     sleep(API_DELAY)
     try:
         index_json = index_lookup.json()
@@ -169,7 +182,7 @@ def get_event(evt_id, force_redownload=False, save=True):
             evt = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError, ForceReDL):
         print(f"Downloading event #{evt_id} JSON...")
-        evt_raw = requests.get(f"https://omni.gatcg.com/api/events/event?id={evt_id}")
+        evt_raw = fetch(f"https://omni.gatcg.com/api/events/event?id={evt_id}")
         #print("...done.")
         if evt_raw.status_code == 404:
             raise EventNotFound
