@@ -2,12 +2,13 @@ from collections import defaultdict
 from time import strftime, gmtime
 
 from player import Entrant
+from battlechart import BattleChart
 from datalayer import get_event, get_card_img
 from archetypes import ARCHETYPES
 from cards import ELEMENTS
 from competition import EVENT_TYPES, TEAM_STANDARD
 from season import SEASONS
-from shared import ElementStats, ArcheStats, ChampStats, RegionStats, OVERALL
+from shared import ElementStats, ArcheStats, ChampStats, RegionStats
 from config import TOP_CUTOFF
 
 class IsTeamEvent(Exception):
@@ -65,11 +66,11 @@ class OmniEvent:
             "Regionals",
             "Regional",
             "Event",
-            "DOA", "FTC", "ALC", "MRC", "AMB", "HVN",
             "Mercurial Heart",
             "Mortal Ambition",
             "Standard",
             "Constructed",
+            "DOA", "FTC", "ALC", "MRC", "AMB", "HVN",
         ]
         testname = self.name.lower()
         for word in GENERIC_WORDS:
@@ -264,121 +265,129 @@ class OmniEvent:
         
 
     def calc_headtohead(self, threshold=None, track_elo=False):
-        use_archetypes = [a[0] for a in self.archedata]
+        return BattleChart.from_event(self, threshold=threshold, track_elo=track_elo)
+        # use_archetypes = [a[0] for a in self.archedata]
         
-        battlechart = {a: {b:{"win":0,"draw":0,"matches":0,"mirror":0} for b in use_archetypes+[OVERALL]} for a in use_archetypes}
+        # # subtypes = []
+        # # for a in self.archedata:
+        # #     subtypes += [s.name for s in a.subtypes]
+        # # use_archetypes += subtypes
         
-        for stage in self.evt["stages"]:
-            #print(f"Stage {stage['id']} ({stage['type']})")
-            for rnd in stage["rounds"]:
-                #print(f"    Round {rnd['id']}")
+        # battlechart = {a: {b:{"win":0,"draw":0,"matches":0,"mirror":0} for b in use_archetypes+[OVERALL]} for a in use_archetypes}
+        
+        # for stage in self.evt["stages"]:
+        #     #print(f"Stage {stage['id']} ({stage['type']})")
+        #     for rnd in stage["rounds"]:
+        #         #print(f"    Round {rnd['id']}")
 
-                for match in rnd["matches"]:
-                    if len(match["pairing"]) < 2:
-                        #print("        And a bye")
-                        continue
+        #         for match in rnd["matches"]:
+        #             if len(match["pairing"]) < 2:
+        #                 #print("        And a bye")
+        #                 continue
 
-                    if match["status"] == "started":
-                        #print("         Match ongoing")
-                        continue
+        #             if match["status"] == "started":
+        #                 #print("         Match ongoing")
+        #                 continue
 
-                    p1r = match["pairing"][0]
-                    p2r = match["pairing"][1]
+        #             p1r = match["pairing"][0]
+        #             p2r = match["pairing"][1]
 
-                    p1 = self.pdict[p1r["id"]]
-                    p2 = self.pdict[p2r["id"]]
+        #             p1 = self.pdict[p1r["id"]]
+        #             p2 = self.pdict[p2r["id"]]
 
-                    if track_elo:
-                        p1.elo_diff += match["pairing"][0].get("eloChange", 0)
-                        p2.elo_diff += match["pairing"][1].get("eloChange", 0)
+        #             if track_elo:
+        #                 p1.elo_diff += match["pairing"][0].get("eloChange", 0)
+        #                 p2.elo_diff += match["pairing"][1].get("eloChange", 0)
 
-                    if p1r["score"] == p2r["score"] and p1r["score"] == 0:
-                        #print(f"        intentional draw")
-                        continue
-                    elif not p1.deck or not p2.deck:
-                        #print("        (decklist unavailable)")
-                        continue
+        #             if p1r["score"] == p2r["score"] and p1r["score"] == 0:
+        #                 #print(f"        intentional draw")
+        #                 continue
+        #             elif not p1.deck or not p2.deck:
+        #                 #print("        (decklist unavailable)")
+        #                 continue
                     
-                    if threshold:
-                        if p1.rank_elo > threshold or p2.rank_elo > threshold:
-                            # Match below ranking threshold; don't count it
-                            continue
-                        else:
-                            #print(f"This is a match between two top-{threshold} players")
-                            pass
+        #             if threshold:
+        #                 if p1.rank_elo > threshold or p2.rank_elo > threshold:
+        #                     # Match below ranking threshold; don't count it
+        #                     continue
+        #                 else:
+        #                     #print(f"This is a match between two top-{threshold} players")
+        #                     pass
                     
-                    if p1r["score"] > p2r["score"]:
-                        # outcome = "beats"
-                        for as_t in p1.deck.archetypes:
-                            battlechart[as_t][OVERALL]["win"] += 1
-                            battlechart[as_t][OVERALL]["matches"] += 1
-                            for vs_t in p2.deck.archetypes:
-                                battlechart[as_t][vs_t]["win"] += 1
-                                battlechart[as_t][vs_t]["matches"] += 1
-                                battlechart[vs_t][as_t]["matches"] += 1
-                                if as_t == vs_t:
-                                    # Note it was a mirror match so we can count the total
-                                    # number of matches more accurately
-                                    battlechart[as_t][vs_t]["mirror"] += 1
-                        for vs_t in p2.deck.archetypes:
-                            if vs_t not in p1.deck.archetypes:
-                                battlechart[vs_t][OVERALL]["matches"] += 1
+        #             if p1r["score"] > p2r["score"]:
+        #                 # outcome = "beats"
+        #                 for as_t in p1.deck.archetypes + p1.deck.subtypes:
+        #                     battlechart[as_t][OVERALL]["win"] += 1
+        #                     battlechart[as_t][OVERALL]["matches"] += 1
+        #                     for vs_t in p2.deck.archetypes + p2.deck.subtypes:
+        #                         battlechart[as_t][vs_t]["win"] += 1
+        #                         battlechart[as_t][vs_t]["matches"] += 1
+        #                         battlechart[vs_t][as_t]["matches"] += 1
+        #                         if as_t == vs_t:
+        #                             # Note it was a mirror match so we can count the total
+        #                             # number of matches more accurately
+        #                             battlechart[as_t][vs_t]["mirror"] += 1
+        #                 for vs_t in p2.deck.archetypes + p2.deck.subtypes:
+        #                     if vs_t not in p1.deck.archetypes + p1.deck.subtypes:
+        #                         battlechart[vs_t][OVERALL]["matches"] += 1
 
-                    elif p1r["score"] < p2r["score"]:
-                        # outcome = "loses to"
-                        for as_t in p1.deck.archetypes:
-                            battlechart[as_t][OVERALL]["matches"] += 1
-                            for vs_t in p2.deck.archetypes:
-                                battlechart[vs_t][as_t]["win"] += 1
-                                battlechart[as_t][vs_t]["matches"] += 1
-                                battlechart[vs_t][as_t]["matches"] += 1
-                                if as_t == vs_t:
-                                    battlechart[as_t][vs_t]["mirror"] += 1
-                        for vs_t in p2.deck.archetypes:
-                            if vs_t not in p1.deck.archetypes:
-                                battlechart[vs_t][OVERALL]["win"] += 1
-                                battlechart[vs_t][OVERALL]["matches"] += 1
+        #             elif p1r["score"] < p2r["score"]:
+        #                 # outcome = "loses to"
+        #                 for as_t in p1.deck.archetypes + p1.deck.subtypes:
+        #                     battlechart[as_t][OVERALL]["matches"] += 1
+        #                     for vs_t in p2.deck.archetypes + p2.deck.subtypes:
+        #                         battlechart[vs_t][as_t]["win"] += 1
+        #                         battlechart[as_t][vs_t]["matches"] += 1
+        #                         battlechart[vs_t][as_t]["matches"] += 1
+        #                         if as_t == vs_t:
+        #                             battlechart[as_t][vs_t]["mirror"] += 1
+        #                 for vs_t in p2.deck.archetypes + p2.deck.subtypes:
+        #                     if vs_t not in p1.deck.archetypes + p1.deck.subtypes:
+        #                         battlechart[vs_t][OVERALL]["win"] += 1
+        #                         battlechart[vs_t][OVERALL]["matches"] += 1
 
-                    else:
-                        # outcome = "ties"
-                        for as_t in p1.deck.archetypes:
-                            battlechart[as_t][OVERALL]["draw"] += 1
-                            battlechart[as_t][OVERALL]["matches"] += 1
-                            for vs_t in p2.deck.archetypes:
-                                battlechart[as_t][vs_t]["draw"] += 1
-                                battlechart[vs_t][as_t]["draw"] += 1
-                                battlechart[as_t][vs_t]["matches"] += 1
-                                battlechart[vs_t][as_t]["matches"] += 1
-                                if as_t == vs_t:
-                                    battlechart[as_t][vs_t]["mirror"] += 1
-                        for vs_t in p2.deck.archetypes:
-                            if vs_t not in p1.deck.archetypes:
-                                battlechart[vs_t][OVERALL]["draw"] += 1
-                                battlechart[vs_t][OVERALL]["matches"] += 1
+        #             else:
+        #                 # outcome = "ties"
+        #                 for as_t in p1.deck.archetypes + p1.deck.subtypes:
+        #                     battlechart[as_t][OVERALL]["draw"] += 1
+        #                     battlechart[as_t][OVERALL]["matches"] += 1
+        #                     for vs_t in p2.deck.archetypes + p2.deck.subtypes:
+        #                         battlechart[as_t][vs_t]["draw"] += 1
+        #                         battlechart[vs_t][as_t]["draw"] += 1
+        #                         battlechart[as_t][vs_t]["matches"] += 1
+        #                         battlechart[vs_t][as_t]["matches"] += 1
+        #                         if as_t == vs_t:
+        #                             battlechart[as_t][vs_t]["mirror"] += 1
+        #                 for vs_t in p2.deck.archetypes + p2.deck.subtypes:
+        #                     if vs_t not in p1.deck.archetypes + p1.deck.subtypes:
+        #                         battlechart[vs_t][OVERALL]["draw"] += 1
+        #                         battlechart[vs_t][OVERALL]["matches"] += 1
 
-                    # print(f"        {p1.deck} {outcome} {p2.deck}")
+        #             # print(f"        {p1.deck} {outcome} {p2.deck}")
         
-        # Calculate win% and favored/unfavored status
-        for as_type, records in battlechart.items():
-            for opp, r in records.items():
-                if r["matches"] > 0:
-                    pct = round(100 * (r["win"] + (r["draw"] / 2)) / r["matches"], 1)
+        # # Calculate win% and favored/unfavored status
+        # for as_type, records in battlechart.items():
+        #     for opp, r in records.items():
+        #         if r["matches"] > 0:
+        #             pct = round(100 * (r["win"] + (r["draw"] / 2)) / r["matches"], 1)
                     
-                    if pct > 60:
-                        rating = "favored"
-                    elif pct < 40:
-                        rating = "unfavored"
-                    else:
-                        rating = "even"
-                    r["rating"] = rating
-                    r["pct"] = pct
-                else:
-                    r["rating"] = "no_data"
+        #             if pct > 60:
+        #                 rating = "favored"
+        #             elif pct < 40:
+        #                 rating = "unfavored"
+        #             else:
+        #                 rating = "even"
+        #             r["rating"] = rating
+        #             r["pct"] = pct
+        #         else:
+        #             r["rating"] = "no_data"
         
-        return battlechart
+        # return battlechart
 
     def __repr__(self):
         return f"Event#{self.id}"
+
+
 
 class Team:
     def __init__(self, data):

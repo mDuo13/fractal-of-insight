@@ -1,6 +1,7 @@
 from collections import defaultdict
 from bisect import insort
 
+from config import SharedConfig
 from shared import ElementStats, ChampStats
 from datalayer import get_card_img, carddata
 
@@ -12,12 +13,17 @@ def card_freq_exclude(cardname):
         return True
     return False
 
+SUBTYPES = {}
+
 class Archetype:
-    def __init__(self, name, require_cards, exclude_cards=[], require_element=None, shortname=None):
+    def __init__(self, name, require_cards, exclude_cards=[],
+                require_types={},
+                require_element=None, shortname=None):
         self.name = name
         self.require = require_cards
         self.exclude = exclude_cards
-        if shortname:
+        self.require_types = require_types
+        if shortname is not None:
             self.shortname = shortname
         else:
             self.shortname = name
@@ -44,19 +50,24 @@ class Archetype:
                 # Keep looking in case an exclude card comes later
                 found_cards += 1
         
+        for t,tcount in self.require_types.items():
+            if t in deck.card_types.keys() and deck.card_types[t] < tcount:
+                return False
+
         # TODO: consider using "found_cards" count for better matching
         if found_cards:
-            for d in self.matched_decks:
-                sim = deck.similarity_to(d)
-                if sim >= SIMILAR_DECKS_CUTOFF:
-                    #print(f"Similarity: {sim}% ({deck.entrant} {deck.date} vs {d.entrant} {d.date})")
-                    # if (d in [x[1] for x in deck.similar_decks]):
-                    #     print(f"Inserting duplicate similar_deck?? {d} vs {deck}")
-                    #     exit(1)
-                    insort(deck.similar_decks, [d, sim], key=lambda x:x[0].date)
-                    #deck.similar_decks.append([d, sim])
-                    insort(d.similar_decks, [deck, sim], key=lambda x:x[0].date)
-                    #d.similar_decks.append([deck, sim])
+            if not SharedConfig.go_fast:
+                for d in self.matched_decks:
+                    sim = deck.similarity_to(d)
+                    if sim >= SIMILAR_DECKS_CUTOFF:
+                        #print(f"Similarity: {sim}% ({deck.entrant} {deck.date} vs {d.entrant} {d.date})")
+                        # if (d in [x[1] for x in deck.similar_decks]):
+                        #     print(f"Inserting duplicate similar_deck?? {d} vs {deck}")
+                        #     exit(1)
+                        insort(deck.similar_decks, [d, sim], key=lambda x:x[0].date)
+                        #deck.similar_decks.append([d, sim])
+                        insort(d.similar_decks, [deck, sim], key=lambda x:x[0].date)
+                        #d.similar_decks.append([deck, sim])
             self.matched_decks.append(deck)
             return True
         return False
@@ -134,8 +145,10 @@ class Archetype:
         total_of_type_sorted.sort(key=lambda x:x[1], reverse=True)
         self.average_of_type = {k: round(v / total_decks, 0) for k,v in total_of_type_sorted}
 
-    def add_subtype(self, st):
+    def add_subtype(self, *args, **kwargs):
+        st = Archetype(*args, **kwargs)
         self.subtypes.append(st)
+        SUBTYPES[st.name] = st
 
 
 ARCHETYPES = {}
@@ -160,6 +173,9 @@ add_archetype(
         "Spirit Blade: Ensoul",
         "Revitalizing Cleanse",
     ],
+    require_types={
+        "ALLY": 30
+    },
     require_element="Water",
     shortname="Allies"
 )
@@ -188,23 +204,28 @@ wind_allies = add_archetype(
         "Razorgale Calling",
         "Wildgrowth Feline",
     ],
+    require_types={
+        "ALLY": 30
+    },
     require_element="Wind",
     shortname="Allies"
 )
 
-wind_allies.add_subtype(Archetype(
-    "Unique",
+wind_allies.add_subtype(
+    "Unique Wind Allies",
     [
         "Mortal Ambition",
         "Dilu, Auspicious Charger",
-    ]
-))
-wind_allies.add_subtype(Archetype(
-    "Robo",
+    ],
+    shortname="Unique"
+)
+wind_allies.add_subtype(
+    "Robo Wind Allies",
     [
         "Manufacture Cell",
-    ]
-))
+    ],
+    shortname="Robo",
+)
 
 add_archetype(
     "Fire Aggro",
@@ -222,6 +243,7 @@ add_archetype(
     exclude_cards=[
         "Vanitas, Obliviate Schemer",
         "Relentless Outburst",
+        "Ghosts of Pendragon",
     ]
 )
 
@@ -301,12 +323,24 @@ add_archetype(
     ]
 )
 
-add_archetype(
+slimes = add_archetype(
     "Slimes",
     [
         "Storm Slime",
         "Ethereal Slime",
     ]
+)
+slimes.add_subtype(
+    "Norm Slimes",
+    ["Silvie, Slime Sovereign"],
+    require_element="Norm",
+    shortname="",
+)
+slimes.add_subtype(
+    "Fire Slimes",
+    ["Silvie, Slime Sovereign"],
+    require_element="Fire",
+    shortname="",
 )
 
 add_archetype(
@@ -322,17 +356,53 @@ add_archetype(
     ]
 )
 
-add_archetype(
+crux = add_archetype(
     "Crux",
     [
         "The Majestic Spirit",
         "Prismatic Edge",
         "Ghosts of Pendragon",
-        "Spirit Blade Ascension",
+        "Spirit Blade: Ascension",
     ],
     exclude_cards=[
         "Rai, Mana Weaver"
     ]
+)
+crux.add_subtype(
+    "Prismatic Fire Crux",
+    [
+        "Favorable Winds",
+        "Scatter Essence",
+        "Repelling Palmblast",
+        "Potion Infusion: Seal",
+        "Freezing Steel",
+        "Chilling Touch",
+        "Fracturize",
+        "Rising Tides",
+        "Refracting Missile",
+        "Primordial Ritual",
+        "Lost in Thought",
+    ],
+    require_element="Fire",
+    shortname="Prismatic",
+)
+
+crux.add_subtype(
+    "Wind Crux Humans",
+    [
+        "Phalanx Captain",
+        "Rally the Peasants",
+    ],
+    require_element="Wind",
+    shortname="Humans",
+)
+
+crux.add_subtype(
+    "Harmonious Crux",
+    [
+        "Harmonious Mantra",
+    ],
+    shortname="Harmonious",
 )
 
 add_archetype(

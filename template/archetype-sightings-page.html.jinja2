@@ -1,0 +1,47 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}{{arche.name}} Sightings, Page {{page_number}} - {% endblock %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/deck/">⇈ Decks</a>
+    <a class="nav-item" href="/deck/{{slugify(arche.name)}}.html">⮤ {{arche.name}}</a>
+</nav>
+
+<h1>Deck Archetype Sightings: {{arche.name}}, page {{page_number}}</h1>
+
+<section id="sightings">
+    <h2>Sightings</h2>
+    <div class="togglable event-filters">
+        {{ macros.event_filters(EVENT_TYPES, lesser=True) }}
+    </div>
+    <button id="wins-filter" class="togglable collapse" onclick="show_wins()">Show event winners only</button>
+    <p id="wins-expl" class="explanation collapse">Showing only events where the deck won overall</p>
+    <button id="sightingsreset" class="collapse" onclick="reset_sightings()">Reset filter</button>
+    <table class="togglable">
+        <thead><tr>
+            <th>Date</th><th>Player</th><th>Event</th><th>Deck</th><th>Placement</th><th>Swiss Record</th>
+        </tr></thead>
+        <tbody>
+        {% for deck in arche.matched_decks[page_start:page_end] %}
+            {{ macros.p_row_arche(deck, loop, events) }}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {{ macros.paginate(base_link="/deck/"+slugify(arche.name),
+        page_number=page_number,
+        max_page=max_page,
+        page1_link="/deck/"+slugify(arche.name)+".html#sightings")
+    }}
+</section>
+
+<!-- DECKLISTS -->
+{% for d in arche.matched_decks[page_start:page_end] %}
+{{ macros.decklist(d.entrant, "deck_"~d.entrant.evt_id~"_"~d.entrant.id, events[d.entrant.evt_id], True) }}
+{% endfor %}
+
+{% include "deckviewscript.html.jinja2" %}
+
+{% endblock %}

@@ -83,6 +83,25 @@ th {
 .element-table td {
     background: white;
 }
+.subtype td, .subtype th {
+    padding: 2px 5px;
+}
+.subtype th {
+    background: var(--ui-bg-sub);
+}
+.st-name {
+    font-size: 14px;
+    line-height: 14px;
+    font-weight: bold;
+}
+.st-name::before {
+    content: "↳ ";
+}
+.subtype .arche-overall {
+    font-size: 13px;
+    line-height: 12px;
+    font-weight: normal;
+}
 
 #players table, #players th, #players td, table.archetypes, .archetypes th, .archetypes td {
     border: none;
@@ -487,6 +506,11 @@ th {
     font-style: normal;
 }
 
+.battlechart button {
+    font-size: 12px;
+    margin-top: 4px;
+}
+
 .regular .event-category {
     color: black;
     background-color: #ccc;
@@ -593,6 +617,10 @@ ul.scooped-corners {
     vertical-align: text-bottom;
 }
 
+.pagination-nav {
+    padding: 1.5rem 0;
+}
+
 .flag {
     text-shadow: var(--main-shadow);
 }
@@ -618,6 +646,7 @@ footer {
 
 :root {
     --ui-bg: linear-gradient(0deg, #e1e0db, #f2efe5);
+    --ui-bg-sub: linear-gradient(0deg, #cbcac6, #e1e0db);
     --ui-bg-vis: #cccbc6;
     --main-shadow: 3px 3px 5px #55504d;
 }

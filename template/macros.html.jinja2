@@ -176,34 +176,33 @@
 </form>
 {% endmacro %}
 
-{% macro battlechart(bc, archedata, only_show=False, link_matches=False) %}
-<table class="{% if not only_show %}collapse togglable{% endif %}">
+{% macro battlechart(bc, only_show=False, link_matches=False) %}
+<table class="battlechart {% if not only_show %}collapse togglable{% endif %}">
     <thead><tr>
         <th>Deck</th>
     {% for archetype, records in bc.items() %}
-        {% if archedata.exists_for(archetype) > 0 %}
         <th><a href="/deck/{{slugify(archetype)}}.html">{{archetype}}</a></th>
-        {% endif %}
     {% endfor %}
     </tr></thead>
     <tbody>
         {% for archetype, records in bc.items() %}
         {% if not only_show or only_show == archetype %}
-        {% if archedata.exists_for(archetype) > 0 %}
         <tr>
             <th><a href="/deck/{{slugify(archetype)}}.html">{{archetype}}</a>
-            <div class="arche-overall">{{records[OVERALL].pct}}%
+            <div class="arche-overall">{{records.overall_pct}}%
                 <div class="matchcount">{% if link_matches %}
                     <a href="#matches" class="matches" onclick="show_arche_matches('{{slugify(archetype)}}')">
-                    ({{records[OVERALL].matches}} matches)
+                    ({{records.true_matchcount}} matches)
                     </a>
                 {% else %}
-                    <div class="matches">({{records[OVERALL].matches}} matches)</div>
+                    <div class="matches">({{records.true_matchcount}} matches)</div>
                 {% endif %}
                 </div>
+                {% if records.subrows %}
+                <button onclick="toggle('.stof-{{slugify(archetype)}}')">Show/Hide Subtypes</button>
+                {% endif %}
             </div></th>
             {% for opp, r in records.items() %}
-                {% if archedata.exists_for(archetype) > 0 and opp != OVERALL %}
                 <td class="{{r.rating}}">
                     {% if r.rating == "no_data" %}
                     (No data)
@@ -212,18 +211,37 @@
                     <div class="matchcount">
                     {% if link_matches %}
                         <a href="#matches" onclick="show_matchup_matches('{{slugify(archetype)}}', '{{slugify(opp)}}')">
-                        ({{r.matches - r.mirror}} matches)
+                        ({{r.true_matchcount}} matches)
                         </a>
                     {% else %}
-                        ({{r.matches - r.mirror}} matches)
+                        ({{r.true_matchcount}} matches)
                     {% endif %}
                     </div>
                     {% endif %}
                 </td>
-                {% endif %}
             {% endfor %}
+        {% for subtype, subrecords in records.subrows.items() %}
         </tr>
-        {% endif %}
+        <tr class="subtype stof-{{slugify(archetype)}} collapse">
+            <th><div class="st-name">{{subtype}}</div>
+                <div class="arche-overall">{{subrecords.overall_pct}}%
+                    <div class="matches">({{subrecords.true_matchcount}} matches)</div>
+                </div>
+            </th>
+            {% for opp, r in subrecords.items() %}
+                <td class="{{r.rating}}">
+                    {% if r.rating == "no_data" %}
+                    (No data)
+                    {% else %}
+                    <div class="pct">{{r.pct}}%</div>
+                    <div class="matchcount">
+                        ({{r.true_matchcount}} matches)
+                    </div>
+                    {% endif %}
+                </td>
+            {% endfor %}
+        {% endfor %}
+        </tr>
         {% endif %}
         {% endfor %}
     </tbody>
@@ -319,7 +337,7 @@
 
             <div class="similar-decks">
             <h4>Similar Decks</h4>
-            <p class="explanation">(Similar decks are calculated on a point system where maindeck cards are worth 1 point, material deck cards are 4 points, and sideboards are discounted by ⅓. Only decks with at least 85% overlap are listed, max 10 each before/during/after this event.)</p>
+            <p class="explanation">(Similar decks are calculated on a point system where maindeck cards are worth 1 point, material deck cards are 3 points, and sideboards are discounted by ⅓. Only decks with at least 85% overlap are listed, max 10 each before/during/after this event.)</p>
             {% if p.deck.similar_decks %}
                 {% set before,sameday,after = p.deck.split_similar_decks() %}
                 {% if before %}
@@ -357,4 +375,29 @@
         </div>
     </div>
 </div>
+{% endmacro %}
+
+{% macro paginate(base_link, page_number, max_page, page1_link="", collapse=False)%}
+<nav class="pagination-nav togglable{% if collapse %} collapse{% endif %}">
+    {% if page_number == 1 %}
+        <span class="nav-item active">1</span>
+    {% elif page_number == 2 %}
+        <a class="nav-item" href="{{page1_link}}">« Prev</a>
+    {% elif page_number > 2 %}
+        <a class="nav-item" href="{{base_link}}-{{page_number-1}}.html">« Prev</a>
+    {% endif %}
+    {% if page_number > 1 %}
+        <a class="nav-item" href="{{page1_link}}">1</a>
+    {% endif %}
+    {% for i in range(2, max_page+1) %}
+        {% if i == page_number %}
+        <span class="nav-item active">{{i}}</span>
+        {% else %}
+        <a class="nav-item" href="{{base_link}}-{{i}}.html">{{i}}</a>
+        {% endif %}
+    {% endfor %}
+    {% if page_number != max_page %}
+        <a class="nav-item" href="{{base_link}}-{{page_number+1}}.html">Next »</a>
+    {% endif %}
+</nav>
 {% endmacro %}

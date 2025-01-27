@@ -10,3 +10,7 @@ REALLY_INTERESTING_PLAYER_COUNT = 60 # Crawler includes events with at least thi
 CRAWL_SAVE_INTERVAL = 50
 EVT_MAX_LENGTH = 60*60*24*2 # Consider an event stale if it's "started" but at least this many seconds ago (2 days)
 MAX_404_STREAK = 5 # If there are this many 404s in a row it probably means we've hit the end of registered events
+
+class SharedConfig:
+    """Global configs set at runtime"""
+    go_fast = False

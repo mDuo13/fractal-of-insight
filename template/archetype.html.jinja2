@@ -41,6 +41,13 @@
                 {% endfor %}
             </ul>
         </li>{% endif %}
+        {% if arche.require_types %}<li><b>Card type counts (in mainboard):</b>
+            <ul>
+                {% for t,tcount in arche.require_types.items() %}
+                <li>{{t}}: at least {{tcount}}</li>
+                {% endfor %}
+            </ul>
+        </li>{% endif %}
     </ul>
     </div>
 </section>
@@ -98,7 +105,7 @@
             </li>
         </ul>
         <h4>Matchups</h4>
-        {{ macros.battlechart(szn.battlechart, szn.archedata, only_show=arche.name) }}
+        {{ macros.battlechart(szn.battlechart, only_show=arche.name) }}
     </div>
     {% endif %}
     {% endfor %}
@@ -118,15 +125,21 @@
             <th>Date</th><th>Player</th><th>Event</th><th>Deck</th><th>Placement</th><th>Swiss Record</th>
         </tr></thead>
         <tbody>
-        {% for deck in arche.matched_decks %}
+        {% for deck in arche.matched_decks[0:page_end] %}
             {{ macros.p_row_arche(deck, loop, events) }}
         {% endfor %}
         </tbody>
     </table>
+
+    {{ macros.paginate(base_link="/deck/"+slugify(arche.name),
+        page_number=1,
+        max_page=max_page,
+        collapse=True)
+    }}
 </section>
 
 <!-- DECKLISTS -->
-{% for d in arche.matched_decks %}
+{% for d in arche.matched_decks[0:page_end] %}
 {{ macros.decklist(d.entrant, "deck_"~d.entrant.evt_id~"_"~d.entrant.id, events[d.entrant.evt_id], True) }}
 {% endfor %}
 

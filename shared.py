@@ -1,4 +1,6 @@
 import re
+from collections import defaultdict
+
 from cards import ELEMENTS
 
 OVERALL = "__overall__"
@@ -38,6 +40,15 @@ def fix_case(cardname):
         cardname = cardname.replace(k,v)
 
     return cardname
+
+class keydefaultdict(defaultdict):
+    # https://stackoverflow.com/questions/2912231/is-there-a-clever-way-to-pass-the-key-to-defaultdicts-default-factory
+    def __missing__(self, key):
+        if self.default_factory is None:
+            raise KeyError( key )
+        else:
+            ret = self[key] = self.default_factory(key)
+            return ret
 
 class ElementStats:
     def __init__(self):
@@ -153,6 +164,15 @@ class ArcheStats(TypeStats):
                 self.items[arche] = 1
                 self.item_elements[arche] = ElementStats()
                 self.item_elements[arche].add_deck(deck)
+        
+        for arche in deck.subtypes:
+            if arche in self.items.keys():
+                self.items[arche] += 1
+                self.item_elements[arche].add_deck(deck)
+            else:
+                self.items[arche] = 1
+                self.item_elements[arche] = ElementStats()
+                self.item_elements[arche].add_deck(deck)
 
 class RegionStats:
     def __init__(self):
@@ -181,17 +201,20 @@ class RegionStats:
 REGIONS = {
     "":   {"name": "Online", "flag": "🌐"},
     "AE": {"name": "United Arab Emirates","flag": "🇦🇪"},
+    "AT": {"name": "Austria", "flag": "🇦🇹"},
     "AU": {"name": "Australia","flag": "🇦🇺"},
     "BE": {"name": "Belgium","flag": "🇧🇪"},
     "BN": {"name": "Brunei","flag": "🇧🇳"},
     "CA": {"name": "Canada","flag": "🇨🇦"},
     "CH": {"name": "Switzerland","flag": "🇨🇭"},
+    "CN": {"name": "China", "flag": "🇨🇳"},
     "CR": {"name": "Costa Rica", "flag": "🇨🇷"},
     "CZ": {"name": "Czech Republic","flag":"🇨🇿"},
     "DE": {"name": "Germany","flag": "🇩🇪"},
     "DK": {"name": "Denmark","flag": "🇩🇰"},
     "ES": {"name": "Spain","flag": "🇪🇸"},
     "FI": {"name": "Finland","flag":"🇫🇮"},
+    "FR": {"name": "France", "flag": "🇫🇷"},
     "GB": {"name": "United Kingdom","flag": "🇬🇧"},
     "GR": {"name": "Greece","flag": "🇬🇷"},
     "HK": {"name": "Hong Kong","flag": "🇭🇰"},

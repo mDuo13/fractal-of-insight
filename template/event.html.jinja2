@@ -111,7 +111,7 @@
     <button onclick="toggle('#head-to-head > .togglable')">Show/Hide Head-to-Head Chart</button>
     <p class="collapse togglable">Deck on the left's win rate vs deck on the top</p>
 
-    {{ macros.battlechart(evt.battlechart, evt.archedata, link_matches=True) }}
+    {{ macros.battlechart(evt.battlechart, link_matches=True) }}
 
 </section>
 {% endif %}{# end num_decklists conditional#}

@@ -4,6 +4,7 @@ import argparse
 import jinja2
 from os import makedirs
 import os.path
+from math import ceil
 
 import config
 from shared import slugify, OVERALL, REGIONS
@@ -12,6 +13,8 @@ from season import Season, SEASONS, Format, FORMATS
 from competition import EVENT_TYPES, TEAM_STANDARD
 from player import Player
 from archetypes import ARCHETYPES
+
+SIGHTINGS_PER_PAGE = 200
 
 class PageBuilder:
     def __init__(self):
@@ -82,7 +85,16 @@ class PageBuilder:
         archetype.analyze()
         slug = slugify(archetype.name)
         arche_path = f"deck/{slug}.html"
-        self.render("archetype.html.jinja2", arche_path, arche=archetype, players=players, events=events, seasons=seasons, wins=wins)
+        # The "Sightings" table is too much, so paginate it.
+        max_page = ceil(len(archetype.matched_decks) / SIGHTINGS_PER_PAGE)
+        self.render("archetype.html.jinja2", arche_path, arche=archetype, players=players, events=events, seasons=seasons, wins=wins, 
+                    page_number=1, page_start=0, page_end=SIGHTINGS_PER_PAGE, max_page=max_page)
+        if max_page > 1:
+            for i in range(1, max_page):
+                page_number = i+1
+                self.render("archetype-sightings-page.html.jinja2", f"deck/{slug}-{page_number}.html", 
+                            arche=archetype, players=players, events=events, seasons=seasons, wins=wins, 
+                            page_number=page_number, max_page=max_page, page_start=(i*SIGHTINGS_PER_PAGE), page_end=((i+1)*SIGHTINGS_PER_PAGE))
 
     def write_archetype_index(self, archetypes, aew):
         self.render("archetypes.html.jinja2", "deck/index.html", archetypes=archetypes, aew=aew)
@@ -156,6 +168,8 @@ class PageBuilder:
         self.render("index.html.jinja2", "index.html", seasons=seasons_sorted)
 
 def main(args):
+    if args.fast:
+        config.SharedConfig.go_fast = True
     builder = PageBuilder()
     for i in args.event_id:
         i_s = str(i)
@@ -171,5 +185,6 @@ if __name__ == "__main__":
     parser.add_argument("event_id", type=int, help="Omnidex event ID to look up", nargs="*", default=None)
     parser.add_argument("-a", "--all", action="store_true", help="Rebuild all cached events")
     parser.add_argument("-u", "--update", action="store_true", help="Redownload the specified omnidex event")
+    parser.add_argument("-f", "--fast", action="store_true", help="Skip deck similarity checks for a faster build")
     args = parser.parse_args()
     main(args)

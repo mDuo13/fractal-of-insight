@@ -57,11 +57,11 @@
     <p class="collapse togglable">Deck on the left's win rate vs deck on the top</p>
     <h3 class="collapse togglable">All Players:</h3>
     
-    {{ macros.battlechart(szn.battlechart, szn.archedata) }}
+    {{ macros.battlechart(szn.battlechart) }}
 
     <h3 class="collapse togglable">Top Players Only:</h3>
     <p class="collapse togglable">This chart shows only matches between players ranked in the top {{config.TOP_CUTOFF}} globally by Elo.</p>
-    {{ macros.battlechart(szn.bc_top, szn.archedata) }}
+    {{ macros.battlechart(szn.bc_top) }}
 </section>
 
 {% endblock %}
