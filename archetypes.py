@@ -30,6 +30,7 @@ class Archetype:
         self.require_element = require_element
         self.earliest = None
         self.subtypes = []
+        self.subtype_of = None
 
         self.matched_decks = []
     
@@ -148,6 +149,7 @@ class Archetype:
     def add_subtype(self, *args, **kwargs):
         st = Archetype(*args, **kwargs)
         self.subtypes.append(st)
+        st.subtype_of = self
         SUBTYPES[st.name] = st
 
 
@@ -205,7 +207,7 @@ wind_allies = add_archetype(
         "Wildgrowth Feline",
     ],
     require_types={
-        "ALLY": 30
+        "ALLY": 24
     },
     require_element="Wind",
     shortname="Allies"
@@ -278,13 +280,15 @@ add_archetype(
 )
 
 add_archetype(
-    "Luxem",
+    "Luxem Assassin",
     [
+        "Lightweaver's Assault",
         "Luxera's Map",
         "Insignia of the Corhazi",
-        "Luxem Sight",
-        "Lightweaver's Assault",
-    ]
+        "Thousand Refractions",
+        "Gleaming Cut",
+    ],
+    shortname="Luxem"
 )
 
 add_archetype(
@@ -405,10 +409,23 @@ crux.add_subtype(
     shortname="Harmonious",
 )
 
-add_archetype(
+shadowstrike = add_archetype(
     "Shadowstrike",
     [
         "Shadowstrike",
+    ]
+)
+shadowstrike.add_subtype(
+    "Inspiring Waltz",
+    [
+        "Inspiring Call",
+        "Penumbral Waltz",
+    ]
+)
+shadowstrike.add_subtype(
+    "Outlook",
+    [
+        "Corhazi Outlook"
     ]
 )
 
@@ -432,8 +449,6 @@ add_archetype(
         "Geldus, Terror of Dorumegia",
         "Capricious Lynx",
         "Tempest Silverback",
-        "Kraal, Stonescale Tyrant",
-        "Vertus, Gaia's Roar",
     ],
     exclude_cards=[
         "Fireball",
@@ -441,6 +456,21 @@ add_archetype(
         "Storm Slime",
         "Ethereal Slime",
     ]
+)
+
+add_archetype(
+    "Tera Tamer",
+    [
+        "Artificer's Opus",
+        "Kraal, Stonescale Tyrant",
+        "Vertus, Gaia's Roar",
+        "Arima, Gaia's Wings",
+    ],
+    exclude_cards=[
+        "Kongming, Fel Eidolon",
+        "Diao Chan, Idyll Corsage",
+    ],
+    shortname="Tera"
 )
 
 add_archetype(
