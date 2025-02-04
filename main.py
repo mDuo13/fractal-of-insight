@@ -13,6 +13,7 @@ from season import Season, SEASONS, Format, FORMATS
 from competition import EVENT_TYPES, TEAM_STANDARD
 from player import Player
 from archetypes import ARCHETYPES
+from spoiler import SpoilerEvent, SPOILER_SEASONS
 
 SIGHTINGS_PER_PAGE = 200
 
@@ -98,6 +99,9 @@ class PageBuilder:
 
     def write_archetype_index(self, archetypes, aew):
         self.render("archetypes.html.jinja2", "deck/index.html", archetypes=archetypes, aew=aew)
+
+    def write_spoilers(self, spoilers):
+        self.render("spoilers.html.jinja2", "spoilers/index.html", spoilers=spoilers)
     
     def write_all(self):
         """
@@ -164,6 +168,13 @@ class PageBuilder:
         arches_sorted = [a for a in ARCHETYPES.values()]
         arches_sorted.sort(key=lambda x: len(x.matched_decks), reverse=True)
         self.write_archetype_index(arches_sorted, aew)
+
+        spoilers = {}
+        for entry in os.scandir("./data/spoilers"):
+            if entry.is_dir() and len(entry.name) == 3:
+                szn = entry.name.lower()
+                spoilers[szn] = SpoilerEvent(szn)
+        self.write_spoilers(spoilers)
 
         self.render("index.html.jinja2", "index.html", seasons=seasons_sorted)
 

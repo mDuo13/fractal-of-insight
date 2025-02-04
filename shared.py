@@ -155,7 +155,6 @@ class ArcheStats(TypeStats):
         if not deck.archetypes:
             return
         
-        # TODO: fractions for multi-archetype decks?
         for arche in deck.archetypes:
             if arche in self.items.keys():
                 self.items[arche] += 1
@@ -173,6 +172,11 @@ class ArcheStats(TypeStats):
                 self.items[arche] = 1
                 self.item_elements[arche] = ElementStats()
                 self.item_elements[arche].add_deck(deck)
+
+
+class CardStats:
+    def __init__(self):
+        self.items = keydefaultdict()
 
 class RegionStats:
     def __init__(self):

@@ -253,14 +253,15 @@ th {
     width: 125px;
     height: 175px;
 }
+
 .decklist .cardimg:active > img,
 .decklist .cardimg.dblclicked > img {
 	position: absolute;
 	width: 250px;
 	height: 350px;
-	z-index: 2;
 	top: 0;
 	left: 0;
+    z-index: 4;
 }
 .decklist .cardimg .quant,
 .top-cards .cardimg .quant {
@@ -277,6 +278,7 @@ th {
     border-radius: 3px;
     border: 2px solid white;
     text-align: center;
+    z-index: 3;
 }
 .decklist .permalink {
     float: right;
@@ -467,6 +469,26 @@ th {
     filter: blur(5px);
     transform: scale(1.05);
     animation: rotateglow 2s ease infinite;
+}
+
+.decklist .newspoiler > img {
+    position: relative;
+    z-index: 2;
+}
+
+.newspoiler::after {
+    content:"";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    background: linear-gradient(0deg, #d3ae08, #ff3131);
+    background-size: 200% 200%;
+    filter: blur(5px);
+    transform: scale(1.05);
 }
 
 .evt h3 {

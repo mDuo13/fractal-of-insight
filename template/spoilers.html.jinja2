@@ -1,0 +1,38 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}Spoilers - {% endblock %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+</nav>
+
+<h1>Spoilers</h1>
+
+{% for szn, evt in spoilers.items() %}
+<section id="spoilers-{{szn}}">
+    <h2><img src="/static/{{szn|upper}}_logo.png" alt="({{szn|upper}})" /></h2>
+    <button onclick="toggle('#spoilers-{{szn}} > .togglable')">Glimpse Spoilers</button>
+
+    <table class="collapse togglable">
+        <thead><tr>
+            <th>Rank</th><th>Player</th><th>Record</th><th>Deck</th><th>Elo Change</th>
+        </tr></thead>
+        <tbody>
+        {% for p in evt.players %}
+           {{ macros.p_row(p, loop, anchor="#deck_"~szn~"_"~p.id, show_matches=False) }}
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endfor %}
+
+<!-- DECKLISTS -->
+{% for szn,evt in spoilers.items() %}
+{% for p in evt.players %}
+{{ macros.decklist(p, "deck_"~szn.lower()~"_"~p.id ) }}
+{% endfor %}
+{% endfor %}
+
+{% include "deckviewscript.html.jinja2" %}
+{% endblock %}

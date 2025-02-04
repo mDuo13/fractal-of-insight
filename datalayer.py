@@ -56,8 +56,19 @@ def get_deck(p_id, evt_id, public_on_omni):
             sleep(API_DELAY)
     return dl
 
-def sideload_deck(p_id, evt_id):
-    with open(f"data/event_{evt_id}/sideload/deck_{p_id}.txt") as f:
+def get_spoiler(szn):
+    try:
+        with open(f"data/spoilers/{szn}/event.json") as f:
+            evt = json.load(f)
+    except (FileNotFoundError):
+        print("Couldn't get event.json for spoiler season", szn)
+        evt = {}
+    return evt
+
+def sideload_deck(p_id, evt_id, fname=None):
+    if not fname:
+        fname = f"data/event_{evt_id}/sideload/deck_{p_id}.txt"
+    with open(fname) as f:
         dl_txt = f.read()
     
     deck = {"material": [], "main": [], "sideboard": []}
@@ -107,6 +118,13 @@ try:
 except FileNotFoundError:
     print("Didn't find cached card data")
     carddata = {}
+
+try:
+    with open("data/card_spoilers.json") as f:
+        spoilerdata = json.load(f)
+except FileNotFoundError:
+    print("No spoiler data to load")
+    spoilerdata = {}
 
 for cardname, card in carddata.items():
     # possibly change card image for a lower rarity one?
@@ -161,7 +179,7 @@ def card_is_floating(card, champs=[]):
     (a) is unconditional floating memory, or
     (b) is floating memory for any class any of the champs have
     """
-    card_effect = card["effect"] or ""
+    card_effect = card.get("effect", "") or ""
     if FM_EFFECT in card_effect:
         if CB_FM in card_effect:
             for champ in champs:

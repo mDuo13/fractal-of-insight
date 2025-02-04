@@ -53,12 +53,12 @@
 </td>
 {% endmacro %}
 
-{% macro p_row(p, loop) %}
+{% macro p_row(p, loop, anchor=None, show_matches=True) %}
     <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}">
         <td class="p_rank">{{loop.index}}</td>
-        <td class="playername" title="Elo: {{p.elo}}"><a href="/player/{{p.id}}.html">{{p}}</a></td>
+        <td class="playername" title="Elo: {{p.elo}}">{% if p.id > 0 %}<a href="/player/{{p.id}}.html">{{p}}</a>{% else %}{{p}}{% endif %}</td>
         <td class="p_record">{{p.record}}</td>
-        <td class="p_deck">{% if p.deck %}<a href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
+        <td class="p_deck">{% if p.deck %}<a href="{{anchor|default('#deck_{{p.id}}')}}" onclick="opendecklist('{{anchor|default('#deck_{{p.id}}')}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
             <div class="deck-bgs">
             {% for el in p.deck.els %}
                 <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
@@ -71,11 +71,12 @@
             {% endfor%}
             </div>
         </td>
-        {# <td class="elo">{{p.elo}}</td> #}
         <td class="elodiff">{% if p.elo_diff > 0 %}+{% endif %}{{p.elo_diff|round|int}}</td>
+        {% if show_matches %}
         <td class="showmatches">
             <button onclick="showmatches({{p.id}})">Show Matches</button>
         </td>
+        {% endif %}
     </tr>
 {% endmacro %}
 
@@ -268,7 +269,7 @@
 </div>
 {% endmacro %}
 
-{% macro decklist(p, id, event, external=False) %}
+{% macro decklist(p, id, event=None, external=False) %}
 <div class="decklist collapse" id="{{id}}">
     <div class="decklist-inner">
         <button class="closeX" onclick="closedecklist('#{{id}}')">❌</button>
@@ -296,7 +297,7 @@
             </ul>
             <div class="deck_gfx">
                 {% for card_o in p.deck.dl["main"] %}
-                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</span></div>
+                <div class="cardimg{% if card_o['newspoiler'] %} newspoiler{% endif %}"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</span></div>
                 {% endfor %}
             </div>
             <h4>Sideboard <span class="cardcount">({{p.deck.side_total}} cards, {{p.deck.side_points}} points)</span></h4>
