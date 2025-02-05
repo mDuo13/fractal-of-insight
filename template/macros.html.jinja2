@@ -58,7 +58,7 @@
         <td class="p_rank">{{loop.index}}</td>
         <td class="playername" title="Elo: {{p.elo}}">{% if p.id > 0 %}<a href="/player/{{p.id}}.html">{{p}}</a>{% else %}{{p}}{% endif %}</td>
         <td class="p_record">{{p.record}}</td>
-        <td class="p_deck">{% if p.deck %}<a href="{{anchor|default('#deck_{{p.id}}')}}" onclick="opendecklist('{{anchor|default('#deck_{{p.id}}')}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
+        <td class="p_deck">{% if p.deck %}<a href="{{anchor|default('#deck_'~p.id, true)}}" onclick="opendecklist('{{anchor|default('#deck_'~p.id, true)}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
             <div class="deck-bgs">
             {% for el in p.deck.els %}
                 <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
