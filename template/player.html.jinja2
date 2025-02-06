@@ -16,6 +16,7 @@
         <li><b>Recent Elo</b>: {{player.events[0].elo}}</li>
         <li><b>Recorded events</b>: {{player.events|length}}</li>
         {% if player.rivals %}<li><b>Rival(s)</b>: {% for r in player.rivals %}<a href="/player/{{r}}.html">{{players[r].username}} #{{r}}</a> ({{player.losses[r]}} losses){% endfor %}<br><span class="explanation">(Your rival is the player who has beaten you the most times in tracked events, minimum 3 times.)</span></li>{% endif %}
+        {% if player.allies %}<li><b>Ally/Allies</b>: {% for a in player.allies %}<a href="/player/{{a}}.html">{{players[a].username}} #{{a}}</a> ({{player.wins[a]}} wins){% endfor %}<br><span class="explanation">(Your ally is the player who has lost to you the most times in tracked events, minimum 3 times.)</span></li>{% endif %}
     </ul>
 </section>
 
