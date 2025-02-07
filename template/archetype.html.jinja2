@@ -2,6 +2,33 @@
 
 {% block subtitle %}{{arche.name}} - {% endblock %}
 
+{% macro arche_definition(a) %}
+<ul>
+    <li><b>Basic Element:</b> {% if a.require_element %}{{a.require_element}}{% else %}(Any){% endif %}</li>
+    <li><b>At least one of the following cards (excluding sideboard):</b>
+        <ul>
+            {% for card in a.require %}
+            <li>{{card}}</li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% if a.exclude %}<li><b>None of the following cards:</b>
+        <ul>
+            {% for card in a.exclude %}
+            <li>{{card}}</li>
+            {% endfor %}
+        </ul>
+    </li>{% endif %}
+    {% if a.require_types %}<li><b>Card type counts (in mainboard):</b>
+        <ul>
+            {% for t,tcount in a.require_types.items() %}
+            <li>{{t}}: at least {{tcount}}</li>
+            {% endfor %}
+        </ul>
+    </li>{% endif %}
+</ul>
+{% endmacro %}
+
 {% block body %}
 <nav id="main-nav">
     <a class="nav-item" href="/">⌂ Home</a>
@@ -24,32 +51,20 @@
     <button onclick="toggle('#arche-def > .togglable')">Show/Hide Definition</button>
 
     <div class="togglable collapse">
-    <p>To qualify as this archetype, a deck must meet the following conditions:</p>
-    <ul>
-        <li><b>Basic Element:</b> {% if arche.require_element %}{{arche.require_element}}{% else %}(Any){% endif %}</li>
-        <li><b>At least one of the following cards (excluding sideboard):</b>
-            <ul>
-                {% for card in arche.require %}
-                <li>{{card}}</li>
-                {% endfor %}
-            </ul>
-        </li>
-        {% if arche.exclude %}<li><b>None of the following cards:</b>
-            <ul>
-                {% for card in arche.exclude %}
-                <li>{{card}}</li>
-                {% endfor %}
-            </ul>
-        </li>{% endif %}
-        {% if arche.require_types %}<li><b>Card type counts (in mainboard):</b>
-            <ul>
-                {% for t,tcount in arche.require_types.items() %}
-                <li>{{t}}: at least {{tcount}}</li>
-                {% endfor %}
-            </ul>
-        </li>{% endif %}
-    </ul>
+    {{ arche_definition(arche) }}
     </div>
+
+    {% if arche.subtypes %}
+    <h3 class="togglable collapse">Sub-Archetypes</h3>
+    <button class="togglable collapse" onclick="toggle('#sub-archetypes > .togglable')">Glimpse Definitions</button>
+    <div id="sub-archetypes" class="togglable collapse">
+        <p class="togglable collapse">In addition to the the {{arche.name}} requirements, a deck can qualify for any or all of the following subtypes by meeting their requirements:</p>
+        {% for st in arche.subtypes %}
+        <h4 class="togglable collapse">{{st.name}}</h4>
+        <div class="togglable collapse">{{arche_definition(st)}}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
 </section>
 
 <section id="deck-composition">
