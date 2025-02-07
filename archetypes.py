@@ -531,3 +531,10 @@ add_archetype(
         "Tempus Stalker",
     ]
 )
+
+add_archetype(
+    "Dahlia",
+    [
+        "Dahlia, Idyllic Dreamer"
+    ]
+)
