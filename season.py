@@ -207,5 +207,10 @@ add_format("AMB Post-Toronto",
 )
 add_format("AMB + ALC Alter",
     start="2025-01-10",
+    end="2025-02-10",
     desc="Alchemical Revolution Alter released."
+)
+add_format("AMB + Reciprocity",
+    start="2025-02-10",
+    desc="Reciprocity, Dorumegia's Call added to Proxia's Vault"
 )

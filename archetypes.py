@@ -203,7 +203,6 @@ wind_allies = add_archetype(
         "Shadowstrike",
         "Storm Slime",
         "Baby Gray Slime",
-        "Razorgale Calling",
         "Wildgrowth Feline",
     ],
     require_types={
@@ -355,7 +354,6 @@ add_archetype(
     exclude_cards=[
         "Shadowstrike",
         "Corhazi Trapper",
-        "Lurking Assailant",
         "Lightweaver's Assault",
     ]
 )
