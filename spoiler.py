@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 from datalayer import get_spoiler, sideload_deck, carddata, spoilerdata, card_is_floating
-from deck import lineage
+from shared import lineage
 from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK
 
 SPOILER_SEASONS = [

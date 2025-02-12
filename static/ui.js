@@ -113,6 +113,16 @@ function reset_matches() {
     show("#keymatch-expl")
     hide("#keymatch-showing")
 }
+function opentab(tabbutton, selector) {
+    const tabbuttons = tabbutton.parentElement.querySelectorAll(".tab")
+    tabbuttons.forEach(el => {el.classList.remove("activetab")})
+    tabbutton.classList.add("activetab")
+
+    const tabcontent = document.querySelector(selector)
+    const tabs = tabcontent.parentElement.querySelectorAll(".tabcontent")
+    tabs.forEach(el => {el.classList.add("collapse")})
+    tabcontent.classList.remove("collapse")
+}
 
 function update_evt_filtering() {
     const decklist_cb = document.getElementById("cb_decklists")

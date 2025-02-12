@@ -2,7 +2,7 @@ from collections import defaultdict
 from bisect import insort
 
 from config import SharedConfig
-from shared import ElementStats, ChampStats
+from shared import ElementStats, ChampStats, lineage
 from datalayer import get_card_img, carddata
 
 SIMILAR_DECKS_CUTOFF = 85
@@ -30,6 +30,8 @@ class Archetype:
         self.require_element = require_element
         self.earliest = None
         self.subtypes = []
+        self.champ_subtypes = {}
+        self.el_subtypes = {}
         self.subtype_of = None
 
         self.matched_decks = []
@@ -70,7 +72,19 @@ class Archetype:
                         insort(d.similar_decks, [deck, sim], key=lambda x:x[0].date)
                         #d.similar_decks.append([deck, sim])
             self.matched_decks.append(deck)
+
+            for lineage in deck.lineages:
+                if lineage not in self.champ_subtypes.keys():
+                    self.champ_subtypes[lineage] = Champtype(lineage, self)
+                self.champ_subtypes[lineage].matched_decks.append(deck)
+            
+            for deck_el in deck.els:
+                if deck_el not in self.el_subtypes.keys():
+                    self.el_subtypes[deck_el] = Eltype(deck_el, self)
+                self.el_subtypes[deck_el].matched_decks.append(deck)
+
             return True
+
         return False
     
     def analyze(self):
@@ -94,6 +108,24 @@ class Archetype:
         
         self.analyze_card_freq()
         self.analyze_card_stats()
+        if self.subtypes:
+            self.subtypes.sort(key=lambda x: len(x.matched_decks), reverse=True)
+            for st in self.subtypes:
+                st.analyze()
+
+        if self.champ_subtypes:
+            sorted_subtypes = [(k,v) for k,v in self.champ_subtypes.items()]
+            sorted_subtypes.sort(key=lambda x: len(x[1].matched_decks), reverse=True)
+            self.champ_subtypes = {k:v for k,v in sorted_subtypes}
+            for ct in self.champ_subtypes.values():
+                ct.analyze()
+
+        if self.el_subtypes:
+            sorted_subtypes = [(k,v) for k,v in self.el_subtypes.items()]
+            sorted_subtypes.sort(key=lambda x: len(x[1].matched_decks), reverse=True)
+            self.el_subtypes = {k:v for k,v in sorted_subtypes}
+            for et in self.el_subtypes.values():
+                et.analyze()
         
     def analyze_card_freq(self):
         card_freq = defaultdict(int)
@@ -152,6 +184,40 @@ class Archetype:
         st.subtype_of = self
         SUBTYPES[st.name] = st
 
+class Champtype(Archetype):
+    def __init__(self, lineage, parent):
+        self.name = lineage
+        self.shortname = lineage
+        self.earliest = None
+        self.subtypes = []
+        self.subtype_of = parent
+        self.matched_decks = []
+
+        self.champ_subtypes = None
+        self.require_element = None
+        self.el_subtypes = None
+
+    # def match(self, deck):
+    #     for card_o in deck.dl["material"]:
+    #         cardname = card_o["card"]
+    #         card = carddata[cardname]
+    #         if "CHAMPION" in card.get("types",[]):
+    #             card_lineage = lineage(cardname)
+    #             if card_lineage == self.name:
+    #                 self.matched_decks.append(deck)
+    #                 return True
+    #     return False
+
+class Eltype(Archetype):
+    def __init__(self, el, parent):
+        self.name = el
+        self.shortname = el
+        self.require_element = el
+        self.subtypes = []
+        self.subtype_of = parent
+        self.matched_decks = []
+        self.champ_subtypes = None
+        self.el_subtypes = None
 
 ARCHETYPES = {}
 def add_archetype(*args,**kwargs):
@@ -160,7 +226,7 @@ def add_archetype(*args,**kwargs):
     return a
 
 
-add_archetype(
+water_allies = add_archetype(
     "Water Allies",
     [
         "Gildas, Chronicler of Aesa",
@@ -202,7 +268,6 @@ wind_allies = add_archetype(
         "Spirit Blade: Ascension",
         "Shadowstrike",
         "Storm Slime",
-        "Baby Gray Slime",
         "Wildgrowth Feline",
     ],
     require_types={
@@ -226,6 +291,16 @@ wind_allies.add_subtype(
         "Manufacture Cell",
     ],
     shortname="Robo",
+)
+wind_allies.add_subtype(
+    "Balance Wind Allies",
+    [
+        "Gildas, Chronicler of Aesa"
+    ],
+    exclude_cards=[
+        "Dilu, Auspicious Charger",
+    ],
+    shortname="Balance",
 )
 
 add_archetype(
@@ -414,9 +489,8 @@ shadowstrike = add_archetype(
     ]
 )
 shadowstrike.add_subtype(
-    "Inspiring Waltz",
+    "Waltz",
     [
-        "Inspiring Call",
         "Penumbral Waltz",
     ]
 )

@@ -1,7 +1,7 @@
 from time import strftime, gmtime
 from collections import defaultdict
 
-from shared import slugify, fix_case
+from shared import slugify, fix_case, lineage
 from datalayer import get_card_img, carddata, card_is_floating
 from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK
 from archetypes import ARCHETYPES, SUBTYPES
@@ -15,8 +15,6 @@ def rank_mat_cardname(cardname):
         return str(card["level"]) + cardname
     return cardname
 
-def lineage(champname):
-    return champname.split(",",1)[0]
 
 def trim_similar(dlist, limit):
     """

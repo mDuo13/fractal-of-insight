@@ -67,6 +67,17 @@
     {% endif %}
 </section>
 
+{% macro top_cards(a, collapse=True) %}
+    <div class="top-cards tabcontent{% if collapse %} collapse{% endif %}" id="top-cards-{{slugify(a.name)}}">
+        <p class="explanation">(Based on {{a.matched_decks|length}} decks with a combined winrate of {{a.winrate}}%.)</p>
+        {% for card_o in a.card_freq.values() %}
+            {% if loop.index0 < 20 %}
+            <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endmacro %}
+
 <section id="deck-composition">
     <h2>Deck Composition</h2>
     <button onclick="toggle('#deck-composition > .togglable')">Show/Hide Deck Composition</button>
@@ -83,10 +94,43 @@
 
     <h3 class="togglable collapse">Top Cards</h3>
     <p class="explanation togglable collapse">(Excluding champions. Showing the percentage of decks containing at least 1 copy in main or material deck.)</p>
-    <div class="top-cards togglable collapse">
-        {% for card_o in arche.card_freq.values() %}
-            {% if loop.index0 < 20 %}
-            <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%</div>
+    <div class="tabs togglable collapse">
+        <button class="tab activetab" onclick="opentab(this, '#top-cards-{{slugify(arche.name)}}')">Overall</button>
+        {% for st in arche.subtypes %}
+            {% if st.shortname %}
+            <button class="tab" onclick="opentab(this, '#top-cards-{{slugify(st.name)}}')">{{st.shortname}}</button>
+            {% endif %}
+        {% endfor %}
+        {% if not arche.require_element %}
+            {% for et in arche.el_subtypes.values() %}
+                {% if et.matched_decks|length > 1 %}
+                <button class="tab" onclick="opentab(this, '#top-cards-{{slugify(et.name)}}')">{{et.name}}</button>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% for c,ct in arche.champ_subtypes.items() %}
+            {% if ct.matched_decks|length > 1 %}
+            <button class="tab" onclick="opentab(this, '#top-cards-{{slugify(ct.name)}}')">{{ct.name}}</button>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="tabwrapper togglable collapse">
+        {{top_cards(arche, collapse=False)}}
+        {% for st in arche.subtypes %}
+            {% if st.shortname %}
+            {{top_cards(st)}}
+            {% endif %}
+        {% endfor %}
+        {% if not arche.require_element %}
+            {% for et in arche.el_subtypes.values() %}
+                {% if et.matched_decks|length > 1 %}
+                {{top_cards(et)}}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% for ct in arche.champ_subtypes.values() %}
+            {% if ct.matched_decks|length > 1 %}
+            {{top_cards(ct)}}
             {% endif %}
         {% endfor %}
     </div>

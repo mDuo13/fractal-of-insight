@@ -14,6 +14,9 @@ def slugify(s):
         s = "_"
     return s.lower()
 
+def lineage(champname):
+    return champname.split(",",1)[0]
+
 def fix_case(cardname):
     repls = {
         "'S":"'s",
@@ -173,10 +176,34 @@ class ArcheStats(TypeStats):
                 self.item_elements[arche] = ElementStats()
                 self.item_elements[arche].add_deck(deck)
 
-
 class CardStats:
+    def __init__(self, cardname):
+        self.name = cardname
+        self.appearances = []
+        self.num_appearances = 0
+        self.wins = 0
+        self.losses = 0
+        self.ties = 0
+    
+    def add_entrant(e):
+        self.appearances.append(e)
+        self.num_appearances += 1
+        self.wins += e.wins
+        self.losses += e.losses
+        self.ties += e.ties
+
+class CardStatSet:
     def __init__(self):
-        self.items = keydefaultdict()
+        self.items = keydefaultdict(CardStats)
+
+    def sort(self):
+        newitems = keydefaultdict(CardStats)
+        statdata = [(k,v) for k,v in self.items.items()]
+        statdata.sort(key=lambda x:x[1].num_appearances, reverse=True)
+        for k,v in statdata:
+            newitems[k] = v
+        self.items = newitems
+
 
 class RegionStats:
     def __init__(self):

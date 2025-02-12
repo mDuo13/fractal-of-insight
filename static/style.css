@@ -291,6 +291,25 @@ th {
     margin-bottom: 175px;
 }
 
+.tabs > button {
+    padding: 5px;
+    border-radius: 8px 8px 0 0;
+    border-style: outset;
+    border-width: 3px;
+    border-color: black;
+    background-color: #ccc;
+}
+
+.tabs > .activetab, .tabs > button:active {
+    background-color: white;
+    border-bottom-color: white;
+    border-style: inset;
+}
+
+.tabs > button:hover {
+    border-bottom-color: #ddd;
+}
+
 .permalink:hover {
     text-shadow: #77a 1px 2px 5px
 }
