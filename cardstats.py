@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from datalayer import get_card_img
+from datalayer import carddata, get_card_img
 from shared import keydefaultdict
 from shared import ElementStats, ChampStats
 
@@ -66,8 +66,14 @@ class CardStatSet:
     
     def add_deck(self, d):
         for card in d: # Iterates material and main deck card names
+            if "TOKEN" in carddata[card]["types"]:
+                # Some decklists mistakenly include tokens. Skip those.
+                continue
             self.items[card].add_entrant(d.entrant)
         for card_o in d.dl["sideboard"]:
+            if "TOKEN" in carddata[card_o["card"]]["types"]:
+                # Skip tokens again
+                continue
             if card_o["card"] not in d: # Don't double-add a deck if a card is in main+side
                 self.items[card_o["card"]].add_entrant(d.entrant)
 
