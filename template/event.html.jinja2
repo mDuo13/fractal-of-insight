@@ -100,7 +100,7 @@
         <p>Top 10 most sideboarded cards:</p>
     {% for card_o in evt.sideboard_stats %}
         {% if loop.index0 < 10 %}
-        <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%</div>
+        <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%</span></div>
         {% endif %}
     {% endfor %}
     </div>

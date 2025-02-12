@@ -12,6 +12,7 @@
 
 <section id="card-info">
     <ul class="scooped-corners">
+        <li><div class="cardimg"><img src="{{card['img']}}" alt="{{card.name}}" loading="eager" width="300" height="420" /></div>
         <li><b>Appearances recorded</b>: {{cardstat.num_appearances}}</li>
         <li><b>First played by</b>: <a href="/player/{{cardstat.first_user.id}}.html">{{cardstat.first_user}}</a></li>
         <li><b>Overall win rate</b>: {{cardstat.winrate}}%</li>
@@ -27,7 +28,7 @@
     <div class="top-cards collapse togglable">
     {% for card_o in cardstat.related_cards.values() %}
         {% if loop.index0 < 20 %}
-        <a class="cardimg" href="/card/{{slugify(card_o['card'])}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%</a>
+        <a class="cardimg" href="/card/{{slugify(card_o['card'])}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" /><span class="quant">{{card_o["pct"]}}%</span></a>
         {% endif %}
     {% endfor %}
     </div>

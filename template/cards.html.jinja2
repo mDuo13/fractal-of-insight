@@ -21,7 +21,7 @@
     {% for cardname, cardstat in cardstats %}
         {% if loop.index0 < 20 %}
             {% set card_o = carddata[cardname] %}
-            <a class="cardimg" href="/card/{{slugify(cardname)}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{cardstat.num_appearances}}×</a>
+            <a class="cardimg" href="/card/{{slugify(cardname)}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{cardstat.num_appearances}}×</span></a>
         {% endif %}
     {% endfor %}
     </div>
@@ -35,7 +35,7 @@
     {% for cardname, cardstat in cardstats.winningest.items() %}
         {% if loop.index0 < 20 %}
             {% set card_o = carddata[cardname] %}
-            <a class="cardimg" href="/card/{{slugify(cardname)}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{cardstat.winrate}}%</a>
+            <a class="cardimg" href="/card/{{slugify(cardname)}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{cardstat.winrate}}%</span></a>
         {% endif %}
     {% endfor %}
     </div>

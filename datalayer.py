@@ -171,8 +171,8 @@ def get_card_img(cardname, at=0):
     #     json.dump(carddata, f)
     return card_img
 
-FM_EFFECT = '<span class=\"effect__label\">Floating Memory</span>'
-CB_FM = '<span class=\"effect__bubble\">Class Bonus</span><span class=\"effect__label\">Floating Memory'
+FM_EFFECT = '**Floating Memory**'
+CB_FM = '[Class Bonus] **Floating Memory**'
 def card_is_floating(card, champs=[]):
     """
     Given a card data object and a list of champion card names, return True if the card

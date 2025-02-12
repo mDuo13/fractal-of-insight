@@ -673,6 +673,10 @@ footer {
     margin-top: 50px;
 }
 
+#card-info .cardimg img {
+    border-radius: 10px;
+}
+
 @keyframes rotateglow {
     0% {
         background-position: 10% 0%;
