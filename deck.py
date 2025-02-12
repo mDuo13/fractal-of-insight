@@ -5,6 +5,7 @@ from shared import slugify, fix_case, lineage
 from datalayer import get_card_img, carddata, card_is_floating
 from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK
 from archetypes import ARCHETYPES, SUBTYPES
+from cardstats import ALL_CARD_STATS
 
 def rank_mat_card(card_o):
     cardname = card_o["card"]
@@ -42,6 +43,8 @@ class Deck:
         self.count_cards() # populates self.card_types and self.floating as well as total counts
         self.find_archetypes()
         self.cardlist_imgs()
+        
+        ALL_CARD_STATS.add_deck(self)
 
     def find_spirits(self):
         self.spirits = []

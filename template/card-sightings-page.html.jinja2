@@ -1,0 +1,48 @@
+{# UNUSED - card sightings take up too much space. #}
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}{{card.name}} Sightings, Page {{page_number}} - {% endblock %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/card/">⇈ Cards</a>
+    <a class="nav-item" href="/card/{{slugify(card.name)}}.html">⮤ {{card.name}}</a>
+</nav>
+
+<h1>Card Sightings: {{card.name}}, page {{page_number}}</h1>
+
+<section id="sightings">
+    <h2>Sightings</h2>
+    <div class="togglable event-filters">
+        {{ macros.event_filters(EVENT_TYPES, lesser=True) }}
+    </div>
+    <button id="wins-filter" class="togglable collapse" onclick="show_wins()">Show event winners only</button>
+    <p id="wins-expl" class="explanation collapse">Showing only events where the deck won overall</p>
+    <button id="sightingsreset" class="collapse" onclick="reset_sightings()">Reset filter</button>
+    <table class="togglable">
+        <thead><tr>
+            <th>Date</th><th>Player</th><th>Event</th><th>Deck</th><th>Placement</th><th>Swiss Record</th>
+        </tr></thead>
+        <tbody>
+        {% for e in cardstat.appearances[page_start:page_end] %}
+            {{ macros.p_row_arche(e.deck, loop, events) }}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {{ macros.paginate(base_link="/card/"+slugify(card.name),
+        page_number=page_number,
+        max_page=max_page,
+        page1_link="/card/"+slugify(card.name)+".html#sightings")
+    }}
+</section>
+
+<!-- DECKLISTS -->
+{% for e in cardstat.appearances[page_start:page_end] %}
+{{ macros.decklist(e, "deck_"~e.evt_id~"_"~e.id, events[e.evt_id], True) }}
+{% endfor %}
+
+{% include "deckviewscript.html.jinja2" %}
+
+{% endblock %}

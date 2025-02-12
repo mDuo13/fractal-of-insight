@@ -7,6 +7,7 @@ import os.path
 from math import ceil
 
 import config
+from datalayer import carddata
 from shared import slugify, OVERALL, REGIONS
 from omnievent import OmniEvent, Team3v3Event, IsTeamEvent
 from season import Season, SEASONS, Format, FORMATS
@@ -14,8 +15,10 @@ from competition import EVENT_TYPES, TEAM_STANDARD
 from player import Player
 from archetypes import ARCHETYPES
 from spoiler import SpoilerEvent, SPOILER_SEASONS
+from cardstats import ALL_CARD_STATS
 
 SIGHTINGS_PER_PAGE = 200
+CARD_SIGHTINGS_PER_PAGE = 100
 
 class PageBuilder:
     def __init__(self):
@@ -100,6 +103,21 @@ class PageBuilder:
     def write_archetype_index(self, archetypes, aew):
         self.render("archetypes.html.jinja2", "deck/index.html", archetypes=archetypes, aew=aew)
 
+    def write_card_index(self):
+        self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata)
+    
+    def write_card_page(self, cardname, cardstat, events=[]):
+        max_page = ceil(len(cardstat.appearances) / CARD_SIGHTINGS_PER_PAGE)
+
+        self.render("card.html.jinja2", f"card/{slugify(cardname)}.html", card=carddata[cardname], cardstat=cardstat, events=events, page_number=1, page_start=0, page_end=CARD_SIGHTINGS_PER_PAGE, max_page=max_page)
+
+        # Actually printing all these sightings is like 4.5 gigs of data oops
+        # if max_page > 1:
+        #     for i in range(1, max_page):
+        #         page_number = i+1
+        #         self.render("card-sightings-page.html.jinja2", f"card/{slugify(cardname)}-{page_number}.html", card=carddata[cardname], cardstat=cardstat, events=events, page_number=page_number, page_start=(i*CARD_SIGHTINGS_PER_PAGE), page_end=((i+1)*CARD_SIGHTINGS_PER_PAGE), max_page=max_page)
+            
+
     def write_spoilers(self, spoilers):
         self.render("spoilers.html.jinja2", "spoilers/index.html", spoilers=spoilers)
     
@@ -168,6 +186,13 @@ class PageBuilder:
         arches_sorted = [a for a in ARCHETYPES.values()]
         arches_sorted.sort(key=lambda x: len(x.matched_decks), reverse=True)
         self.write_archetype_index(arches_sorted, aew)
+
+        for cardname, cardstat in ALL_CARD_STATS:
+            cardstat.analyze()
+            self.write_card_page(cardname, cardstat, events=all_events)
+        ALL_CARD_STATS.sort()
+        
+        self.write_card_index()
 
         spoilers = {}
         for entry in os.scandir("./data/spoilers"):

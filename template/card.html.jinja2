@@ -1,0 +1,71 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}{{card.name}} - {% endblock %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/card/">⮤ Cards</a>
+</nav>
+
+<h1>Card Stats: {{card.name}}</h1>
+
+<section id="card-info">
+    <ul class="scooped-corners">
+        <li><b>Appearances recorded</b>: {{cardstat.num_appearances}}</li>
+        <li><b>First played by</b>: <a href="/player/{{cardstat.first_user.id}}.html">{{cardstat.first_user}}</a></li>
+        <li><b>Overall win rate</b>: {{cardstat.winrate}}%</li>
+        <li><b>Lifeteme record</b>: {{cardstat.wins}}-{{cardstat.losses}}-{{cardstat.ties}}</li>
+        <li><a href="https://index.gatcg.com/card/{{card.slug}}">Index Lookup</a></li>
+    </ul>
+</section>
+
+<section id="buddy-cards">
+    <h2>Buddy Cards</h2>
+    <button onclick="toggle('#buddy-cards > .togglable')">Glimpse Buddies</button>
+    <p class="explanation collapse togglable">(Cards that appear most often in the same decklists.)</p>
+    <div class="top-cards collapse togglable">
+    {% for card_o in cardstat.related_cards.values() %}
+        {% if loop.index0 < 20 %}
+        <a class="cardimg" href="/card/{{slugify(card_o['card'])}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%</a>
+        {% endif %}
+    {% endfor %}
+    </div>
+</section>
+
+<section id="sightings">
+    <h2>Recent Sightings</h2>
+    <button onclick="toggle('#sightings > .togglable')">Glimpse Sightings</button>
+    <div class="togglable collapse event-filters">
+        {{ macros.event_filters(EVENT_TYPES, lesser=True) }}
+    </div>
+    <button id="wins-filter" class="togglable collapse" onclick="show_wins()">Show event winners only</button>
+    <p id="wins-expl" class="explanation collapse">Showing only events where the deck won overall</p>
+    <button id="sightingsreset" class="collapse" onclick="reset_sightings()">Reset filter</button>
+    <table class="togglable collapse">
+        <thead><tr>
+            <th>Date</th><th>Player</th><th>Event</th><th>Deck</th><th>Placement</th><th>Swiss Record</th>
+        </tr></thead>
+        <tbody>
+        {% for e in cardstat.appearances[0:page_end] %}
+            {{ macros.p_row_arche(e.deck, loop, events) }}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {# UNUSED - card sightings take up too much space
+    {{ macros.paginate(base_link="/card/"+slugify(card.name),
+        page_number=1,
+        max_page=max_page,
+        collapse=True)
+    }}#}
+</section>
+
+<!-- DECKLISTS -->
+{% for e in cardstat.appearances[page_start:page_end] %}
+{{ macros.decklist(e, "deck_"~e.evt_id~"_"~e.id, events[e.evt_id], True) }}
+{% endfor %}
+
+{% include "deckviewscript.html.jinja2" %}
+
+{% endblock %}

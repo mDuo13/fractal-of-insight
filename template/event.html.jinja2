@@ -26,7 +26,7 @@
 
 <section id="players">
     <h2>Players</h2>
-    <button onclick="toggle('#players > .togglable')">Show/Hide Player List</button>
+    <button onclick="toggle('#players > .togglable')">Glimpse Player List</button>
 
     {% if evt.top_cut|length %}
     <h3 class="collapse togglable" id="topcut">Single Elimination Top Cut</h3>
@@ -59,7 +59,7 @@
 
     <div class="player-regions">
         <h3>Home Region Breakdown</h3>
-        <button onclick="toggle('.player-regions > .togglable')">Show/Hide Region Data</button>
+        <button onclick="toggle('.player-regions > .togglable')">Glimpse Region Data</button>
 
         <table class="collapse togglable">
             <thead><tr>
@@ -81,7 +81,7 @@
 {% if evt.num_decklists %}
 <section id="meta_composition">
     <h2>Meta Composition</h2>
-    <button onclick="toggle('#meta_composition > .togglable')">Show/Hide Meta Composition</button>
+    <button onclick="toggle('#meta_composition > .togglable')">Glimpse Meta Composition</button>
     <h3 class="togglable collapse">Elements</h3>
     <div class="element-meta collapse togglable">
         {{macros.elementpie(evt.elements)}}
@@ -108,7 +108,7 @@
 
 <section id="head-to-head">
     <h2>Head-to-Head</h2>
-    <button onclick="toggle('#head-to-head > .togglable')">Show/Hide Head-to-Head Chart</button>
+    <button onclick="toggle('#head-to-head > .togglable')">Glimpse Head-to-Head Chart</button>
     <p class="collapse togglable">Deck on the left's win rate vs deck on the top</p>
 
     {{ macros.battlechart(evt.battlechart, link_matches=True) }}
@@ -118,7 +118,7 @@
 
 <section id="matches">
     <h2>Matches</h2>
-    <button onclick="toggle('#matches > .togglable')">Show/Hide Matches</button>
+    <button onclick="toggle('#matches > .togglable')">Glimpse Matches</button>
     <div class="stages togglable collapse">
     <button id="keymatches" class="togglable" onclick="show_key_matches()">Show Key Matches Only</button>
     <p id="keymatch-expl" class="explanation togglable">(Key matches are ones between players who both finished with a high Swiss score, excluding intentional draws.)</p>

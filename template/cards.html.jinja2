@@ -1,0 +1,76 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}Card Stats - {% endblock %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+</nav>
+<h1>Card Stats</h1>
+<section id="card-stats-overview">
+    <ul class="scooped-corners">
+        <li><b>Total cards played</b>: {{cardstats|length}}</li>
+    </ul>
+</section>
+
+<section id="most-popular-cards">
+    <h2>Most Played Cards</h2>
+    <button onclick="toggle('#most-popular-cards > .togglable')">Glimpse most played</button>
+    <p class="explanation collapse togglable">(Number of recorded decklists containing at least one copy of the card.)</p>
+    <div class="top-cards collapse togglable">
+    {% for cardname, cardstat in cardstats %}
+        {% if loop.index0 < 20 %}
+            {% set card_o = carddata[cardname] %}
+            <a class="cardimg" href="/card/{{slugify(cardname)}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{cardstat.num_appearances}}×</a>
+        {% endif %}
+    {% endfor %}
+    </div>
+</section>
+
+<section id="winningest-cards">
+    <h2>Winningest Cards</h2>
+    <button onclick="toggle('#winningest-cards > .togglable')">Glimpse winningest</button>
+    <p class="explanation collapse togglable">(Based on win rate of decks containing at least one copy, including sideboard. Minimum 20 recorded deck lists to be eligible.)</p>
+    <div class="top-cards collapse togglable">
+    {% for cardname, cardstat in cardstats.winningest.items() %}
+        {% if loop.index0 < 20 %}
+            {% set card_o = carddata[cardname] %}
+            <a class="cardimg" href="/card/{{slugify(cardname)}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{cardstat.winrate}}%</a>
+        {% endif %}
+    {% endfor %}
+    </div>
+</section>
+
+<section id="all-cards">
+    <h2>Full Card List</h2>
+    <button onclick="toggle('#all-cards > .togglable')">Glimpse all</button>
+    <p class="explanation collapse togglable">(All cards with at least one recorded appearance.)</p>
+    <table class="togglable collapse">
+        <thead>
+            <tr><th>Card</th><th>Appearances</th><th>Lifetime Win Rate</th></tr>
+        </thead>
+        <tbody>
+        {% for cardname, cardstat in cardstats.alphabetical.items() %}
+            <tr>
+                <td><a href="/card/{{slugify(cardname)}}.html">{{cardname}}</a></td>
+                <td>{{cardstat.num_appearances}}</td>
+                <td>{{cardstat.winrate}}%</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section id="unplayed-cards">
+    <h2>Unplayed Cards</h2>
+    <button onclick="toggle('#unplayed-cards > .togglable')">Glimpse unplayed</button>
+    <p class="explanation collapse togglable">(Cards that have not been in any public decklist.)</p>
+    <div class="top-cards collapse togglable">
+    {% for cardname, card_o in carddata.items() %}
+        {% if cardname not in cardstats and "TOKEN" not in card_o["types"] and card_o.legality == None %}
+            <a class="cardimg" href="https://index.gatcg.com/card/{{card_o['slug']}}" title="GA Index lookup"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /></a>
+        {% endif %}
+    {% endfor %}
+    </div>
+</section>
+{% endblock %}

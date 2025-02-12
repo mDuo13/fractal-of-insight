@@ -242,7 +242,7 @@ water_allies = add_archetype(
         "Revitalizing Cleanse",
     ],
     require_types={
-        "ALLY": 30
+        "ALLY": 24
     },
     require_element="Water",
     shortname="Allies"

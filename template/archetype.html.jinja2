@@ -48,7 +48,7 @@
 
 <section id="arche-def">
     <h2>Definition</h2>
-    <button onclick="toggle('#arche-def > .togglable')">Show/Hide Definition</button>
+    <button onclick="toggle('#arche-def > .togglable')">Glimpse definition</button>
 
     <div class="togglable collapse">
     {{ arche_definition(arche) }}
@@ -69,7 +69,7 @@
 
 {% macro top_cards(a, collapse=True) %}
     <div class="top-cards tabcontent{% if collapse %} collapse{% endif %}" id="top-cards-{{slugify(a.name)}}">
-        <p class="explanation">(Based on {{a.matched_decks|length}} decks with a combined winrate of {{a.winrate}}%.)</p>
+        <p class="explanation">(Based on {{a.matched_decks|length}} decks with a combined win rate of {{a.winrate}}%.)</p>
         {% for card_o in a.card_freq.values() %}
             {% if loop.index0 < 20 %}
             <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%</div>
@@ -80,7 +80,7 @@
 
 <section id="deck-composition">
     <h2>Deck Composition</h2>
-    <button onclick="toggle('#deck-composition > .togglable')">Show/Hide Deck Composition</button>
+    <button onclick="toggle('#deck-composition > .togglable')">Glimpse Deck Composition</button>
     
     {% if not arche.require_element %}
     <h3 class="togglable collapse">Elements</h3>
@@ -149,7 +149,7 @@
 
 <section id="arche-results">
     <h2>Results By Season</h2>
-    <button onclick="toggle('#arche-results > .togglable')">Show/Hide Results</button>
+    <button onclick="toggle('#arche-results > .togglable')">Glimpse Results</button>
 
     {% for season, szn in seasons.items() %}
     {% if szn.archedata.exists_for(arche.name) %}
@@ -172,7 +172,7 @@
 
 <section id="sightings">
     <h2>Sightings</h2>
-    <button onclick="toggle('#sightings > .togglable')">Show/Hide List</button>
+    <button onclick="toggle('#sightings > .togglable')">Glimpse List</button>
     <div class="togglable collapse event-filters">
         {{ macros.event_filters(EVENT_TYPES, lesser=True) }}
     </div>

@@ -21,7 +21,7 @@
 
 <section id="entered-events">
     <h2>Events Entered</h2>
-    <button onclick="toggle('#entered-events > .togglable')">Show/Hide List</button>
+    <button onclick="toggle('#entered-events > .togglable')">Glimpse List</button>
     <div class="togglable collapse">
         {{ macros.event_filters(EVENT_TYPES) }}
     </div>
@@ -40,7 +40,7 @@
 {% if player.num_decklists %}
 <section id="deck-trends">
     <h2>Deck Trends</h2>
-    <button onclick="toggle('#deck-trends > .togglable')">Show/Hide Deck Trends</button>
+    <button onclick="toggle('#deck-trends > .togglable')">Glimpse Deck Trends</button>
     <h3 class="togglable collapse">Elements</h3>
     <div class="element-meta collapse togglable">
         {{macros.elementpie(player.elements)}}
