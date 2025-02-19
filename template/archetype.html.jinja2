@@ -51,7 +51,11 @@
     <button onclick="toggle('#arche-def > .togglable')">Glimpse definition</button>
 
     <div class="togglable collapse">
+    {% if arche.name == "Rogue Decks" %}
+    <p>These decks were not classified as any known archetype.</p>
+    {% else %}
     {{ arche_definition(arche) }}
+    {% endif %}
     </div>
 
     {% if arche.subtypes %}
@@ -72,7 +76,7 @@
         <p class="explanation">(Based on {{a.matched_decks|length}} decks with a combined win rate of {{a.winrate}}%.)</p>
         {% for card_o in a.card_freq.values() %}
             {% if loop.index0 < 20 %}
-            <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%</span></div>
+            <a class="cardimg" href="/card/{{slugify(card_o['card'])}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%</span></a>
             {% endif %}
         {% endfor %}
     </div>
@@ -147,6 +151,7 @@
     </ul>
 </section>
 
+{% if arche.name != "Rogue Decks" %}
 <section id="arche-results">
     <h2>Results By Season</h2>
     <button onclick="toggle('#arche-results > .togglable')">Glimpse Results</button>
@@ -169,6 +174,7 @@
     {% endif %}
     {% endfor %}
 </section>
+{% endif %}
 
 <section id="sightings">
     <h2>Sightings</h2>

@@ -4,7 +4,7 @@ from collections import defaultdict
 from shared import slugify, fix_case, lineage
 from datalayer import get_card_img, carddata, card_is_floating
 from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK
-from archetypes import ARCHETYPES, SUBTYPES
+from archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
 from cardstats import ALL_CARD_STATS
 
 def rank_mat_card(card_o):
@@ -86,6 +86,9 @@ class Deck:
                 for st in archetype.subtypes:
                     if st.match(self):
                         self.subtypes.append(st.name)
+        
+        if not self.archetypes:
+            NO_ARCHETYPE.add_match(self)
 
     
     def find_elements(self):

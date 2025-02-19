@@ -13,7 +13,7 @@ from omnievent import OmniEvent, Team3v3Event, IsTeamEvent
 from season import Season, SEASONS, Format, FORMATS
 from competition import EVENT_TYPES, TEAM_STANDARD
 from player import Player
-from archetypes import ARCHETYPES
+from archetypes import ARCHETYPES, NO_ARCHETYPE
 from spoiler import SpoilerEvent, SPOILER_SEASONS
 from cardstats import ALL_CARD_STATS
 
@@ -182,10 +182,12 @@ class PageBuilder:
             if a.name not in aew.keys():
                 aew[a.name] = []
             self.write_archetype(a, known_players, all_events, seasons_sorted, aew[a.name])
+        
+        self.write_archetype(NO_ARCHETYPE, known_players, all_events, seasons_sorted, [])
 
         arches_sorted = [a for a in ARCHETYPES.values()]
         arches_sorted.sort(key=lambda x: len(x.matched_decks), reverse=True)
-        self.write_archetype_index(arches_sorted, aew)
+        self.write_archetype_index(arches_sorted+[NO_ARCHETYPE], aew)
 
         for cardname, cardstat in ALL_CARD_STATS:
             cardstat.analyze()

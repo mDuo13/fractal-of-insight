@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from datalayer import carddata, get_card_img
 from shared import keydefaultdict
-from shared import ElementStats, ChampStats
+from shared import ElementStats, ChampStats, ArcheStats
 
 # Minimum number of appearances for a card to be eligible for "winningest" list
 MIN_SIGHTINGS = 20
@@ -32,10 +32,12 @@ class CardStats:
         
         self.elements = ElementStats()
         self.champdata = ChampStats()
+        self.archedata = ArcheStats()
         
         for e in self.appearances:
             self.elements.add_deck(e.deck)
             self.champdata.add_deck(e.deck)
+            self.archedata.add_deck(e.deck)
         
         matches = self.wins+self.losses+self.ties
         winscore = self.wins + (self.ties/2)

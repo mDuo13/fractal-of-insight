@@ -119,6 +119,7 @@ th {
 
 .p-row, .team-member {
     position: relative;
+    transform:scale(1,1);
     overflow: hidden;
     height: 55px;
     margin-bottom: 5px;
@@ -226,6 +227,7 @@ th {
     background: rgba(0,0,0,0.5);
     padding: 10vh 10vw;
     font-size: 14px;
+    z-index: 3;
 }
 
 .decklist-inner {

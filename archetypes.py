@@ -57,35 +57,37 @@ class Archetype:
             if t in deck.card_types.keys() and deck.card_types[t] < tcount:
                 return False
 
-        # TODO: consider using "found_cards" count for better matching
         if found_cards:
-            if not SharedConfig.go_fast:
-                for d in self.matched_decks:
-                    sim = deck.similarity_to(d)
-                    if sim >= SIMILAR_DECKS_CUTOFF:
-                        #print(f"Similarity: {sim}% ({deck.entrant} {deck.date} vs {d.entrant} {d.date})")
-                        # if (d in [x[1] for x in deck.similar_decks]):
-                        #     print(f"Inserting duplicate similar_deck?? {d} vs {deck}")
-                        #     exit(1)
-                        insort(deck.similar_decks, [d, sim], key=lambda x:x[0].date)
-                        #deck.similar_decks.append([d, sim])
-                        insort(d.similar_decks, [deck, sim], key=lambda x:x[0].date)
-                        #d.similar_decks.append([deck, sim])
-            self.matched_decks.append(deck)
-
-            for lineage in deck.lineages:
-                if lineage not in self.champ_subtypes.keys():
-                    self.champ_subtypes[lineage] = Champtype(lineage, self)
-                self.champ_subtypes[lineage].matched_decks.append(deck)
-            
-            for deck_el in deck.els:
-                if deck_el not in self.el_subtypes.keys():
-                    self.el_subtypes[deck_el] = Eltype(deck_el, self)
-                self.el_subtypes[deck_el].matched_decks.append(deck)
-
+            self.add_match(deck)
             return True
 
         return False
+
+    def add_match(self, deck):
+        if not SharedConfig.go_fast:
+            for d in self.matched_decks:
+                sim = deck.similarity_to(d)
+                if sim >= SIMILAR_DECKS_CUTOFF:
+                    #print(f"Similarity: {sim}% ({deck.entrant} {deck.date} vs {d.entrant} {d.date})")
+                    # if (d in [x[1] for x in deck.similar_decks]):
+                    #     print(f"Inserting duplicate similar_deck?? {d} vs {deck}")
+                    #     exit(1)
+                    insort(deck.similar_decks, [d, sim], key=lambda x:x[0].date)
+                    #deck.similar_decks.append([d, sim])
+                    insort(d.similar_decks, [deck, sim], key=lambda x:x[0].date)
+                    #d.similar_decks.append([deck, sim])
+        self.matched_decks.append(deck)
+
+        for lineage in deck.lineages:
+            if lineage not in self.champ_subtypes.keys():
+                self.champ_subtypes[lineage] = Champtype(lineage, self)
+            self.champ_subtypes[lineage].matched_decks.append(deck)
+        
+        for deck_el in deck.els:
+            if deck_el not in self.el_subtypes.keys():
+                self.el_subtypes[deck_el] = Eltype(deck_el, self)
+            self.el_subtypes[deck_el].matched_decks.append(deck)
+
     
     def analyze(self):
         self.matched_decks.sort(key=lambda d: d.entrant.evt_time *1000 + 9999-d.entrant.placement, reverse=True)
@@ -225,6 +227,11 @@ def add_archetype(*args,**kwargs):
     ARCHETYPES[a.name] = a
     return a
 
+NO_ARCHETYPE  = Archetype(
+    "Rogue Decks",
+    [],
+    shortname=""
+)
 
 water_allies = add_archetype(
     "Water Allies",
@@ -236,16 +243,29 @@ water_allies = add_archetype(
         "Corhazi Trapper",
         "Halocline Scout",
         "Sword Saint of Eventide",
+        "Lunete, Frostbinder Priest",
+        "Jueying, Shadowmare",
     ],
     exclude_cards=[
         "Spirit Blade: Ensoul",
         "Revitalizing Cleanse",
     ],
     require_types={
-        "ALLY": 24
+        "ALLY": 20
     },
     require_element="Water",
     shortname="Allies"
+)
+
+water_allies.add_subtype(
+    "Water Unique Allies",
+    [
+        "Jueying, Shadowmare"
+    ],
+    require_types={
+        "UNIQUE": 12
+    },
+    shortname="Unique"
 )
 
 wind_allies = add_archetype(
@@ -472,14 +492,6 @@ crux.add_subtype(
     ],
     require_element="Wind",
     shortname="Humans",
-)
-
-crux.add_subtype(
-    "Harmonious Crux",
-    [
-        "Harmonious Mantra",
-    ],
-    shortname="Harmonious",
 )
 
 shadowstrike = add_archetype(

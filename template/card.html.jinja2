@@ -21,6 +21,21 @@
     </ul>
 </section>
 
+<section id="card-usage">
+    <h2>Typical Usage</h2>
+    <button onclick="toggle('#card-usage > .togglable')">Glimpse Usage</button>
+    <h3 class="togglable collapse">Elements</h3>
+    <div class="element-meta collapse togglable">
+        {{macros.elementpie(cardstat.elements)}}
+    </div>
+    
+    <h3 class="togglable collapse">Champions</h3>
+    {{ macros.elementbars(cardstat.champdata) }}
+
+    <h3 class="togglable collapse">Archetypes</h3>
+    {{ macros.elementbars(cardstat.archedata, True) }}
+</section>
+
 <section id="buddy-cards">
     <h2>Buddy Cards</h2>
     <button onclick="toggle('#buddy-cards > .togglable')">Glimpse Buddies</button>

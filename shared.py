@@ -153,6 +153,10 @@ class ChampStats(TypeStats):
     
 
 class ArcheStats(TypeStats):
+    def __init__(self):
+        self.known_subtypes = []
+        super().__init__()
+
     def add_deck(self, deck):
         self.total_items += 1
         if not deck.archetypes:
@@ -172,9 +176,16 @@ class ArcheStats(TypeStats):
                 self.items[arche] += 1
                 self.item_elements[arche].add_deck(deck)
             else:
+                self.known_subtypes.append(arche)
                 self.items[arche] = 1
                 self.item_elements[arche] = ElementStats()
                 self.item_elements[arche].add_deck(deck)
+    
+    def __iter__(self):
+        for item, pct, quant in super().__iter__():
+            if item in self.known_subtypes:
+                continue
+            yield item, pct, quant
 
 
 class RegionStats:

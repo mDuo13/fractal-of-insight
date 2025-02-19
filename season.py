@@ -212,5 +212,10 @@ add_format("AMB + ALC Alter",
 )
 add_format("AMB + Reciprocity",
     start="2025-02-10",
+    end="2025-02-17",
     desc="Reciprocity, Dorumegia's Call added to Proxia's Vault"
+)
+add_format("AMB Post-Feb Bans",
+    start="2025-02-17",
+    desc="Icebound Slam and Baby Gray Slime banned."
 )
