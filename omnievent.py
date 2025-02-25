@@ -124,32 +124,31 @@ class OmniEvent:
     def analyze_day2(self):
         # TODO: maybe turn this into a list of stages?
         keepN = self.evt.get("keepN")
-        if not keepN:
-            return
-        day2_start = keepN[0]['round']
-        stage1 = self.evt['stages'][0]
-        if len(stage1['rounds']) <= day2_start:
-            print("Day 2 cutoff not ready yet")
-            return
-        d2r1pairings = stage1['rounds'][day2_start]["pairings"]
-        day2players = [self.pdict[pid] for pid in d2r1pairings.values()]
+        if keepN:
+            day2_start = keepN[0]['round']
+            stage1 = self.evt['stages'][0]
+            if len(stage1['rounds']) <= day2_start:
+                print("Day 2 cutoff not ready yet")
+                return
+            d2r1pairings = stage1['rounds'][day2_start]["pairings"]
+            day2players = [self.pdict[pid] for pid in d2r1pairings.values()]
 
-        self.day2stats = {
-            "elements": ElementStats(),
-            "archedata": ArcheStats(),
-            "champdata": ChampStats(),
-            "regiondata": RegionStats(),
-        }
-        for p in day2players:
-            if p.deck:
-                self.day2stats['elements'].add_deck(p.deck)
-                self.day2stats['archedata'].add_deck(p.deck)
-                self.day2stats['champdata'].add_deck(p.deck)
-            else:
-                self.day2stats['elements'].add_unknown()
-                self.day2stats['archedata'].add_unknown()
-                self.day2stats['champdata'].add_unknown()
-            self.day2stats['regiondata'].add_player(p)
+            self.day2stats = {
+                "elements": ElementStats(),
+                "archedata": ArcheStats(),
+                "champdata": ChampStats(),
+                "regiondata": RegionStats(),
+            }
+            for p in day2players:
+                if p.deck:
+                    self.day2stats['elements'].add_deck(p.deck)
+                    self.day2stats['archedata'].add_deck(p.deck)
+                    self.day2stats['champdata'].add_deck(p.deck)
+                else:
+                    self.day2stats['elements'].add_unknown()
+                    self.day2stats['archedata'].add_unknown()
+                    self.day2stats['champdata'].add_unknown()
+                self.day2stats['regiondata'].add_player(p)
         
         if self.top_cut:
             self.topcutstats = {
@@ -168,8 +167,6 @@ class OmniEvent:
                     self.topcutstats['archedata'].add_unknown()
                     self.topcutstats['champdata'].add_unknown()
                 self.topcutstats['regiondata'].add_player(p)
-
-
 
     def parse_top_cut(self):
         self.top_cut = []
