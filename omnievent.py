@@ -53,6 +53,7 @@ class OmniEvent:
         if not isinstance(self, Team3v3Event):
             self.parse_top_cut() # populates self.top_cut
             # For Team3v3, this needs to happen after parse_teams()
+        self.analyze_day2()
     
     def fix_generic_name(self):
         GENERIC_WORDS = [
@@ -119,6 +120,56 @@ class OmniEvent:
             self.regiondata.add_player(p)
         self.calc_draw_pct()
         self.calc_sideboards()
+    
+    def analyze_day2(self):
+        # TODO: maybe turn this into a list of stages?
+        keepN = self.evt.get("keepN")
+        if not keepN:
+            return
+        day2_start = keepN[0]['round']
+        stage1 = self.evt['stages'][0]
+        if len(stage1['rounds']) <= day2_start:
+            print("Day 2 cutoff not ready yet")
+            return
+        d2r1pairings = stage1['rounds'][day2_start]["pairings"]
+        day2players = [self.pdict[pid] for pid in d2r1pairings.values()]
+
+        self.day2stats = {
+            "elements": ElementStats(),
+            "archedata": ArcheStats(),
+            "champdata": ChampStats(),
+            "regiondata": RegionStats(),
+        }
+        for p in day2players:
+            if p.deck:
+                self.day2stats['elements'].add_deck(p.deck)
+                self.day2stats['archedata'].add_deck(p.deck)
+                self.day2stats['champdata'].add_deck(p.deck)
+            else:
+                self.day2stats['elements'].add_unknown()
+                self.day2stats['archedata'].add_unknown()
+                self.day2stats['champdata'].add_unknown()
+            self.day2stats['regiondata'].add_player(p)
+        
+        if self.top_cut:
+            self.topcutstats = {
+                "elements": ElementStats(),
+                "archedata": ArcheStats(),
+                "champdata": ChampStats(),
+                "regiondata": RegionStats(),
+            }
+            for p in self.top_cut:
+                if p.deck:
+                    self.topcutstats['elements'].add_deck(p.deck)
+                    self.topcutstats['archedata'].add_deck(p.deck)
+                    self.topcutstats['champdata'].add_deck(p.deck)
+                else:
+                    self.topcutstats['elements'].add_unknown()
+                    self.topcutstats['archedata'].add_unknown()
+                    self.topcutstats['champdata'].add_unknown()
+                self.topcutstats['regiondata'].add_player(p)
+
+
 
     def parse_top_cut(self):
         self.top_cut = []
@@ -266,123 +317,12 @@ class OmniEvent:
 
     def calc_headtohead(self, threshold=None, track_elo=False):
         return BattleChart.from_event(self, threshold=threshold, track_elo=track_elo)
-        # use_archetypes = [a[0] for a in self.archedata]
+
+    # def calc_conversion_rates(self):
+    #     if len(self.evt['stages']) <= 1:
+    #         return
         
-        # # subtypes = []
-        # # for a in self.archedata:
-        # #     subtypes += [s.name for s in a.subtypes]
-        # # use_archetypes += subtypes
-        
-        # battlechart = {a: {b:{"win":0,"draw":0,"matches":0,"mirror":0} for b in use_archetypes+[OVERALL]} for a in use_archetypes}
-        
-        # for stage in self.evt["stages"]:
-        #     #print(f"Stage {stage['id']} ({stage['type']})")
-        #     for rnd in stage["rounds"]:
-        #         #print(f"    Round {rnd['id']}")
 
-        #         for match in rnd["matches"]:
-        #             if len(match["pairing"]) < 2:
-        #                 #print("        And a bye")
-        #                 continue
-
-        #             if match["status"] == "started":
-        #                 #print("         Match ongoing")
-        #                 continue
-
-        #             p1r = match["pairing"][0]
-        #             p2r = match["pairing"][1]
-
-        #             p1 = self.pdict[p1r["id"]]
-        #             p2 = self.pdict[p2r["id"]]
-
-        #             if track_elo:
-        #                 p1.elo_diff += match["pairing"][0].get("eloChange", 0)
-        #                 p2.elo_diff += match["pairing"][1].get("eloChange", 0)
-
-        #             if p1r["score"] == p2r["score"] and p1r["score"] == 0:
-        #                 #print(f"        intentional draw")
-        #                 continue
-        #             elif not p1.deck or not p2.deck:
-        #                 #print("        (decklist unavailable)")
-        #                 continue
-                    
-        #             if threshold:
-        #                 if p1.rank_elo > threshold or p2.rank_elo > threshold:
-        #                     # Match below ranking threshold; don't count it
-        #                     continue
-        #                 else:
-        #                     #print(f"This is a match between two top-{threshold} players")
-        #                     pass
-                    
-        #             if p1r["score"] > p2r["score"]:
-        #                 # outcome = "beats"
-        #                 for as_t in p1.deck.archetypes + p1.deck.subtypes:
-        #                     battlechart[as_t][OVERALL]["win"] += 1
-        #                     battlechart[as_t][OVERALL]["matches"] += 1
-        #                     for vs_t in p2.deck.archetypes + p2.deck.subtypes:
-        #                         battlechart[as_t][vs_t]["win"] += 1
-        #                         battlechart[as_t][vs_t]["matches"] += 1
-        #                         battlechart[vs_t][as_t]["matches"] += 1
-        #                         if as_t == vs_t:
-        #                             # Note it was a mirror match so we can count the total
-        #                             # number of matches more accurately
-        #                             battlechart[as_t][vs_t]["mirror"] += 1
-        #                 for vs_t in p2.deck.archetypes + p2.deck.subtypes:
-        #                     if vs_t not in p1.deck.archetypes + p1.deck.subtypes:
-        #                         battlechart[vs_t][OVERALL]["matches"] += 1
-
-        #             elif p1r["score"] < p2r["score"]:
-        #                 # outcome = "loses to"
-        #                 for as_t in p1.deck.archetypes + p1.deck.subtypes:
-        #                     battlechart[as_t][OVERALL]["matches"] += 1
-        #                     for vs_t in p2.deck.archetypes + p2.deck.subtypes:
-        #                         battlechart[vs_t][as_t]["win"] += 1
-        #                         battlechart[as_t][vs_t]["matches"] += 1
-        #                         battlechart[vs_t][as_t]["matches"] += 1
-        #                         if as_t == vs_t:
-        #                             battlechart[as_t][vs_t]["mirror"] += 1
-        #                 for vs_t in p2.deck.archetypes + p2.deck.subtypes:
-        #                     if vs_t not in p1.deck.archetypes + p1.deck.subtypes:
-        #                         battlechart[vs_t][OVERALL]["win"] += 1
-        #                         battlechart[vs_t][OVERALL]["matches"] += 1
-
-        #             else:
-        #                 # outcome = "ties"
-        #                 for as_t in p1.deck.archetypes + p1.deck.subtypes:
-        #                     battlechart[as_t][OVERALL]["draw"] += 1
-        #                     battlechart[as_t][OVERALL]["matches"] += 1
-        #                     for vs_t in p2.deck.archetypes + p2.deck.subtypes:
-        #                         battlechart[as_t][vs_t]["draw"] += 1
-        #                         battlechart[vs_t][as_t]["draw"] += 1
-        #                         battlechart[as_t][vs_t]["matches"] += 1
-        #                         battlechart[vs_t][as_t]["matches"] += 1
-        #                         if as_t == vs_t:
-        #                             battlechart[as_t][vs_t]["mirror"] += 1
-        #                 for vs_t in p2.deck.archetypes + p2.deck.subtypes:
-        #                     if vs_t not in p1.deck.archetypes + p1.deck.subtypes:
-        #                         battlechart[vs_t][OVERALL]["draw"] += 1
-        #                         battlechart[vs_t][OVERALL]["matches"] += 1
-
-        #             # print(f"        {p1.deck} {outcome} {p2.deck}")
-        
-        # # Calculate win% and favored/unfavored status
-        # for as_type, records in battlechart.items():
-        #     for opp, r in records.items():
-        #         if r["matches"] > 0:
-        #             pct = round(100 * (r["win"] + (r["draw"] / 2)) / r["matches"], 1)
-                    
-        #             if pct > 60:
-        #                 rating = "favored"
-        #             elif pct < 40:
-        #                 rating = "unfavored"
-        #             else:
-        #                 rating = "even"
-        #             r["rating"] = rating
-        #             r["pct"] = pct
-        #         else:
-        #             r["rating"] = "no_data"
-        
-        # return battlechart
 
     def __repr__(self):
         return f"Event#{self.id}"
@@ -442,3 +382,6 @@ class Team3v3Event(OmniEvent):
         # Nah, it's just team standard.
         return {}
     
+    def analyze_day2(self):
+        # Maybe someday.
+        pass

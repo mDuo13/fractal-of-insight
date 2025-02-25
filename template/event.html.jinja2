@@ -2,6 +2,23 @@
 
 {% block subtitle %}{{evt.name}} Analysis - {% endblock %}
 
+{% macro regiontable(regiondata, id, collapse=True) %}
+<table class="tabcontent togglable {% if collapse %}collapse{% endif %}" id="{{id}}">
+    <thead><tr>
+        <th>Region</th><th># Entrants</th><th>%</th>
+    </tr></thead>
+    <tbody>
+        {% for region, quant, pct in regiondata %}
+        <tr>
+            <td>{{macros.flag(region, True)}}</td>
+            <td>{{quant}}</td>
+            <td>{{pct}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endmacro %}
+
 {% block body %}
 <nav id="main-nav">
     <a class="nav-item" href="/">⌂ Home</a>
@@ -61,20 +78,26 @@
         <h3>Home Region Breakdown</h3>
         <button onclick="toggle('.player-regions > .togglable')">Glimpse Region Data</button>
 
-        <table class="collapse togglable">
-            <thead><tr>
-                <th>Region</th><th># Entrants</th><th>%</th>
-            </tr></thead>
-            <tbody>
-                {% for region, quant, pct in evt.regiondata %}
-                <tr>
-                    <td>{{macros.flag(region, True)}}</td>
-                    <td>{{quant}}</td>
-                    <td>{{pct}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% if evt.day2stats or evt.topcutstats %}
+        <div class="tabs togglable collapse">
+            <button class="tab activetab" onclick="opentab(this, '#regions-overall')">Overall</button>
+            {% if evt.day2stats %}
+            <button class="tab" onclick="opentab(this, '#regions-day2')">Day 2</button>
+            {% endif %}
+            {% if evt.topcutstats %}
+            <button class="tab" onclick="opentab(this, '#regions-topcut')">Top Cut</button>
+            {% endif %}
+        </div>
+        {% endif %}
+        <div class="tabwrapper togglable collapse">
+            {{regiontable(evt.regiondata, "regions-overall", collapse=False)}}
+            {% if evt.day2stats %}
+            {{regiontable(evt.day2stats.regiondata, "regions-day2")}}
+            {% endif %}
+            {% if evt.topcutstats %}
+            {{regiontable(evt.topcutstats.regiondata, "regions-topcut")}}
+            {% endif %}
+        </div>
     </div>
 </section>
 
@@ -83,16 +106,92 @@
     <h2>Meta Composition</h2>
     <button onclick="toggle('#meta_composition > .togglable')">Glimpse Meta Composition</button>
     <h3 class="togglable collapse">Elements</h3>
-    <div class="element-meta collapse togglable">
-        {{macros.elementpie(evt.elements)}}
+    {% if evt.day2stats or evt.topcutstats %}
+    <div class="tabs togglable collapse">
+        <button class="tab activetab" onclick="opentab(this, '#element-meta-overall')">Overall</button>
+        {% if evt.day2stats %}
+        <button class="tab" onclick="opentab(this, '#element-meta-day2')">Day 2</button>
+        {% endif %}
+        {% if evt.topcutstats %}
+        <button class="tab" onclick="opentab(this, '#element-meta-topcut')">Top Cut</button>
+        {% endif %}
+    </div>
+    {% endif %}
+    <div class="tabwrapper togglable collapse">
+        <div class="element-meta tabcontent" id="element-meta-overall">
+            {{macros.elementpie(evt.elements)}}
+        </div>
+    {% if evt.day2stats %}
+        <div class="element-meta tabcontent collapse togglable" id="element-meta-day2">
+            {{macros.elementpie(evt.day2stats.elements)}}
+        </div>
+    {% endif %}
+    {% if evt.topcutstats %}
+        <div class="element-meta tabcontent collapse togglable" id="element-meta-topcut">
+            {{macros.elementpie(evt.topcutstats.elements)}}
+        </div>
+    {% endif %}
     </div>
 
     <h3 class="togglable collapse">Archetypes</h3>
-    {{ macros.elementbars(evt.archedata, True) }}
+    {% if evt.day2stats or evt.topcutstats %}
+    <div class="tabs togglable collapse">
+        <button class="tab activetab" onclick="opentab(this, '#archedata-overall')">Overall</button>
+        {% if evt.day2stats %}
+        <button class="tab" onclick="opentab(this, '#archedata-day2')">Day 2</button>
+        {% endif %}
+        {% if evt.topcutstats %}
+        <button class="tab" onclick="opentab(this, '#archedata-topcut')">Top Cut</button>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="tabwrapper togglable collapse">
+        <div class="tabcontent togglable" id="archedata-overall">
+            {{ macros.elementbars(evt.archedata, link=True, collapse=False) }}
+        </div>
+        {% if evt.day2stats %}
+        <div class="tabcontent togglable collapse" id="archedata-day2">
+            {{ macros.elementbars(evt.day2stats.archedata, link=True, collapse=False) }}
+        </div>
+        {% endif %}
+        {% if evt.topcutstats %}
+        <div class="tabcontent togglable collapse" id="archedata-topcut">
+            {{ macros.elementbars(evt.topcutstats.archedata, link=True, collapse=False) }}
+        </div>
+        {% endif %}
+    </div>
     <p class="togglable collapse">Note archetypes don't sum to 100% because decks can be multiple archetypes.</p>
 
     <h3 class="togglable collapse">Champions</h3>
-    {{ macros.elementbars(evt.champdata) }}
+
+    {% if evt.day2stats or evt.topcutstats %}
+    <div class="tabs togglable collapse">
+        <button class="tab activetab" onclick="opentab(this, '#champdata-overall')">Overall</button>
+        {% if evt.day2stats %}
+        <button class="tab" onclick="opentab(this, '#champdata-day2')">Day 2</button>
+        {% endif %}
+        {% if evt.topcutstats %}
+        <button class="tab" onclick="opentab(this, '#champdata-topcut')">Top Cut</button>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="tabwrapper togglable collapse">
+        <div class="tabcontent togglable" id="champdata-overall">
+            {{ macros.elementbars(evt.champdata, link=True, collapse=False) }}
+        </div>
+        {% if evt.day2stats %}
+        <div class="tabcontent togglable collapse" id="champdata-day2">
+            {{ macros.elementbars(evt.day2stats.champdata, link=True, collapse=False) }}
+        </div>
+        {% endif %}
+        {% if evt.topcutstats %}
+        <div class="tabcontent togglable collapse" id="champdata-topcut">
+            {{ macros.elementbars(evt.topcutstats.champdata, link=True, collapse=False) }}
+        </div>
+        {% endif %}
+    </div>
     <p class="togglable collapse">This breakdown only shows the basic elements from the deck's spirit(s), not elements added by Lv1+ champions.</p>
 
     <h3 class="togglable collapse">Sideboards</h3>

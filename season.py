@@ -130,8 +130,6 @@ class Format(Season):
         self.name = name
         self.start_time = start
         self.end_time = end
-        if not end:
-            self.end_time = strftime(ISOFMT, gmtime())
         self.season_guide = None
         self.desc = desc
         self.events = []
@@ -147,9 +145,11 @@ class Format(Season):
         if evt.evt["format"] != "standard":
             return False
         fmt_start = strptime(self.start_time, ISOFMT)
-        fmt_end = strptime(self.end_time, ISOFMT)
+        if self.end_time:
+            fmt_end = strptime(self.end_time, ISOFMT)
+        
         evt_start = gmtime(evt.evt["startAt"]/1000)
-        if fmt_start <= evt_start < fmt_end:
+        if fmt_start <= evt_start and (not self.end_time or evt_start < fmt_end):
             return True
         return False
     

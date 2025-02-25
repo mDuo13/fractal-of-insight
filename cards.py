@@ -25,3 +25,13 @@ ERRATA = {
         "img": "https://ga-mainsite-common.s3.us-west-2.amazonaws.com/media/PRXY_002_Stonescale_Band_921e35b7d4.jpg"
     }
 }
+
+BANLIST = [
+    "Sword of Avarice",
+    "Reckless Conversion",
+    "Corhazi Outlook",
+    "Crystal of Empowerment",
+    "Erupting Rhapsody",
+    "Baby Gray Slime",
+    "Icebound Slam",
+]

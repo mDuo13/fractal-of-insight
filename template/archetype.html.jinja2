@@ -76,7 +76,7 @@
         <p class="explanation">(Based on {{a.matched_decks|length}} decks with a combined win rate of {{a.winrate}}%.)</p>
         {% for card_o in a.card_freq.values() %}
             {% if loop.index0 < 20 %}
-            <a class="cardimg" href="/card/{{slugify(card_o['card'])}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%</span></a>
+            {{ macros.cardimg(card_o, link=True)}}
             {% endif %}
         {% endfor %}
     </div>

@@ -250,9 +250,24 @@
 <p class="explanation{% if not only_show %} collapse togglable{% endif %}">(Match counts may not sum as expected because some decks count towards multiple archetypes. Head-to-head stats exclude byes and intentional draws.)</p>
 {% endmacro %}
 
+{% macro cardimg(card, hide_overlay=False, link=False, spoiler=False) %}
+{% if link %}
+    {% set el = "a" %}
+{% else %}
+    {% set el = "div" %}
+{% endif %}
+<{{el}} class="cardimg{% if card["newspoiler"] %} newspoiler{% endif %}{% if card["banned"] %} banned{% endif%}" {% if link %}href="/card/{{slugify(card['card'])}}.html"{% endif %}>
+    <img src="{{card['img']}}" alt="{{card['card']}}" loading="lazy" />
+    {%- if card['quantity'] is defined and not hide_overlay -%}
+    <span class="quant">{{card["quantity"]}}</span>
+    {%- elif card['pct'] is defined and not hide_overlay -%}
+    <span class="quant">{{card["pct"]}}%</span>
+    {% endif %}
+</{{el}}>
+{% endmacro %}
 
-{% macro elementbars(data, link=False) %}
-<div class="collapse togglable element-bars">
+{% macro elementbars(data, link=False, collapse=True) %}
+<div class="{% if collapse %}collapse{% endif %} togglable element-bars">
     {% for label, pct, elpcts in data %}
     {% if pct > 0 %}
         <div class="archetype">
@@ -286,7 +301,11 @@
             </ul>
             <div class="deck_gfx">
                 {% for card_o in p.deck.dl["material"] %}
-                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" />{% if card_o["quantity"] != 1 %}<span class="quant">{{card_o["quantity"]}}</span>{% endif %}</div>
+                {% if card_o["quantity"] == 1 %}
+                    {{ cardimg(card_o, hide_overlay=True) }}
+                {% else %}
+                    {{ cardimg(card_o) }}
+                {% endif %}
                 {% endfor %}
             </div>
             <h4>Maindeck <span class="cardcount">({{p.deck.main_total}} cards)</span></h4>
@@ -297,7 +316,7 @@
             </ul>
             <div class="deck_gfx">
                 {% for card_o in p.deck.dl["main"] %}
-                <div class="cardimg{% if card_o['newspoiler'] %} newspoiler{% endif %}"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</span></div>
+                    {{ cardimg(card_o) }}
                 {% endfor %}
             </div>
             <h4>Sideboard <span class="cardcount">({{p.deck.side_total}} cards, {{p.deck.side_points}} points)</span></h4>
@@ -308,7 +327,7 @@
             </ul>
             <div class="deck_gfx">
                 {% for card_o in p.deck.dl["sideboard"] %}
-                <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["quantity"]}}</span></div>
+                    {{ cardimg(card_o) }}
                 {% endfor %}
             </div>
             <textarea class="omniexport">

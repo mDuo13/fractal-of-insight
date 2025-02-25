@@ -43,7 +43,7 @@
     <div class="top-cards collapse togglable">
     {% for card_o in cardstat.related_cards.values() %}
         {% if loop.index0 < 20 %}
-        <a class="cardimg" href="/card/{{slugify(card_o['card'])}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" /><span class="quant">{{card_o["pct"]}}%</span></a>
+        {{ macros.cardimg(card_o, link=True)}}
         {% endif %}
     {% endfor %}
     </div>

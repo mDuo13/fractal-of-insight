@@ -3,7 +3,7 @@ from collections import defaultdict
 
 from shared import slugify, fix_case, lineage
 from datalayer import get_card_img, carddata, card_is_floating
-from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK
+from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST
 from archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
 from cardstats import ALL_CARD_STATS
 
@@ -105,21 +105,27 @@ class Deck:
         self.els = els
     
     def fix_dl(self):
-        # TODO: handle more cases where card name isn't properly cased
         if not self.dl.get("main"):
             raise ValueError(f"Decklist has no maindeck? {self.dl}")
         for card_o in self.dl["main"]:
             card_o["card"] = fix_case(card_o["card"])
+            if card_o["card"] in BANLIST:
+                card_o["banned"] = True
         for card_o in self.dl["material"]:
             card_o["card"] = fix_case(card_o["card"])
+            if card_o["card"] in BANLIST:
+                card_o["banned"] = True
         for card_o in self.dl["sideboard"]:
             card_o["card"] = fix_case(card_o["card"])
+            if card_o["card"] in BANLIST:
+                card_o["banned"] = True
 
-        # Special case for Yeti local 9/5 which used Gate of Alterity as a placeholder for Polaris, Twinkling Cauldron
+        # Special case for Yeti local 9/5/2024 which used Gate of Alterity as a placeholder for Polaris, Twinkling Cauldron
         if self.entrant.evt_time == 1725580800000:
             for card_o in self.dl["material"]:
                 if card_o["card"] == "Gate of Alterity":
                     card_o["card"] = "Polaris, Twinkling Cauldron"
+        
 
         self.dl["main"].sort(key=lambda x:x["card"])
         self.dl["sideboard"].sort(key=lambda x:x["card"])

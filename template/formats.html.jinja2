@@ -12,14 +12,12 @@
 
 Compare data for standard formats split by card legality changes including cards being banned (Category 3) or added to Proxia's Vault, excluding April Fools changes.
 
-
-
 <div id="elements">
     <h2>Elements</h2>
     <button onclick="toggle('#elements > .togglable')">Glimpse Element Breakdown</button>
 
     {% for fmt in formats %}
-    <h3 class="collapse togglable">{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time}})</span></h3>
+    <h3 class="collapse togglable">{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time|default("Ongoing", true)}})</span></h3>
     <p class="explanation collapse togglable">{{fmt.desc}} ({{fmt.events|length}} events)</p>
     <div class="element-meta collapse togglable">
         {{macros.elementpie(fmt.elements)}}
