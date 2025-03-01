@@ -291,7 +291,7 @@ wind_allies = add_archetype(
         "Wildgrowth Feline",
     ],
     require_types={
-        "ALLY": 24
+        "ALLY": 22
     },
     require_element="Wind",
     shortname="Allies"
@@ -620,5 +620,15 @@ add_archetype(
     "Dahlia",
     [
         "Dahlia, Idyllic Dreamer"
+    ]
+)
+
+add_archetype(
+    "Fractal",
+    [
+        "Fractal of Mana",
+    ],
+    exclude_cards=[
+        "Dungeon Guide",
     ]
 )
