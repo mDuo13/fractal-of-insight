@@ -64,7 +64,7 @@ class Archetype:
         return False
 
     def add_match(self, deck):
-        if not SharedConfig.go_fast:
+        if not SharedConfig.go_fast and not self.subtype_of:
             for d in self.matched_decks:
                 sim = deck.similarity_to(d)
                 if sim >= SIMILAR_DECKS_CUTOFF:

@@ -37,10 +37,12 @@ class Entrant:
             self.record = f"{self.wins + self.byes}-{self.losses}-{self.ties}"
             if 3*(self.wins + self.byes) + self.ties > self.score:
                 print(f"event {evt_id}: byes counted in wins when not expected")
+                exit(1)
         else:
             self.record = f"{self.wins}-{self.losses}-{self.ties}"
             if 3*(self.wins + self.byes) + self.ties <= self.score and self.byes > 0:
                 print(f"event {evt_id}: byes NOT counted in wins when expected")
+                exit(1)
             
 
         # if data.get("isDecklistPublic"):

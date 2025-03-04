@@ -22,13 +22,13 @@ def trim_similar(dlist, limit):
     Given a list of (d,sim) tuples where d is a deck,
     return the limit most similar decks, ordered by date
     """
+    dlist2 = [x for x in dlist]
+    dlist2.sort(key=lambda x:x[1], reverse=True)
     if len(dlist) > limit:
-        dlist2 = [x for x in dlist]
-        dlist2.sort(key=lambda x:x[1], reverse=True)
         dlist2 = dlist2[:limit]
         dlist2.sort(key=lambda x:x[0].date)
         return dlist2
-    return dlist
+    return dlist2
 
 class Deck:
     def __init__(self, dl, entrant):

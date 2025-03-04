@@ -13,6 +13,7 @@
         <thead><tr>
             <th>Username</th>
             <th>Events Recorded</th>
+            <th>Region</th>
             <th>Latest Event</th>
             <th>Most-played Champion</th>
         </tr></thead>
@@ -22,6 +23,7 @@
             <tr>
                 <td><a href="/player/{{p.id}}.html">{{p.username}} #{{p.id}}</a></td>
                 <td>{{p.events|length}}</td>
+                <td>{{macros.flag(p.region)}}
                 <td><a href="/{{e.season}}/{{e.id}}.html">{{e.name}}</a></td>
                 <td>{{p.mostplayed()}}</td>
             </tr>
