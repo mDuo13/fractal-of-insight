@@ -33,7 +33,7 @@ class Entrant:
 
         # At some point Omnidex changed from the "wins" number being inclusive of byes
         # to it not being.
-        if self.evt_time >= 1715745600000 or evt_id == "1687":
+        if self.evt_time >= 1715340600001 or evt_id == "1687":
             self.record = f"{self.wins + self.byes}-{self.losses}-{self.ties}"
             if 3*(self.wins + self.byes) + self.ties > self.score:
                 print(f"event {evt_id}: byes counted in wins when not expected")
