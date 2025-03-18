@@ -23,7 +23,7 @@ class NoDeck(Exception):
     pass
 
 MAX_RETRIES = 3
-TIMEOUT_SECONDS = 3
+TIMEOUT_SECONDS = 8
 def fetch(url):
     """
     Get with timeouts, automatic backoff, etc.

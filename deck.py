@@ -56,6 +56,7 @@ class Deck:
     
     def find_champs(self):
         self.champs = []
+        self.fatestones = []
         lineages = []
         levels = set()
         self.is_hybrid = False
@@ -73,6 +74,9 @@ class Deck:
                 elif lineage(cardname) in lineages:
                     self.champs.append(cardname)
                     levels.add(card["level"])
+            elif "FATESTONE" in card.get("subtypes", []):
+                backside = card["editions"][0]["other_orientations"][0]["name"]
+                self.fatestones.append(backside.split(",", 1)[0])
 
         self.lineages = list(dict.fromkeys(lineages)) # Uniquified
 
@@ -287,6 +291,9 @@ class Deck:
             champstr = ""
         if self.is_hybrid:
             champstr += " Hybrid"
+        
+        if self.fatestones:
+            champstr = " ".join(self.fatestones) + " " + champstr
 
         if not self.archetypes:
             archetypestr = ""

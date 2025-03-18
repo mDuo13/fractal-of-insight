@@ -179,6 +179,8 @@ class PageBuilder:
                     aew[arche] = wins
 
         for a in ARCHETYPES.values():
+            # if a.shortname == "": # Quasi-sub archetypes like Fatestone
+            #     continue
             if a.name not in aew.keys():
                 aew[a.name] = []
             self.write_archetype(a, known_players, all_events, seasons_sorted, aew[a.name])

@@ -5,6 +5,10 @@
 {% block body %}
 <nav id="main-nav">
     <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/player/">→ Players</a>
+    <b class="nav-item">↓ Decks</b>
+    <a class="nav-item" href="/formats/">→ Format Stats</a>
+    <a class="nav-item" href="/card/">→ Cards</a>
 </nav>
 
 <section id="arche-list">
@@ -19,6 +23,7 @@
     </tr></thead>
     <tbody>
     {% for arche in archetypes %}
+    {% if arche.shortname != ""%}
     <tr class="p-row">
         <td>
             <a href="/deck/{{slugify(arche.name)}}.html">{{arche.name}}</a>
@@ -30,6 +35,7 @@
         <td>{{arche.winrate}}%</td>
         <td>{{aew[arche.name]|length}}</td>
     </tr>
+    {% endif %}
     {% endfor %}
     </tbody>
 </table>

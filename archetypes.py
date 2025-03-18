@@ -68,6 +68,9 @@ class Archetype:
             for d in self.matched_decks:
                 sim = deck.similarity_to(d)
                 if sim >= SIMILAR_DECKS_CUTOFF:
+                    if d in [d2[0] for d2 in deck.similar_decks]:
+                        # Already matched, probably via a different overlapping archetype
+                        continue
                     #print(f"Similarity: {sim}% ({deck.entrant} {deck.date} vs {d.entrant} {d.date})")
                     # if (d in [x[1] for x in deck.similar_decks]):
                     #     print(f"Inserting duplicate similar_deck?? {d} vs {deck}")
@@ -249,6 +252,7 @@ water_allies = add_archetype(
     exclude_cards=[
         "Spirit Blade: Ensoul",
         "Revitalizing Cleanse",
+        "Dawn of Ashes",
     ],
     require_types={
         "ALLY": 20
@@ -289,6 +293,7 @@ wind_allies = add_archetype(
         "Shadowstrike",
         "Storm Slime",
         "Wildgrowth Feline",
+        "Dawn of Ashes",
     ],
     require_types={
         "ALLY": 22
@@ -340,6 +345,7 @@ add_archetype(
         "Vanitas, Obliviate Schemer",
         "Relentless Outburst",
         "Ghosts of Pendragon",
+        "Dungeon Guide",
     ]
 )
 
@@ -381,6 +387,9 @@ add_archetype(
         "Insignia of the Corhazi",
         "Thousand Refractions",
         "Gleaming Cut",
+    ],
+    exclude_cards=[
+        "Guo Jia, Heaven's Favored"
     ],
     shortname="Luxem"
 )
@@ -597,6 +606,7 @@ add_archetype(
         "Silvie, Loved by All",
         "Silvie, Earth's Tune",
         "Silvie, Slime Sovereign",
+        "Diao Chan, Idyll Corsage",
     ],
     shortname = "Tera",
 )
@@ -626,9 +636,53 @@ add_archetype(
 add_archetype(
     "Fractal",
     [
-        "Fractal of Mana",
+        "Burst Asunder",
+        "Shimmering Refraction",
     ],
     exclude_cards=[
         "Dungeon Guide",
+        "Strategem of Myriad Ice",
+        "Firebloom Flourish",
+    ]
+)
+add_archetype(
+    "Luxem Tamer",
+    [
+        "Fortuitous Flock",
+        "Fatestone of Heaven",
+        "Excalibur, Cleansing Light",
+        "Glorious Presence",
+    ],
+    exclude_cards=[
+        "Zander, Blinding Steel",
+        "Zander, Corhazi's Chosen",
+        "Tonoris, Genesis Aegis",
+    ],
+    shortname="Luxem",
+)
+
+add_archetype(
+    "Tera Cleric",
+    [
+        "Diao Chan, Idyll Corsage",
+        "Season's End",
+        "Bloom: Winter's Chill",
+        "Maiden of Primal Virtue",
+    ],
+    shortname="Tera",
+)
+
+# Turns out Rebuke is a more distinctive indicator than Firebloom.
+add_archetype(
+    "Rebuke",
+    [
+        "Searing Rebuke",
+    ]
+)
+
+add_archetype(
+    "Dawn of Ashes",
+    [
+        "Dawn of Ashes",
     ]
 )

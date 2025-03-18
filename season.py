@@ -158,6 +158,7 @@ class Format(Season):
 
 
 SEASONS = {
+    "Abyssal Heaven": "HVN",
     "Mortal Ambition": "AMB",
     "Offseason": "OFF",
     "Mercurial Heart": "MRC",
@@ -217,5 +218,10 @@ add_format("AMB + Reciprocity",
 )
 add_format("AMB Post-Feb Bans",
     start="2025-02-17",
+    end="2025-03-07",
     desc="Icebound Slam and Baby Gray Slime banned."
+)
+add_format("HVN Release",
+    start="2025-03-07",
+    desc="Abyssal Heaven released."
 )
