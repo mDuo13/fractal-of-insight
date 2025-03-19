@@ -648,10 +648,11 @@ add_archetype(
 add_archetype(
     "Luxem Tamer",
     [
-        "Fortuitous Flock",
+        "Felicitous Flock",
         "Fatestone of Heaven",
         "Excalibur, Cleansing Light",
         "Glorious Presence",
+        "Sunblessed Gazelle",
     ],
     exclude_cards=[
         "Zander, Blinding Steel",
