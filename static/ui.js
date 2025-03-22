@@ -173,3 +173,14 @@ function omnidexexport(q) {
         navigator.clipboard.writeText(textarea.textContent)
     }
 }
+
+function carddetail(c) {
+    c.classList.toggle("dblclicked")
+    c.querySelector(".carddeets").classList.toggle("collapse")
+}
+function flipcard(event, c) {
+    event.stopPropagation()
+    c.querySelector(".cardfront").classList.toggle("flipped")
+    c.querySelector(".cardback").classList.toggle("flipped")
+
+}

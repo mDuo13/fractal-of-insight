@@ -276,7 +276,6 @@ th {
     z-index: 6;
 }
 
-.decklist .cardimg:active > img,
 .decklist .cardimg.dblclicked > img {
 	position: absolute;
 	width: 250px;
@@ -308,6 +307,52 @@ th {
     text-align: center;
     z-index: 3;
 }
+.decklist .cardimg .flipper {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    padding: 5px;
+    background: #333;
+    color: white;
+    font-weight: bold;
+    border-radius: 3px;
+    border: 2px solid white;
+    text-align: center;
+    z-index: 4;
+    cursor: alias;
+}
+.decklist .cardimg.dblclicked .flipper {
+    right: -15px;
+    bottom: -170px;
+}
+
+.cardback {
+    transition: transform .5s;
+    transform-style: preserve-3d;
+    position: absolute;
+    left: 0;
+    top: 0;
+    backface-visibility: hidden;
+}
+.cardfront {
+    transition: transform .5s;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
+.flipped {
+    transform: rotateY(180deg);
+}
+.carddeets {
+    z-index: 5;
+    position: absolute;
+    bottom: calc(-100% - 32px);
+    left: 75px;
+    width: 50%;
+    background: white;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
 .decklist .permalink {
     float: right;
     padding: 7px 5px;
@@ -707,6 +752,18 @@ footer {
 
 #card-info .cardimg img {
     border-radius: 10px;
+}
+
+#card-info .cardimg {
+    display: inline-block;
+    width: 300px;
+    height: 440px;
+}
+
+#card-info .cardside-front,
+#card-info .cardside-back {
+    display: block;
+    text-align: center;
 }
 
 @keyframes rotateglow {

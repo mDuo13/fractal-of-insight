@@ -115,14 +115,23 @@ class Deck:
             card_o["card"] = fix_case(card_o["card"])
             if card_o["card"] in BANLIST:
                 card_o["banned"] = True
+            card_back = carddata[card_o["card"]].get("back")
+            if card_back:
+                card_o["back"] = card_back
         for card_o in self.dl["material"]:
             card_o["card"] = fix_case(card_o["card"])
             if card_o["card"] in BANLIST:
                 card_o["banned"] = True
+            card_back = carddata[card_o["card"]].get("back")
+            if card_back:
+                card_o["back"] = card_back
         for card_o in self.dl["sideboard"]:
             card_o["card"] = fix_case(card_o["card"])
             if card_o["card"] in BANLIST:
                 card_o["banned"] = True
+            card_back = carddata[card_o["card"]].get("back")
+            if card_back:
+                card_o["back"] = card_back
 
         # Special case for Yeti local 9/5/2024 which used Gate of Alterity as a placeholder for Polaris, Twinkling Cauldron
         if self.entrant.evt_time == 1725580800000:

@@ -15,6 +15,7 @@ from competition import EVENT_TYPES, TEAM_STANDARD
 from player import Player
 from archetypes import ARCHETYPES, NO_ARCHETYPE
 from spoiler import SpoilerEvent, SPOILER_SEASONS
+from cards import ERRATA, BANLIST
 from cardstats import ALL_CARD_STATS
 
 SIGHTINGS_PER_PAGE = 200
@@ -109,7 +110,7 @@ class PageBuilder:
     def write_card_page(self, cardname, cardstat, events=[]):
         max_page = ceil(len(cardstat.appearances) / CARD_SIGHTINGS_PER_PAGE)
 
-        self.render("card.html.jinja2", f"card/{slugify(cardname)}.html", card=carddata[cardname], cardstat=cardstat, events=events, page_number=1, page_start=0, page_end=CARD_SIGHTINGS_PER_PAGE, max_page=max_page)
+        self.render("card.html.jinja2", f"card/{slugify(cardname)}.html", card=carddata[cardname], cardstat=cardstat, events=events, ERRATA=ERRATA, BANLIST=BANLIST, page_number=1, page_start=0, page_end=CARD_SIGHTINGS_PER_PAGE, max_page=max_page)
 
         # Actually printing all these sightings is like 4.5 gigs of data oops
         # if max_page > 1:

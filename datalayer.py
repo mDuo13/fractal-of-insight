@@ -108,10 +108,16 @@ try:
                 setlist = json.load(f)
             for card in setlist:
                 cardname = fix_case(card["name"])
+
+                o_orients = card["editions"][0].get("other_orientations")
+                if o_orients:
+                    card["back"] = o_orients[0]
+
                 if cardname not in carddata.keys():
                     carddata[cardname] = card
                 else:
                     carddata[cardname]["result_editions"] += card["result_editions"]
+                
                     
     # with open(f"data/cards.json") as f:
     #     carddata = json.load(f)
@@ -139,7 +145,11 @@ for cardname, card in carddata.items():
     if lowest_rarity == 99:
         exit(f"Error finding lowest rarity for {cardname}.")
     ed_slug = lowest_ced["slug"]
-    card["img"] = f"https://ga-index-public.s3.us-west-2.amazonaws.com/cards/{ed_slug}.jpg"
+    #card["img"] = f"https://ga-index-public.s3.us-west-2.amazonaws.com/cards/{ed_slug}.jpg"
+    card["img"] = f"https://api.gatcg.com/cards/images/{ed_slug}.jpg"
+    if card.get("back"):
+        back_img = card["back"]["edition"]["image"]
+        card["back"]["img"] = f"https://api.gatcg.com{back_img}"
 
 def get_card_img(cardname, at=0):
     # Special case for errata'd Proxia's Vault cards like Stonescale Band
@@ -161,7 +171,8 @@ def get_card_img(cardname, at=0):
         print("Invalid/unexpected Index response:", index_lookup)
         exit()
     ed_slug = index_json["result_editions"][0]["slug"]
-    card_img = f"https://ga-index-public.s3.us-west-2.amazonaws.com/cards/{ed_slug}.jpg"
+    #card_img = f"https://ga-index-public.s3.us-west-2.amazonaws.com/cards/{ed_slug}.jpg"
+    card_img = f"https://api.gatcg.com/cards/images/{ed_slug}.jpg"
     # print("Saving card data to cache...")
     # makedirs("data/", exist_ok=True)
     # carddata[cardname] = {

@@ -16,12 +16,39 @@
 
 <section id="card-info">
     <ul class="scooped-corners">
-        <li><div class="cardimg"><img src="{{card['img']}}" alt="{{card.name}}" loading="eager" width="300" height="420" /></div>
+    {% if card.back %}
+        <li>
+            <div class="cardimg">
+                <span class="cardside-front">Front</span>
+                <img src="{{card.img}}" alt="{{card.name}}" loading="eager" width="300" height="420" />
+            </div>
+            <div class="cardimg">
+                <span class="cardside-back">Back</span>
+                <img src="{{card.back.img}}" alt="{{card.back.name}}" loading="eager" width="300" height="420" />
+            </div>
+        </li>
+    {% elif card.name in ERRATA.keys() %}
+        <li>
+            <div class="cardimg">
+                <span class="card-current">(Current)</span>
+                <img src="{{card.img}}" alt="{{card.name}}" loading="eager" width="300" height="420" />
+            </div>
+            <div class="cardimg">
+                <span class="card-before-errata">(Before errata)</span>
+                <img src="{{ERRATA[card.name].img}}" alt="{{card.name}} (Before errata)" loading="eager" width="300" height="420" />
+            </div>
+        </li>
+    {% else %}
+        <li><div class="cardimg"><img src="{{card.img}}" alt="{{card.name}}" loading="eager" width="300" height="420" /></div></li>
+    {% endif %}
         <li><b>Appearances recorded</b>: {{cardstat.num_appearances}}</li>
         <li><b>First played by</b>: <a href="/player/{{cardstat.first_user.id}}.html">{{cardstat.first_user}}</a></li>
         <li><b>Overall win rate</b>: {{cardstat.winrate}}%</li>
-        <li><b>Lifeteme record</b>: {{cardstat.wins}}-{{cardstat.losses}}-{{cardstat.ties}}</li>
+        <li><b>Lifetime record</b>: {{cardstat.wins}}-{{cardstat.losses}}-{{cardstat.ties}}</li>
         <li><a href="https://index.gatcg.com/card/{{card.slug}}">Index Lookup</a></li>
+    {% if card.name in BANLIST %}
+        <li><b>Banned in Standard play</b></li>
+    {% endif %}
     </ul>
 </section>
 
