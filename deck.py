@@ -301,8 +301,8 @@ class Deck:
         if self.is_hybrid:
             champstr += " Hybrid"
         
-        if self.fatestones:
-            champstr = " ".join(self.fatestones) + " " + champstr
+        # if self.fatestones:
+        #     champstr = " ".join(self.fatestones) + " " + champstr
 
         if not self.archetypes:
             archetypestr = ""

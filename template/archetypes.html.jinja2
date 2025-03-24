@@ -23,7 +23,6 @@
     </tr></thead>
     <tbody>
     {% for arche in archetypes %}
-    {% if arche.shortname != ""%}
     <tr class="p-row">
         <td>
             <a href="/deck/{{slugify(arche.name)}}.html">{{arche.name}}</a>
@@ -35,7 +34,6 @@
         <td>{{arche.winrate}}%</td>
         <td>{{aew[arche.name]|length}}</td>
     </tr>
-    {% endif %}
     {% endfor %}
     </tbody>
 </table>

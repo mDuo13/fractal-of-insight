@@ -251,7 +251,6 @@ water_allies = add_archetype(
     ],
     exclude_cards=[
         "Spirit Blade: Ensoul",
-        "Revitalizing Cleanse",
         "Dawn of Ashes",
     ],
     require_types={
@@ -338,6 +337,7 @@ add_archetype(
         "Flamewing Fowl",
         "Heated Vengeance",
         "Rending Flames",
+        "Blazing Bowman",
     ],
     require_element="Fire",
     shortname="Aggro",
@@ -437,18 +437,6 @@ slimes = add_archetype(
         "Ethereal Slime",
     ]
 )
-# slimes.add_subtype(
-#     "Norm Slimes",
-#     ["Silvie, Slime Sovereign"],
-#     require_element="Norm",
-#     shortname="",
-# )
-# slimes.add_subtype(
-#     "Fire Slimes",
-#     ["Silvie, Slime Sovereign"],
-#     require_element="Fire",
-#     shortname="",
-# )
 
 add_archetype(
     "Slice & Dice",
@@ -660,6 +648,31 @@ add_archetype(
         "Tonoris, Genesis Aegis",
     ],
     shortname="Luxem",
+)
+
+add_archetype(
+    "Seiryuu",
+    [
+        "Fabled Azurite Fatestone"
+    ]
+)
+add_archetype(
+    "Genbu",
+    [
+        "Fabled Sapphire Fatestone"
+    ]
+)
+add_archetype(
+    "Byakko",
+    [
+        "Fabled Emerald Fatestone"
+    ]
+)
+add_archetype(
+    "Suzaku",
+    [
+        "Fabled Ruby Fatestone"
+    ]
 )
 
 add_archetype(
