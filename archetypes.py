@@ -437,18 +437,18 @@ slimes = add_archetype(
         "Ethereal Slime",
     ]
 )
-slimes.add_subtype(
-    "Norm Slimes",
-    ["Silvie, Slime Sovereign"],
-    require_element="Norm",
-    shortname="",
-)
-slimes.add_subtype(
-    "Fire Slimes",
-    ["Silvie, Slime Sovereign"],
-    require_element="Fire",
-    shortname="",
-)
+# slimes.add_subtype(
+#     "Norm Slimes",
+#     ["Silvie, Slime Sovereign"],
+#     require_element="Norm",
+#     shortname="",
+# )
+# slimes.add_subtype(
+#     "Fire Slimes",
+#     ["Silvie, Slime Sovereign"],
+#     require_element="Fire",
+#     shortname="",
+# )
 
 add_archetype(
     "Slice & Dice",

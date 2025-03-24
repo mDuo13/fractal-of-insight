@@ -52,7 +52,7 @@ form > fieldset {
 
 .favored { background-color:green; color: white;}
 .unfavored{background-color: pink}
-.no_data{background-color:gray}
+.no_data{background-color:gray; font-size: 15px;}
 .even{background-color: white;}
 
 #head-to-head td a,

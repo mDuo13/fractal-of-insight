@@ -1,4 +1,7 @@
 from shared import keydefaultdict
+from cards import ELEMENTS
+
+LINEAGES = set()
 
 class BCCell:
     def __init__(self, name):
@@ -49,7 +52,7 @@ class BCRow:
         self.cols = keydefaultdict(BCCell)
         self.subrows = keydefaultdict(BCRow)
     
-    def win_vs(self, vs_deck, subtypes=[]):
+    def win_vs(self, vs_deck, as_deck=None):
         self.wins += 1
         self.matches += 1
         for vs_t in vs_deck.archetypes:
@@ -58,20 +61,31 @@ class BCRow:
             if self.name == vs_t:
                 self.cols[vs_t].mirrors += 1/2
                 self.mirrors += 1/2
-        for as_t in subtypes:
-            self.subrows[as_t].win_vs(vs_deck)
+        if as_deck:
+            [LINEAGES.add(l) for l in as_deck.lineages]
+            subtypes = as_deck.subtypes + as_deck.lineages + as_deck.els
+            for as_t in subtypes:
+                self.subrows[as_t].win_vs(vs_deck)
+                if self.name in vs_deck.archetypes and (as_t in vs_deck.els or as_t in vs_deck.lineages):
+                    self.subrows[as_t].mirrors += 1/2
+        
     
-    def loss_vs(self, vs_deck, subtypes=[]):
+    def loss_vs(self, vs_deck, as_deck=None):
         self.matches += 1
         for vs_t in vs_deck.archetypes:
             self.cols[vs_t].matches += 1
             if self.name == vs_t:
                 self.cols[vs_t].mirrors += 1/2
                 self.mirrors += 1/2
-        for as_t in subtypes:
-            self.subrows[as_t].loss_vs(vs_deck)
+        if as_deck:
+            [LINEAGES.add(l) for l in as_deck.lineages]
+            subtypes = as_deck.subtypes + as_deck.lineages + as_deck.els
+            for as_t in subtypes:
+                self.subrows[as_t].loss_vs(vs_deck)
+                if self.name in vs_deck.archetypes and (as_t in vs_deck.els or as_t in vs_deck.lineages):
+                    self.subrows[as_t].mirrors += 1/2
     
-    def draw_vs(self, vs_deck, subtypes=[]):
+    def draw_vs(self, vs_deck, as_deck=None):
         self.matches += 1
         self.draws += 1
         for vs_t in vs_deck.archetypes:
@@ -80,8 +94,13 @@ class BCRow:
             if self.name == vs_t:
                 self.cols[vs_t].mirrors += 1/2
                 self.mirrors += 1/2
-        for as_t in subtypes:
-            self.subrows[as_t].draw_vs(vs_deck)
+        if as_deck:
+            [LINEAGES.add(l) for l in as_deck.lineages]
+            subtypes = as_deck.subtypes + as_deck.lineages + as_deck.els
+            for as_t in subtypes:
+                self.subrows[as_t].draw_vs(vs_deck)
+                if self.name in vs_deck.archetypes and (as_t in vs_deck.els or as_t in vs_deck.lineages):
+                    self.subrows[as_t].mirrors += 1/2
     
     def merge(self, row):
         if self.name != row.name:
@@ -103,10 +122,25 @@ class BCRow:
         self.cols = newcols
         for subrow in self.subrows.values():
             subrow.sortby(keyorder)
+        # Reorder sub-rows with elements → lineages → subtypes
+        subrow_keys = list(self.subrows.keys())
+        subrow_keys.sort(key=lambda x:self.subrows[x].sortkey(), reverse=True)
+        new_subrows = keydefaultdict(BCRow)
+        for k in subrow_keys:
+            new_subrows[k] = self.subrows[k]
+        self.subrows = new_subrows
         self.mirrors = int(self.mirrors)
     
     def sortkey(self):
-        return self.true_matchcount
+        if self.name in ELEMENTS:
+            key1 = 9
+        elif self.name in LINEAGES:
+            key1 = 8
+        else:
+            key1 = 0
+
+        return f"{key1}{self.true_matchcount:07}"
+        # return self.true_matchcount
     
     @property
     def true_matchcount(self):
@@ -174,23 +208,23 @@ class BattleChart:
                     if p1r["score"] > p2r["score"]:
                         # outcome = "beats"
                         for as_t in p1.deck.archetypes:
-                            self.rows[as_t].win_vs(p2.deck, subtypes=p1.deck.subtypes)
+                            self.rows[as_t].win_vs(p2.deck, as_deck=p1.deck)
                         for vs_t in p2.deck.archetypes:
-                            self.rows[vs_t].loss_vs(p1.deck, subtypes=p2.deck.subtypes)
+                            self.rows[vs_t].loss_vs(p1.deck, as_deck=p2.deck)
                     
                     elif p1r["score"] < p2r["score"]:
                         # outcome = "loses to"
                         for as_t in p1.deck.archetypes:
-                            self.rows[as_t].loss_vs(p2.deck, subtypes=p1.deck.subtypes)
+                            self.rows[as_t].loss_vs(p2.deck, as_deck=p1.deck)
                         for vs_t in p2.deck.archetypes:
-                            self.rows[vs_t].win_vs(p1.deck, subtypes=p2.deck.subtypes)
+                            self.rows[vs_t].win_vs(p1.deck, as_deck=p2.deck)
 
                     else:
                         # outcome = "ties"
                         for as_t in p1.deck.archetypes:
-                            self.rows[as_t].draw_vs(p2.deck, subtypes=p1.deck.subtypes)
+                            self.rows[as_t].draw_vs(p2.deck, as_deck=p1.deck)
                         for vs_t in p2.deck.archetypes:
-                            self.rows[vs_t].draw_vs(p1.deck, subtypes=p2.deck.subtypes)
+                            self.rows[vs_t].draw_vs(p1.deck, as_deck=p2.deck)
 
                     # print(f"        {p1.deck} {outcome} {p2.deck}")
         self.sort()
