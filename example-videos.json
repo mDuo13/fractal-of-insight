@@ -1,0 +1,110 @@
+{
+    "//": "Example videos.json file for Ascent Seattle (omni ID# 21122)",
+    "videos":[
+    {
+        "stage": 1,
+        "round": 1,
+        "link": "https://www.youtube.com/live/jd-wmZsIeAU?feature=shared&t=4532",
+        "p1": 2659,
+        "p2": 638
+    },
+    {
+        "stage": 1,
+        "round": 2,
+        "p1": 291,
+        "p2": 889,
+        "link": "https://www.youtube.com/live/jd-wmZsIeAU?feature=shared&t=9816"
+    },
+    {
+        "stage": 1,
+        "round": 3,
+        "link": "https://www.youtube.com/live/jd-wmZsIeAU?feature=shared&t=14556",
+        "p1": 426,
+        "p2": 574
+    },
+    {
+        "stage": 1,
+        "round": 4,
+        "link": "https://www.youtube.com/live/jd-wmZsIeAU?feature=shared&t=19124",
+        "p1": 363,
+        "p2": 5987
+    },
+    {
+        "stage": 1,
+        "round": 5,
+        "link": "https://www.youtube.com/live/jd-wmZsIeAU?feature=shared&t=27504",
+        "p1": 7389,
+        "p2": 13946
+    },
+    {
+        "stage": 1,
+        "round": 6,
+        "link": "https://www.youtube.com/live/jd-wmZsIeAU?feature=shared&t=32127",
+        "p1": 468,
+        "p2": 810
+    },
+    {
+        "stage": 1,
+        "round": 7,
+        "link": "https://www.youtube.com/live/jd-wmZsIeAU?feature=shared&t=36809",
+        "p1": 276,
+        "p2": 3903
+    },
+    {
+        "stage": 1,
+        "round": 8,
+        "link": "https://www.youtube.com/live/jd-wmZsIeAU?feature=shared&t=41794",
+        "p1": 104,
+        "p2": 4792,
+        "//": "Note, the VOD gets cut off so there's no round 9 footage on Youtube"
+    },
+    {
+        "stage": 1,
+        "round": 10,
+        "link": "https://www.youtube.com/live/3f7HH-9Ll1I?feature=shared&t=1975",
+        "p1": 3641,
+        "p2": 1526
+    },
+    {
+        "stage": 1,
+        "round": 11,
+        "link": "https://www.youtube.com/live/3f7HH-9Ll1I?feature=shared&t=5779",
+        "p1": 2669,
+        "p2": 181
+    },
+    {
+        "stage": 1,
+        "round": 12,
+        "link": "https://www.youtube.com/live/3f7HH-9Ll1I?feature=shared&t=8816",
+        "p1": 4518,
+        "p2": 832
+    },
+    {
+        "stage": 1,
+        "round": 13,
+        "link": "https://www.youtube.com/live/3f7HH-9Ll1I?feature=shared&t=13105",
+        "p1": 4720,
+        "p2": 810
+    },
+    {
+        "stage": 2,
+        "round": 1,
+        "link": "https://www.youtube.com/live/3f7HH-9Ll1I?feature=shared&t=18682",
+        "p1": 1968,
+        "p2": 1
+    },
+    {
+        "stage": 2,
+        "round": 2,
+        "link": "https://www.youtube.com/live/3f7HH-9Ll1I?feature=shared&t=25089",
+        "p1": 3903,
+        "p2": 2143
+    },
+    {
+        "stage": 2,
+        "round": 3,
+        "link": "https://www.youtube.com/live/3f7HH-9Ll1I?feature=shared&t=29529",
+        "p1": 3903,
+        "p2": 1
+    }
+]}
