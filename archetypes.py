@@ -379,7 +379,7 @@ add_archetype(
     shortname="Umbra"
 )
 
-add_archetype(
+lwa = add_archetype(
     "Luxem Assassin",
     [
         "Lightweaver's Assault",
@@ -392,6 +392,31 @@ add_archetype(
         "Guo Jia, Heaven's Favored"
     ],
     shortname="Luxem"
+)
+lwa.add_subtype(
+    "Serene",
+    [
+        "Spirit of Serene Fire",
+        "Spirit of Serene Water",
+        "Spirit of Serene Wind",
+    ],
+    shortname="",
+)
+lwa.add_subtype(
+    "Non-Serene",
+    [
+        "Lightweaver's Assault",
+        "Luxera's Map",
+        "Insignia of the Corhazi",
+        "Thousand Refractions",
+        "Gleaming Cut",
+    ],
+    exclude_cards=[
+        "Spirit of Serene Fire",
+        "Spirit of Serene Water",
+        "Spirit of Serene Wind",
+    ],
+    shortname="",
 )
 
 add_archetype(

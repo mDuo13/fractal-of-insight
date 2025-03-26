@@ -104,6 +104,14 @@ function show_key_matches() {
     show("#matches > .togglable")
     show("#matches .keymatch")
 }
+function show_vid_matches() {
+    hide("#showvids")
+    show("#matchreset")
+
+    hide("#matches .match")
+    show("#matches > .togglable")
+    show("#matches .hasvideo")
+}
 function reset_matches() {
     hide("#matchreset")
     show("#keymatches")

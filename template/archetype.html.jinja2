@@ -105,9 +105,7 @@
     <div class="tabs togglable collapse">
         <button class="tab activetab" onclick="opentab(this, '#top-cards-{{slugify(arche.name)}}')">Overall</button>
         {% for st in arche.subtypes %}
-            {% if st.shortname %}
-            <button class="tab" onclick="opentab(this, '#top-cards-{{slugify(st.name)}}')">{{st.shortname}}</button>
-            {% endif %}
+            <button class="tab" onclick="opentab(this, '#top-cards-{{slugify(st.name)}}')">{% if st.shortname %}{{st.shortname}}{% else %}{{st.name}}{% endif %}</button>
         {% endfor %}
         {% if not arche.require_element %}
             {% for et in arche.el_subtypes.values() %}
@@ -125,9 +123,7 @@
     <div class="tabwrapper togglable collapse">
         {{top_cards(arche, collapse=False)}}
         {% for st in arche.subtypes %}
-            {% if st.shortname %}
             {{top_cards(st)}}
-            {% endif %}
         {% endfor %}
         {% if not arche.require_element %}
             {% for et in arche.el_subtypes.values() %}
