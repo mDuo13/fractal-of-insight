@@ -3,7 +3,7 @@ from time import strftime, gmtime
 
 from player import Entrant
 from battlechart import BattleChart
-from datalayer import get_event, get_card_img
+from datalayer import get_event, get_event_videos, get_card_img
 from archetypes import ARCHETYPES
 from cards import ELEMENTS
 from competition import EVENT_TYPES, TEAM_STANDARD
@@ -44,9 +44,10 @@ class OmniEvent:
         # has a theoretical "win rate" of > 50% of possible matches
         # (e.g. missing day 2 is like losing all your day 2 games)
         self.fiftypct_points = self.evt["rounds"] * 1.5
-
+        
         self.winner = None
         self.load_players() # populates self.players, self.num_decklists, self.decklist_status
+        self.load_videos()
         self.analyze() #populates self.elements, archedata, champdata, draw_pct, nat_draw_pct
         self.battlechart = self.calc_headtohead(track_elo=self.track_elo)
         self.bc_top = self.calc_headtohead(TOP_CUTOFF)
@@ -102,6 +103,20 @@ class OmniEvent:
             self.decklist_status = "partial"
         if self.track_elo:
             self.average_elo = round(sum([p.elo for p in self.players]) / len(self.players), 1)
+    
+    def load_videos(self):
+        self.videos = get_event_videos(self.id)
+        for vid in self.videos:
+            stage = vid.get("stage", 1)
+            rnd = vid["round"]
+            p1 = vid["p1"]
+            p2 = vid["p2"]
+            #print(f"adding match vid. stage {stage}, round {rnd}, #{p1} vs #{p2}")
+            matches = self.evt["stages"][stage - 1]["rounds"][rnd - 1]["matches"]
+            for m in matches:
+                if m["pairing"][0]["id"] in (p1,p2) and m["pairing"][1]["id"] in (p1,p2):
+                    m["video"] = vid["link"]
+
     
     def analyze(self):
         self.elements = ElementStats()

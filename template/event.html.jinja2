@@ -255,7 +255,7 @@
                 {% else %}
                 {% set p2 = None %}
                 {% endif %}
-                <div class="match p_{{p1.id}} {% if p2 %}p_{{p2.id}} {{iskeymatch}} {% endif %}" data-p1-archetypes="{{p1_archetypes}}" data-p2-archetypes="{{p2_archetypes}}">
+                <div class="match p_{{p1.id}} {% if p2 %}p_{{p2.id}} {{iskeymatch}} {% endif %}{% if match.video %} hasvideo{% endif %}" data-p1-archetypes="{{p1_archetypes}}" data-p2-archetypes="{{p2_archetypes}}">
                     <div class="player">
                         {{macros.pname_w_dl(p1)}}
                         {% if p2 and p2.elo - config.UPSET_CUTOFF > p1.elo and match["pairing"][0]["score"] > match["pairing"][1]["score"] %}{{macros.upset()}}{% endif %}
@@ -269,6 +269,9 @@
                         {% if p1.elo - config.UPSET_CUTOFF > p2.elo and match["pairing"][1]["score"] > match["pairing"][0]["score"] %}{{macros.upset()}}{% endif %}
                         <span class="matchscore {{match['pairing'][1]['status']}}">{{match["pairing"][1]["score"]}}</span>
                     </div>
+                        {% if match.video %}
+                        <a class="matchvid" href="{{match.video}}" target="_blank" title="Match VOD available">📺</a>
+                        {% endif %}
                     {% else %}
                     <div class="player bye">Bye</div>
                     {% endif %}

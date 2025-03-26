@@ -418,7 +418,7 @@ th {
 
 .match {
     display: inline-block;
-    width: 200px;
+    width: 220px;
     margin: 5px;
     border: 2px solid #555;
     border-radius: 3px;
@@ -469,6 +469,25 @@ th {
 
 .elodiff {
     text-align: right;
+}
+
+.match.hasvideo {
+    position: relative;
+    padding-left: 20px;
+    width: 200px;
+}
+
+.matchvid {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 15px;
+    font-size: 15px;
+    height: 100%;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .archetype {

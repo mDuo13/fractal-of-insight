@@ -221,6 +221,14 @@ def get_event(evt_id, force_redownload=False, save=True):
         sleep(API_DELAY)
     return evt
 
+def get_event_videos(evt_id):
+    try:
+        with open(f"data/event_{evt_id}/videos.json") as f:
+            vids = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        vids = {"videos": []}
+    return vids.get("videos", [])
+
 def save_event_json(evt):
     makedirs(f"data/event_{evt['id']}/", exist_ok=True)
     with open(f"data/event_{evt['id']}/event.json", "w") as f:
