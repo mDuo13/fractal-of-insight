@@ -2,7 +2,7 @@ from time import strftime, gmtime
 from collections import defaultdict
 
 from shared import slugify, fix_case, lineage
-from datalayer import get_card_img, carddata, card_is_floating
+from datalayer import get_card_img, carddata, card_is_floating, get_card_references
 from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST
 from archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
 from cardstats import ALL_CARD_STATS
@@ -264,6 +264,42 @@ class Deck:
                 decks_after.append([d,sim])
         
         return trim_similar(decks_before, limit), trim_similar(decks_sameday, limit), trim_similar(decks_after, limit)
+
+    def tts_json(self):
+        """
+        JSON decklist formatted for Tabletop Simulator import
+        """
+        j = {
+            "cards": {
+                "material": [],
+                "main": [],
+                "sideboard": [],
+                "references": []
+            }
+        }
+        raw_refs = []
+        for section in ("main", "material", "sideboard"):
+            for card_o in self.dl[section]:
+                raw_refs += get_card_references(card_o["card"])
+                j_card = {
+                    "name": card_o["card"],
+                    "image": card_o["img"],
+                    "quantity": card_o["quantity"]
+                }
+                if card_o.get("back"):
+                    j_card["orientation"] = "Front"
+                    j_card["orientations"] = [{
+                        "orientation": "Back",
+                        "name": card_o["back"]["name"],
+                        "image": card_o["back"]["img"]
+                    }]
+                j["cards"][section].append(j_card)
+        for r in raw_refs:
+            j["cards"]["references"].append({
+                "name": r["name"],
+                "image": r["img"]
+            })
+        return j
     
     def __str__(self):
         spiritstr = ""

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import json
 import jinja2
 from os import makedirs
 import os.path
@@ -117,7 +118,16 @@ class PageBuilder:
         #     for i in range(1, max_page):
         #         page_number = i+1
         #         self.render("card-sightings-page.html.jinja2", f"card/{slugify(cardname)}-{page_number}.html", card=carddata[cardname], cardstat=cardstat, events=events, page_number=page_number, page_start=(i*CARD_SIGHTINGS_PER_PAGE), page_end=((i+1)*CARD_SIGHTINGS_PER_PAGE), max_page=max_page)
-            
+    
+    def write_decklist_tts(self, deck):
+        write_to = f"tts/event_{deck.entrant.evt_id}/{deck.entrant.id}.json"
+        out_dir, out_file = os.path.split(write_to)
+        whole_out_dir = os.path.join(config.OUTDIR, out_dir)
+        makedirs(whole_out_dir, exist_ok=True)
+        whole_out_file = os.path.join(whole_out_dir, out_file)
+        print("Writing to", whole_out_file)
+        with open(whole_out_file, "w") as f:
+            json.dump(deck.tts_json(), f)
 
     def write_spoilers(self, spoilers):
         self.render("spoilers.html.jinja2", "spoilers/index.html", spoilers=spoilers)
@@ -153,9 +163,12 @@ class PageBuilder:
                     else:
                         known_players[entrant.id] = Player(entrant)
                     known_players[entrant.id].track_rivals_for_event(e)
+
+                    if entrant.deck:
+                        self.write_decklist_tts(entrant.deck)
         
         for e in all_events.values():
-                self.write_event(e)
+            self.write_event(e)
         
         seasons_sorted = {k:seasons[v] for k,v in SEASONS.items() if v in seasons.keys()}
 

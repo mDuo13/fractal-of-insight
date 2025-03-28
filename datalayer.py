@@ -233,3 +233,7 @@ def save_event_json(evt):
     makedirs(f"data/event_{evt['id']}/", exist_ok=True)
     with open(f"data/event_{evt['id']}/event.json", "w") as f:
         json.dump(evt, f)
+
+def get_card_references(cardname):
+    refs = carddata[cardname].get("references", [])
+    return [carddata[r.get("name")] for r in refs if r.get("direction") == "TO"]
