@@ -2,8 +2,9 @@ from deck import Deck
 
 from datalayer import get_deck, NoDeck
 from cards import ELEMENTS
-from shared import ElementStats, ChampStats, ArcheStats
-RIVAL_THRESHOLD = 3 # min losses to count as a rival
+from shared import keydefaultdict, ElementStats, ChampStats, ArcheStats
+RIVAL_THRESHOLD = 3 # min matches to count as a rival
+RIVAL_MAXCOUNT = 5 # trim rivals list if it's over this size
 
 class Entrant:
     """
@@ -60,6 +61,23 @@ class Entrant:
     def __str__(self):
         return f'{self.username} #{self.id}'
 
+class Rivalry:
+    def __init__(self, opp_id):
+        self.opp_id = opp_id
+        self.wins = 0
+        self.losses = 0
+        self.draws = 0
+    
+    @property
+    def matches(self):
+        return self.wins+self.losses+self.draws
+    
+    @property
+    def pct(self):
+        if self.matches == 0:
+            return "?"
+        return round(100 * (self.wins + (self.draws / 2)) / self.matches, 1)
+
 class Player:
     """
     Represents a player across multiple events
@@ -68,8 +86,7 @@ class Player:
         self.id = entrant.id
         self.username = entrant.username
         self.events = [entrant]
-        self.wins = {}
-        self.losses = {}
+        self.rivalries=keydefaultdict(Rivalry)
         self.region = entrant.region
     
     def add_entry(self, entrant):
@@ -81,7 +98,6 @@ class Player:
         self.num_decklists = len([e for e in self.events if e.deck])
         self.analyze_champions()
         self.analyze_rivals()
-        self.analyze_allies()
         
     def analyze_champions(self):
         self.elements = ElementStats()
@@ -101,37 +117,34 @@ class Player:
             for rnd in stage["rounds"]:
                 for match in rnd["matches"]:
                     for mpl in match["pairing"]:
-                        if mpl["id"] == self.id and mpl["status"] == "loser":
+                        if mpl["id"] == self.id:
+                            if str(self.id) not in rnd["pairings"].keys():
+                                # This happens for byes
+                                continue
                             oppid = rnd["pairings"][str(self.id)]
-                            if oppid in self.losses.keys():
-                                self.losses[oppid] += 1
-                            else:
-                                self.losses[oppid] = 1
+
+                            if mpl["status"] == "loser":
+                                self.rivalries[oppid].losses += 1
+                            elif mpl["status"] == "winner":
+                                self.rivalries[oppid].wins += 1
+                            elif mpl["status"] == "tied":
+                                self.rivalries[oppid].draws += 1
     
     def analyze_rivals(self):
-        max_l = 0
-        max_l_ps = []
-        for p,l in self.losses.items():
-            if l >= RIVAL_THRESHOLD and l >= max_l:
-                if l > max_l:
-                    max_l_ps = [int(p)]
-                elif l == max_l:
-                    max_l_ps.append(int(p))
-        self.rivals = max_l_ps
-        # if self.rivals:
-        #     print(f"{self.username} rivals: {self.rivals}")
+        rivalries_sorted = [r for r in self.rivalries.values() if r.matches >= RIVAL_THRESHOLD]
+        rivalries_sorted.sort(key=lambda x:x.matches, reverse=True)
 
-    def analyze_allies(self):
-        max_w = 0
-        max_w_ps = []
-        for p,w in self.wins.items():
-            if w >= RIVAL_THRESHOLD and w >= max_w:
-                if w > max_w:
-                    max_w_ps = [int(p)]
-                elif w == max_w:
-                    max_w_ps.append(int(p))
-        self.allies = max_w_ps
-
+        # If list is over size, trim the opponent(s) w/ the fewest matches off
+        self.rivals = rivalries_sorted
+        rival_threshold = RIVAL_THRESHOLD
+        while len(self.rivals) > RIVAL_MAXCOUNT:
+            rival_threshold += 1
+            trimmed_rivals = [r for r in self.rivals if r.matches >= rival_threshold]
+            if trimmed_rivals:
+                self.rivals = trimmed_rivals
+            else:
+                # Prefer an oversized list to an empty one
+                break
 
     def mostplayed(self):
         topchamps = self.champdata.top()

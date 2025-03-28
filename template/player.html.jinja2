@@ -19,8 +19,7 @@
         {% if player.region %}<li><b>Region:</b> {{macros.flag(player.region, True)}}</li>{% endif %}
         <li><b>Recent Elo</b>: {{player.events[0].elo}}</li>
         <li><b>Recorded events</b>: {{player.events|length}}</li>
-        {% if player.rivals %}<li><b>Rival(s)</b>: {% for r in player.rivals %}<a href="/player/{{r}}.html">{{players[r].username}} #{{r}}</a> ({{player.losses[r]}} losses){% endfor %}<br><span class="explanation">(Your rival is the player who has beaten you the most times in tracked events, minimum 3 times.)</span></li>{% endif %}
-        {% if player.allies %}<li><b>Ally/Allies</b>: {% for a in player.allies %}<a href="/player/{{a}}.html">{{players[a].username}} #{{a}}</a> ({{player.wins[a]}} wins){% endfor %}<br><span class="explanation">(Your ally is the player who has lost to you the most times in tracked events, minimum 3 times.)</span></li>{% endif %}
+        {% if player.rivals %}<li><b>Rival(s)</b>: <ul>{% for r in player.rivals %}<li><a href="/player/{{r.opp_id}}.html">{{players[r.opp_id].username}} #{{r.opp_id}}</a> ({{r.wins}}-{{r.losses}}-{{r.draws}})</li>{% endfor %}</ul><span class="explanation">(Rivals are players you've faced the most times in tracked events, minimum 3 matches.)</span></li>{% endif %}
     </ul>
 </section>
 
