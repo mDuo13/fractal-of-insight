@@ -236,4 +236,4 @@ def save_event_json(evt):
 
 def get_card_references(cardname):
     refs = carddata[cardname].get("references", [])
-    return [carddata[r.get("name")] for r in refs if r.get("direction") == "TO"]
+    return [carddata[r.get("name")] for r in refs if r.get("direction") == "TO" and r.get("kind") in ("SUMMON", "MASTERY", "GENERATE")]
