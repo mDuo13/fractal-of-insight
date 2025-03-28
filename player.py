@@ -3,7 +3,7 @@ from deck import Deck
 from datalayer import get_deck, NoDeck
 from cards import ELEMENTS
 from shared import ElementStats, ChampStats, ArcheStats
-RIVAL_THRESHOLD = 3 # min losses to counta as a rival
+RIVAL_THRESHOLD = 3 # min losses to count as a rival
 
 class Entrant:
     """
@@ -68,6 +68,7 @@ class Player:
         self.id = entrant.id
         self.username = entrant.username
         self.events = [entrant]
+        self.wins = {}
         self.losses = {}
         self.region = entrant.region
     
@@ -80,6 +81,7 @@ class Player:
         self.num_decklists = len([e for e in self.events if e.deck])
         self.analyze_champions()
         self.analyze_rivals()
+        self.analyze_allies()
         
     def analyze_champions(self):
         self.elements = ElementStats()
@@ -118,6 +120,17 @@ class Player:
         self.rivals = max_l_ps
         # if self.rivals:
         #     print(f"{self.username} rivals: {self.rivals}")
+
+    def analyze_allies(self):
+        max_w = 0
+        max_w_ps = []
+        for p,w in self.wins.items():
+            if w >= RIVAL_THRESHOLD and w >= max_w:
+                if w > max_w:
+                    max_w_ps = [int(p)]
+                elif w == max_w:
+                    max_w_ps.append(int(p))
+        self.allies = max_w_ps
 
 
     def mostplayed(self):
