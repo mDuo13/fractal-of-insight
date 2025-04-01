@@ -29,6 +29,8 @@ class OmniEvent:
         if self.evt["format"] == TEAM_STANDARD and not isinstance(self, Team3v3Event):
             raise IsTeamEvent
         self.format = self.evt["format"]
+        self.matchformat_swiss = self.evt["matchConfigSwiss"]
+        self.matchformat_topcut = self.evt.get("matchConfigSingleElim")
         self.name = self.evt["name"]
         self.fix_generic_name()
         self.date = strftime(r"%Y-%m-%d", gmtime(self.evt["startAt"]/1000))
@@ -87,7 +89,7 @@ class OmniEvent:
         self.num_decklists = 0
         self.players = []
         for pdata in self.evt["players"]:
-            p = Entrant(pdata, self.id, self.season, evt_time=self.evt["startAt"])
+            p = Entrant(pdata, self.id, self)
             self.players.append(p)
             if p.deck:
                 self.num_decklists += 1

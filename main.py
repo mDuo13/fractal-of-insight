@@ -18,6 +18,7 @@ from archetypes import ARCHETYPES, NO_ARCHETYPE
 from spoiler import SpoilerEvent, SPOILER_SEASONS
 from cards import ERRATA, BANLIST
 from cardstats import ALL_CARD_STATS
+from achievements import ACHIEVEMENTS, GAS
 
 SIGHTINGS_PER_PAGE = 200
 CARD_SIGHTINGS_PER_PAGE = 100
@@ -33,6 +34,7 @@ class PageBuilder:
         self.env.globals["REGIONS"] = REGIONS
         self.env.globals["TEAM_STANDARD"] = TEAM_STANDARD
         self.env.globals["OVERALL"] = OVERALL
+        self.env.globals["ACHIEVEMENTS"] = ACHIEVEMENTS
         self.env.filters["slugify"] = slugify
     
     def render(self, template, write_to, **kwargs):
@@ -128,6 +130,13 @@ class PageBuilder:
         print("Writing to", whole_out_file)
         with open(whole_out_file, "w") as f:
             json.dump(deck.tts_json(), f)
+    
+    def write_achievement(self, achievement):
+        write_to = f"achievement/{slugify(achievement.name)}.html"
+        self.render("achievement.html.jinja2", write_to, achievement=achievement, astats=GAS[achievement.name])
+    
+    def write_achievements_index(self):
+        self.render("achievements.html.jinja2", "achievement/index.html", GAS=GAS)
 
     def write_spoilers(self, spoilers):
         self.render("spoilers.html.jinja2", "spoilers/index.html", spoilers=spoilers)
@@ -162,7 +171,6 @@ class PageBuilder:
                         known_players[entrant.id].add_entry(entrant)
                     else:
                         known_players[entrant.id] = Player(entrant)
-                    known_players[entrant.id].track_rivals_for_event(e)
 
                     if entrant.deck:
                         self.write_decklist_tts(entrant.deck)
@@ -178,6 +186,12 @@ class PageBuilder:
         formats_desc = list(reversed(FORMATS.values()))
         self.write_formats(formats_desc)
         
+        # Card stats has to come before player stuff for "first play" to work.
+        for cardname, cardstat in ALL_CARD_STATS:
+            cardstat.analyze()
+            self.write_card_page(cardname, cardstat, events=all_events)
+        ALL_CARD_STATS.sort()
+
         known_pids_sorted = [pid for pid, pl in known_players.items()]
         known_pids_sorted.sort(key=lambda x: known_players[x].sortkey())
         for pid in known_pids_sorted:
@@ -204,13 +218,13 @@ class PageBuilder:
         arches_sorted = [a for a in ARCHETYPES.values()]
         arches_sorted.sort(key=lambda x: len(x.matched_decks), reverse=True)
         self.write_archetype_index(arches_sorted+[NO_ARCHETYPE], aew)
-
-        for cardname, cardstat in ALL_CARD_STATS:
-            cardstat.analyze()
-            self.write_card_page(cardname, cardstat, events=all_events)
-        ALL_CARD_STATS.sort()
         
         self.write_card_index()
+
+        GAS.total_players = len(known_players)
+        for achievement in ACHIEVEMENTS.values():
+            self.write_achievement(achievement)
+        self.write_achievements_index()
 
         spoilers = {}
         for entry in os.scandir("./data/spoilers"):

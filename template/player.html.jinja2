@@ -10,6 +10,7 @@
     <a class="nav-item" href="/deck/">→ Decks</a>
     <a class="nav-item" href="/formats/">→ Format Stats</a>
     <a class="nav-item" href="/card/">→ Cards</a>
+    <a class="nav-item" href="/achievement/">→ Achievements</a>
 </nav>
 
 <section id="player-info">
@@ -21,6 +22,20 @@
         <li><b>Recorded events</b>: {{player.events|length}}</li>
         {% if player.rivals %}<li><b>Rival(s)</b>: <ul>{% for r in player.rivals %}<li><a href="/player/{{r.opp_id}}.html">{{players[r.opp_id].username}} #{{r.opp_id}}</a> ({{r.wins}}-{{r.losses}}-{{r.draws}})</li>{% endfor %}</ul><span class="explanation">(Rivals are players you've faced the most times in tracked events, minimum 3 matches.)</span></li>{% endif %}
     </ul>
+</section>
+
+<section id="achievements">
+    <h2>Achievements</h2>
+    <button onclick="toggle('#achievements > .togglable')">Glimpse achievements</button>
+    <div class="togglable collapse achievementlist">
+        {% for a in player.achievements -%}
+            {{ macros.achievement(a) }}
+        {%- endfor %}
+        {% if not player.achievements %}
+            <p class="description">This player hasn't earned any achievements yet.</p>
+        {% endif %}
+    </div>
+
 </section>
 
 <section id="entered-events">

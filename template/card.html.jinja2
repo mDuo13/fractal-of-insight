@@ -42,7 +42,13 @@
         <li><div class="cardimg"><img src="{{card.img}}" alt="{{card.name}}" loading="eager" width="300" height="420" /></div></li>
     {% endif %}
         <li><b>Appearances recorded</b>: {{cardstat.num_appearances}}</li>
-        <li><b>First played by</b>: <a href="/player/{{cardstat.first_user.id}}.html">{{cardstat.first_user}}</a></li>
+        <li><b>First played by</b>: {% if cardstat.first_users|length == 1 %}<a href="/player/{{cardstat.first_users[0].id}}.html">{{cardstat.first_users[0]}}</a>{% else %}{{cardstat.first_users|length}} players
+        {% if cardstat.first_users|length > 5 %}<button onclick="toggle('.first-players')">Glimpse players</button> <div class="first-players collapse togglable">{% else %}<div class="first-players">{% endif %}(
+            {% for u in cardstat.first_users %}
+                <a href="/player/{{u.id}}.html">{{u}}</a>{% if not loop.last %},{% endif %}
+            {% endfor %}
+        )</div>
+        {% endif %}</li>
         <li><b>Overall win rate</b>: {{cardstat.winrate}}%</li>
         <li><b>Lifetime record</b>: {{cardstat.wins}}-{{cardstat.losses}}-{{cardstat.ties}}</li>
         <li><a href="https://index.gatcg.com/card/{{card.slug}}">Index Lookup</a></li>

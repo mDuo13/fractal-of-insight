@@ -27,8 +27,16 @@ class CardStats:
     def analyze(self):
         self.appearances.sort(key=lambda e: e.evt_time*1000 + 9999-e.placement, reverse=True)
         if self.num_appearances:
-            # TODO: handle ties for first user?
-            self.first_user = self.appearances[-1]
+            self.first_users = [self.appearances[-1]]
+            self.appearances[-1].first_plays.append(self.name)
+            i = 2
+            first_date = self.appearances[-1].event.date
+            while i <= len(self.appearances):
+                u = self.appearances[-i]
+                if u.event.date == first_date:
+                    self.first_users.append(u)
+                    u.first_plays.append(self.name)
+                i+= 1
         
         self.elements = ElementStats()
         self.champdata = ChampStats()

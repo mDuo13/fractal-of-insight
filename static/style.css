@@ -802,6 +802,81 @@ footer {
     }
 }
 
+.achievement {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 105px;
+    height: 105px;
+    margin: 5px;
+    padding: 8px;
+    border: 1px solid black;
+    border-radius: 4px;
+    text-align: center;
+    overflow: hidden;
+    background: rgb(221,213,193);
+    background: radial-gradient(circle, rgba(221,213,193,1) 0%, rgba(166,158,137,1) 75%, rgba(138,113,158,1) 100%);
+    background-position: top left;
+}
+a.achievement {
+    text-decoration: none;
+    color: black;
+}
+.achievement.unachieved {
+    opacity: 0.5;
+    border-style: dotted;
+    filter: sepia(100%);
+}
+.achievement.achieved {
+    border-style: double;
+    border-width: 4px;
+    margin: 2px;
+    text-shadow: var(--main-shadow);
+}
+.achievement h4 {
+    margin: 0;
+    line-height: 16px;
+}
+.achievement-emoji {
+    font-size: 28px;
+    line-height: 38px;
+}
+.achievement-img {
+    display: inline-block;
+    width: 105px;
+    height: 65px;
+    overflow: hidden;
+}
+.achievement-img img {
+    width: 125px;
+    height: 65px;
+    object-fit: cover;
+    object-position: 0 22%;
+    margin-left: -10px;
+}
+.achievement-desc {
+    padding: 0;
+    margin: 0;
+    text-indent: 0;
+    font-size: 13px;
+    line-height: 10px;
+}
+.achievement-stats {
+    font-size: 12px;
+    line-height: 10px;
+    font-style: italic;
+    margin: 0;
+    padding: 5px;
+    padding-top: 0;
+    text-align: center;
+}
+.achievement-wrapper {
+    display: inline-block;
+    width: 135px;
+    height: 165px;
+    margin: 6px;
+}
+
 :root {
     --ui-bg: linear-gradient(0deg, #e1e0db, #f2efe5);
     --ui-bg-sub: linear-gradient(0deg, #cbcac6, #e1e0db);
