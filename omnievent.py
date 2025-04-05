@@ -1,7 +1,7 @@
 from collections import defaultdict
 from time import strftime, gmtime
 
-from player import Entrant
+from player import Entrant, JudgeEvt
 from battlechart import BattleChart
 from datalayer import get_event, get_event_videos, get_card_img
 from archetypes import ARCHETYPES
@@ -46,6 +46,9 @@ class OmniEvent:
         # has a theoretical "win rate" of > 50% of possible matches
         # (e.g. missing day 2 is like losing all your day 2 games)
         self.fiftypct_points = self.evt["rounds"] * 1.5
+
+        self.judges = [JudgeEvt(jdata, self) for jdata in self.evt.get("judges", [])]
+
         
         self.winner = None
         self.load_players() # populates self.players, self.num_decklists, self.decklist_status

@@ -6,6 +6,7 @@ import jinja2
 from os import makedirs
 import os.path
 from math import ceil
+from collections import defaultdict
 
 import config
 from datalayer import carddata
@@ -148,6 +149,7 @@ class PageBuilder:
         seasons = {}
         known_players = {}
         all_events = {}
+        known_judges = defaultdict(list)
         for entry in os.scandir("./data"):
             if entry.is_dir() and entry.name[:6] == "event_":
                 print("Reading event#",entry.name[6:])
@@ -174,7 +176,16 @@ class PageBuilder:
 
                     if entrant.deck:
                         self.write_decklist_tts(entrant.deck)
-        
+                for judge in e.judges:
+                    known_judges[judge.id].append(judge)
+        # Add judges to player profiles where they exist
+        for jid, events_judged in known_judges.items():
+            if jid in known_players.keys():
+                events_judged.sort(key=lambda x:x.event.date)
+                known_players[jid].events_judged = events_judged
+            else:
+                print(f"Judge with no player instances? {judge}")
+
         for e in all_events.values():
             self.write_event(e)
         

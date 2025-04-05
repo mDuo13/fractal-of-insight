@@ -67,6 +67,41 @@ class Entrant:
     def __str__(self):
         return f'{self.username} #{self.id}'
 
+def exp_for_level(n):
+    """
+    Incremental experience points to reach judge level n from level n-1.
+    Formula copied from Omnidex JS (rounding added)
+    """
+    if n <= 0:
+        return 0
+    return round((100 + 10 * n) * (1 + 0.05 * n), 2)
+
+
+class JudgeEvt:
+    """
+    Represents a person judging in one event
+    """
+    def __init__(self, data, evt):
+        self.id = data["id"]
+        self.username = data["username"]
+        self.events_judged = data["judgeEvents"]
+        self.exp = data["judgeExperience"]
+        self.event = evt
+        self.calc_judge_level()
+    
+    def calc_judge_level(self):
+        self.level = 0
+        if self.exp == 0:
+            return
+        exp_left = self.exp
+        while exp_left >= exp_for_level(self.level+1):
+            self.level += 1
+            exp_left -= exp_for_level(self.level)
+    
+    def __str__(self):
+        return f'{self.username} #{self.id}'
+
+
 class Rivalry:
     def __init__(self, opp_id):
         self.opp_id = opp_id
@@ -84,6 +119,7 @@ class Rivalry:
             return "?"
         return round(100 * (self.wins + (self.draws / 2)) / self.matches, 1)
 
+
 class Player:
     """
     Represents a player across multiple events
@@ -96,6 +132,7 @@ class Player:
         self.achievements = AchievementSet()
         self.peak_elo = entrant.rank_elo
         self.vp = entrant.vp
+        self.events_judged = []
     
     def add_entry(self, entrant):
         self.events.append(entrant)
@@ -108,6 +145,7 @@ class Player:
         self.num_decklists = len([e for e in self.events if e.deck])
         self.analyze_champions()
         self.track_rivals()
+        self.analyze_judging()
         self.check_achievements()
         
     def analyze_champions(self):
@@ -158,6 +196,12 @@ class Player:
             else:
                 # Prefer an oversized list to an empty one
                 break
+    
+    def analyze_judging(self):
+        if not self.events_judged:
+            self.judge_level = None
+            return
+        self.judge_level = max([e.level for e in self.events_judged])
 
     def mostplayed(self):
         topchamps = self.champdata.top()
@@ -194,6 +238,7 @@ class Player:
         
         # Achievements for entering & winning different event types
         regionals_by_season = defaultdict(int)
+        in_person_regionals_by_season = defaultdict(int)
         for e in events_chrono:
             if e.event.category["name"] == "Regular":
                 self.achievements.add("Just Chillin'", e)
@@ -210,18 +255,26 @@ class Player:
                 regionals_by_season[e.event.season] += 1
                 if regionals_by_season[e.event.season] >= 2:
                     self.achievements.add("Nomad", e)
+                if e.event.country:
+                    in_person_regionals_by_season[e.event.season] += 1
+                    if in_person_regionals_by_season[e.event.season] >= 2:
+                        self.achievements.add("True Nomad", e)
+                
             elif e.event.category["name"] == "Ascent":
                 self.achievements.add("Mountain Climber", e)
-                if (e.placement <= 8 and e.event.evt["format"] != TEAM_STANDARD) or \
+                # Don't award top performances for ongoing Ascents/etc.
+                # Only finished events will have a non-None winner
+                if e.event.winner and \
+                   (e.placement <= 8 and e.event.evt["format"] != TEAM_STANDARD) or \
                    (e.placement <= 4 and e.event.evt["format"] == TEAM_STANDARD):
                     self.achievements.add("Spirited Competitor", e)
             elif e.event.category["name"] == "Nationals":
                 self.achievements.add("Join the Battle", e)
-                if e.placement == 1:
+                if e.event.winner and e.placement == 1:
                     self.achievements.add("Hometown Hero", e)
             elif e.event.category["name"] == "Worlds":
                 self.achievements.add("World-Class Competitor", e)
-                if e.placement == 1:
+                if e.event.winner and e.placement == 1:
                     self.achievements.add("Ascendant", e)
         
         # Achievements for decklist quirks
@@ -250,6 +303,8 @@ class Player:
                     self.achievements.add("Big Deck Energy", e, details=f"{e.deck} ({e.deck.main_total} cards)")
                 if e.deck.floating >= 30:
                     self.achievements.add("Antigravity", e, details=str(e.deck))
+                if e.deck.guns >= 3:
+                    self.achievements.add("We Need Guns. Lots of Guns", e, details=str(e.deck))
         
         # Four Seasons
         seasons_played = set()
@@ -307,6 +362,17 @@ class Player:
         for e in events_chrono:
             if e.losses == 0 and e.ties >= 2:
                 self.achievements.add("Technically Undefeated", e, details=e.record)
+        
+        # Movie Star
+        for e in events_chrono:
+            for vid in e.event.videos:
+                if e.id in (vid["p1"], vid["p2"]):
+                    self.achievements.add("Movie Star", e, details=f"Stage {vid.get('stage', 1)}, round {vid['round']}")
+        
+        # JUDGE!
+        if self.events_judged:
+            self.achievements.add("JUDGE!", self.events_judged[0])
+        
         
         # First card plays
         for e in events_chrono:

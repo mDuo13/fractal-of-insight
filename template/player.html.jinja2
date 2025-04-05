@@ -21,6 +21,7 @@
         <li><b>Recent Elo</b>: {{player.events[0].elo}}</li>
         <li><b>Recorded events</b>: {{player.events|length}}</li>
         {% if player.rivals %}<li><b>Rival(s)</b>: <ul>{% for r in player.rivals %}<li><a href="/player/{{r.opp_id}}.html">{{players[r.opp_id].username}} #{{r.opp_id}}</a> ({{r.wins}}-{{r.losses}}-{{r.draws}})</li>{% endfor %}</ul><span class="explanation">(Rivals are players you've faced the most times in tracked events, minimum 3 matches.)</span></li>{% endif %}
+        {% if player.judge_level %}<li><b>Judge Level:</b> {{player.judge_level}}{% endif %}
     </ul>
 </section>
 
@@ -71,9 +72,27 @@
     <h3 class="togglable collapse">Archetypes</h3>
     {{ macros.elementbars(player.archedata, True) }}
 </section>
+{% endif %}
 
-{# TODO: archetype, element stats, maybe head-to-head stats vs various archetypes too? #}
-{% endif %}{# end num_decklists conditional#}
+{% if player.events_judged %}
+<section id="judged-events">
+    <h2>Events Judged</h2>
+    <button onclick="toggle('#judged-events > .togglable')">Glimpse List</button>
+    <table class="togglable collapse">
+        <thead><tr>
+            <th>Date</th><th>Event</th>
+        </tr></thead>
+        <tbody>
+        {% for judge_evt in player.events_judged %}
+            <tr>
+                <td>{{judge_evt.event.date}}</td>
+                <td><a href="/{{judge_evt.event.season}}/{{judge_evt.event.id}}.html">{{judge_evt.event.name}}</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endif %}
 
 <!-- DECKLISTS -->
 {% for p in player.events %}

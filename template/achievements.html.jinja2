@@ -1,0 +1,38 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}Achievements - {% endblock %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/player/">→ Players</a>
+    <a class="nav-item" href="/deck/">→ Decks</a>
+    <a class="nav-item" href="/formats/">→ Format Stats</a>
+    <a class="nav-item" href="/card/">→ Cards</a>
+    <a class="nav-item" href="/achievement/">↓ Achievements</a>
+</nav>
+
+<h1>Achievements</h1>
+
+<p>These achievements are all "for fun" and unofficial. More ideas for achievements are welcome.</p>
+
+<section id="achievements-list">
+    {% for a in ACHIEVEMENTS.values() %}
+    <div class="achievement-wrapper">
+        <a href="/achievement/{{slugify(a.name)}}.html" class="achievement unachieved">
+            <h4>{{a.name}}</h4>
+            {% if a.emoji %}
+                <div class="achievement-emoji">{{a.emoji}}</div>
+            {% elif a.img %}
+                <div class="achievement-img">
+                    <img src="{{a.img}}" alt="{{a.name}}" loading="lazy" />
+                </div>
+            {% endif%}
+            <p class="achievement-desc">{{a.description}}</p>
+        </a>
+        <p class="achievement-stats">(Achieved by {{GAS[a.name].rate}}% of players)</p>
+    </div>
+    {% endfor %}
+</section>
+
+{% endblock %}

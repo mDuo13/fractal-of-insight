@@ -1,0 +1,46 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}{{achievement.name}} - {% endblock %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/player/">→ Players</a>
+    <a class="nav-item" href="/deck/">→ Decks</a>
+    <a class="nav-item" href="/formats/">→ Format Stats</a>
+    <a class="nav-item" href="/card/">→ Cards</a>
+    <a class="nav-item" href="/achievement/">⮤ Achievements</a>
+    <b class="nav-item"> ↓ {{achievement.name}}</b>
+</nav>
+
+<h1>Achievement Stats: {{achievement.name}}</h1>
+
+<ul class="scooped-corners">
+    <li>{{macros.achievement(achievement, is_link=False)}}</li>
+    <li><strong>Achieved:</strong> {{astats.count}} times</li>
+    <li><strong>Rate:</strong> {{astats.rate}}% of players</li>
+    {% if achievement.first and not achievement.skip_date %}<li><strong>First achieved by:</strong> {{astats.first}}</li>{% endif %}
+</ul>
+
+<section id="achieving-players">
+    <h2>Players with this achievement</h2>
+    <button onclick="toggle('#achieving-players > .togglable')">Glimpse players</button>
+    <table class="togglable collapse">
+        <thead><tr>
+                <th>Player</th>
+                <th>Date</th>
+                <th>Event</th>
+        </tr></thead>
+        <tbody>
+        {% for p in astats.players %}
+            <tr>
+                <td><a href="/player/{{p.id}}.html">{{p}}</a></td>
+                <td>{{p.event.date}}</td>
+                <td><a href="/{{p.event.season}}/{{p.event.id}}.html">{{p.event.name}}</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+{% endblock %}

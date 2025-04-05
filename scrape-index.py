@@ -12,12 +12,9 @@ r = requests.get("https://api.gatcg.com/option/search")
 j = r.json()
 all_sets = j["set"]
 
-#all_cards = {}
-
 for cardset in all_sets:
     setlist = []
     prefix = cardset["value"]
-    #all_cards[prefix] = []
     page = 0
     total_pages = 1
 

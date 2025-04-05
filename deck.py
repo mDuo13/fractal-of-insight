@@ -151,9 +151,13 @@ class Deck:
     def count_cards(self):
         card_types = defaultdict(int)
         self.floating = 0
+        self.guns = 0 # used by "We Need Guns..." achievement
         m = 0
         for card_o in self.dl["material"]:
             m += card_o["quantity"] # should be 1 unless there's something weird going on
+            card = carddata[card_o["card"]]
+            if "GUN" in card.get("subtypes",[]):
+                self.guns += 1
         self.mat_total = m
         n = 0
         for card_o in self.dl["main"]:
@@ -163,6 +167,8 @@ class Deck:
                 card_types[cardtype] += card_o["quantity"]
             if card_is_floating(card, self.champs):
                 self.floating += card_o["quantity"]
+            if "GUN" in card.get("subtypes",[]):
+                self.guns += 1
         self.main_total = n
         card_types_sorted = [(k,v) for k,v in card_types.items()]
         card_types_sorted.sort(key=lambda x:x[0])
@@ -177,6 +183,8 @@ class Deck:
                 p += 3 * card_o["quantity"]
             else:
                 p += 1 * card_o["quantity"]
+            if "GUN" in card.get("subtypes",[]):
+                self.guns += 1
         self.side_total = b
         self.side_points = p
     
