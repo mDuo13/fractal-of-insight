@@ -346,6 +346,7 @@ add_archetype(
         "Relentless Outburst",
         "Ghosts of Pendragon",
         "Dungeon Guide",
+        "Searing Rebuke",
     ]
 )
 
@@ -429,6 +430,9 @@ add_archetype(
     [
         "Ravishing Finale",
     ],
+    exclude_cards=[
+        "Guo Jia, Blessed Scion",
+    ],
     shortname="Mill"
 )
 
@@ -439,6 +443,7 @@ add_archetype(
     ],
     exclude_cards=[
         "Ravishing Finale",
+        "Guo Jia, Blessed Scion",
     ],
     shortname="Mill"
 )
@@ -523,9 +528,9 @@ shadowstrike = add_archetype(
     ]
 )
 shadowstrike.add_subtype(
-    "Waltz",
+    "Inspiring",
     [
-        "Penumbral Waltz",
+        "Inspiring Call",
     ]
 )
 shadowstrike.add_subtype(
