@@ -619,6 +619,7 @@ add_archetype(
         "Spellshield: Tera",
         "Conduit of Seasons",
         "Sempiternal Sage",
+        "Bagua of Vital Demise",
     ],
     exclude_cards=[
         "Silvie, Loved by All",

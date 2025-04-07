@@ -366,7 +366,7 @@
                 <h5>Before this</h5>
                 <ul>
                 {% for otherdeck, sim in before %}
-                    <li><a href="/{{otherdeck.entrant.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} on {{otherdeck.date}} ({{sim}}%)</a></li>
+                    <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{sim}}%)</a></li>
                 {% endfor %}
                 </ul>
                 {% endif %}
@@ -375,9 +375,9 @@
                 <ul>
                 {% for otherdeck, sim in sameday %}
                     {% if not external and event.id == otherdeck.entrant.evt_id %}
-                    <li><a href="#deck_{{otherdeck.entrant.id}}" onclick="opendecklist('#deck_{{otherdeck.entrant.id}}')">{{otherdeck.entrant.username}} in this event ({{sim}}%)</a></li>
+                    <li><a href="#deck_{{otherdeck.entrant.id}}" onclick="opendecklist('#deck_{{otherdeck.entrant.id}}')">{{otherdeck.entrant.username}} in this event ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
                     {% else %}
-                    <li><a href="/{{otherdeck.entrant.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in event #{{otherdeck.entrant.evt_id}} ({{sim}}%)</a></li>
+                    <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
                     {% endif %}
                 {% endfor%}
                 </ul>
@@ -386,7 +386,7 @@
                 <h5>After this</h5>
                 <ul>
                 {% for otherdeck, sim in after %}
-                    <li><a href="/{{otherdeck.entrant.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} on {{otherdeck.date}} ({{sim}}%)</a></li>
+                    <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
                 {% endfor %}
                 </ul>
                 {% endif %}

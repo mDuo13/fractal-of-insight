@@ -69,6 +69,7 @@ class OmniEvent:
             "Store",
             "Championships",
             "Championship",
+            "Champion",
             "Champs",
             "Regionals",
             "Regional",
