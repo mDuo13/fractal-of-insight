@@ -1,0 +1,46 @@
+{
+    "videos": [
+        {
+            "round": 1,
+            "link": "https://www.youtube.com/live/W1ROnUxfuvw?feature=shared&t=872",
+            "p1": 2941,
+            "p2": 398
+        },
+        {
+            "round": 2,
+            "link": "https://www.youtube.com/live/W1ROnUxfuvw?feature=shared&t=5186",
+            "p1": 11445,
+            "p2": 3367
+        },
+        {
+            "round": 3,
+            "link": "https://www.youtube.com/live/W1ROnUxfuvw?feature=shared&t=9512",
+            "p1": 973,
+            "p2": 8233
+        },
+        {
+            "round": 4,
+            "link": "https://www.youtube.com/live/W1ROnUxfuvw?feature=shared&t=13813",
+            "p1": 127,
+            "p2": 9337
+        },
+        {
+            "round": 5,
+            "link": "https://www.youtube.com/live/W1ROnUxfuvw?feature=shared&t=18225",
+            "p1": 860,
+            "p2": 8748
+        },
+        {
+            "round": 6,
+            "link": "https://www.youtube.com/live/W1ROnUxfuvw?feature=shared&t=22500",
+            "p1": 973,
+            "p2": 127
+        },
+        {
+            "round": 7,
+            "link": "https://www.youtube.com/live/W1ROnUxfuvw?feature=shared&t=27242",
+            "p1": 973,
+            "p2": 2150
+        }
+    ]
+}

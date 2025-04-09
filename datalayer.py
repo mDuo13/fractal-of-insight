@@ -223,7 +223,7 @@ def get_event(evt_id, force_redownload=False, save=True):
 
 def get_event_videos(evt_id):
     try:
-        with open(f"data/event_{evt_id}/videos.json") as f:
+        with open(f"vods/{evt_id}.json") as f:
             vids = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         vids = {"videos": []}

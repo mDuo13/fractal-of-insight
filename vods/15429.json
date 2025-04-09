@@ -1,0 +1,109 @@
+{"videos": [
+    {
+        "stage": 1,
+        "round": 1,
+        "link": "https://www.youtube.com/live/panCSchyYfo?feature=shared&t=2945",
+        "p1": 5986,
+        "p2": 2659
+    },
+    {
+        "stage": 1,
+        "round": 2,
+        "link": "https://www.youtube.com/live/panCSchyYfo?feature=shared&t=8725",
+        "p1": 969,
+        "p2": 363
+    },
+    {
+        "stage": 1,
+        "round": 3,
+        "link": "https://www.youtube.com/live/panCSchyYfo?feature=shared&t=13809",
+        "p1": 1129,
+        "p2": 4137
+    },
+    {
+        "stage": 1,
+        "round": 4,
+        "link": "https://www.youtube.com/live/panCSchyYfo?feature=shared&t=19046",
+        "p1": 792,
+        "p2": 4720
+    },
+    {
+        "stage": 1,
+        "round": 5,
+        "link": "https://www.youtube.com/live/panCSchyYfo?feature=shared&t=25507",
+        "p1": 810,
+        "p2": 955
+    },
+    {
+        "stage": 1,
+        "round": 6,
+        "link": "https://www.youtube.com/live/panCSchyYfo?feature=shared&t=30971",
+        "p1": 705,
+        "p2": 5010
+    },
+    {
+        "stage": 1,
+        "round": 7,
+        "link": "https://www.youtube.com/live/panCSchyYfo?feature=shared&t=36151",
+        "p1": 672,
+        "p2": 2920
+    },
+    {
+        "stage": 1,
+        "round": 8,
+        "link": "https://www.youtube.com/live/panCSchyYfo?feature=shared&t=41623",
+        "p1": 1339,
+        "p2": 127,
+        "//": "Stream gets cut off-mid match due to youtube length restrictions. No round 9 for that reason"
+    },
+    {
+        "stage": 1,
+        "round": 10,
+        "link": "https://www.youtube.com/live/C6Xh12TupCc?feature=shared&t=2689",
+        "p1": 5010,
+        "p2": 999
+    },
+    {
+        "stage": 1,
+        "round": 11,
+        "link": "https://www.youtube.com/live/C6Xh12TupCc?feature=shared&t=7824",
+        "p1": 546,
+        "p2": 327
+    },
+    {
+        "stage": 1,
+        "round": 12,
+        "link": "https://www.youtube.com/live/C6Xh12TupCc?feature=shared&t=12768",
+        "p1": 221,
+        "p2": 169
+    },
+    {
+        "stage": 1,
+        "round": 13,
+        "link": "https://www.youtube.com/live/C6Xh12TupCc?feature=shared&t=15218",
+        "p1": 3756,
+        "p2": 185,
+        "//": "Stream starts mid-match, probably from connection issues"
+    },
+    {
+        "stage": 2,
+        "round": 1,
+        "link": "https://www.youtube.com/live/C6Xh12TupCc?feature=shared&t=23239",
+        "p1": 221,
+        "p2": 1
+    },
+    {
+        "stage": 2,
+        "round": 2,
+        "link": "https://www.youtube.com/live/C6Xh12TupCc?feature=shared&t=30135",
+        "p1": 291,
+        "p2": 2150
+    },
+    {
+        "stage": 2,
+        "round": 3,
+        "link": "https://www.youtube.com/live/C6Xh12TupCc?feature=shared&t=36234",
+        "p1": 810,
+        "p2": 2150
+    }
+]}

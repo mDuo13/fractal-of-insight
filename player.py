@@ -6,6 +6,7 @@ from cards import ELEMENTS
 from shared import keydefaultdict, ElementStats, ChampStats, ArcheStats
 from competition import TEAM_STANDARD
 from achievements import AchievementSet
+from config import UPSET_CUTOFF
 
 RIVAL_THRESHOLD = 3 # min matches to count as a rival
 RIVAL_MAXCOUNT = 5 # trim rivals list if it's over this size
@@ -120,6 +121,22 @@ class Rivalry:
         return round(100 * (self.wins + (self.draws / 2)) / self.matches, 1)
 
 
+def is_upset(event, pairing):
+    if len(pairing) < 2:
+        return False
+    p1 = pairing[0]
+    p2 = pairing[1]
+    if p1["status"] == "winner":
+        winner = event.pdict[p1["id"]]
+        loser = event.pdict[p2["id"]]
+    else:
+        winner = event.pdict[p2["id"]]
+        loser = event.pdict[p1["id"]]
+    if winner.elo - loser.elo >= UPSET_CUTOFF:
+        return True
+    return False
+    
+
 class Player:
     """
     Represents a player across multiple events
@@ -226,15 +243,30 @@ class Player:
             if e.event.matchformat_swiss != "bo3":
                 continue
             # Skipping multi-stage events... usually stage 2 is untimed anyway
-            swiss = e.event.evt["stages"][0]
-            for rnd_num, rnd in enumerate(swiss["rounds"]):
-                for match in rnd["matches"]:
-                    for p in match["pairing"]:
-                        if p["id"] == self.id and p["score"] == 1 and p["status"] == "winner":
-                            #print(f"Long game: {self.username} in {e.event.name}")
-                            self.achievements.add("Play the Long Game", e, details=f"Round {rnd_num+1}")
-                        if p["id"] == self.id and p["score"] == 0 and p["status"] == "tied":
-                            self.achievements.add("Hand Shaker", e, details=f"Round {rnd_num+1}")
+            for stage_num, stage in enumerate(e.event.evt["stages"]):
+                for rnd_num, rnd in enumerate(stage["rounds"]):
+                    for match in rnd["matches"]:
+                        for p_i, p in enumerate(match["pairing"]):
+                            if p["id"] != self.id:
+                                continue
+                            if len(match["pairing"]) == 1: # it's a bye
+                                continue
+                            if p_i == 0:
+                                opp_p = match["pairing"][1]
+                                opp = e.event.pdict[opp_p["id"]]
+                            else:
+                                opp_p = match["pairing"][0]
+                                opp = e.event.pdict[opp_p["id"]]
+
+                            if p["status"] == "winner" and p["score"] == 1:
+                                #print(f"Long game: {self.username} in {e.event.name}")
+                                self.achievements.add("Play the Long Game", e, details=f"Round {rnd_num+1}")
+                            if p["status"] == "tied" and p["score"] == 0:
+                                self.achievements.add("Hand Shaker", e, details=f"Round {rnd_num+1}")
+                            if p["status"] == "winner" and is_upset(e.event, match["pairing"]):
+                                self.achievements.add("Titan Slayer", e, details=f"Round {rnd_num+1} vs {opp.username}")
+                            if p["status"] == "winner" and round(opp.elo, 0) >= 1600:
+                                self.achievements.add("Attack and Dethrone God", e, details=f"Round {rnd_num+1} vs {opp.username}")
         
         # Achievements for entering & winning different event types
         regionals_by_season = defaultdict(int)
@@ -268,6 +300,8 @@ class Player:
                    (e.placement <= 8 and e.event.evt["format"] != TEAM_STANDARD) or \
                    (e.placement <= 4 and e.event.evt["format"] == TEAM_STANDARD):
                     self.achievements.add("Spirited Competitor", e)
+                if e.event.winner and e.placement == 1:
+                    self.achievements.add("View from the Top", e)
             elif e.event.category["name"] == "Nationals":
                 self.achievements.add("Join the Battle", e)
                 if e.event.winner and e.placement == 1:
@@ -346,12 +380,14 @@ class Player:
                     else:
                         opps_played.add(opp)
         
-        # Ladder Leaper
+        # Elo achievements
         for e in events_chrono:
             if round(e.elo_diff,0) >= 50:
                 self.achievements.add("Ladder Leaper", e)
             if round(e.elo, 0) >= 1400:
                 self.achievements.add("Deadly Duelist", e)
+            if round(e.elo, 0) >= 1600:
+                self.achievements.add("Demigod", e)
         
         # Capped Veteran
         for e in events_chrono:

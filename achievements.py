@@ -115,6 +115,7 @@ add_achievement("Join the Battle", "✉️", "Enter a Nationals event.")
 add_achievement("Hometown Hero", "🏁", "Win a Nationals event.")
 add_achievement("Mountain Climber", "🌄", "Enter an Ascent.")
 add_achievement("Spirited Competitor", "🌟",  "Make top cut of an Ascent.")
+add_achievement("View from the Top", "🏔", "Win an Ascent.")
 add_achievement("World-Class Competitor", "🏅", "Enter a Worlds event.")
 add_achievement("Ascendant", "🌞", "Win a Worlds event.")
 
@@ -141,9 +142,12 @@ add_achievement("True Nomad", "🐪", "Enter 2+ in-person Regionals in one seaso
 
 # Elo, etc.
 ## skip_date for some of these because the data is based on when I re-downloaded the event, not the player's stats at the time of the event.
-add_achievement("Deadly Duelist", "⚜️", "Have over 1400 peak Elo.", skip_date=True)
+add_achievement("Deadly Duelist", "⚜️", "Have 1400+ peak Elo.", skip_date=True)
+add_achievement("Demigod", "😇", "Have 1600+ peak Elo.", skip_date=True)
 add_achievement("Ladder Leaper", "🪜",  "Gain 50+ Elo from one event.")
 add_achievement("Capped Veteran", "🧢", "Have 800+ Veterancy Points.", skip_date=True)
+add_achievement("Titan Slayer", "😲", "Win in an upset.")
+add_achievement("Attack and Dethrone God", "👹", "Defeat a player with 1600+ Elo.")
 
 # Match details
 add_achievement("Hand Shaker", "🤝",  "Take an intentional draw.")
