@@ -22,6 +22,9 @@
         <li><b>Draw Rate:</b> {{szn.draw_pct}}% {% if szn.nat_draw_pct != szn.draw_pct %}({{szn.nat_draw_pct}}% natural)
             <p class="explanation">(Assuming matches with a 0-0 score are intentional draws.)</p>{% endif %}
         </li>
+        <li><b>Players:</b> {{szn.total_players}}
+            <p class="explanation">(Only includes players who entered an event that's tracked on this site.)</p>
+        </li>
     </ul>
 </section>
 

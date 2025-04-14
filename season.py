@@ -1,4 +1,5 @@
 from time import strftime, strptime, gmtime
+from collections import defaultdict
 
 from shared import ElementStats, ArcheStats, ChampStats, OVERALL
 from battlechart import BattleChart
@@ -10,6 +11,7 @@ class Season:
         self.code = season
         self.events = []
         self.data = {}
+        self.pdict = defaultdict(list) # list of events entered by player ID
 
     def add_event(self, e):
         self.events.append(e)
@@ -34,11 +36,18 @@ class Season:
     def analyze(self):
         # Call after all events have been added & analyzed
         self.events.sort(key=lambda x:x.date, reverse=True)
+        self.analyze_players()
         self.analyze_decks()
         self.battlechart = self.calc_headtohead()
         self.bc_top = self.calc_headtohead(True)
         self.analyze_finishes()
         self.analyze_draws()
+    
+    def analyze_players(self):
+        for e in self.events:
+            for p in e.players:
+                self.pdict[p.id].append(p)
+        self.total_players = len(self.pdict.keys())
 
     def analyze_decks(self):
         self.elements = ElementStats()
@@ -134,6 +143,7 @@ class Format(Season):
         self.desc = desc
         self.events = []
         self.data = None
+        self.pdict = defaultdict(list)
     
     def add_event(self, e):
         self.events.append(e)
@@ -223,5 +233,5 @@ add_format("AMB Post-Feb Bans",
 )
 add_format("HVN Release",
     start="2025-03-07",
-    desc="Abyssal Heaven released."
+    desc="Abyssal Heaven released; Scepter of Lumina received errata."
 )
