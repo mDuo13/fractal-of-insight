@@ -17,12 +17,13 @@ SUBTYPES = {}
 
 class Archetype:
     def __init__(self, name, require_cards, exclude_cards=[],
-                require_types={},
+                require_types={}, require_combos=[],
                 require_element=None, shortname=None):
         self.name = name
         self.require = require_cards
         self.exclude = exclude_cards
         self.require_types = require_types
+        self.require_combos = require_combos
         if shortname is not None:
             self.shortname = shortname
         else:
@@ -55,6 +56,21 @@ class Archetype:
         
         for t,tcount in self.require_types.items():
             if t in deck.card_types.keys() and deck.card_types[t] < tcount:
+                return False
+        
+        if self.require_combos:
+            combo_found = False
+            for combo in self.require_combos:
+                combopieces_found = []
+                for cardname in deck:
+                    if cardname in combo and cardname not in combopieces_found:
+                        combopieces_found.append(cardname)
+                        if len(combopieces_found) == len(combo):
+                            combo_found = True
+                            break
+                if combo_found:
+                    break
+            if not combo_found:
                 return False
 
         if found_cards:
@@ -284,7 +300,6 @@ wind_allies = add_archetype(
         "Shimmercloak Assassin",
         "Dilu, Auspicious Charger",
         "Oath of the Sakura",
-        "Guan Yu, Prime Exemplar",
         "Liu Bei, Oathkeeper",
     ],
     exclude_cards=[
@@ -338,6 +353,7 @@ add_archetype(
         "Heated Vengeance",
         "Rending Flames",
         "Blazing Bowman",
+        "Cinder Geyser",
     ],
     require_element="Fire",
     shortname="Aggro",
@@ -346,7 +362,6 @@ add_archetype(
         "Relentless Outburst",
         "Ghosts of Pendragon",
         "Dungeon Guide",
-        "Searing Rebuke",
     ]
 )
 
@@ -715,14 +730,6 @@ add_archetype(
         "Maiden of Primal Virtue",
     ],
     shortname="Tera",
-)
-
-# Turns out Rebuke is a more distinctive indicator than Firebloom.
-add_archetype(
-    "Rebuke",
-    [
-        "Searing Rebuke",
-    ]
 )
 
 add_archetype(

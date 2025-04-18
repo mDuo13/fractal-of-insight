@@ -12,6 +12,15 @@
             {% endfor %}
         </ul>
     </li>
+    {% if a.require_combos %}
+    <li><b>At least one of the following combos:</b>
+        <ul>
+            {% for combo in a.require_combos %}
+            <li>{{combo|join(", ")}}</li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endif %}
     {% if a.exclude %}<li><b>None of the following cards:</b>
         <ul>
             {% for card in a.exclude %}
