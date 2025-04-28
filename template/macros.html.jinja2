@@ -144,7 +144,7 @@
 {% endmacro %}
 
 {% macro eventbox(evt) %}
-<a class="evt {{slugify(evt.category['name'])}}" href="/{{evt.season}}/{{evt.id}}.html" data-decklists="{{evt.num_decklists}}" data-category="{{slugify(evt.category['name'])}}">
+<a class="evt {{slugify(evt.category['name'])}}{% if evt.decklist_status == 'none' %} collapse{% endif %}" href="/{{evt.season}}/{{evt.id}}.html" data-decklists="{{evt.num_decklists}}" data-category="{{slugify(evt.category['name'])}}">
     <div class="evt-mainbox">
         <h3>{{evt.name}}</h3>
         <div class="date_loc">{{evt.date}} {{flag(evt.country)}}</div>
@@ -161,7 +161,7 @@
     <fieldset>
         <legend>Filter events</legend>
         {% if not lesser %}
-        <input type="checkbox" id="cb_decklists" value=0 onclick="update_evt_filtering()" />
+        <input type="checkbox" id="cb_decklists" checked="checked" onclick="update_evt_filtering()" />
         <label for="cb_decklists">Only events with decklists</label>
         <fieldset>
             <legend>Event Category</legend>

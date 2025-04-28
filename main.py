@@ -9,7 +9,7 @@ from math import ceil
 from collections import defaultdict
 
 import config
-from datalayer import carddata
+from datalayer import carddata, get_event
 from shared import slugify, OVERALL, REGIONS
 from omnievent import OmniEvent, Team3v3Event, IsTeamEvent
 from season import Season, SEASONS, Format, FORMATS
@@ -252,11 +252,7 @@ def main(args):
     builder = PageBuilder()
     for i in args.event_id:
         i_s = str(i)
-        try:
-            e = OmniEvent(i_s, force_redownload=args.update)
-        except IsTeamEvent:
-            e = Team3v3Event(i_s, force_redownload=args.update)
-        #builder.write_event(e)
+        get_event(i, force_redownload=args.update, save=True, dl_decklists=True)
     builder.write_all()
 
 if __name__ == "__main__":

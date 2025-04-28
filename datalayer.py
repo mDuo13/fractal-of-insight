@@ -36,12 +36,12 @@ def fetch(url):
 
 def get_deck(p_id, evt_id, public_on_omni):
     try:
-        with open(f"data/event_{evt_id}/deck_{p_id}.json") as f:
-            dl = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
+        dl = sideload_deck(p_id, evt_id)
+    except (FileNotFoundError):
         try:
-            dl = sideload_deck(p_id, evt_id)
-        except (FileNotFoundError):
+            with open(f"data/event_{evt_id}/deck_{p_id}.json") as f:
+                dl = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
             if not public_on_omni:
                 raise NoDeck()
             print(f"Downloading #{p_id}'s decklist...")
@@ -203,7 +203,7 @@ def card_is_floating(card, champs=[]):
             return True
     return False
 
-def get_event(evt_id, force_redownload=False, save=True):
+def get_event(evt_id, force_redownload=False, save=True, dl_decklists=False):
     try:
         if force_redownload:
             raise ForceReDL
@@ -219,6 +219,13 @@ def get_event(evt_id, force_redownload=False, save=True):
         if save:
             save_event_json(evt)
         sleep(API_DELAY)
+    if dl_decklists:
+        for pdata in evt["players"]:
+            is_public = pdata.get("isDecklistPublic")
+            try:
+                get_deck(pdata["id"], evt["id"], is_public)
+            except NoDeck:
+                pass
     return evt
 
 def get_event_videos(evt_id):

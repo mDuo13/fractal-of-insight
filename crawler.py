@@ -109,12 +109,13 @@ def is_interesting(evt):
         return 0
     
     players = evt.get("players", [])
-    if len(players) < config.INTERESTING_PLAYER_COUNT:
-        print(f"Only {len(players)} players")
-        return 0
+    # if len(players) < config.INTERESTING_PLAYER_COUNT:
+    #     print(f"Only {len(players)} players")
+    #     return 0
     
     if evt.get("category") == "regular" and not evt.get("decklists"):
-        print(f"Big locals? #{evt['id']} ({len(players)} players): {evt['name']}")
+        if len(players) >= config.INTERESTING_PLAYER_COUNT:
+            print(f"Big locals? #{evt['id']} ({len(players)} players): {evt['name']}")
         if len(players) > config.REALLY_INTERESTING_PLAYER_COUNT:
             return 1
         return 0
