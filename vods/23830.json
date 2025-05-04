@@ -1,0 +1,108 @@
+{"videos": [
+    {
+        "stage": 1,
+        "round": 1,
+        "link": "https://www.youtube.com/live/ZpUg98K8kVY?feature=shared&t=3358",
+        "p1": 264,
+        "p2": 12219
+    },
+    {
+        "stage": 1,
+        "round": 2,
+        "link": "https://www.youtube.com/live/ZpUg98K8kVY?feature=shared&t=8482",
+        "p1": 1436,
+        "p2": 12059
+    },
+    {
+        "stage": 1,
+        "round": 3,
+        "link": "https://www.youtube.com/live/ZpUg98K8kVY?feature=shared&t=13276",
+        "p1": 2031,
+        "p2": 672
+    },
+    {
+        "stage": 1,
+        "round": 4,
+        "link": "https://www.youtube.com/live/ZpUg98K8kVY?feature=shared&t=18262",
+        "p1": 12342,
+        "p2": 14386
+    },
+    {
+        "stage": 1,
+        "round": 5,
+        "link": "https://www.youtube.com/live/ZpUg98K8kVY?feature=shared&t=26265",
+        "p1": 792,
+        "p2": 662
+    },
+    {
+        "stage": 1,
+        "round": 6,
+        "link": "https://www.youtube.com/live/ZpUg98K8kVY?feature=shared&t=31103",
+        "p1": 2398,
+        "p2": 3583
+    },
+    {
+        "stage": 1,
+        "round": 7,
+        "link": "https://www.youtube.com/live/ZpUg98K8kVY?feature=shared&t=36050",
+        "p1": 419,
+        "p2": 13783
+    },
+    {
+        "stage": 1,
+        "round": 8,
+        "link": "https://www.youtube.com/live/ZpUg98K8kVY?feature=shared&t=40735",
+        "p1": 12223,
+        "p2": 1951,
+        "//": "The VOD gets cut off at 12 hours so the end of this match and round 9 are unavailable."
+    },
+    {
+        "stage": 1,
+        "round": 10,
+        "link": "https://www.youtube.com/live/JbVk-zzc9SY?feature=shared&t=2433",
+        "p1": 3756,
+        "p2": 12705
+    },
+    {
+        "stage": 1,
+        "round": 11,
+        "link": "https://www.youtube.com/live/JbVk-zzc9SY?feature=shared&t=6928",
+        "p1": 3547,
+        "p2": 1133
+    },
+    {
+        "stage": 1,
+        "round": 12,
+        "link": "https://www.youtube.com/live/JbVk-zzc9SY?feature=shared&t=11822",
+        "p1": 2031,
+        "p2": 7946
+    },
+    {
+        "stage": 1,
+        "round": 13,
+        "link": "https://www.youtube.com/live/JbVk-zzc9SY?feature=shared&t=17002",
+        "p1": 8056,
+        "p2": 15262
+    },
+    {
+        "stage": 2,
+        "round": 1,
+        "link": "https://www.youtube.com/live/JbVk-zzc9SY?feature=shared&t=24836",
+        "p1": 9385,
+        "p2": 17072
+    },
+    {
+        "stage": 2,
+        "round": 2,
+        "p1": 7946,
+        "p2": 3547,
+        "link": "https://www.youtube.com/live/JbVk-zzc9SY?feature=shared&t=30649"
+    },
+    {
+        "stage": 2,
+        "round": 3,
+        "link": "https://www.youtube.com/live/JbVk-zzc9SY?feature=shared&t=36251",
+        "p1": 17072,
+        "p2": 7946
+    }
+]}

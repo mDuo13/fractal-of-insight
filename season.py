@@ -233,5 +233,10 @@ add_format("AMB Post-Feb Bans",
 )
 add_format("HVN Release",
     start="2025-03-07",
+    end="2025-04-28",
     desc="Abyssal Heaven released; Scepter of Lumina received errata."
+)
+add_format("HVN + Clarent",
+    start="2025-04-28",
+    desc="Clarent, Reimagined added to Proxia's Vault."
 )

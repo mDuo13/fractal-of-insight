@@ -66,6 +66,7 @@ class OmniEvent:
             "Grand",
             "Archive",
             "TCG",
+            "Storechamp",
             "Store",
             "Championships",
             "Championship",
