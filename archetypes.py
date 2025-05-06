@@ -126,6 +126,7 @@ class Archetype:
         
         if matches:
             self.winrate = round(100*wins/matches, 1)
+            self.total_matches = matches
         
         self.analyze_card_freq()
         self.analyze_card_stats()
@@ -264,6 +265,7 @@ water_allies = add_archetype(
         "Sword Saint of Eventide",
         "Lunete, Frostbinder Priest",
         "Jueying, Shadowmare",
+        "Imperial Panzer",
     ],
     exclude_cards=[
         "Spirit Blade: Ensoul",
@@ -301,6 +303,7 @@ wind_allies = add_archetype(
         "Dilu, Auspicious Charger",
         "Oath of the Sakura",
         "Liu Bei, Oathkeeper",
+        "Imperial Panzer",
     ],
     exclude_cards=[
         "Spirit Blade: Ascension",
