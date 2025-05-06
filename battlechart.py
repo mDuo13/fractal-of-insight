@@ -49,9 +49,18 @@ class BCRow:
         self.draws = 0
         self.matches = 0
         self.mirrors = 0
+        self.intentional_draws = 0
+        self.byes = 0
         self.cols = keydefaultdict(BCCell)
         self.subrows = keydefaultdict(BCRow)
     
+    def id_vs(self, vs_deck, as_deck=None):
+        # TODO: vs_deck might be None here
+        self.intentional_draws += 1
+    
+    def bye(self, as_deck=None):
+        self.byes += 1
+
     def win_vs(self, vs_deck, as_deck=None):
         self.wins += 1
         self.matches += 1
@@ -109,6 +118,8 @@ class BCRow:
         self.draws += row.draws
         self.matches += row.matches
         self.mirrors += row.mirrors
+        self.intentional_draws += row.intentional_draws
+        self.byes += row.byes
         for cname, c in row.cols.items():
             self.cols[cname].merge(c)
         for as_sub,subrow in row.subrows.items():
@@ -174,6 +185,11 @@ class BattleChart:
             for rnd in stage["rounds"]:
                 for match in rnd["matches"]:
                     if len(match["pairing"]) < 2:
+                        p1r = match["pairing"][0]
+                        p1 = pdict[p1r["id"]]
+                        if p1.deck:
+                            for as_t in p1.deck.archetypes:
+                                self.rows[as_t].bye()
                         #print("        And a bye")
                         continue
                     if match["status"] == "started":
@@ -192,8 +208,16 @@ class BattleChart:
 
                     if p1r["score"] == p2r["score"] and p1r["score"] == 0:
                         #print(f"        intentional draw")
+                        if p1.deck:
+                            for as_t in p1.deck.archetypes:
+                                self.rows[as_t].id_vs(p2.deck)
+                        if p2.deck:
+                            for as_t in p2.deck.archetypes:
+                                self.rows[as_t].id_vs(p1.deck)
                         continue
                     elif not p1.deck or not p2.deck:
+                        # TODO: maybe note the win vs an unknown deck?
+                        # since it affects overall win rate.
                         #print("        (decklist unavailable)")
                         continue
                     
@@ -251,3 +275,11 @@ class BattleChart:
             if not v.matches:
                 continue
             yield k,v
+    
+    def has_data_for(self, arche):
+        if arche in self.rows.keys():
+            return True
+        return False
+    
+    def __getitem__(self, key):
+        return self.rows[key]

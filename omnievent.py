@@ -32,6 +32,7 @@ class OmniEvent:
         self.matchformat_swiss = self.evt["matchConfigSwiss"]
         self.matchformat_topcut = self.evt.get("matchConfigSingleElim")
         self.name = self.evt["name"]
+        self.host = self.evt["store"]["name"]
         self.fix_generic_name()
         self.date = strftime(r"%Y-%m-%d", gmtime(self.evt["startAt"]/1000))
         if "season" in self.evt:

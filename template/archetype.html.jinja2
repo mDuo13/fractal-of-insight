@@ -55,7 +55,7 @@
     <ul class="scooped-corners">
         <li><b>Appearances recorded</b>: {{arche.matched_decks|length}}</li>
         <li><b>Earliest appearance</b>: {{arche.earliest}}</li>
-        <li><b>Overall win rate</b>: {{arche.winrate}}%</li>
+        <li><b>All-time win rate</b>: {{arche.winrate}}%</li>
         <li><b>Total events won</b>: {{wins|length}}</li>
     </ul>
 </section>
@@ -179,7 +179,7 @@
             </li>
         </ul>
         <h4>Matchups</h4>
-        {{ macros.battlechart(szn.battlechart, only_show=arche.name) }}
+        {{ macros.battlechart(szn.battlechart, only_show=arche.name, collapse=False) }}
     </div>
     {% endif %}
     {% endfor %}

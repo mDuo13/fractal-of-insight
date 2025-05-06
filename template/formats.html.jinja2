@@ -19,52 +19,87 @@ Compare data for standard formats split by card legality changes including cards
 
 <div id="elements">
     <h2>Elements</h2>
-    <button onclick="toggle('#elements > .togglable')">Glimpse Element Breakdown</button>
 
-    {% for fmt in formats %}
-    <h3 class="collapse togglable">{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time|default("Ongoing", true)}})</span></h3>
-    <p class="explanation collapse togglable">{{fmt.desc}} ({{fmt.events|length}} events)</p>
-    <div class="element-meta collapse togglable">
-        {{macros.elementpie(fmt.elements)}}
+    <div class="tabs">
+        {% for fmt in formats %}
+        <button class="tab{% if loop.index0 == 0 %} activetab{% endif %}" data-tabfor="{{slugify(fmt.name)}}" onclick="opentabs(this)">{{fmt.name}}</button>
+        {% endfor %}
     </div>
-    {% endfor %}
+    <div class="tabwrapper">
+        {% for fmt in formats %}
+        <div class="tabcontent{% if loop.index0 != 0 %} collapse{% endif %}" data-tabof="{{slugify(fmt.name)}}">
+            <h3>{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time|default("Ongoing", true)}})</span></h3>
+            <p class="explanation">{{fmt.desc}} ({{fmt.events|length}} events)</p>
+            <div class="element-meta">
+                {{macros.elementpie(fmt.elements)}}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 
 </div>
 
 
 <div id="champions">
     <h2>Champions</h2>
-    <button onclick="toggle('#champions > .togglable')">Glimpse Element Breakdown</button>
 
-    {% for fmt in formats %}
-    <h3 class="collapse togglable">{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time}})</span></h3>
-    <p class="explanation collapse togglable">{{fmt.desc}} ({{fmt.events|length}} events)</p>
-    {{ macros.elementbars(fmt.champdata) }}
-    {% endfor %}
+    <div class="tabs">
+        {% for fmt in formats %}
+        <button class="tab{% if loop.index0 == 0 %} activetab{% endif %}" data-tabfor="{{slugify(fmt.name)}}" onclick="opentabs(this)">{{fmt.name}}</button>
+        {% endfor %}
+    </div>
+    
+    <div class="tabwrapper">
+        {% for fmt in formats %}
+        <div class="tabcontent{% if loop.index0 != 0 %} collapse{% endif %}" data-tabof="{{slugify(fmt.name)}}">
+            <h3>{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time|default("Ongoing", true)}})</span></h3>
+            <p class="explanation">{{fmt.desc}} ({{fmt.events|length}} events)</p>
+            {{ macros.elementbars(fmt.champdata, collapse=False) }}
+        </div>
+        {% endfor %}
+    </div>
 </div>
 
 
 <div id="archetypes">
     <h2>Archetypes</h2>
-    <button onclick="toggle('#archetypes > .togglable')">Glimpse Element Breakdown</button>
 
-    {% for fmt in formats %}
-    <h3 class="collapse togglable">{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time}})</span></h3>
-    <p class="explanation collapse togglable">{{fmt.desc}} ({{fmt.events|length}} events)</p>
-    {{ macros.elementbars(fmt.archedata) }}
-    {% endfor %}
+    <div class="tabs">
+        {% for fmt in formats %}
+        <button class="tab{% if loop.index0 == 0 %} activetab{% endif %}" data-tabfor="{{slugify(fmt.name)}}" onclick="opentabs(this)">{{fmt.name}}</button>
+        {% endfor %}
+    </div>
+
+    <div class="tabwrapper">
+        {% for fmt in formats %}
+        <div class="tabcontent{% if loop.index0 != 0 %} collapse{% endif %}" data-tabof="{{slugify(fmt.name)}}">
+            <h3>{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time|default("Ongoing", true)}})</span></h3>
+            <p class="explanation">{{fmt.desc}} ({{fmt.events|length}} events)</p>
+            {{ macros.elementbars(fmt.archedata, collapse=False) }}
+        </div>
+        {% endfor %}
+    </div>
 </div>
 
 <div id="head-to-head">
     <h2>Head-to-Head</h2>
-    <button onclick="toggle('#head-to-head > .togglable')">Glimpse Element Breakdown</button>
 
-    {% for fmt in formats %}
-    <h3 class="collapse togglable">{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time}})</span></h3>
-    <p class="explanation collapse togglable">{{fmt.desc}} ({{fmt.events|length}} events)</p>
-    <p class="collapse togglable">Deck on the left's win rate vs deck on the top</p>
-    {{ macros.battlechart(fmt.battlechart) }}
-    {% endfor %}
+    <div class="tabs">
+        {% for fmt in formats %}
+        <button class="tab{% if loop.index0 == 0 %} activetab{% endif %}" data-tabfor="{{slugify(fmt.name)}}" onclick="opentabs(this)">{{fmt.name}}</button>
+        {% endfor %}
+    </div>
+
+    <div class="tabwrapper">
+        {% for fmt in formats %}
+        <div class="tabcontent{% if loop.index0 != 0 %} collapse{% endif %}" data-tabof="{{slugify(fmt.name)}}">
+            <h3 >{{fmt.name}} <span class="explanation">({{fmt.start_time}} – {{fmt.end_time|default("Ongoing", true)}})</span></h3>
+            <p class="explanation">{{fmt.desc}} ({{fmt.events|length}} events)</p>
+            <p>Deck on the left's win rate vs deck on the top</p>
+            {{ macros.battlechart(fmt.battlechart, collapse=False) }}
+        </div>
+        {% endfor %}
+    </div>
 </div>
 
 {% endblock %}

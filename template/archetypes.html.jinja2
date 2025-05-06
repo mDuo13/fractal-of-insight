@@ -20,7 +20,8 @@
         <th>Name</th>
         <th>Appearances</th>
         <th>Overall win rate</th>
-        <th>Events won</th>
+        <th>Current season win rate</th>
+        <th>Events won (all-time)</th>
     </tr></thead>
     <tbody>
     {% for arche in archetypes %}
@@ -33,6 +34,11 @@
         </td>
         <td>{{arche.matched_decks|length}}</td>
         <td>{{arche.winrate}}%</td>
+        {% if arche.name in cswr.keys() %}
+            <td>{{cswr[arche.name]}}%</td>
+        {% else %}
+            <td>(No data)</td>
+        {% endif %}
         <td>{{aew[arche.name]|length}}</td>
     </tr>
     {% endfor %}

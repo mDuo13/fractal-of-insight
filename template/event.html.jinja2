@@ -38,6 +38,7 @@
     <ul class="scooped-corners">
         <li><b>Date:</b> {{evt.date}}</li>
         <li><b>Entrants:</b> {{evt.players|length}}</li>
+        <li><b>Hosted by:</b> {{evt.host}}</li>
         {% if evt.evt.address %}<li><b>Location:</b> {{evt.evt.address}}</li>{% endif %}
         <li><b>Omnidex ID:</b> <a href="https://omni.gatcg.com/events/{{evt.id}}">{{evt.id}}</a></li>
         <li><b>Draw Rate:</b> {{evt.draw_pct}}% {% if evt.nat_draw_pct != evt.draw_pct %}({{evt.nat_draw_pct}}% natural)

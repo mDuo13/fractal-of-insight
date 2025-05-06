@@ -177,8 +177,8 @@
 </form>
 {% endmacro %}
 
-{% macro battlechart(bc, only_show=False, link_matches=False) %}
-<table class="battlechart {% if not only_show %}collapse togglable{% endif %}">
+{% macro battlechart(bc, only_show=False, link_matches=False, collapse=True) %}
+<table class="battlechart {% if collapse %}collapse togglable{% endif %}">
     <thead><tr>
         <th>Deck</th>
     {% for archetype, records in bc.items() %}

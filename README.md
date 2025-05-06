@@ -14,3 +14,5 @@ This site shows information and analysis of Grand Archive tournament results. It
 - sideboard / tech cards prevalence rate (event/season)
 - path of silver data
 - conversion rate to top cut
+- achievement for advanced elements
+- top users per card

@@ -132,6 +132,19 @@ function opentab(tabbutton, selector) {
     tabcontent.classList.remove("collapse")
 }
 
+function opentabs(tabbutton) {
+    const tabfor = tabbutton.dataset.tabfor
+    const tabbuttons = document.querySelectorAll(".tab")
+    const matchingtabs = document.querySelectorAll(`[data-tabfor="${tabfor}"]`)
+    tabbuttons.forEach(el => {el.classList.remove("activetab")})
+    matchingtabs.forEach(el => {el.classList.add("activetab")})
+
+    const alltabcontent = document.querySelectorAll(".tabcontent")
+    const matchingtabcontent = document.querySelectorAll(`[data-tabof="${tabfor}"]`)
+    alltabcontent.forEach(el => {el.classList.add("collapse")})
+    matchingtabcontent.forEach(el => {el.classList.remove("collapse")})
+}
+
 function update_evt_filtering() {
     const decklist_cb = document.getElementById("cb_decklists")
     let decklists_only = false

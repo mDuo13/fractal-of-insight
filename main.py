@@ -90,7 +90,7 @@ class PageBuilder:
     def write_player_index(self, players=[], events={}):
         self.render("players.html.jinja2", "player/index.html", players=players, events=events)
 
-    def write_archetype(self, archetype, players=[], events=[], seasons=[], wins=0):
+    def write_archetype(self, archetype, players=[], events=[], seasons={}, wins=0):
         archetype.analyze()
         slug = slugify(archetype.name)
         arche_path = f"deck/{slug}.html"
@@ -105,8 +105,8 @@ class PageBuilder:
                             arche=archetype, players=players, events=events, seasons=seasons, wins=wins, 
                             page_number=page_number, max_page=max_page, page_start=(i*SIGHTINGS_PER_PAGE), page_end=((i+1)*SIGHTINGS_PER_PAGE))
 
-    def write_archetype_index(self, archetypes, aew):
-        self.render("archetypes.html.jinja2", "deck/index.html", archetypes=archetypes, aew=aew)
+    def write_archetype_index(self, archetypes, aew, cswr):
+        self.render("archetypes.html.jinja2", "deck/index.html", archetypes=archetypes, aew=aew, cswr=cswr)
 
     def write_card_index(self):
         self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata)
@@ -228,7 +228,25 @@ class PageBuilder:
 
         arches_sorted = [a for a in ARCHETYPES.values()]
         arches_sorted.sort(key=lambda x: len(x.matched_decks), reverse=True)
-        self.write_archetype_index(arches_sorted+[NO_ARCHETYPE], aew)
+        current_season = list(seasons_sorted.values())[0]
+        # Calculate "naive" win rate for current season, to match overall win rate.
+        # This doesn't match Battlechart win rate because BC omits matches where one
+        # deck is unknown, intentional draws, byes, etc.
+        csa_wins = defaultdict(int) # current season archetype wins
+        csa_losses = defaultdict(int)
+        csa_ties = defaultdict(int)
+        for s_e in current_season.events:
+            for s_p in s_e.players:
+                if s_p.deck:
+                    for a in s_p.deck.archetypes:
+                        csa_wins[a] += s_p.wins
+                        csa_losses[a] += s_p.losses
+                        csa_ties[a] += s_p.ties
+        cswr = {}
+        for a in csa_wins.keys():
+            csa_matches = csa_wins[a]+csa_losses[a]+csa_ties[a]
+            cswr[a] = round( 100*(csa_wins[a] + (csa_ties[a] / 2)) / csa_matches, 1)
+        self.write_archetype_index(arches_sorted+[NO_ARCHETYPE], aew, cswr=cswr)
         
         self.write_card_index()
 
