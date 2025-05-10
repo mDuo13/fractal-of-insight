@@ -116,6 +116,7 @@ function reset_matches() {
     hide("#matchreset")
     show("#keymatches")
     show("#matches .match")
+    show("#showvids")
 
     // Switch the labels
     show("#keymatch-expl")
