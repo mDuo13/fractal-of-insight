@@ -270,10 +270,11 @@
 
 {% macro elementbars(data, link=False, collapse=True) %}
 <div class="{% if collapse %}collapse{% endif %} togglable element-bars">
-    {% for label, pct, elpcts in data %}
+    {% for label, pct, quant, elpcts in data %}
     {% if pct > 0 %}
         <div class="archetype">
             <div class="el-pct">{{pct}}%</div>
+            <div class="el-quant">({{quant}} {% if quant == 1 %}deck{% else %}decks{% endif %})</div>
             <div class="arche-bar" style="height: {{4*pct}}px">
                 {% for el,quant,elpct in elpcts %}
                     <div class="el-bar {{el|lower}}" style="height: {% if elpct > 0 %}{{elpct+0.1}}{% else %}0{% endif %}%" title="{{elpct}}% {{el}}">&nbsp;</div>

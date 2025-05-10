@@ -312,6 +312,12 @@ th {
     text-align: center;
     z-index: 3;
 }
+
+.subquant {
+    display: block;
+    font-size: 13px;
+}
+
 .decklist .cardimg .flipper {
     position: absolute;
     right: 5px;
@@ -515,9 +521,11 @@ th {
     margin: 0;
     text-align: center;
 }
-.el-pct {
+.el-pct, 
+.el-quant {
 	text-align: center;
-	font-size: smaller;
+	font-size: 16px;
+    line-height: 16px;
 }
 
 .element-meta {

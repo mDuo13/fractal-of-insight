@@ -118,7 +118,7 @@ class TypeStats:
             exit(1)
         for t, quant in typedata:
             pct = round(100*quant/self.total_items, 1)
-            yield (t, pct, self.item_elements[t])
+            yield (t, pct, quant, self.item_elements[t])
 
     def __getitem__(self, item):
         quant = self.items[item]
@@ -182,10 +182,10 @@ class ArcheStats(TypeStats):
                 self.item_elements[arche].add_deck(deck)
     
     def __iter__(self):
-        for item, pct, quant in super().__iter__():
+        for item, pct, quant, elstats in super().__iter__():
             if item in self.known_subtypes:
                 continue
-            yield item, pct, quant
+            yield item, pct, quant, elstats
 
 
 class RegionStats:

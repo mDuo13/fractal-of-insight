@@ -321,15 +321,27 @@ class OmniEvent:
     def calc_sideboards(self):
         total_decks = 0
         sb_cards = defaultdict(int)
+        
         for p in self.players:
             if p.deck:
                 total_decks += 1
                 for card_o in p.deck.dl["sideboard"]:
                     sb_cards[card_o["card"]] += 1
+        sb_main_cards = defaultdict(int)
+        for cardname in sb_cards.keys():
+            for p in self.players:
+                if p.deck:
+                    if p.deck.quantity_of(cardname, search_sections=("sideboard",)):
+                        # Skip decks that have the card boarded already
+                        continue
+                    if p.deck.quantity_of(cardname):
+                        sb_main_cards[cardname] += 1
+
         sb_cards_sorted = []
         self.sideboard_stats = [{
                             "card": card, 
                             "pct": round(100*cc/total_decks,1),
+                            "mb_pct": round(100*sb_main_cards[card]/total_decks,1),
                             "img": get_card_img(card),
                            } for card, cc in sb_cards.items()]
         self.sideboard_stats.sort(key=lambda x:x["pct"], reverse=True)

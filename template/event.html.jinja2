@@ -34,7 +34,7 @@
 <section id="evt-info">
     <h1>
     <img src="/static/{{evt.category['shortname']}}.svg" alt="({{evt.category['name']}})" title="Event category: ({{evt.category['name']}})" width="30" height="35" />
-    {{evt.name}}</h1>
+    {{evt.name}}{% if not evt.winner %} (Ongoing){% endif %}</h1>
     <ul class="scooped-corners">
         <li><b>Date:</b> {{evt.date}}</li>
         <li><b>Entrants:</b> {{evt.players|length}}</li>
@@ -186,16 +186,16 @@
 
     <div class="tabwrapper togglable collapse">
         <div class="tabcontent togglable" id="champdata-overall">
-            {{ macros.elementbars(evt.champdata, link=True, collapse=False) }}
+            {{ macros.elementbars(evt.champdata, link=False, collapse=False) }}
         </div>
         {% if evt.day2stats %}
         <div class="tabcontent togglable collapse" id="champdata-day2">
-            {{ macros.elementbars(evt.day2stats.champdata, link=True, collapse=False) }}
+            {{ macros.elementbars(evt.day2stats.champdata, link=False, collapse=False) }}
         </div>
         {% endif %}
         {% if evt.topcutstats %}
         <div class="tabcontent togglable collapse" id="champdata-topcut">
-            {{ macros.elementbars(evt.topcutstats.champdata, link=True, collapse=False) }}
+            {{ macros.elementbars(evt.topcutstats.champdata, link=False, collapse=False) }}
         </div>
         {% endif %}
     </div>
@@ -206,9 +206,10 @@
         <p>Top 10 most sideboarded cards:</p>
     {% for card_o in evt.sideboard_stats %}
         {% if loop.index0 < 10 %}
-        <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%</span></div>
+        <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%<span class="subquant">(+{{card_o["mb_pct"]}}%)</span></span></div>
         {% endif %}
     {% endfor %}
+        <p class="explanation">(+X%) indicates how many additional decks have the card in main/material deck already.</p>
     </div>
 </section>
 
