@@ -152,6 +152,12 @@ function update_evt_filtering() {
     if (decklist_cb) {
         decklists_only = decklist_cb.checked
     }
+    const small_evts_cb = document.getElementById("cb_small_events")
+    let small_events = false
+    if (small_evts_cb) {
+        small_events = small_evts_cb.checked
+    }
+
     const show_cats = []
     document.querySelectorAll('input[name="category"]').forEach( el => {
         if (el.checked) {
@@ -161,6 +167,8 @@ function update_evt_filtering() {
     //console.log("show_cats", show_cats)
     document.querySelectorAll('.evt').forEach( el => {
         if (decklists_only && el.dataset["decklists"] == "0") {
+            el.classList.add("collapse")
+        } else if (!small_events && parseInt(el.dataset["playercount"]) < 20) {
             el.classList.add("collapse")
         } else {
             if ( show_cats.includes(el.dataset["category"]) ) {
@@ -172,6 +180,8 @@ function update_evt_filtering() {
     })
     document.querySelectorAll('.p-row').forEach( el => {
         if (decklists_only && el.dataset["decklists"] == "0") {
+            el.classList.add("collapse")
+        } else if (!small_events && parseInt(el.dataset["playercount"]) < 20) {
             el.classList.add("collapse")
         } else {
             if ( show_cats.includes(el.dataset["category"]) ) {

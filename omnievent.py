@@ -1,5 +1,6 @@
 from collections import defaultdict
 from time import strftime, gmtime
+import re
 
 from player import Entrant, JudgeEvt
 from battlechart import BattleChart
@@ -78,11 +79,12 @@ class OmniEvent:
             "Event",
             "Mercurial Heart",
             "Mortal Ambition",
+            "Abyssal Heaven",
             "Standard",
             "Constructed",
             "DOA", "FTC", "ALC", "MRC", "AMB", "HVN",
         ]
-        testname = self.name.lower()
+        testname = re.sub(r"\W","",self.name.lower())
         for word in GENERIC_WORDS:
             testname = testname.replace(word.lower(), "")
         testname = testname.strip()

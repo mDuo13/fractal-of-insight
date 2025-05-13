@@ -295,6 +295,10 @@ th {
     display: none;
 }
 
+fieldset label {
+    margin-right: 10px;
+}
+
 .decklist .cardimg .quant,
 .top-cards .cardimg .quant {
     position: absolute;

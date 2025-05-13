@@ -81,7 +81,7 @@
 {% endmacro %}
 
 {% macro p_row_profilepage(p, loop, event) %}
-    <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}" data-decklists="{% if p.deck %}1{% else %}0{% endif %}" data-category="{{slugify(event.category['name'])}}">
+    <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}" data-decklists="{% if p.deck %}1{% else %}0{% endif %}" data-category="{{slugify(event.category['name'])}}" data-playercount="{{event.players|length}}">
         <td class="p_date">{{event.date}}</td>
         <td class="p_event"><a href="/{{event.season}}/{{event.id}}.html">{{event.name}}</a></td>
         {% if event.format == TEAM_STANDARD %}
@@ -144,7 +144,7 @@
 {% endmacro %}
 
 {% macro eventbox(evt) %}
-<a class="evt {{slugify(evt.category['name'])}}{% if evt.decklist_status == 'none' %} collapse{% endif %}" href="/{{evt.season}}/{{evt.id}}.html" data-decklists="{{evt.num_decklists}}" data-category="{{slugify(evt.category['name'])}}">
+<a class="evt {{slugify(evt.category['name'])}}{% if evt.decklist_status == 'none' or evt.players|length < 20 %} collapse{% endif %}" href="/{{evt.season}}/{{evt.id}}.html" data-decklists="{{evt.num_decklists}}" data-category="{{slugify(evt.category['name'])}}" data-playercount="{{evt.players|length}}">
     <div class="evt-mainbox">
         <h3>{{evt.name}}</h3>
         <div class="date_loc">{{evt.date}} {{flag(evt.country)}}</div>
@@ -163,6 +163,8 @@
         {% if not lesser %}
         <input type="checkbox" id="cb_decklists" checked="checked" onclick="update_evt_filtering()" />
         <label for="cb_decklists">Only events with decklists</label>
+        <input type="checkbox" id="cb_small_events" onclick="update_evt_filtering()" />
+        <label for="cb_small_events">Small events (&lt; 20p)</label>
         <fieldset>
             <legend>Event Category</legend>
         {% endif %}
