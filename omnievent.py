@@ -64,7 +64,7 @@ class OmniEvent:
         self.analyze_day2()
     
     def fix_generic_name(self):
-        GENERIC_WORDS = [
+        GENERIC_WORDS = [w.lower() for w in [
             "Grand",
             "Archive",
             "TCG",
@@ -77,20 +77,20 @@ class OmniEvent:
             "Regionals",
             "Regional",
             "Event",
-            "Mercurial Heart",
-            "Mortal Ambition",
-            "Abyssal Heaven",
+            "Mercurial", "Heart",
+            "Mortal", "Ambition",
+            "Abyssal", "Heaven",
             "Standard",
             "Constructed",
             "DOA", "FTC", "ALC", "MRC", "AMB", "HVN",
-        ]
-        testname = re.sub(r"\W","",self.name.lower())
-        for word in GENERIC_WORDS:
-            testname = testname.replace(word.lower(), "")
-        testname = testname.strip()
+        ]]
+        name_words = re.split(r"\W+", self.name.lower())
+        testname = ""
+        for word in name_words:
+            if word not in GENERIC_WORDS:
+                testname += word
         if not testname:
-            #print(f"Fixing generic event name (remaining testname was '{testname}')")
-            # it's a generic name, add the store name
+            # add the store name to make it less generic
             self.name = self.evt["store"]["name"] + " " + self.name
     
     def load_players(self):

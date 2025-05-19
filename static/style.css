@@ -542,6 +542,10 @@ fieldset label {
     margin-right: 0;
 }
 
+.tabwrapper .element-bars {
+    padding-top: 5px;
+}
+
 .pie-chart {
     width: 200px;
     height: 200px;
