@@ -15,6 +15,9 @@ from config import TOP_CUTOFF
 class IsTeamEvent(Exception):
     pass
 
+class NotStarted(Exception):
+    pass
+
 def pct_with_archetype(players, arche):
     nom = 0
     for p in players:
@@ -27,6 +30,8 @@ class OmniEvent:
     def __init__(self, evt_id, force_redownload=False):
         self.id = evt_id
         self.evt = get_event(self.id, force_redownload)
+        if self.evt["status"] not in ("started", "completable", "complete"):
+            raise NotStarted
         if self.evt["format"] == TEAM_STANDARD and not isinstance(self, Team3v3Event):
             raise IsTeamEvent
         self.format = self.evt["format"]

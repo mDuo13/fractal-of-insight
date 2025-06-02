@@ -52,7 +52,7 @@ def crawl_event(i): # TODO: implement a force_redownload
 
     if due_for_update(evt_data):
         try:
-            evt_full = get_event(i, save=False)
+            evt_full = get_event(i, force_redownload=True, save=False)
             if i > crawldata["max_crawled"]:
                 crawldata["max_crawled"] = i
         except EventNotFound:

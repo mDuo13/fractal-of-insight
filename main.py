@@ -11,7 +11,7 @@ from collections import defaultdict
 import config
 from datalayer import carddata, get_event
 from shared import slugify, OVERALL, REGIONS
-from omnievent import OmniEvent, Team3v3Event, IsTeamEvent
+from omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
 from season import Season, SEASONS, Format, FORMATS
 from competition import EVENT_TYPES, TEAM_STANDARD
 from player import Player
@@ -159,6 +159,9 @@ class PageBuilder:
                 except IsTeamEvent:
                     e = Team3v3Event(entry.name[6:])
                     all_events[e.id] = e
+                except NotStarted:
+                    print(f"Event #{entry.name[6:]} not started.")
+                    pass
                 if not seasons.get(e.season):
                     seasons[e.season] = Season(e.season)
                 seasons[e.season].add_event(e)
