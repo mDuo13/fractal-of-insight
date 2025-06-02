@@ -39,4 +39,5 @@ BANLIST = [
     "Erupting Rhapsody",
     "Baby Gray Slime",
     "Icebound Slam",
+    "Dissonant Fractal",
 ]

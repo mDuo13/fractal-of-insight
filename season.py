@@ -238,5 +238,15 @@ add_format("HVN Release",
 )
 add_format("HVN + Clarent",
     start="2025-04-28",
+    end="2025-05-31",
     desc="Clarent, Reimagined added to Proxia's Vault."
+)
+add_format("HVN + MRC Alter",
+    start="2025-05-31",
+    end="2025-06-02",
+    desc="Mercurial Heart Alter Edition released."
+)
+add_format("HVN Post-June Ban",
+    start="2025-06-02",
+    desc="Dissonant fractal banned."
 )
