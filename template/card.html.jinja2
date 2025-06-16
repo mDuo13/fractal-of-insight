@@ -51,6 +51,10 @@
         {% endif %}</li>
         <li><b>Overall win rate</b>: {{cardstat.winrate}}%</li>
         <li><b>Lifetime record</b>: {{cardstat.wins}}-{{cardstat.losses}}-{{cardstat.ties}}</li>
+        <li><b>Hot rating</b>: {{cardstat.hot_rating}}%
+            <p class="explanation">(Weighted win rate in last ~60 days.)</p></li>
+        <li><b>Hipster Rating</b>: {{cardstat.hipster}}
+            <p class="explanation">(The less popular a card is, the higher it scores, on a scale of 0–100.)</p></li>
         <li><a href="https://index.gatcg.com/card/{{card.slug}}">Index Lookup</a></li>
     {% if card.name in BANLIST %}
         <li><b>Banned in Standard play</b></li>

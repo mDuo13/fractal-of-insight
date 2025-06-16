@@ -213,6 +213,28 @@
     }}
 </section>
 
+{% if arche.videos%}
+<section id="vods">
+    <h2>VODs</h2>
+    <button onclick="toggle('#vods > .togglable')">Glimpse VODs</button>
+    <table class="togglable collapse">
+        <thead><tr>
+            <th>Video</th><th>Event</th><th>Player 1</th><th>Player 2</th>
+        </tr></thead>
+        <tbody>
+        {% for vid in arche.videos %}
+            <tr>
+                <td class="vidcol"><a href="{{vid.link}}" target="_blank">📺</a></td>
+                <td><a href="/{{vid.event.season}}/{{vid.event.id}}.html">{{vid.event.name}}</a></td>
+                <td>{{vid.p1}} - {{vid.p1.deck}}</td>
+                <td>{{vid.p2}} - {{vid.p2.deck}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endif %}
+
 <!-- DECKLISTS -->
 {% for d in arche.matched_decks[0:page_end] %}
 {{ macros.decklist(d.entrant, "deck_"~d.entrant.evt_id~"_"~d.entrant.id, events[d.entrant.evt_id], True) }}

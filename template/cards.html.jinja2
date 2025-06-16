@@ -40,20 +40,37 @@
 <section id="winningest-cards">
     <h2>Winningest Cards</h2>
     <button onclick="toggle('#winningest-cards > .togglable')">Glimpse winningest</button>
-    <p class="explanation collapse togglable">(Based on win rate of decks containing at least one copy, including sideboard. Minimum 20 recorded deck lists to be eligible.)</p>
+    <p class="explanation collapse togglable">(Based on win rate of decks containing at least one copy, including sideboard. Cards with fewer than {{PAD_UNTIL}} appearances have their win rates weighted towards 50%.)</p>
     <div class="top-cards collapse togglable">
     {% for cardname, cardstat in cardstats.winningest.items() %}
         {% if loop.index0 < 20 %}
             {% set card_o = {
                 'card': cardname, 
                 'img': carddata[cardname]['img'], 
-                'pct': cardstat.winrate
+                'pct': cardstat.weighted_winrate
             } %}
             {{ macros.cardimg(card_o, link=True) }}
 {#            <a class="cardimg" href="/card/{{slugify(cardname)}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{cardstat.winrate}}%</span></a>#}
         {% endif %}
     {% endfor %}
     </div>
+</section>
+
+<section id="hot-cards">
+    <h2>Hot Cards</h2>
+    <button onclick="toggle('#hot-cards > .togglable')">Glimpse hot cards</button>
+    <p class="explanation collapse togglable">(Based on weighted win rate in the last 60 days.)</p>
+    <div class="top-cards collapse togglable">
+    {% for cardname, cardstat in cardstats.hottest.items() %}
+        {% if loop.index0 < 20 %}
+            {% set card_o = {
+                'card': cardname, 
+                'img': carddata[cardname]['img'], 
+                'pct': cardstat.hot_rating
+            } %}
+            {{ macros.cardimg(card_o, link=True) }}
+        {% endif %}
+    {% endfor %}
 </section>
 
 <section id="all-cards">

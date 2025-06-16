@@ -361,42 +361,43 @@
             </ul>
 
             <div class="similar-decks">
-            <h4>Similar Decks</h4>
-            <p class="explanation">(Similar decks are calculated on a point system where maindeck cards are worth 1 point, material deck cards are 3 points, and sideboards are discounted by ⅓. Only decks with at least 85% overlap are listed, max 10 each before/during/after this event.)</p>
-            {% if p.deck.similar_decks %}
-                {% set before,sameday,after = p.deck.split_similar_decks() %}
-                {% if before %}
-                <h5>Before this</h5>
-                <ul>
-                {% for otherdeck, sim in before %}
-                    <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{sim}}%)</a></li>
-                {% endfor %}
-                </ul>
-                {% endif %}
-                {% if sameday %}
-                <h5>Same day</h5>
-                <ul>
-                {% for otherdeck, sim in sameday %}
-                    {% if not external and event.id == otherdeck.entrant.evt_id %}
-                    <li><a href="#deck_{{otherdeck.entrant.id}}" onclick="opendecklist('#deck_{{otherdeck.entrant.id}}')">{{otherdeck.entrant.username}} in this event ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
-                    {% else %}
-                    <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
+                <h4>Similar Decks</h4>
+                <p class="explanation">(Similar decks are calculated on a point system where maindeck cards are worth 1 point, material deck cards are 3 points, and sideboards are discounted by ⅓. Only decks with at least 85% overlap are listed, max 10 each before/during/after this event.)</p>
+                {% if p.deck.similar_decks %}
+                    {% set before,sameday,after = p.deck.split_similar_decks() %}
+                    {% if before %}
+                    <h5>Before this</h5>
+                    <ul>
+                    {% for otherdeck, sim in before %}
+                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{sim}}%)</a></li>
+                    {% endfor %}
+                    </ul>
                     {% endif %}
-                {% endfor%}
-                </ul>
+                    {% if sameday %}
+                    <h5>Same day</h5>
+                    <ul>
+                    {% for otherdeck, sim in sameday %}
+                        {% if not external and event.id == otherdeck.entrant.evt_id %}
+                        <li><a href="#deck_{{otherdeck.entrant.id}}" onclick="opendecklist('#deck_{{otherdeck.entrant.id}}')">{{otherdeck.entrant.username}} in this event ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
+                        {% else %}
+                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
+                        {% endif %}
+                    {% endfor%}
+                    </ul>
+                    {% endif %}
+                    {% if after %}
+                    <h5>After this</h5>
+                    <ul>
+                    {% for otherdeck, sim in after %}
+                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
+                    {% endfor %}
+                    </ul>
+                    {% endif %}
+                {% else %}
+                <p>None.</p>
                 {% endif %}
-                {% if after %}
-                <h5>After this</h5>
-                <ul>
-                {% for otherdeck, sim in after %}
-                    <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
-                {% endfor %}
-                </ul>
-                {% endif %}
-            {% else %}
-            <p>None.</p>
-            {% endif %}
             </div>
+            <p><b>Hipster rating:</b> {{p.deck.hipster}}</p>
         </div>
     </div>
 </div>

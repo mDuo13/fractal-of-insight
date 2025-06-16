@@ -505,6 +505,14 @@ fieldset label {
     justify-content: center;
 }
 
+.vidcol {
+    text-align: center;
+}
+.vidcol a {
+    font-size: 18px;
+    padding: 2px;
+}
+
 .archetype {
     position: relative;
     display: inline-flex;

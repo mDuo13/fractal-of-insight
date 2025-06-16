@@ -131,6 +131,13 @@ class OmniEvent:
             for m in matches:
                 if m["pairing"][0]["id"] in (p1,p2) and m["pairing"][1]["id"] in (p1,p2):
                     m["video"] = vid["link"]
+                    viddata = {
+                        "p1": self.pdict[p1],
+                        "p2": self.pdict[p2],
+                        "link": vid["link"],
+                        "event": self
+                    }
+                    self.pdict[p1].deck.videos.append(viddata)
 
     
     def analyze(self):

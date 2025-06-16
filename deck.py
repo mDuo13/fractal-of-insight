@@ -43,6 +43,8 @@ class Deck:
         self.count_cards() # populates self.card_types and self.floating as well as total counts
         self.find_archetypes()
         self.cardlist_imgs()
+
+        self.videos = [] # populated in OmniEvent.load_videos()
         
         ALL_CARD_STATS.add_deck(self)
 
@@ -276,6 +278,25 @@ class Deck:
                 decks_after.append([d,sim])
         
         return trim_similar(decks_before, limit), trim_similar(decks_sameday, limit), trim_similar(decks_after, limit)
+    
+    def rate_hipster(self, ALL_CARD_STATS):
+        self.hipster = 0
+        for card_o in self.dl["material"]:
+            if card_o["card"] not in ALL_CARD_STATS.items.keys():
+                # Skip things without stats, like tokens that shouldn't be in decklists
+                continue
+            self.hipster += (ALL_CARD_STATS[card_o["card"]].hipster)
+        for card_o in self.dl["main"]:
+            if card_o["card"] not in ALL_CARD_STATS.items.keys():
+                # Skip things without stats, like tokens that shouldn't be in decklists
+                continue
+            self.hipster += (ALL_CARD_STATS[card_o["card"]].hipster) * card_o["quantity"]
+        for card_o in self.dl["sideboard"]:
+            if card_o["card"] not in ALL_CARD_STATS.items.keys():
+                # Skip things without stats, like tokens that shouldn't be in decklists
+                continue
+            self.hipster += (ALL_CARD_STATS[card_o["card"]].hipster) * card_o["quantity"]
+        self.hipster = round(self.hipster / 100, 1)
 
     def tts_json(self):
         """

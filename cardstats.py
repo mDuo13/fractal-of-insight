@@ -1,11 +1,18 @@
 from collections import defaultdict
+from time import time
 
 from datalayer import carddata, get_card_img
 from shared import keydefaultdict
 from shared import ElementStats, ChampStats, ArcheStats
 
 # Minimum number of appearances for a card to be eligible for "winningest" list
-MIN_SIGHTINGS = 20
+#MIN_SIGHTINGS = 20
+MIN_SIGHTINGS = 1 # temp: trying disabled since the weighting should handle this
+PAD_UNTIL = 500
+M_PER_APP = 6 # Empirically, an average "appearance" consists of ~5.9 matches.
+
+HOT_CARDS_WINDOW = 60*60*24*61 # last ~60 days in seconds
+PAD_HOT_MATCHES = 500 # for hot cards, weight for this many *matches* (not appearances)
 
 class CardStats:
     def __init__(self, cardname):
@@ -16,6 +23,8 @@ class CardStats:
         self.losses = 0
         self.ties = 0
         self.winrate = 0
+        self.hipster = 0 # %ile rating of how uncommonly played the card is.
+                         # Populated by CardStatSet.sort()
     
     def add_entrant(self, e):
         self.appearances.append(e)
@@ -51,6 +60,36 @@ class CardStats:
         winscore = self.wins + (self.ties/2)
         if matches:
             self.winrate = round(100*winscore/matches, 1)
+
+        ## Weighted match score. Assuming PAD_UNTIL appearances is enough data
+        ## an expected win rate is 50%, and an appearance involves M_PER_APP
+        ## matches on average, pad results with draws (half-wins) if data is
+        ## under PAD_UNTIL appearances.
+        if self.num_appearances >= PAD_UNTIL:
+            self.weighted_winrate = self.winrate
+        elif self.num_appearances:
+            pad_amount = M_PER_APP * (PAD_UNTIL - self.num_appearances)
+            winscore_padded = winscore + (pad_amount / 2)
+            self.weighted_winrate = round(100*winscore_padded/(matches+pad_amount), 1)
+
+        ## Hot cards: only count wins in the past ~60 days.
+        cutoff_time_ms = (int(time()) - HOT_CARDS_WINDOW) * 1000
+        hot_events = [e for e in self.appearances if e.evt_time > cutoff_time_ms]
+        if not hot_events:
+            self.hot_rating = 0
+        else:
+            hot_w = 0
+            hot_l = 0
+            hot_t = 0
+            for e in hot_events:
+                hot_w += e.wins
+                hot_l += e.losses
+                hot_t += e.ties
+            hot_matches = hot_w + hot_l + hot_t
+            if hot_matches < PAD_HOT_MATCHES:
+                hot_t += (PAD_HOT_MATCHES - hot_matches)
+                hot_matches = PAD_HOT_MATCHES
+            self.hot_rating = round(100*(hot_w + (hot_t / 2)) / hot_matches, 1)
         
         self.analyze_associated_cards()
     
@@ -70,6 +109,7 @@ class CardStats:
             } for c,f in cf_sorted
         }
 
+
 class CardStatSet:
     def __init__(self):
         self.items = keydefaultdict(CardStats)
@@ -88,18 +128,26 @@ class CardStatSet:
                 self.items[card_o["card"]].add_entrant(d.entrant)
 
     def sort(self):
-        newitems = keydefaultdict(CardStats)
+        mostappearances = keydefaultdict(CardStats)
         statdata = [(k,v) for k,v in self.items.items()]
         statdata.sort(key=lambda x:x[1].num_appearances, reverse=True)
-        for k,v in statdata:
-            newitems[k] = v
-        self.items = newitems
+        for i, (k,v) in enumerate(statdata):
+            v.hipster = round(100 * i / len(statdata), 1)
+            mostappearances[k] = v
+        self.items = mostappearances
         
-        statdata.sort(key=lambda x:x[1].winrate, reverse=True)
+        #statdata.sort(key=lambda x:x[1].winrate, reverse=True)
+        statdata.sort(key=lambda x:x[1].weighted_winrate, reverse=True)
         self.winningest = {k:v for k,v in statdata if v.num_appearances >= MIN_SIGHTINGS}
+
+        statdata.sort(key=lambda x:x[1].hot_rating, reverse=True)
+        self.hottest = {k:v for k,v in statdata if v.hot_rating > 0}
 
         statdata.sort(key=lambda x:x[0])
         self.alphabetical = {k:v for k,v in statdata}
+    
+    def __getitem__(self, item):
+        return self.items[item]
     
     def __iter__(self):
         for cardname, cardstats in self.items.items():

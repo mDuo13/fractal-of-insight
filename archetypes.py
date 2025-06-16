@@ -200,6 +200,11 @@ class Archetype:
         total_of_type_sorted.sort(key=lambda x:x[1], reverse=True)
         self.average_of_type = {k: round(v / total_decks, 0) for k,v in total_of_type_sorted}
 
+    def load_videos(self):
+        self.videos = []
+        for d in self.matched_decks:
+            self.videos += d.videos
+
     def add_subtype(self, *args, **kwargs):
         st = Archetype(*args, **kwargs)
         self.subtypes.append(st)
@@ -311,6 +316,7 @@ wind_allies = add_archetype(
         "Storm Slime",
         "Wildgrowth Feline",
         "Dawn of Ashes",
+        "Seiryuu's Command",
     ],
     require_types={
         "ALLY": 22
@@ -689,7 +695,7 @@ add_archetype(
         "Fatestone of Heaven",
         "Excalibur, Cleansing Light",
         "Glorious Presence",
-        "Sunblessed Gazelle",
+        # "Sunblessed Gazelle", # Try to split these from Seiryuu decks
     ],
     exclude_cards=[
         "Zander, Blinding Steel",

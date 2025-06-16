@@ -219,6 +219,23 @@ class Player:
             self.judge_level = None
             return
         self.judge_level = max([e.level for e in self.events_judged])
+    
+    def analyze_hipster(self, low):
+        """
+        Give the player a hipster rating based on the average of their decks,
+        curved by the minimum deck score.
+        """
+        hipster_total = 0
+        rating_count = 0
+        for e in self.events:
+            if e.deck:
+                hipster_total += e.deck.hipster
+                rating_count += 1
+        if rating_count:
+            self.hipster = round((hipster_total / rating_count) - low)
+        else:
+            self.hipster = 0
+
 
     def mostplayed(self):
         topchamps = self.champdata.top()

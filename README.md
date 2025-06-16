@@ -16,3 +16,4 @@ This site shows information and analysis of Grand Archive tournament results. It
 - conversion rate to top cut
 - achievement for advanced elements
 - top users per card
+- improve VOD list on archetype pages

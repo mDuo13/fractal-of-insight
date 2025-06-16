@@ -18,7 +18,7 @@ from player import Player
 from archetypes import ARCHETYPES, NO_ARCHETYPE
 from spoiler import SpoilerEvent, SPOILER_SEASONS
 from cards import ERRATA, BANLIST
-from cardstats import ALL_CARD_STATS
+from cardstats import ALL_CARD_STATS, PAD_UNTIL
 from achievements import ACHIEVEMENTS, GAS
 
 SIGHTINGS_PER_PAGE = 200
@@ -91,7 +91,6 @@ class PageBuilder:
         self.render("players.html.jinja2", "player/index.html", players=players, events=events)
 
     def write_archetype(self, archetype, players=[], events=[], seasons={}, wins=0):
-        archetype.analyze()
         slug = slugify(archetype.name)
         arche_path = f"deck/{slug}.html"
         # The "Sightings" table is too much, so paginate it.
@@ -109,7 +108,7 @@ class PageBuilder:
         self.render("archetypes.html.jinja2", "deck/index.html", archetypes=archetypes, aew=aew, cswr=cswr)
 
     def write_card_index(self):
-        self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata)
+        self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata, PAD_UNTIL=PAD_UNTIL)
     
     def write_card_page(self, cardname, cardstat, events=[]):
         max_page = ceil(len(cardstat.appearances) / CARD_SIGHTINGS_PER_PAGE)
@@ -188,9 +187,6 @@ class PageBuilder:
                 known_players[jid].events_judged = events_judged
             else:
                 print(f"Judge with no player instances? {judge}")
-
-        for e in all_events.values():
-            self.write_event(e)
         
         seasons_sorted = {k:seasons[v] for k,v in SEASONS.items() if v in seasons.keys()}
 
@@ -203,12 +199,25 @@ class PageBuilder:
         # Card stats has to come before player stuff for "first play" to work.
         for cardname, cardstat in ALL_CARD_STATS:
             cardstat.analyze()
-            self.write_card_page(cardname, cardstat, events=all_events)
         ALL_CARD_STATS.sort()
+
+        HIPSTER_FLOOR = 99999
+        for e in all_events.values():
+            for p in e.players:
+                if p.deck:
+                    p.deck.rate_hipster(ALL_CARD_STATS)
+                    if p.deck.hipster < HIPSTER_FLOOR:
+                        HIPSTER_FLOOR = p.deck.hipster
+
+        for cardname, cardstat in ALL_CARD_STATS:
+            self.write_card_page(cardname, cardstat, events=all_events)
 
         known_pids_sorted = [pid for pid, pl in known_players.items()]
         known_pids_sorted.sort(key=lambda x: known_players[x].sortkey())
+        
         for pid in known_pids_sorted:
+            known_players[pid].analyze_hipster(HIPSTER_FLOOR)
+
             self.write_player(known_players[pid], all_events, known_players)
         self.write_player_index(players=[known_players[pid] for pid in known_pids_sorted], events=all_events)
 
@@ -225,8 +234,10 @@ class PageBuilder:
             #     continue
             if a.name not in aew.keys():
                 aew[a.name] = []
+            a.analyze()
+            a.load_videos()
             self.write_archetype(a, known_players, all_events, seasons_sorted, aew[a.name])
-        
+        NO_ARCHETYPE.analyze()
         self.write_archetype(NO_ARCHETYPE, known_players, all_events, seasons_sorted, [])
 
         arches_sorted = [a for a in ARCHETYPES.values()]
@@ -250,6 +261,9 @@ class PageBuilder:
             csa_matches = csa_wins[a]+csa_losses[a]+csa_ties[a]
             cswr[a] = round( 100*(csa_wins[a] + (csa_ties[a] / 2)) / csa_matches, 1)
         self.write_archetype_index(arches_sorted+[NO_ARCHETYPE], aew, cswr=cswr)
+
+        for e in all_events.values():
+            self.write_event(e)
         
         self.write_card_index()
 
@@ -268,6 +282,7 @@ class PageBuilder:
         self.render("index.html.jinja2", "index.html", seasons=seasons_sorted)
 
 def main(args):
+
     if args.fast:
         config.SharedConfig.go_fast = True
     builder = PageBuilder()
