@@ -35,29 +35,38 @@ def save_crawldata():
 def due_for_update(evt_data):
     if not evt_data:
         return True
-    if evt_data.get("status") in ("started", "completable", "404"):
-        return True
+    if evt_data.get("status") in ("complete", "stale", "canceled", "deleted", "canceled-suspended"):
+        return False
+    return True
 
-    if evt_data.get("status") == "rsvp":
-        start_time = evt_data.get("startAt", 0) / 1000
-        if start_time > time():
-            # Scheduled for future, don't bother updating yet
-            return False
-        return True
+    ## Old logic: didn't update in-progress events, sometimes fooled by
+    ## events that were initially scheduled in the far future.
+    # if evt_data.get("status") in ("started", "completable", "404"):
+    #     return True
+
+    # if evt_data.get("status") == "rsvp":
+    #     start_time = evt_data.get("startAt", 0) / 1000
+    #     if start_time > time():
+    #         # Scheduled for future, don't bother updating yet
+    #         return False
+    #     return True
     
-    return False
+    # return False
 
 def crawl_event(i): # TODO: implement a force_redownload
     evt_data = crawldata["events"].get(str(i))
+    updated = False
 
     if due_for_update(evt_data):
         try:
             evt_full = get_event(i, force_redownload=True, save=False)
             if i > crawldata["max_crawled"]:
                 crawldata["max_crawled"] = i
+            updated = True
         except EventNotFound:
             if crawldata["max_crawled"] > i:
                 evt_full = {"status": "deleted"}
+                updated = True
             else:
                 evt_full = {"status": "404"}
     
@@ -81,7 +90,7 @@ Decklists? {"Yes" if evt_full.get("decklists") else "No"}
             evt_data["startAt"] = evt_full.get("startAt", 0)
         crawldata["events"][str(i)] = evt_data
 
-    return evt_data
+    return evt_data, updated
 
 
 def is_interesting(evt):
@@ -100,6 +109,9 @@ def is_interesting(evt):
             return 0
     if evt.get("status") in ("rsvp", "canceled", "started", "stale", "deleted"):
         print("Status:",evt.get("status"))
+        if evt.get("category") in ("ascent", "nationals", "worlds"):
+            # These are interesting even while ongoing
+            return 1
         return 0
     if evt["status"] != "complete":
         print(f"Unknown status: {evt['status']}")
@@ -138,8 +150,8 @@ def main(args):
     consecutive404s = 0
     try:
         for i in range(start, 99999999):
-            evt_data = crawl_event(i)
-            if evt_data.get("interesting"):
+            evt_data, updated = crawl_event(i)
+            if evt_data.get("interesting") and updated:
                 interesting_events[i] = evt_data
             unsaved_data += 1
             if unsaved_data >= config.CRAWL_SAVE_INTERVAL:
@@ -152,7 +164,7 @@ def main(args):
             
     except (KeyboardInterrupt, Consecutive404Streak):
         save_crawldata()
-        print(f"\n{len(interesting_events)} interesting events:")
+        print(f"\n{len(interesting_events)} new interesting events:")
         print(", ".join([str(k) for k in interesting_events.keys()]))
 
 
