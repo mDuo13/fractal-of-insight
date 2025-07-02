@@ -5,8 +5,7 @@ This site shows information and analysis of Grand Archive tournament results. It
 
 ## TODO / Planned Features
 
-- handle username changes and maybe user ID changes too
-- handle multiple decklists for worlds events (incl. stats)
+- IN PROGRESS: handle multiple decklists for worlds events (incl. stats)
 - improve performance on large event pages (e.g. team standard 2025, Ascent KL)
 - bugfix: clicking on players in the match listing doesn't work on mobile sometimes
 - stats / meta composition split by seat in teams (e.g. all the fire decks on seat C)
@@ -22,3 +21,4 @@ This site shows information and analysis of Grand Archive tournament results. It
 - achievement for advanced elements
 - top users per card
 - improve VOD list on archetype pages
+- show multiple regions for player profiles where players' home region has changed

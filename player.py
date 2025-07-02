@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 from deck import Deck
-from datalayer import get_deck, NoDeck
+from datalayer import get_deck, get_topcut_deck, NoDeck
 from cards import ELEMENTS
 from shared import keydefaultdict, ElementStats, ChampStats, ArcheStats
 from competition import TEAM_STANDARD
@@ -55,9 +55,16 @@ class Entrant:
             is_public = data.get("isDecklistPublic")
             dl = get_deck(self.id, evt_id, is_public)
             self.deck = Deck(dl, self)
-        # else:
         except (NoDeck):
             self.deck = None
+        
+        # Special case for Worlds where you can switch decks for top cut:
+        try:
+            dl = get_topcut_deck(self.id, evt_id)
+            self.topcut_deck = Deck(dl, self, is_topcut_deck=True)
+        except (NoDeck):
+            self.topcut_deck = None
+            
         
         self.first_plays = [] # List of card names first played in this deck.
                               # Populated by cardstats.
@@ -144,6 +151,8 @@ class Player:
     def __init__(self, entrant):
         self.id = entrant.id
         self.username = entrant.username
+        self.username_time = entrant.evt_time
+        self.past_usernames = []
         self.events = [entrant]
         self.region = entrant.region
         self.achievements = AchievementSet()
@@ -155,6 +164,15 @@ class Player:
         self.events.append(entrant)
         if entrant.elo > self.peak_elo:
             self.peak_elo = entrant.elo
+        # Handle username updates. As of 2025, these are rarely, but occasionally
+        # offered to players who qualify for high-level events.
+        if entrant.username != self.username and entrant.evt_time > self.username_time:
+            if self.username not in self.past_usernames:
+                self.past_usernames.append(self.username)
+            self.username = entrant.username
+            self.username_time = entrant.evt_time
+        if entrant.region != self.region:
+            print("Player region change:", self, self.region, "→", entrant.region)
     
     def analyze(self):
         # To be called after all event entries have been added

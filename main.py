@@ -122,7 +122,10 @@ class PageBuilder:
         #         self.render("card-sightings-page.html.jinja2", f"card/{slugify(cardname)}-{page_number}.html", card=carddata[cardname], cardstat=cardstat, events=events, page_number=page_number, page_start=(i*CARD_SIGHTINGS_PER_PAGE), page_end=((i+1)*CARD_SIGHTINGS_PER_PAGE), max_page=max_page)
     
     def write_decklist_tts(self, deck):
-        write_to = f"tts/event_{deck.entrant.evt_id}/{deck.entrant.id}.json"
+        if deck.is_topcut_deck:
+            write_to = f"tts/event_{deck.entrant.evt_id}/{deck.entrant.id}_topcut.json"
+        else:
+            write_to = f"tts/event_{deck.entrant.evt_id}/{deck.entrant.id}.json"
         out_dir, out_file = os.path.split(write_to)
         whole_out_dir = os.path.join(config.OUTDIR, out_dir)
         makedirs(whole_out_dir, exist_ok=True)
@@ -178,6 +181,8 @@ class PageBuilder:
 
                     if entrant.deck:
                         self.write_decklist_tts(entrant.deck)
+                    if entrant.topcut_deck:
+                        self.write_decklist_tts(entrant.topcut_deck)
                 for judge in e.judges:
                     known_judges[judge.id].append(judge)
         # Add judges to player profiles where they exist
@@ -208,6 +213,10 @@ class PageBuilder:
                     p.deck.rate_hipster(ALL_CARD_STATS)
                     if p.deck.hipster < HIPSTER_FLOOR:
                         HIPSTER_FLOOR = p.deck.hipster
+                if p.topcut_deck:
+                    p.topcut_deck.rate_hipster(ALL_CARD_STATS)
+                    if p.topcut_deck.hipster < HIPSTER_FLOOR:
+                        HIPSTER_FLOOR = p.topcut_deck.hipster
 
         for cardname, cardstat in ALL_CARD_STATS:
             self.write_card_page(cardname, cardstat, events=all_events)

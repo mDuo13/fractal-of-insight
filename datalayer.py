@@ -56,6 +56,14 @@ def get_deck(p_id, evt_id, public_on_omni):
             sleep(API_DELAY)
     return dl
 
+def get_topcut_deck(p_id, evt_id):
+    # Maybe someday there will be an API way to get top cut decks.
+    try:
+        dl = sideload_deck(p_id, evt_id, fname=f"data/event_{evt_id}/sideload/deck_{p_id}_topcut.txt")
+        return dl
+    except (FileNotFoundError):
+        raise NoDeck()
+
 def get_spoiler(szn):
     try:
         with open(f"data/spoilers/{szn}/event.json") as f:

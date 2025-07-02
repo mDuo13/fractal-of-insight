@@ -14,6 +14,54 @@ M_PER_APP = 6 # Empirically, an average "appearance" consists of ~5.9 matches.
 HOT_CARDS_WINDOW = 60*60*24*61 # last ~60 days in seconds
 PAD_HOT_MATCHES = 500 # for hot cards, weight for this many *matches* (not appearances)
 
+class TopCutAppearance:
+    # A shim for an "Entrant" but using only the different deck they played
+    # in the single-elim top cut of a Worlds event.
+    def __init__(self, e):
+        self.entrant = e
+        self.calc_topcut_record()
+    
+    def __getattr__(self, attr):
+        if attr == "deck":
+            return self.entrant.topcut_deck
+        return getattr(self.entrant, attr)
+    
+    def calc_topcut_record(self):
+        self.wins = 0
+        self.losses = 0
+        self.ties = 0
+        topcut_stage = self.event.evt["stages"][-1]
+        for rnd in topcut_stage["rounds"]:
+            for match in rnd["matches"]:
+                if len(match["pairing"]) < 2:
+                    # Maybe record the bye in stats? Meh
+                    continue
+
+                p1r = match["pairing"][0]
+                p2r = match["pairing"][1]
+                if self.entrant.id not in (p1r["id"], p2r["id"]):
+                    # Someone else's match. Ignore.
+                    continue
+                if p1r["score"] == p2r["score"] and p1r["score"] == 0:
+                    # Intentional draw
+                    self.ties += 1
+                elif p1r["id"] == self.entrant.id:
+                    if p1r["status"] == "winner":
+                        self.wins += 1
+                    elif p1r["status"] == "loser":
+                        self.losses += 1
+                    elif p1r["status"] == "tied":
+                        self.ties += 1
+                elif p2r["id"] == self.entrant.id:
+                    if p2r["status"] == "winner":
+                        self.wins += 1
+                    elif p2r["status"] == "loser":
+                        self.losses += 1
+                    elif p2r["status"] == "tied":
+                        self.ties += 1
+
+
+
 class CardStats:
     def __init__(self, cardname):
         self.name = cardname
@@ -26,7 +74,9 @@ class CardStats:
         self.hipster = 0 # %ile rating of how uncommonly played the card is.
                          # Populated by CardStatSet.sort()
     
-    def add_entrant(self, e):
+    def add_entrant(self, e, is_topcut_deck=False):
+        if is_topcut_deck:
+            e = TopCutAppearance(e)
         self.appearances.append(e)
         self.num_appearances += 1
         self.wins += e.wins
@@ -119,13 +169,13 @@ class CardStatSet:
             if "TOKEN" in carddata[card]["types"]:
                 # Some decklists mistakenly include tokens. Skip those.
                 continue
-            self.items[card].add_entrant(d.entrant)
+            self.items[card].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
         for card_o in d.dl["sideboard"]:
             if "TOKEN" in carddata[card_o["card"]]["types"]:
                 # Skip tokens again
                 continue
             if card_o["card"] not in d: # Don't double-add a deck if a card is in main+side
-                self.items[card_o["card"]].add_entrant(d.entrant)
+                self.items[card_o["card"]].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
 
     def sort(self):
         mostappearances = keydefaultdict(CardStats)

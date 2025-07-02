@@ -55,6 +55,15 @@
     {% if evt.top_cut|length %}
     <h3 class="collapse togglable" id="topcut">Single Elimination Top Cut</h3>
     <table class="collapse togglable">
+    {% if evt.category.shortname == "worlds" %}
+        <thead><tr>
+            <th>Rank</th><th>Player</th><th>Deck</th><th>Elo Change</th>
+        </tr></thead>
+        <tbody>
+        {% for p in evt.top_cut %}
+            {{ macros.p_row_worlds_topcut(p, loop) }}
+        {% endfor %}
+    {% else %}
         <thead><tr>
             <th>Rank</th><th>Player</th><th>Swiss Record</th><th>Deck</th><th>Elo Change</th><th>Matches</th>
         </tr></thead>
@@ -62,10 +71,15 @@
         {% for p in evt.top_cut %}
             {{ macros.p_row(p, loop) }}
         {% endfor %}
+        {% endif %}
         </tbody>
     </table>
 
+    {% if evt.category.shortname == "worlds" %}
+    <h3 class="collapse togglable">Swiss Stage</h3>
+    {% else %}
     <h3 class="collapse togglable">Below Top Cut</h3>
+    {% endif %}
     {% endif %}
 
     <table class="collapse togglable">
@@ -74,7 +88,7 @@
         </tr></thead>
         <tbody>
         {% for p in evt.players %}
-            {% if not evt.top_cut|length or loop.index > evt.top_cut|length %}
+            {% if evt.category.shortname == "worlds" or not evt.top_cut|length or p not in evt.top_cut %}
             {{ macros.p_row(p, loop) }}
             {% endif %}
         {% endfor %}
@@ -240,9 +254,18 @@
             <h4>Round {{rnd["id"]}}</h4>
             {% for match in rnd["matches"] %}
                 {% set p1 = evt.pdict[match["pairing"][0]["id"]] %}
-                {% if p1.deck %}
+                {% if evt.category.shortname == "worlds" and stage["type"] == "single-elimination" %}
+                    {% set use_topcut_deck = True %}
+                    {% if p1.topcut_deck %}
+                        {% set p1_archetypes = p1.topcut_deck.archetypes|map('slugify')|join(" ") %}
+                    {% else %}
+                        {% set p1_archetypes = "" %}
+                    {% endif %}
+                {% elif p1.deck %}
+                    {% set use_topcut_deck = False %}
                     {% set p1_archetypes = p1.deck.archetypes|map('slugify')|join(" ") %}
                 {% else %}
+                    {% set use_topcut_deck = False %}
                     {% set p1_archetypes = "" %}
                 {% endif %}
                 {% if match["pairing"]|length > 1 %}
@@ -251,7 +274,13 @@
                     {% if p1.score > evt.fiftypct_points and p2.score > evt.fiftypct_points and match["pairing"][0]["score"]+match["pairing"][1]["score"] > 0 %}
                         {% set iskeymatch="keymatch" %}
                     {% endif %}
-                    {% if p2.deck %}
+                    {% if evt.category.shortname == "worlds" and stage["type"] == "single-elimination" %}
+                        {% if p2.topcut_deck %}
+                            {% set p2_archetypes = p2.topcut_deck.archetypes|map('slugify')|join(" ") %}
+                        {% else %}
+                            {% set p2_archetypes = "" %}
+                        {% endif %}
+                    {% elif p2.deck %}
                         {% set p2_archetypes = p2.deck.archetypes|map('slugify')|join(" ") %}
                     {% else %}
                         {% set p2_archetypes = "" %}
@@ -261,7 +290,7 @@
                 {% endif %}
                 <div class="match p_{{p1.id}} {% if p2 %}p_{{p2.id}} {{iskeymatch}} {% endif %}{% if match.video %} hasvideo{% endif %}" data-p1-archetypes="{{p1_archetypes}}" data-p2-archetypes="{{p2_archetypes}}">
                     <div class="player">
-                        {{macros.pname_w_dl(p1)}}
+                        {{macros.pname_w_dl(p1, use_topcut_deck)}}
                         {% if p2 and p2.elo - config.UPSET_CUTOFF > p1.elo and match["pairing"][0]["score"] > match["pairing"][1]["score"] %}{{macros.upset()}}{% endif %}
                         {% if match["pairing"]|length > 1 %}
                         <span class="matchscore {{match['pairing'][0]['status']}}">{{match["pairing"][0]["score"]}}</span>
@@ -269,7 +298,7 @@
                     </div>
                     {% if match["pairing"]|length > 1 %}
                     <div class="player">
-                        {{macros.pname_w_dl(p2)}}
+                        {{macros.pname_w_dl(p2, use_topcut_deck)}}
                         {% if p1.elo - config.UPSET_CUTOFF > p2.elo and match["pairing"][1]["score"] > match["pairing"][0]["score"] %}{{macros.upset()}}{% endif %}
                         <span class="matchscore {{match['pairing'][1]['status']}}">{{match["pairing"][1]["score"]}}</span>
                     </div>
@@ -291,6 +320,9 @@
 {% for p in evt.players %}
 {% if p.deck %}
 {{ macros.decklist(p, "deck_"~p.id, evt) }}
+{% endif %}
+{% if p.topcut_deck %}
+{{ macros.decklist(p, "deck_"~p.id, evt, use_topcut_deck=True) }}
 {% endif %}
 {% endfor %}
 

@@ -31,7 +31,7 @@ def trim_similar(dlist, limit):
     return dlist2
 
 class Deck:
-    def __init__(self, dl, entrant):
+    def __init__(self, dl, entrant, is_topcut_deck=False):
         self.dl = dl
         self.entrant = entrant
         self.date = strftime(r"%Y-%m-%d", gmtime(self.entrant.evt_time/1000))
@@ -43,6 +43,7 @@ class Deck:
         self.count_cards() # populates self.card_types and self.floating as well as total counts
         self.find_archetypes()
         self.cardlist_imgs()
+        self.is_topcut_deck = is_topcut_deck
 
         self.videos = [] # populated in OmniEvent.load_videos()
         

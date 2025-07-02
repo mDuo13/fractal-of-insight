@@ -120,7 +120,11 @@
 
 <!-- DECKLISTS -->
 {% for e in cardstat.appearances[page_start:page_end] %}
+{% if e.deck and e.deck.is_topcut_deck %}
+{{ macros.decklist(e, "deck_"~e.evt_id~"_"~e.id, events[e.evt_id], True, use_topcut_deck=True) }}
+{% else %}
 {{ macros.decklist(e, "deck_"~e.evt_id~"_"~e.id, events[e.evt_id], True) }}
+{% endif %}
 {% endfor %}
 
 {% include "deckviewscript.html.jinja2" %}

@@ -17,6 +17,7 @@
     <h1>Player: {{player.username}}</h1>
     <ul class="scooped-corners">
         <li><b>Omnidex ID</b>: #{{player.id}}</li>
+        {% if player.past_usernames|length %}<li><b>Past usernames:</b> {{",".join(player.past_usernames)}}</li>{% endif %}
         {% if player.region %}<li><b>Region:</b> {{macros.flag(player.region, True)}}</li>{% endif %}
         <li><b>Recent Elo</b>: {{player.events[0].elo}}</li>
         <li><b>Recorded events</b>: {{player.events|length}}</li>
@@ -100,6 +101,9 @@
 {% for p in player.events %}
 {% if p.deck %}
 {{ macros.decklist(p, "deck_"~p.evt_id, events[p.evt_id], True) }}
+{% endif %}
+{% if p.topcut_deck %}
+{{ macros.decklist(p, "deck_"~p.evt_id, events[p.evt_id], True, use_topcut_deck=True) }}
 {% endif %}
 {% endfor %}
 

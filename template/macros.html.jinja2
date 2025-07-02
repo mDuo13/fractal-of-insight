@@ -29,8 +29,8 @@
 
 
 
-{% macro pname_w_dl(p) %}
-<a class="playername" {% if p.deck %}href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')"{% endif %} title="Elo: {{p.elo}}">{{p.username}}</a>
+{% macro pname_w_dl(p, use_topcut_deck=False) %}
+<a class="playername" {% if use_topcut_deck %}{% if p.topcut_deck %}href="#deck_{{p.id}}_topcut" onclick="opendecklist('#deck_{{p.id}}_topcut')"{% endif %}{% elif p.deck %}href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')"{% endif %} title="Elo: {{p.elo}}">{{p.username}}</a>
 {% endmacro %}
 
 {% macro team_member_cell(p) %}
@@ -80,19 +80,41 @@
     </tr>
 {% endmacro %}
 
+
+{% macro p_row_worlds_topcut(p, loop) %}
+    <tr class="p-row n-styles-{{p.topcut_deck.els|length+p.topcut_deck.archetypes|length+p.topcut_deck.lineages|length}}">
+        <td class="p_rank">{{loop.index}}</td>
+        <td class="playername" title="Elo: {{p.elo}}">{% if p.id > 0 %}<a href="/player/{{p.id}}.html">{{p}}</a>{% else %}{{p}}{% endif %}</td>
+        <td class="p_deck">{% if p.topcut_deck %}<a href="{{'#deck_'~p.id~'_topcut'}}" onclick="opendecklist('{{'#deck_'~p.id~'_topcut'}}')">{{p.topcut_deck}}</a>{% else %}No decklist{% endif %}
+            <div class="deck-bgs">
+            {% for el in p.topcut_deck.els %}
+                <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
+            {% endfor%}
+            {% for arche in p.topcut_deck.archetypes %}
+                <img class="deck-bg" src="/static/bg-{{slugify(arche)}}.jpg" alt="" />
+            {% endfor%}
+            {% for lineage in p.topcut_deck.lineages %}
+                <img class="deck-bg" src="/static/bg-{{slugify(lineage)}}.jpg" alt="" />
+            {% endfor%}
+            </div>
+        </td>
+        <td class="elodiff">{% if p.elo_diff > 0 %}+{% endif %}{{p.elo_diff|round|int}}</td>
+    </tr>
+{% endmacro %}
+
 {% macro p_row_profilepage(p, loop, event) %}
     <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}" data-decklists="{% if p.deck %}1{% else %}0{% endif %}" data-category="{{slugify(event.category['name'])}}" data-playercount="{{event.players|length}}">
-        <td class="p_date">{{event.date}}</td>
-        <td class="p_event"><a href="/{{event.season}}/{{event.id}}.html">{{event.name}}</a></td>
+        <td class="p_date"{% if p.topcut_deck %} rowspan="2"{% endif%}>{{event.date}}</td>
+        <td class="p_event"{% if p.topcut_deck %} rowspan="2"{% endif%}><a href="/{{event.season}}/{{event.id}}.html">{{event.name}}</a></td>
         {% if event.format == TEAM_STANDARD %}
         {% set t = event.teams[p.team|lower] %}
         <td class="p_placement">{% if event.winning_team == t %}{{winner()}} {% endif %}{{t.placement}}/{{event.teams|length}} teams</td>
         <td class="p_record">{{t.record}}</td>
         {% else %}
-        <td class="p_placement">{% if event.winner == p %}{{winner()}} {% endif %}{{p.placement}}/{{event.players|length}}</td>
-        <td class="p_record">{{p.record}}</td>
+        <td class="p_placement"{% if p.topcut_deck %} rowspan="2"{% endif%}>{% if event.winner == p %}{{winner()}} {% endif %}{{p.placement}}/{{event.players|length}}</td>
+        <td class="p_record"{% if p.topcut_deck %} rowspan="2"{% endif%}>{{p.record}}</td>
         {% endif %}
-        <td class="p_deck">{% if p.deck %}<a href="#deck_{{event.id}}" onclick="opendecklist('#deck_{{event.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
+        <td class="p_deck">{% if p.deck %}<a href="#deck_{{event.id}}" onclick="opendecklist('#deck_{{event.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}{% if p.topcut_deck %} (Swiss){% endif %}
             <div class="deck-bgs">
             {% for el in p.deck.els %}
                 <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
@@ -106,20 +128,41 @@
             </div>
         </td>
         {# <td class="elo">{{p.elo}}</td> #}
-        <td class="elodiff">{% if p.elo_diff > 0 %}+{% endif %}{{p.elo_diff|round|int}}</td>
+        <td class="elodiff"{% if p.topcut_deck %} rowspan="2"{% endif%}>{% if p.elo_diff > 0 %}+{% endif %}{{p.elo_diff|round|int}}</td>
     </tr>
+    {% if p.topcut_deck %}
+    <tr class="p-row n-styles-{{p.topcut_deck.els|length+p.topcut_deck.archetypes|length+p.topcut_deck.lineages|length}}" data-decklists="1" data-category="{{slugify(event.category['name'])}}" data-playercount="{{event.players|length}}">
+        <td class="p_deck"><a href="#deck_{{event.id}}_topcut" onclick="opendecklist('#deck_{{event.id}}_topcut')">{{p.topcut_deck}}</a> (Top Cut)
+            <div class="deck-bgs">
+            {% for el in p.topcut_deck.els %}
+                <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
+            {% endfor%}
+            {% for arche in p.topcut_deck.archetypes %}
+                <img class="deck-bg" src="/static/bg-{{slugify(arche)}}.jpg" alt="" />
+            {% endfor%}
+            {% for lineage in p.topcut_deck.lineages %}
+                <img class="deck-bg" src="/static/bg-{{slugify(lineage)}}.jpg" alt="" />
+            {% endfor%}
+            </div>
+        </td>
+    </tr>
+    {% endif %}
 {% endmacro %}
 
 {% macro winner() %}<span class="win_icon" title="This player won the event">👑</span>{% endmacro %}
 
 {% macro p_row_arche(deck, loop, events) %}
     {% set event = events[deck.entrant.evt_id] %}
+    {% set anchor = '#deck_'~event.id~'_'~deck.entrant.id %}
+    {% if deck.is_topcut_deck %}
+        {% set anchor = anchor~'_topcut' %}
+    {% endif %}
     <tr class="p-row n-styles-{{deck.els|length+deck.archetypes|length+deck.lineages|length}}{% if event.winner.deck == deck %} winner{% endif %}" data-decklists="{{event.num_decklists}}" data-category="{{slugify(event.category['name'])}}">
         <td class="p_date">{{deck.date}}</td>
         <td class="playername" title="Elo: {{deck.entrant.elo}}"><a href="/player/{{deck.entrant.id}}.html">{{deck.entrant}}</a></td>
         
         <td class="p_event"><a href="/{{event.season}}/{{event.id}}.html">{{event.name}}</a></td>
-        <td class="p_deck"><a href="#deck_{{event.id}}_{{deck.entrant.id}}" onclick="opendecklist('#deck_{{event.id}}_{{deck.entrant.id}}')">{{deck}}</a>
+        <td class="p_deck"><a href="{{anchor}}" onclick="opendecklist('{{anchor}}')">{{deck}}</a>
             <div class="deck-bgs">
             {% for el in deck.els %}
                 <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
@@ -288,23 +331,29 @@
 </div>
 {% endmacro %}
 
-{% macro decklist(p, id, event=None, external=False) %}
+{% macro decklist(p, id, event=None, external=False, use_topcut_deck=False) %}
+{% if use_topcut_deck %}
+{% set deck = p.topcut_deck %}
+{% set id = id~"_topcut" %}
+{% else %}
+{% set deck = p.deck %}
+{% endif %}
 <div class="decklist collapse" id="{{id}}">
     <div class="decklist-inner">
         <button class="closeX" onclick="closedecklist('#{{id}}')">❌</button>
         <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
         <button class="omniexport_btn" onclick="omnidexexport('#{{id}} .omniexport')"><img alt="Export" title="Omnidex Export (copy to clipboard)" src="/static/export.svg" width="24" height="24" /></button>
         <a class="permalink" href="#{{id}}" onclick="copypermalink()">🔗</a>
-        <h3>{{p.username}}'s {{p.deck}}{% if external %} ({{event.name}}){% endif %}</h3>
+        <h3>{{p.username}}'s {{deck}}{% if external %} ({{event.name}}){% endif %}</h3>
         <div class="decklist-viewbox">
-            <h4>Materials <span class="cardcount">({{p.deck.mat_total}} cards)</span></h4>
+            <h4>Materials <span class="cardcount">({{deck.mat_total}} cards)</span></h4>
             <ul class="deck_txt collapse">
-                {% for card_o in p.deck.dl["material"] %}
+                {% for card_o in deck.dl["material"] %}
                 <li>{{card_o["card"]}}</li>
                 {% endfor %}
             </ul>
             <div class="deck_gfx">
-                {% for card_o in p.deck.dl["material"] %}
+                {% for card_o in deck.dl["material"] %}
                 {% if card_o["quantity"] == 1 %}
                     {{ cardimg(card_o, hide_overlay=True) }}
                 {% else %}
@@ -312,49 +361,49 @@
                 {% endif %}
                 {% endfor %}
             </div>
-            <h4>Maindeck <span class="cardcount">({{p.deck.main_total}} cards)</span></h4>
+            <h4>Maindeck <span class="cardcount">({{deck.main_total}} cards)</span></h4>
             <ul class="deck_txt collapse">
-                {% for card_o in p.deck.dl["main"] %}
+                {% for card_o in deck.dl["main"] %}
                 <li>{{card_o["quantity"]}}x {{card_o["card"]}}</li>
                 {% endfor %}
             </ul>
             <div class="deck_gfx">
-                {% for card_o in p.deck.dl["main"] %}
+                {% for card_o in deck.dl["main"] %}
                     {{ cardimg(card_o) }}
                 {% endfor %}
             </div>
-            <h4>Sideboard <span class="cardcount">({{p.deck.side_total}} cards, {{p.deck.side_points}} points)</span></h4>
+            <h4>Sideboard <span class="cardcount">({{deck.side_total}} cards, {{deck.side_points}} points)</span></h4>
             <ul class="deck_txt collapse">
-                {% for card_o in p.deck.dl["sideboard"] %}
+                {% for card_o in deck.dl["sideboard"] %}
                 <li>{{card_o["quantity"]}}x {{card_o["card"]}}</li>
                 {% endfor %}
             </ul>
             <div class="deck_gfx">
-                {% for card_o in p.deck.dl["sideboard"] %}
+                {% for card_o in deck.dl["sideboard"] %}
                     {{ cardimg(card_o) }}
                 {% endfor %}
             </div>
             <textarea class="omniexport">
 # Material Deck
-{% for card_o in p.deck.dl["material"] %}
+{% for card_o in deck.dl["material"] %}
 {{card_o["quantity"]}} {{card_o["card"]}}
 {%- endfor %}
 
 # Main Deck
-{% for card_o in p.deck.dl["main"] %}
+{% for card_o in deck.dl["main"] %}
 {{card_o["quantity"]}} {{card_o["card"]}}
 {%- endfor %}
 
 # Sideboard
-{% for card_o in p.deck.dl["sideboard"] %}
+{% for card_o in deck.dl["sideboard"] %}
 {{card_o["quantity"]}} {{card_o["card"]}}
 {%- endfor -%}
             </textarea>
             <h4>Card Counts</h4>
             <p class="explanation">(Maindeck cards only. Cards with multiple types count for each type. Floating memory counts if the deck has any champion that can use it.)</p>
             <ul class="deck-stats">
-                <li><b>Floating Memory</b>: {{p.deck.floating}}</li>
-                {% for cardtype,cardcount in p.deck.card_types.items() %}
+                <li><b>Floating Memory</b>: {{deck.floating}}</li>
+                {% for cardtype,cardcount in deck.card_types.items() %}
                 <li><b>{{cardtype|title}} Cards:</b> {{cardcount}}</li>
                 {% endfor %}
             </ul>
@@ -362,13 +411,13 @@
             <div class="similar-decks">
                 <h4>Similar Decks</h4>
                 <p class="explanation">(Similar decks are calculated on a point system where maindeck cards are worth 1 point, material deck cards are 3 points, and sideboards are discounted by ⅓. Only decks with at least 85% overlap are listed, max 10 each before/during/after this event.)</p>
-                {% if p.deck.similar_decks %}
-                    {% set before,sameday,after = p.deck.split_similar_decks() %}
+                {% if deck.similar_decks %}
+                    {% set before,sameday,after = deck.split_similar_decks() %}
                     {% if before %}
                     <h5>Before this</h5>
                     <ul>
                     {% for otherdeck, sim in before %}
-                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{sim}}%)</a></li>
+                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{sim}}%)</a></li>
                     {% endfor %}
                     </ul>
                     {% endif %}
@@ -377,9 +426,9 @@
                     <ul>
                     {% for otherdeck, sim in sameday %}
                         {% if not external and event.id == otherdeck.entrant.evt_id %}
-                        <li><a href="#deck_{{otherdeck.entrant.id}}" onclick="opendecklist('#deck_{{otherdeck.entrant.id}}')">{{otherdeck.entrant.username}} in this event ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
+                        <li><a href="#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}" onclick="opendecklist('#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}')">{{otherdeck.entrant.username}} in this event ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
                         {% else %}
-                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
+                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
                         {% endif %}
                     {% endfor%}
                     </ul>
@@ -388,7 +437,7 @@
                     <h5>After this</h5>
                     <ul>
                     {% for otherdeck, sim in after %}
-                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
+                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
                     {% endfor %}
                     </ul>
                     {% endif %}
@@ -396,7 +445,7 @@
                 <p>None.</p>
                 {% endif %}
             </div>
-            <p><b>Hipster rating:</b> {{p.deck.hipster}}</p>
+            <p><b>Hipster rating:</b> {{deck.hipster}}</p>
         </div>
     </div>
 </div>

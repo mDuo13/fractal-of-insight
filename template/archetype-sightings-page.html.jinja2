@@ -43,7 +43,11 @@
 
 <!-- DECKLISTS -->
 {% for d in arche.matched_decks[page_start:page_end] %}
+{% if d.is_topcut_deck %}
+{{ macros.decklist(d.entrant, "deck_"~d.entrant.evt_id~"_"~d.entrant.id, events[d.entrant.evt_id], True, use_topcut_deck=True) }}
+{% else %}
 {{ macros.decklist(d.entrant, "deck_"~d.entrant.evt_id~"_"~d.entrant.id, events[d.entrant.evt_id], True) }}
+{% endif %}
 {% endfor %}
 
 {% include "deckviewscript.html.jinja2" %}

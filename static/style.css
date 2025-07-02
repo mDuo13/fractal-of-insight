@@ -112,7 +112,7 @@ th {
     border: none;
     border-collapse: separate;
 }
-
+/* 
 .playername:active::after {
     content: attr(title);
     position: absolute;
@@ -120,7 +120,7 @@ th {
     padding: 5px;
     background-color: white;
     box-shadow: var(--main-shadow);
-}
+} */
 
 .p-row, .team-member {
     position: relative;
@@ -148,6 +148,11 @@ th {
                   white -1px -1px 2px,
                   white 1px -1px 2px,
                   white -1px 1px 2px;
+}
+
+.p-row td[rowspan="2"] {
+    vertical-align: top;
+    padding-top: 15px;
 }
 
 .deck-bgs {

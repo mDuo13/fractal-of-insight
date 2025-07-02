@@ -181,14 +181,17 @@ class BattleChart:
         pdict = e.pdict
         stages = e.evt["stages"]
 
-        for stage in stages:
+        for stagei, stage in enumerate(stages):
             for rnd in stage["rounds"]:
                 for match in rnd["matches"]:
                     if len(match["pairing"]) < 2:
                         p1r = match["pairing"][0]
-                        p1 = pdict[p1r["id"]]
-                        if p1.deck:
-                            for as_t in p1.deck.archetypes:
+                        if stagei > 0 and e.category['shortname'] == "worlds":
+                            p1_deck = pdict[p1r["id"]].topcut_deck
+                        else:
+                            p1_deck = pdict[p1r["id"]].deck
+                        if p1_deck:
+                            for as_t in p1_deck.archetypes:
                                 self.rows[as_t].bye()
                         #print("        And a bye")
                         continue
@@ -206,16 +209,23 @@ class BattleChart:
                         p1.elo_diff += match["pairing"][0].get("eloChange", 0)
                         p2.elo_diff += match["pairing"][1].get("eloChange", 0)
 
+                    if stagei > 0 and e.category['shortname'] == "worlds":
+                        p1_deck = p1.topcut_deck
+                        p2_deck = p2.topcut_deck
+                    else:
+                        p1_deck = p1.deck
+                        p2_deck = p2.deck
+
                     if p1r["score"] == p2r["score"] and p1r["score"] == 0:
                         #print(f"        intentional draw")
-                        if p1.deck:
-                            for as_t in p1.deck.archetypes:
-                                self.rows[as_t].id_vs(p2.deck)
-                        if p2.deck:
-                            for as_t in p2.deck.archetypes:
-                                self.rows[as_t].id_vs(p1.deck)
+                        if p1_deck:
+                            for as_t in p1_deck.archetypes:
+                                self.rows[as_t].id_vs(p2_deck)
+                        if p2_deck:
+                            for as_t in p2_deck.archetypes:
+                                self.rows[as_t].id_vs(p1_deck)
                         continue
-                    elif not p1.deck or not p2.deck:
+                    elif not p1_deck or not p2_deck:
                         # TODO: maybe note the win vs an unknown deck?
                         # since it affects overall win rate.
                         #print("        (decklist unavailable)")
@@ -231,26 +241,26 @@ class BattleChart:
                     
                     if p1r["score"] > p2r["score"]:
                         # outcome = "beats"
-                        for as_t in p1.deck.archetypes:
-                            self.rows[as_t].win_vs(p2.deck, as_deck=p1.deck)
-                        for vs_t in p2.deck.archetypes:
-                            self.rows[vs_t].loss_vs(p1.deck, as_deck=p2.deck)
+                        for as_t in p1_deck.archetypes:
+                            self.rows[as_t].win_vs(p2_deck, as_deck=p1_deck)
+                        for vs_t in p2_deck.archetypes:
+                            self.rows[vs_t].loss_vs(p1_deck, as_deck=p2_deck)
                     
                     elif p1r["score"] < p2r["score"]:
                         # outcome = "loses to"
-                        for as_t in p1.deck.archetypes:
-                            self.rows[as_t].loss_vs(p2.deck, as_deck=p1.deck)
-                        for vs_t in p2.deck.archetypes:
-                            self.rows[vs_t].win_vs(p1.deck, as_deck=p2.deck)
+                        for as_t in p1_deck.archetypes:
+                            self.rows[as_t].loss_vs(p2_deck, as_deck=p1_deck)
+                        for vs_t in p2_deck.archetypes:
+                            self.rows[vs_t].win_vs(p1_deck, as_deck=p2_deck)
 
                     else:
                         # outcome = "ties"
-                        for as_t in p1.deck.archetypes:
-                            self.rows[as_t].draw_vs(p2.deck, as_deck=p1.deck)
-                        for vs_t in p2.deck.archetypes:
-                            self.rows[vs_t].draw_vs(p1.deck, as_deck=p2.deck)
+                        for as_t in p1_deck.archetypes:
+                            self.rows[as_t].draw_vs(p2_deck, as_deck=p1_deck)
+                        for vs_t in p2_deck.archetypes:
+                            self.rows[vs_t].draw_vs(p1_deck, as_deck=p2_deck)
 
-                    # print(f"        {p1.deck} {outcome} {p2.deck}")
+                    # print(f"        {p1_deck} {outcome} {p2_deck}")
         self.sort()
         return self
     
