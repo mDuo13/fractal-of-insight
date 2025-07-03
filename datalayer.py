@@ -152,9 +152,11 @@ for cardname, card in carddata.items():
             lowest_ced = ced
     if lowest_rarity == 99:
         exit(f"Error finding lowest rarity for {cardname}.")
-    ed_slug = lowest_ced["slug"]
+    # ed_slug = lowest_ced["slug"]
     #card["img"] = f"https://ga-index-public.s3.us-west-2.amazonaws.com/cards/{ed_slug}.jpg"
-    card["img"] = f"https://api.gatcg.com/cards/images/{ed_slug}.jpg"
+    # card["img"] = f"https://api.gatcg.com/cards/images/{ed_slug}.jpg"
+    ed_img = lowest_ced["image"]
+    card["img"] = f"https://api.gatcg.com{ed_img}"
     if card.get("back"):
         back_img = card["back"]["edition"]["image"]
         card["back"]["img"] = f"https://api.gatcg.com{back_img}"
@@ -178,9 +180,11 @@ def get_card_img(cardname, at=0):
     except json.JSONDecodeError:
         print("Invalid/unexpected Index response:", index_lookup)
         exit()
-    ed_slug = index_json["result_editions"][0]["slug"]
+    ed_img = index_json["result_editions"][0]["image"]
+    card_img = f"https://api.gatcg.com{ed_img}"
+    # ed_slug = index_json["result_editions"][0]["slug"]
     #card_img = f"https://ga-index-public.s3.us-west-2.amazonaws.com/cards/{ed_slug}.jpg"
-    card_img = f"https://api.gatcg.com/cards/images/{ed_slug}.jpg"
+    # card_img = f"https://api.gatcg.com/cards/images/{ed_slug}.jpg"
     # print("Saving card data to cache...")
     # makedirs("data/", exist_ok=True)
     # carddata[cardname] = {

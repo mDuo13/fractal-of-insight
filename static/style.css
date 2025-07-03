@@ -55,10 +55,81 @@ form > fieldset {
     margin-bottom: 25px;
 }
 
-.favored { background-color:green; color: white;}
-.unfavored{background-color: pink}
-.no_data{background-color:gray; font-size: 15px;}
-.even{background-color: white;}
+.battlechart {
+    background: #dedede;
+    background: linear-gradient(135deg, rgba(222, 222, 222, 1) 0%, rgba(224, 230, 211, 0.31) 85%, rgba(199, 189, 189, 1) 100%);
+    border: 1px solid #333;
+}
+.battlechart td, .battlechart th {
+    border: 1px solid #333;
+}
+
+.battlechart thead th {
+    font-size: 15px;
+}
+
+.battlechart tbody th {
+    min-width: 100px;
+}
+
+.battlechart button {
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.battlechart tr.oddrow {
+    background: #c0c0c0;
+}
+tr.subtype {
+    background: #707070;
+}
+
+.bc-inner {
+    width: 75px;
+    margin: 5px 5px 7px 3px;
+    border-radius: 5px;
+    box-shadow: rgba(20,20,20,0.5) 3px 2px 0px;
+    padding: 12px 8px;
+    text-align: center;
+}
+
+.favored .bc-inner {
+    background-color: #68935B; 
+    color: white;
+    background-image: url(swirl.svg);
+    background-repeat: repeat-y;
+    background-position: right;
+}
+.unfavored .bc-inner {
+    background-color: #FDA0A0;
+    background-image: url(jaggy.svg);
+    background-repeat: repeat-y;
+    background-position: right;
+}
+.even .bc-inner {
+    background-color: #F0F0F0;
+    background-image: url(zag.svg);
+    background-repeat: repeat-y;
+    background-position: right;
+}
+.slight-favored .bc-inner {
+    background-color: #F0F0F0;
+    background: url(swirl.svg), linear-gradient(90deg,rgba(240, 240, 240, 1) 0%, rgba(240, 240, 240, 1) 85%, rgba(104, 147, 91, 1) 95%);
+    background-repeat: repeat-y;
+    background-position: right;
+}
+.slight-unfavored .bc-inner {
+    background-color: #F0F0F0;
+    background: url(jaggy.svg), linear-gradient(90deg,rgba(240, 240, 240, 1) 0%, rgba(240, 240, 240, 1) 85%, rgba(253, 160, 160, 1) 95%);
+    background-repeat: repeat-y;
+    background-position: right;
+}
+.no_data .bc-inner {
+    background-color: #343434; 
+    font-size: 15px; 
+    color: white; 
+    padding: 14px 8px;
+}
 
 #head-to-head td a,
 #head-to-head td a:visited {
@@ -666,7 +737,10 @@ fieldset label {
 }
 
 .scooped-corners .explanation {
-    margin: 0 0 0 20px;
+    display: block;
+    padding-left: 20px;
+    line-height: 14px;
+    margin: 3px 0 3px 18px;
 }
 
 .noem {
@@ -675,11 +749,6 @@ fieldset label {
 
 .player-regions .tabs {
     margin-top: 25px;
-}
-
-.battlechart button {
-    font-size: 12px;
-    margin-top: 4px;
 }
 
 .regular .event-category {
@@ -715,6 +784,7 @@ fieldset label {
 .season h2 {
     text-align: center;
     position: relative;
+    margin: 0;
 }
 
 .season h2 a img {

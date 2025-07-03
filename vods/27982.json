@@ -1,0 +1,101 @@
+{"videos": [
+    {
+        "stage": 1,
+        "round": 1,
+        "p1": 810,
+        "p2": 5010,
+        "link": "https://www.youtube.com/watch?v=fTyI1MJTbFk&t=6622s"
+    },
+    {
+        "stage": 1,
+        "round": 2,
+        "p1": 115,
+        "p2": 3903,
+        "link": "https://www.youtube.com/watch?v=fTyI1MJTbFk&t=11074s"
+    },
+    {
+        "stage": 1,
+        "round": 3,
+        "p1": 4137,
+        "p2": 1,
+        "link": "https://www.youtube.com/watch?v=fTyI1MJTbFk&t=16427s"
+    },
+    {
+        "stage": 1,
+        "round": 4,
+        "p1": 546,
+        "p2": 955,
+        "link": "https://www.youtube.com/watch?v=fTyI1MJTbFk&t=23480s"
+    },
+    {
+        "stage": 1,
+        "round": 5,
+        "p1": 1058,
+        "p2": 127,
+        "link": "https://www.youtube.com/watch?v=fTyI1MJTbFk&t=28301s"
+    },
+    {
+        "stage": 1,
+        "round": 6,
+        "p1": 327,
+        "p2": 792,
+        "link": "https://www.youtube.com/watch?v=fTyI1MJTbFk&t=33204s"
+    },
+    {
+        "stage": 1,
+        "round": 7,
+        "p1": 4137,
+        "p2": 9281,
+        "link": "https://www.youtube.com/watch?v=fTyI1MJTbFk&t=38379s",
+        "//": "Round 8 is cut off by Youtube due to VOD length again"
+    },
+    {
+        "stage": 2,
+        "round": 1,
+        "p1": 810,
+        "p2": 115,
+        "link": "https://www.youtube.com/watch?v=1oXFzNCvWxI&t=2156s"
+    },
+    {
+        "stage": 2,
+        "round": 1,
+        "p1": 127,
+        "p2": 1033,
+        "link": "https://www.youtube.com/watch?v=1oXFzNCvWxI&t=9539s"
+    },
+    {
+        "stage": 2,
+        "round": 1,
+        "p1": 1,
+        "p2": 327,
+        "link": "https://www.youtube.com/watch?v=1oXFzNCvWxI&t=16918s"
+    },
+    {
+        "stage": 2,
+        "round": 1,
+        "p1": 111,
+        "p2": 792,
+        "link": "https://www.youtube.com/watch?v=1oXFzNCvWxI&t=23599s"
+    },
+    {
+        "stage": 2,
+        "round": 2,
+        "p1": 1,
+        "p2": 127,
+        "link": "https://www.youtube.com/watch?v=I3HVrMEHlrE&t=3435s"
+    },
+    {
+        "stage": 2,
+        "round": 2,
+        "p1": 111,
+        "p2": 810,
+        "link": "https://www.youtube.com/watch?v=I3HVrMEHlrE&t=17355s"
+    },
+    {
+        "stage": 2,
+        "round": 3,
+        "p1": 111,
+        "p2": 127,
+        "link": "https://www.youtube.com/watch?v=I3HVrMEHlrE&t=27155s"
+    }
+]}

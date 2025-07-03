@@ -3,8 +3,12 @@
 if (window.location.hash) {
     //console.debug("hash:",window.location.hash)
     const defaultobj = document.querySelector(window.location.hash)
-    if (defaultobj) {
+    if (defaultobj && defaultobj.classList.contains("collapse")) {
         defaultobj.classList.remove("collapse")
+    } else {
+        q = `${window.location.hash} > .togglable.collapse`
+        //collapsedChildren = document.querySelectorAll(q)
+        show(q)
     }
 }
 document.querySelectorAll(".decklist").forEach(el => {
@@ -17,13 +21,8 @@ document.querySelectorAll(".decklist").forEach(el => {
             evt.preventDefault()
         } else {
             el.classList.add("collapse")
-            history.pushState("", document.title, window.location.pathname+window.location.search)
+            history.replaceState("", document.title, window.location.pathname+window.location.search)
         }
     })
 })
-{# document.querySelectorAll(".decklist .cardimg").forEach(el => {
-    el.addEventListener("click", (evt) => {
-        el.classList.toggle("dblclicked")
-    })
-}) #}
 </script>

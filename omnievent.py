@@ -137,7 +137,16 @@ class OmniEvent:
                         "link": vid["link"],
                         "event": self
                     }
-                    self.pdict[p1].deck.videos.append(viddata)
+                    for pn in (p1, p2):
+                        if self.category['shortname'] == "worlds" and stage > 1:
+                            # Top cut deck
+                            d = self.pdict[pn].topcut_deck
+                            viddata["is_topcut"] = True
+                        else:
+                            d = self.pdict[pn].deck
+                            viddata["is_topcut"] = False
+                        if d and viddata not in d.videos:
+                            d.videos.append(viddata)
 
     
     def analyze(self):

@@ -1,6 +1,10 @@
 function toggle(q) {
     const togtarget = document.querySelectorAll(q)
     togtarget.forEach(el => {el.classList.toggle("collapse") })
+    const anchor = q.match(/#[a-z\-]+/)
+    if (anchor && anchor[0]) {
+        history.replaceState("", document.title, window.location.pathname+anchor)
+    }
 }
 function show(q) {
     const els = document.querySelectorAll(q)
@@ -17,7 +21,7 @@ function opendecklist(q) {
 function closedecklist(q) {
     hide(q)
     //window.location.replace(window.location.pathname+window.location.search)
-    history.pushState("", document.title, window.location.pathname+window.location.search)
+    history.replaceState("", document.title, window.location.pathname+window.location.search)
 }
 function togglegfx() {
     toggle(".deck_gfx")

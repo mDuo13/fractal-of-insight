@@ -251,6 +251,7 @@ REGIONS = {
     "SG": {"name": "Singapore","flag": "🇸🇬"},
     "SI": {"name": "Slovenia","flag":"🇸🇮"},
     "SK": {"name": "Slovakia","flag":"🇸🇰"},
+    "TH": {"name": "Thailand", "flag": "🇹🇭"},
     "TW": {"name": "Taiwan","flag": "🇹🇼"},
     "US": {"name": "United States of America","flag": "🇺🇸"},
 }

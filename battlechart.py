@@ -25,10 +25,14 @@ class BCCell:
             return "no_data"
         if self.pct > 60:
             return "favored"
-        elif self.pct < 40:
-            return "unfavored"
-        else:
+        elif self.pct > 52:
+            return "slight-favored"
+        elif self.pct > 48:
             return "even"
+        elif self.pct > 40:
+            return "slight-unfavored"
+        else:
+            return "unfavored"
     
     @property
     def true_matchcount(self):
