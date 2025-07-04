@@ -15,6 +15,7 @@ function hide(q) {
     els.forEach(el => {el.classList.add("collapse")})
 }
 function opendecklist(q) {
+    hide(".decklist")
     show(q)
     window.location.replace(window.location.pathname+window.location.search+q)
 }

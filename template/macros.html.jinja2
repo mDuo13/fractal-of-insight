@@ -335,9 +335,11 @@
 {% endmacro %}
 
 {% macro decklist(p, id, event=None, external=False, use_topcut_deck=False) %}
+{% set id_swiss = id %}
+{% set id_topcut = id~"_topcut" %}
 {% if use_topcut_deck %}
 {% set deck = p.topcut_deck %}
-{% set id = id~"_topcut" %}
+{% set id = id_topcut %}
 {% else %}
 {% set deck = p.deck %}
 {% endif %}
@@ -347,6 +349,12 @@
         <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
         <button class="omniexport_btn" onclick="omnidexexport('#{{id}} .omniexport')"><img alt="Export" title="Omnidex Export (copy to clipboard)" src="/static/export.svg" width="24" height="24" /></button>
         <a class="permalink" href="#{{id}}" onclick="copypermalink()">🔗</a>
+        {% if p.deck and p.topcut_deck %}
+        <div class="tabs">
+            <button class="tab{% if not use_topcut_deck %} activetab{% endif %}" onclick="opendecklist('#{{id_swiss}}')">Swiss decklist</button>
+            <button class="tab{% if use_topcut_deck %} activetab{% endif %}" onclick="opendecklist('#{{id_topcut}}')">Top cut decklist</button>
+        </div>
+        {% endif %}
         <h3>{{p.username}}'s {{deck}}{% if external %} ({{event.name}}){% endif %}{% if use_topcut_deck %} (Top cut list){% endif %}</h3>
         <div class="decklist-viewbox">
             <h4>Materials <span class="cardcount">({{deck.mat_total}} cards)</span></h4>

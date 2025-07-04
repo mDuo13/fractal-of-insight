@@ -119,6 +119,7 @@ class Deck:
         if not self.dl.get("main"):
             raise ValueError(f"Decklist has no maindeck? {self.dl}")
         for card_o in self.dl["main"]:
+            card_o["card"] = card_o["card"].strip()
             card_o["card"] = fix_case(card_o["card"])
             if card_o["card"] in BANLIST:
                 card_o["banned"] = True
@@ -126,6 +127,7 @@ class Deck:
             if card_back:
                 card_o["back"] = card_back
         for card_o in self.dl["material"]:
+            card_o["card"] = card_o["card"].strip()
             card_o["card"] = fix_case(card_o["card"])
             if card_o["card"] in BANLIST:
                 card_o["banned"] = True
@@ -133,6 +135,7 @@ class Deck:
             if card_back:
                 card_o["back"] = card_back
         for card_o in self.dl["sideboard"]:
+            card_o["card"] = card_o["card"].strip()
             card_o["card"] = fix_case(card_o["card"])
             if card_o["card"] in BANLIST:
                 card_o["banned"] = True
