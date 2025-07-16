@@ -98,6 +98,35 @@
     {{ macros.elementbars(evt.champdata) }}
     <p class="togglable collapse">This breakdown only shows the basic elements from the deck's spirit(s), not elements added by Lv1+ champions.</p>
 </section>
+
+<section id="seat-composition">
+    <h2>Seat Breakdown</h2>
+    <button onclick="toggle('#seat-composition > .togglable')">Glimpse Seat Breakdown</button>
+
+    <div class="seat-cols togglable collapse">
+    {% for seat in evt.seatdata %}
+    <div class="seat-cell">
+    <h3>Seat {{seat.letter}}</h3>
+    <h4>Elements</h4>
+    <div class="element-meta">
+        {{macros.elementpie(seat.elements)}}
+    </div>
+    </div>
+
+    <div class="seat-cell">
+    <h4>Archetypes</h4>
+    {{ macros.elementbars(seat.archedata, link=True, collapse=False) }}
+    <p>Archetypes don't sum to 100% because decks can be multiple or zero archetypes.</p>
+    </div>
+
+    <div class="seat-cell">
+    <h4>Champions</h4>
+    {{ macros.elementbars(seat.champdata, collapse=False) }}
+    <p>This breakdown only shows the basic elements from the deck's spirit(s), not elements added by Lv1+ champions.</p>
+    </div>
+    {% endfor %}
+    </div>
+</section>
 {% endif %}{# end num_decklists conditional#}
 
 <section id="matches">

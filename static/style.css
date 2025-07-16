@@ -193,6 +193,26 @@ th {
     box-shadow: var(--main-shadow);
 } */
 
+.seat-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    grid-auto-flow: column;
+}
+
+.seat-cell {
+    padding: 10px;
+    align-content: end;
+}
+.seat-cell:nth-child(-n + 3) {
+    border-right: 1px dotted black;
+    padding-left: 0;
+}
+.seat-cell:nth-child(n + 7) {
+    border-left: 1px dotted black;
+    padding-right: 0;
+}
+
 .p-row, .team-member {
     position: relative;
     transform:scale(1,1);

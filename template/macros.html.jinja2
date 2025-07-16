@@ -172,8 +172,14 @@
             {% endfor%}
             </div>
         </td>
+        {% if event.format == TEAM_STANDARD %}
+        {% set t = event.teams[deck.entrant.team|lower] %}
+        <td class="p_placement">{% if event.winning_team == t %}{{winner()}} {% endif %}{{t.placement}}/{{event.teams|length}} teams</td>
+        <td class="p_record">{{t.record}}</td>
+        {% else %}
         <td class="p_placement">{% if event.winner == deck.entrant %}{{winner()}} {% endif %}{{deck.entrant.placement}}/{{event.players|length}}</td>
         <td class="p_record">{{deck.entrant.record}}</td>
+        {% endif %}
     </tr>
 {% endmacro %}
 

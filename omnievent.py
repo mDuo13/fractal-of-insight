@@ -403,6 +403,12 @@ class Team:
     def sortkey(self):
         return self.score + (self.omw/100) + (self.gwp / 100000) + (self.ogw / 10000000)
 
+class SeatIn3v3:
+    def __init__(self, i):
+        self.letter = ["A","B","C"][i]
+        self.elements = ElementStats()
+        self.archedata = ArcheStats()
+        self.champdata = ChampStats()
 
 class Team3v3Event(OmniEvent):
     def __init__(self, evt_id, force_redownload=False):
@@ -410,6 +416,7 @@ class Team3v3Event(OmniEvent):
         self.parse_teams()
         self.fix_placement()
         self.parse_top_cut()
+        self.analyze_seats()
 
     def parse_teams(self):
         teams = []
@@ -432,6 +439,21 @@ class Team3v3Event(OmniEvent):
             team.placement = i+1
             for p in team.members:
                 p.placement = i+1
+    
+    def analyze_seats(self):
+        self.seatdata = [SeatIn3v3(i) for i in range(3)]
+        for team in self.teams.values():
+            for i,p in enumerate(team.members):
+                seat = self.seatdata[i]
+                if p.deck:
+                    seat.elements.add_deck(p.deck)
+                    seat.archedata.add_deck(p.deck)
+                    seat.champdata.add_deck(p.deck)
+                else:
+                    seat.elements.add_unknown()
+                    seat.archedata.add_unknown()
+                    seat.champdata.add_unknown()
+
 
     def calc_headtohead(self, threshold=None, track_elo=False):
         # Nah, it's just team standard.
