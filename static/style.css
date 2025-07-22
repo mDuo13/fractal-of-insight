@@ -825,6 +825,8 @@ h1 {
     margin-right: 20%;
     position: relative;
     clip-path: polygon(0% 0%, calc(100% - 20px) 0%, 100% 50%, calc(100% - 20px) 100%, 0% 100%);
+    font-size: 2em;
+    line-height: 1.25em;
 }
 
 #evt-info h1 img,
