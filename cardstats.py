@@ -195,6 +195,18 @@ class CardStatSet:
 
         statdata.sort(key=lambda x:x[0])
         self.alphabetical = {k:v for k,v in statdata}
+
+    def split_by_set(self):
+        setstats = {}
+        for k,v in self.items.items():
+            card = carddata[v.name]
+            prefix = card["set_introduced"]
+            if prefix not in setstats.keys():
+                setstats[prefix] = CardStatSet()
+            setstats[prefix].items[k] = v
+        for ss in setstats.values():
+            ss.sort()
+        return setstats
     
     def __getitem__(self, item):
         return self.items[item]

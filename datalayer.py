@@ -111,7 +111,7 @@ def sideload_deck(p_id, evt_id, fname=None):
 try:
     carddata = {}
     for entry in scandir(CARDS_FOLDER):
-        if entry.is_file() and entry.name[-5:] == ".json":
+        if entry.is_file() and entry.name[-5:] == ".json" and entry.name != "set-groups.json":
             with open(entry) as f:
                 setlist = json.load(f)
             for card in setlist:
@@ -125,13 +125,69 @@ try:
                     carddata[cardname] = card
                 else:
                     carddata[cardname]["result_editions"] += card["result_editions"]
-                
-                    
     # with open(f"data/cards.json") as f:
     #     carddata = json.load(f)
 except FileNotFoundError:
     print("Didn't find cached card data")
     carddata = {}
+
+# Compare editions and result_editions
+# Powercell A/B order is nondeterministic
+# result_editions has all Nameless Champions
+# for cardname,card in carddata.items():
+#     eds = sorted(card["editions"], key=lambda x:x["set"]["prefix"].ljust(10)+x["collector_number"])
+#     reds = sorted(card["result_editions"], key=lambda x:x["set"]["prefix"].ljust(10)+x["collector_number"])
+#     if eds != reds:
+#         print(f"Editions / Result Editions mismatch: {cardname}")
+#         if len(eds) != len(reds):
+#             print("Different length:")
+#             print([ed["set"]["prefix"] for ed in eds])
+#             print([ed["set"]["prefix"] for ed in reds])
+#         else:
+#             for i in range(len(eds)):
+#                 if eds[i] != reds[i]:
+#                     print(f"Mismatch in edition {eds[i]['set']['prefix']}")
+#                     for k,v in eds[i].items():
+#                         if reds[i][k] != v:
+#                             print(f"Field {k}: {v} vs {reds[i][k]}")
+#         #print("Eds:", eds)
+#         #print("R-Eds:", reds)
+
+## Identify which edition a card first appeared in and add it as
+## a 'set_introduced' field for the card data
+try:
+    with open("data/index/set-groups.json") as f:
+        set_groups_list = json.load(f)
+    set_groups_list.reverse() # Put them with, generally, oldest group first
+    set_groups = {s["name"]:s for s in set_groups_list}
+    set_groups["Other"] = {"name": "Other", "sets": []}
+    
+    for card in carddata.values():
+        in_sets = [ed["set"]["prefix"] for ed in card["editions"]]
+        found_sg = False
+        for prefix in in_sets:
+            for sg in set_groups.values():
+                for sgs in sg["sets"]:
+                    if sgs["prefix"] in in_sets:
+                        card["set_introduced"] = sg["name"]
+                        found_sg = True
+                        break
+                if found_sg:
+                    break
+            if found_sg:
+                break
+        if not found_sg:
+            #print("Couldn't find set group for card:", card["name"])
+            card["set_introduced"] = "Other"
+except FileNotFoundError:
+    print("No data on set groups. Can't determine oldest edition of cards accurately")
+    # Fallback method relies on set release_date field which is not a reliable
+    # indicator of when a card actually released (mostly because of promos)
+    for card in carddata.values():
+        eds = sorted(card["editions"], key=lambda x:x["set"]["release_date"])
+        oldest_ed = eds[0]
+        card["set_introduced"] = oldest_ed["set"]["prefix"]
+
 
 try:
     with open("data/card_spoilers.json") as f:
@@ -161,7 +217,18 @@ for cardname, card in carddata.items():
         back_img = card["back"]["edition"]["image"]
         card["back"]["img"] = f"https://api.gatcg.com{back_img}"
 
-def get_card_img(cardname, at=0):
+def get_card_img(cardname, at=0, from_set_group=None):
+    """
+    Get an appropriate image URL for the card, looking it up on Index if necessary.
+    
+    Params:
+    at - the time of the event where the card appears, in case of cards that
+         have different versions because of errata
+    from_set_group - if provided, should be the name of an Index-defined set 
+                     group, such as 'Mercurial Heart' (which includes ReCo 
+                     decks & MRC Alter). Will return the image URL for the
+                     corresponding edition if possible.
+    """
     # Special case for errata'd Proxia's Vault cards like Stonescale Band
     if cardname in ERRATA.keys():
         errata = ERRATA[cardname]
@@ -169,7 +236,13 @@ def get_card_img(cardname, at=0):
             return errata["img"]
 
     card_info = carddata.get(cardname)
-    if card_info and card_info.get("img"):
+    if card_info and from_set_group and from_set_group != "Other":
+        set_group = set_groups[from_set_group]
+        set_prefixes = [s["prefix"] for s in set_group["sets"]]
+        for ed in card_info["editions"]:
+            if ed["set"]["prefix"] in set_prefixes:
+                return f"https://api.gatcg.com{ed['image']}"
+    elif card_info and card_info.get("img"):
         return card_info["img"]
 
     print("looking up img for",cardname)
@@ -254,5 +327,8 @@ def save_event_json(evt):
         json.dump(evt, f)
 
 def get_card_references(cardname):
+    """
+    Return a list of card (names) summoned/generated by the card.
+    """
     refs = carddata[cardname].get("references", [])
     return [carddata[r.get("name")] for r in refs if r.get("direction") == "TO" and r.get("kind") in ("SUMMON", "MASTERY", "GENERATE")]

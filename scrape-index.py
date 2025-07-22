@@ -27,7 +27,13 @@ for cardset in all_sets:
         total_pages = j["total_pages"]
         setlist += j["data"]
 
-    os.makedirs(CARDS_FOLDER, exist_ok=True)        
+    os.makedirs(CARDS_FOLDER, exist_ok=True)
     fname = os.path.join(CARDS_FOLDER, f"{prefix}.json")
     with open(fname, "w") as f:
         json.dump(setlist, f)
+
+print("Fetching featured set groups...")
+groups = requests.get("https://api.gatcg.com/featured-sets").json()
+fname = os.path.join(CARDS_FOLDER, "set-groups.json")
+with open(fname, "w") as f:
+    json.dump(groups, f)

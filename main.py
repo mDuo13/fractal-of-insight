@@ -9,7 +9,7 @@ from math import ceil
 from collections import defaultdict
 
 import config
-from datalayer import carddata, get_event
+from datalayer import carddata, get_event, set_groups, get_card_img
 from shared import slugify, OVERALL, REGIONS
 from omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
 from season import Season, SEASONS, Format, FORMATS
@@ -107,8 +107,8 @@ class PageBuilder:
     def write_archetype_index(self, archetypes, aew, cswr):
         self.render("archetypes.html.jinja2", "deck/index.html", archetypes=archetypes, aew=aew, cswr=cswr)
 
-    def write_card_index(self):
-        self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata, PAD_UNTIL=PAD_UNTIL)
+    def write_card_index(self, card_stats_by_set):
+        self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata, set_groups=set_groups, get_card_img=get_card_img, card_stats_by_set=card_stats_by_set, PAD_UNTIL=PAD_UNTIL)
     
     def write_card_page(self, cardname, cardstat, events=[]):
         max_page = ceil(len(cardstat.appearances) / CARD_SIGHTINGS_PER_PAGE)
@@ -205,6 +205,7 @@ class PageBuilder:
         for cardname, cardstat in ALL_CARD_STATS:
             cardstat.analyze()
         ALL_CARD_STATS.sort()
+        card_stats_by_set = ALL_CARD_STATS.split_by_set()
 
         HIPSTER_FLOOR = 99999
         for e in all_events.values():
@@ -274,7 +275,7 @@ class PageBuilder:
         for e in all_events.values():
             self.write_event(e)
         
-        self.write_card_index()
+        self.write_card_index(card_stats_by_set)
 
         GAS.total_players = len(known_players)
         for achievement in ACHIEVEMENTS.values():

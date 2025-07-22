@@ -31,7 +31,42 @@
                 'quantity': cardstat.num_appearances~'×'
             } %}
             {{ macros.cardimg(card_o, link=True) }}
-{#            <a class="cardimg" href="/card/{{slugify(cardname)}}.html"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{cardstat.num_appearances}}×</span></a>#}
+        {% endif %}
+    {% endfor %}
+    </div>
+    <h3 class="collapse togglable">Most Played from Set</h3>
+
+    <div class="tabs collapse togglable">
+    {% for setname in set_groups.keys() %}
+    {% if card_stats_by_set[setname]|length %}
+    <button class="tab{% if loop.index0 == 0 %} activetab{% endif %}" data-tabfor="{{slugify(setname)}}" onclick="opentabs(this)">{{setname}}</button>
+    {% endif %}
+    {% endfor %}
+    </div>
+    <div class="tabwrapper collapse togglable">
+    {% for setname, set_group in set_groups.items() %}
+        {% set setstats = card_stats_by_set[setname] %}
+        {% if setstats|length %}
+        <div class="tabcontent {% if loop.index0 != 0 %} collapse{% endif %}" data-tabof="{{slugify(setname)}}">
+            {% if setname == "Other" %}
+            <p class="explanation">(All cards introduced in special sets like Proxia's Vault or promos.)</p>
+            {% else %}
+            <p class="explanation">(All cards introduced in the {{setname}} family of sets: {% for set_ in set_group.sets %}{% if loop.last %}and {% endif %}{{set_.name}}{% if not loop.last %}, {% endif %}{% endfor %}. {% if setname == "Abyssal Heaven" %} Note, Nullifying Mirror counts appearances from being pre-released in Proxia's Vault.{% endif %})</p>
+            {# <p class="explanation">(All cards introduced in the following sets: {{", ".join(set_group.sets|selectattr("name"))}})</p> #}
+            {% endif %}
+            <div class="top-cards">
+            {% for cardname, cardstat in setstats %}
+                {% if loop.index0 < 20 %}
+                    {% set card_o = {
+                        'card': cardname,
+                        'img': get_card_img(cardname, from_set_group=setname),
+                        'quantity': cardstat.num_appearances~'×'
+                    } %}
+                    {{ macros.cardimg(card_o, link=True) }}
+                {% endif %}
+            {% endfor %}
+            </div>
+        </div>
         {% endif %}
     {% endfor %}
     </div>
