@@ -321,7 +321,8 @@ class Deck:
                 j_card = {
                     "name": card_o["card"],
                     "image": card_o["img"],
-                    "quantity": card_o["quantity"]
+                    "quantity": card_o["quantity"],
+                    "types": carddata[card_o["card"]]["types"],
                 }
                 if card_o.get("back"):
                     j_card["orientation"] = "Front"
