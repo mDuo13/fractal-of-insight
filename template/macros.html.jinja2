@@ -21,6 +21,30 @@
     </table>
 {% endmacro %}
 
+{% macro deck_elementpie(elements) %}
+<div class="element-meta">
+    {% set el_colors = {"Norm": "#ba9", "Fire": "#b30", "Wind": "#6c3", "Water": "#06b", "Arcane": "#23a", "Astra": "#336", "Crux": "#a9d", "Exia": "#310", "Luxem": "#ec4", "Neos": "#a63", "Tera": "#164", "Umbra": "#214", "Exalted/Norm": "#ca7", "Exalted/Fire": "#ca7", "Exalted/Water": "#ca7", "Exalted/Wind": "#ca7", "Unknown": "#000"} %}
+    {% set ns = namespace(cumu = 0) %}
+    <div class="pie-chart" style="background: conic-gradient({% for el, quant, pct in elements %}{{el_colors[el|title]}} {{ns.cumu}}%{% set ns.cumu = ns.cumu + pct %}, {{el_colors[el|title]}} {{ns.cumu}}%{% if not loop.last%}, {% endif %}{% endfor %})">&nbsp;</div>
+
+    <table class="element-table">
+        <thead><tr>
+            <th>Element</th>
+            <th># of cards</th>
+            <th>%</th>
+        </tr></thead>
+        <tbody>
+            {% for el, quant, pct in elements %}
+            <tr>
+                <th><span class="el-indicator" style="background-color: {{el_colors[el|title]}};">&nbsp;</span> {{el|title}}</td>
+                <td>{{quant|int}}</td>
+                <td>{{pct}}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endmacro %}
 
 
 {% macro upset(cutoff) %}
@@ -365,12 +389,12 @@
         <div class="decklist-viewbox">
             <h4>Materials <span class="cardcount">({{deck.mat_total}} cards)</span></h4>
             <ul class="deck_txt collapse">
-                {% for card_o in deck.dl["material"] %}
+                {% for card_o in deck.mat %}
                 <li>{{card_o["card"]}}</li>
                 {% endfor %}
             </ul>
             <div class="deck_gfx">
-                {% for card_o in deck.dl["material"] %}
+                {% for card_o in deck.mat %}
                 {% if card_o["quantity"] == 1 %}
                     {{ cardimg(card_o, hide_overlay=True) }}
                 {% else %}
@@ -380,50 +404,59 @@
             </div>
             <h4>Maindeck <span class="cardcount">({{deck.main_total}} cards)</span></h4>
             <ul class="deck_txt collapse">
-                {% for card_o in deck.dl["main"] %}
+                {% for card_o in deck.main %}
                 <li>{{card_o["quantity"]}}x {{card_o["card"]}}</li>
                 {% endfor %}
             </ul>
             <div class="deck_gfx">
-                {% for card_o in deck.dl["main"] %}
+                {% for card_o in deck.main %}
                     {{ cardimg(card_o) }}
                 {% endfor %}
             </div>
             <h4>Sideboard <span class="cardcount">({{deck.side_total}} cards, {{deck.side_points}} points)</span></h4>
             <ul class="deck_txt collapse">
-                {% for card_o in deck.dl["sideboard"] %}
+                {% for card_o in deck.side %}
                 <li>{{card_o["quantity"]}}x {{card_o["card"]}}</li>
                 {% endfor %}
             </ul>
             <div class="deck_gfx">
-                {% for card_o in deck.dl["sideboard"] %}
+                {% for card_o in deck.side %}
                     {{ cardimg(card_o) }}
                 {% endfor %}
             </div>
             <textarea class="omniexport">
 # Material Deck
-{% for card_o in deck.dl["material"] %}
+{% for card_o in deck.mat %}
 {{card_o["quantity"]}} {{card_o["card"]}}
 {%- endfor %}
 
 # Main Deck
-{% for card_o in deck.dl["main"] %}
+{% for card_o in deck.main %}
 {{card_o["quantity"]}} {{card_o["card"]}}
 {%- endfor %}
 
 # Sideboard
-{% for card_o in deck.dl["sideboard"] %}
+{% for card_o in deck.side %}
 {{card_o["quantity"]}} {{card_o["card"]}}
 {%- endfor -%}
             </textarea>
-            <h4>Card Counts</h4>
-            <p class="explanation">(Maindeck cards only. Cards with multiple types count for each type. Floating memory counts if the deck has any champion that can use it.)</p>
-            <ul class="deck-stats">
-                <li><b>Floating Memory</b>: {{deck.floating}}</li>
-                {% for cardtype,cardcount in deck.card_types.items() %}
-                <li><b>{{cardtype|title}} Cards:</b> {{cardcount}}</li>
-                {% endfor %}
-            </ul>
+            <div class="deck-card-counts">
+                <div class="counts-by-type">
+                    <h4>Card Counts</h4>
+                    <p class="explanation">(Main deck cards only. Cards with multiple types count for each type. Floating memory counts if the deck has any champion that can use it.)</p>
+                    <ul class="deck-stats">
+                        <li><b>Floating Memory</b>: {{deck.floating}}</li>
+                        {% for cardtype,cardcount in deck.card_types.items() %}
+                        <li><b>{{cardtype|title}} Cards:</b> {{cardcount}}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="counts-by-element">
+                    <h4>Elements</h4>
+                    <p class="explanation">(Maindeck cards only.)</p>
+                    {{ deck_elementpie(deck.main_deck_els) }}
+                </div>
+            </div>
 
             <div class="similar-decks">
                 <h4>Similar Decks</h4>

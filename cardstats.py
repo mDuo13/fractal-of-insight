@@ -170,7 +170,7 @@ class CardStatSet:
                 # Some decklists mistakenly include tokens. Skip those.
                 continue
             self.items[card].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
-        for card_o in d.dl["sideboard"]:
+        for card_o in d.side:
             if "TOKEN" in carddata[card_o["card"]]["types"]:
                 # Skip tokens again
                 continue

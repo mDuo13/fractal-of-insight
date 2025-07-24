@@ -159,6 +159,9 @@ th {
 .element-table td {
     background: white;
 }
+.element-table tbody th {
+    text-align: left;
+}
 .subtype td, .subtype th {
     padding: 2px 5px;
 }
@@ -356,6 +359,11 @@ th {
     width: 125px;
     height: 175px;
     border-radius: 3%;
+}
+
+.top-cards h4 {
+    margin-top: 10px;
+    margin-bottom: 0;
 }
 
 .cardimg.banned::after {
@@ -636,9 +644,20 @@ fieldset label {
     line-height: 16px;
 }
 
-.element-meta {
+.element-meta, .deck-card-counts {
     display: flex;
     margin-bottom: 40px;
+}
+
+.el-indicator {
+    padding: 0 2px;
+}
+
+.counts-by-type {
+    flex-grow: 1;
+}
+.counts-by-element {
+    flex-grow: 2;
 }
 
 .element-table {

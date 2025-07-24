@@ -69,40 +69,6 @@ class Season:
             bc_list = [e.battlechart for e in self.events]
         bc = BattleChart.from_merge(bc_list)
         return bc
-
-        # archetypes = [a[0] for a in self.archedata]
-        # bc = {a: {b:{"win":0,"draw":0,"matches":0,"mirror":0} for b in archetypes+[OVERALL]} for a in archetypes}
-        # for e in self.events:
-        #     if use_top:
-        #         event_bc = e.bc_top
-        #     else:
-        #         event_bc = e.battlechart
-
-        #     for as_deck in event_bc.keys():
-        #         for vs_deck, record in event_bc[as_deck].items():
-        #             bc[as_deck][vs_deck]["win"] += record["win"]
-        #             bc[as_deck][vs_deck]["draw"] += record["draw"]
-        #             bc[as_deck][vs_deck]["matches"] += record["matches"]
-        #             bc[as_deck][vs_deck]["mirror"] += record["mirror"]
-        
-        # # Calculate win% and favored/unfavored status
-        # for as_type, records in bc.items():
-        #     for opp, r in records.items():
-        #         if r["matches"] > 0:
-        #             pct = round(100 * (r["win"] + (r["draw"] / 2)) / r["matches"], 1)
-                    
-        #             if pct > 60:
-        #                 rating = "favored"
-        #             elif pct < 40:
-        #                 rating = "unfavored"
-        #             else:
-        #                 rating = "even"
-        #             r["rating"] = rating
-        #             r["pct"] = pct
-        #         else:
-        #             r["rating"] = "no_data"
-        
-        # return bc
     
     def analyze_finishes(self):
         self.arche_wins = {}

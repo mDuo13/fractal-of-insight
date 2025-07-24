@@ -348,7 +348,7 @@ class OmniEvent:
         for p in self.players:
             if p.deck:
                 total_decks += 1
-                for card_o in p.deck.dl["sideboard"]:
+                for card_o in p.deck.side:
                     sb_cards[card_o["card"]] += 1
         sb_main_cards = defaultdict(int)
         for cardname in sb_cards.keys():

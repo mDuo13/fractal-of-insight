@@ -3,15 +3,10 @@ from bisect import insort
 
 from config import SharedConfig
 from shared import ElementStats, ChampStats, lineage
+from cards import BANLIST
 from datalayer import get_card_img, carddata
 
 SIMILAR_DECKS_CUTOFF = 85
-
-def card_freq_exclude(cardname):
-    card = carddata[cardname]
-    if "CHAMPION" in card.get("types",[]):
-        return True
-    return False
 
 SUBTYPES = {}
 
@@ -150,49 +145,42 @@ class Archetype:
                 et.analyze()
         
     def analyze_card_freq(self):
-        card_freq = defaultdict(int)
-        for deck in self.matched_decks:
-            for cardname in deck:
-                if not card_freq_exclude(cardname):
-                    card_freq[cardname] += 1
-                else:
-                    #print("excluding", cardname)
-                    pass
-        cf_sorted = list(card_freq.items())
-        cf_sorted.sort(key=lambda x:x[1], reverse=True)
-        total_decks = len(self.matched_decks)
-        self.card_freq = {
-            c: {
-                "card": c,
-                "pct": round(100*f/total_decks, 1),
-                "img": get_card_img(c)
-            } for c,f in cf_sorted
+        card_freqs = {
+            "mat": defaultdict(int),
+            "main": defaultdict(int),
+            "side": defaultdict(int)
         }
+        card_etc = defaultdict(None)
+        for deck in self.matched_decks:
+            for card_o in deck.mat:
+                card_freqs["mat"][card_o["card"]] += 1
+            for card_o in deck.main:
+                card_freqs["main"][card_o["card"]] += 1
+            for card_o in deck.side:
+                card_freqs["side"][card_o["card"]] += 1
+        total_decks = len(self.matched_decks)
+        self.card_freqs = {}
+        for cf_type, card_freq in card_freqs.items():
+            cf_sorted = list(card_freq.items())
+            cf_sorted.sort(key=lambda x:x[1], reverse=True)
+            self.card_freqs[cf_type] = {
+                c: {
+                    "card": c,
+                    "pct": round(100*f/total_decks, 1),
+                    "img": get_card_img(c),
+                    "banned": (True if c in BANLIST else False),
+                } for c,f in cf_sorted
+            }
     
     def analyze_card_stats(self):
         total_decks = 0
         total_floating = 0
         total_of_type = defaultdict(int)
         for deck in self.matched_decks:
-            # floating = 0
-            # allies = 0
-            # for cardname in deck:
-            #     card = carddata.get(cardname, None)
-            #     if not card:
-            #         print("No data saved for card:", cardname)
-            #         continue
-            #     card_quantity = deck.quantity_of(cardname)
-            #     if is_floating(card):
-            #         floating += card_quantity
-            #     card_types = card["types"]
-            #     if "ALLY" in card_types:
-            #         allies += card_quantity
-            # print("This deck has", floating, "floating memory.")
             total_decks += 1
             total_floating += deck.floating
             for k,v in deck.card_types.items():
                 total_of_type[k] += v
-        # print("Average floating memory for", self.name, "decks:", (total_floating/total_decks))
         if total_decks == 0:
             raise ZeroDivisionError(f"No decks for archetype {self.name}")
         self.average_floating = round(total_floating / total_decks, 0)
@@ -223,17 +211,6 @@ class Champtype(Archetype):
         self.champ_subtypes = None
         self.require_element = None
         self.el_subtypes = None
-
-    # def match(self, deck):
-    #     for card_o in deck.dl["material"]:
-    #         cardname = card_o["card"]
-    #         card = carddata[cardname]
-    #         if "CHAMPION" in card.get("types",[]):
-    #             card_lineage = lineage(cardname)
-    #             if card_lineage == self.name:
-    #                 self.matched_decks.append(deck)
-    #                 return True
-    #     return False
 
 class Eltype(Archetype):
     def __init__(self, el, parent):

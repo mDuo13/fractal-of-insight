@@ -1,7 +1,7 @@
 from time import strftime, gmtime
 from collections import defaultdict
 
-from shared import slugify, fix_case, lineage
+from shared import slugify, fix_case, lineage, element_sortkey
 from datalayer import get_card_img, carddata, card_is_floating, get_card_references
 from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST
 from archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
@@ -39,7 +39,7 @@ class Deck:
         self.fix_dl()
         self.find_spirits()
         self.find_champs()
-        self.find_elements()
+        self.find_elements() # populates self.els
         self.count_cards() # populates self.card_types and self.floating as well as total counts
         self.find_archetypes()
         self.cardlist_imgs()
@@ -51,7 +51,7 @@ class Deck:
 
     def find_spirits(self):
         self.spirits = []
-        for card_o in self.dl["material"]:
+        for card_o in self.mat:
             cardname = card_o["card"]
             card = carddata[cardname]
             if card.get("level") == 0:
@@ -64,7 +64,7 @@ class Deck:
         lineages = []
         levels = set()
         self.is_hybrid = False
-        for card_o in self.dl["material"]:
+        for card_o in self.mat:
             cardname = card_o["card"]
             card = carddata[cardname]
             
@@ -91,6 +91,14 @@ class Deck:
     def find_archetypes(self):
         self.archetypes = []
         self.subtypes = []
+        
+        # Special case to exclude "junk" decks from polluting stats,
+        # lump them into Rogue Decks.
+        if len(self.dl["material"]) > 12:
+            NO_ARCHETYPE.add_match(self)
+            print(f"Too-large mat deck: {self.entrant} @ {self.entrant.event}")
+            return
+
         for archetype in ARCHETYPES.values():
             if archetype.match(self):
                 self.archetypes.append( archetype.name )
@@ -103,7 +111,10 @@ class Deck:
 
     
     def find_elements(self):
-        # Doesn't include advanced elements or basic-elemental champs
+        """
+        Set the list of basic elements provided by the deck's spirit(s).
+        Doesn't count main deck, Lv1+ champs, or sideboard.
+        """
         els = []
         for spirit in self.spirits:
             for element in ELEMENTS:
@@ -116,6 +127,10 @@ class Deck:
         self.els = els
     
     def fix_dl(self):
+        """
+        Clean up the decklist and add some extra metadata such as
+        card backs and ban status.
+        """
         if not self.dl.get("main"):
             raise ValueError(f"Decklist has no maindeck? {self.dl}")
         for card_o in self.dl["main"]:
@@ -155,18 +170,24 @@ class Deck:
         self.dl["material"].sort(key=rank_mat_card)
     
     def count_cards(self):
+        """
+        Count various quantities of cards in the deck, such as the number
+        of floating memory, allies, etc. Also counts how many total cards are
+        in the material and main decks, and how many points the sideboard is.
+        """
         card_types = defaultdict(int)
         self.floating = 0
         self.guns = 0 # used by "We Need Guns..." achievement
         m = 0
-        for card_o in self.dl["material"]:
+        for card_o in self.mat:
             m += card_o["quantity"] # should be 1 unless there's something weird going on
             card = carddata[card_o["card"]]
             if "GUN" in card.get("subtypes",[]):
                 self.guns += 1
         self.mat_total = m
+        el_counts = defaultdict(int)
         n = 0
-        for card_o in self.dl["main"]:
+        for card_o in self.main:
             n += card_o["quantity"]
             card = carddata[card_o["card"]]
             for cardtype in card["types"]:
@@ -175,6 +196,19 @@ class Deck:
                 self.floating += card_o["quantity"]
             if "GUN" in card.get("subtypes",[]):
                 self.guns += 1
+            if len(card["elements"]) == 1:
+                el_counts[card["elements"][0]] += card_o["quantity"]
+            elif len(card["elements"]):
+                # Count the combination of elements
+                el_combo="/".join(sorted(card["elements"]))
+                el_counts[el_combo] += card_o["quantity"]
+        
+        self.main_deck_els = []
+        for el,quant in el_counts.items():
+            pct = round(quant/n*100, 1)
+            self.main_deck_els.append((el, quant, pct))
+        self.main_deck_els.sort(key=lambda x:element_sortkey(x[0]))
+        
         self.main_total = n
         card_types_sorted = [(k,v) for k,v in card_types.items()]
         card_types_sorted.sort(key=lambda x:x[0])
@@ -182,7 +216,7 @@ class Deck:
 
         b = 0
         p = 0
-        for card_o in self.dl["sideboard"]:
+        for card_o in self.side:
             card = carddata[card_o["card"]]
             b += card_o["quantity"]
             if "CHAMPION" in card["types"] or "REGALIA" in card["types"]:
@@ -285,17 +319,17 @@ class Deck:
     
     def rate_hipster(self, ALL_CARD_STATS):
         self.hipster = 0
-        for card_o in self.dl["material"]:
+        for card_o in self.mat:
             if card_o["card"] not in ALL_CARD_STATS.items.keys():
                 # Skip things without stats, like tokens that shouldn't be in decklists
                 continue
             self.hipster += (ALL_CARD_STATS[card_o["card"]].hipster)
-        for card_o in self.dl["main"]:
+        for card_o in self.main:
             if card_o["card"] not in ALL_CARD_STATS.items.keys():
                 # Skip things without stats, like tokens that shouldn't be in decklists
                 continue
             self.hipster += (ALL_CARD_STATS[card_o["card"]].hipster) * card_o["quantity"]
-        for card_o in self.dl["sideboard"]:
+        for card_o in self.side:
             if card_o["card"] not in ALL_CARD_STATS.items.keys():
                 # Skip things without stats, like tokens that shouldn't be in decklists
                 continue
@@ -395,3 +429,21 @@ class Deck:
             yield card_o["card"]
         for card_o in self.dl["main"]:
             yield card_o["card"]
+
+    @property
+    def mat(self):
+        for card_o in self.dl["material"]:
+            yield card_o
+
+    @property
+    def main(self):
+        """
+        Iterate main deck only
+        """
+        for card_o in self.dl["main"]:
+            yield card_o
+
+    @property
+    def side(self):
+        for card_o in self.dl["sideboard"]:
+            yield card_o

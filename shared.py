@@ -44,6 +44,21 @@ def fix_case(cardname):
 
     return cardname
 
+def element_sortkey(el):
+    """
+    Key for sorting element strings.
+    Sort elements with Norm first, then other basic elements in alphabetical order, then advanced elements in alphabetical order.
+    TBD: what to do about exalted.
+    """
+    el = el.title()
+    if el == "Norm":
+        return "0"+el
+    elif el in ELEMENTS: #Basic elements
+        return "1"+el
+    else:
+        return "2"+el
+
+
 class keydefaultdict(defaultdict):
     # https://stackoverflow.com/questions/2912231/is-there-a-clever-way-to-pass-the-key-to-defaultdicts-default-factory
     def __missing__(self, key):

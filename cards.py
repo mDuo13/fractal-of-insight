@@ -23,12 +23,17 @@ SPIRITTYPES = [
 ERRATA = {
     "Stonescale Band": {
         "before": 1722841200000, # 2024-08-05
-        "img": "https://ga-mainsite-common.s3.us-west-2.amazonaws.com/media/PRXY_002_Stonescale_Band_921e35b7d4.jpg"
+        "img": "https://api.gatcg.com/cards/images/stonescale-band-prxy-002.jpg"
     },
     "Scepter of Lumina": {
         "before": 1741334400000, #2025-03-07
-        "img": "https://ga-index-public.s3.us-west-2.amazonaws.com/cards/scepter-of-lumina-prxy.jpg"
-    }
+        "img": "https://api.gatcg.com/cards/images/scepter-of-lumina-prxy-001.jpg"
+    },
+    # TODO: uncomment & update when Index has both versions
+    # "Polaris, Twinkling Cauldron": {
+    #     "before": 1753401600000, #2025-07-25
+    #     "img": "https://api.gatcg.com/cards/images/polaris-twinkling-cauldron-prxy.jpg"
+    # }
 }
 
 BANLIST = [
@@ -40,4 +45,5 @@ BANLIST = [
     "Baby Gray Slime",
     "Icebound Slam",
     "Dissonant Fractal",
+    "Lost in Thought",
 ]

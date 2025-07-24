@@ -88,8 +88,21 @@
 {% macro top_cards(a, collapse=True) %}
     <div class="top-cards tabcontent{% if collapse %} collapse{% endif %}" id="top-cards-{{slugify(a.name)}}">
         <p class="explanation">(Based on {{a.matched_decks|length}} decks with a combined win rate of {{a.winrate}}%.)</p>
-        {% for card_o in a.card_freq.values() %}
-            {% if loop.index0 < 20 %}
+        <h4>Material</h4>
+        {% for card_o in a.card_freqs.mat.values() %}
+            {% if loop.index0 < 12 %}
+            {{ macros.cardimg(card_o, link=True)}}
+            {% endif %}
+        {% endfor %}
+        <h4>Maindeck</h4>
+        {% for card_o in a.card_freqs.main.values() %}
+            {% if loop.index0 < 15 %}
+            {{ macros.cardimg(card_o, link=True)}}
+            {% endif %}
+        {% endfor %}
+        <h4>Sideboard</h4>
+        {% for card_o in a.card_freqs.side.values() %}
+            {% if loop.index0 < 10 %}
             {{ macros.cardimg(card_o, link=True)}}
             {% endif %}
         {% endfor %}
@@ -110,7 +123,21 @@
     <h3 class="togglable collapse">Champions</h3>
     {{ macros.elementbars(arche.champdata) }}
 
-    <h3 class="togglable collapse">Top Cards</h3>
+    <h3 class="togglable collapse">Averages</h3>
+    <p class="explanation togglable collapse">(Maindeck cards only. Cards with multiple types count for each type. Floating memory counts if a deck has any champion that can use it.)</p>
+    <ul class="averages togglable collapse">
+        <li><b>Average Floating Memory:</b> {{arche.average_floating|int}}</li>
+        {% for cardtype,avg in arche.average_of_type.items() %}
+        {% if avg|int > 0 %}
+        <li><b>Average {{cardtype|title}} Cards:</b> {{avg|int}}</li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+</section>
+
+<section id="top-cards">
+    <h2>Top Cards</h2>
+    <button onclick="toggle('#top-cards > .togglable')">Glimpse top cards</button>
     <p class="explanation togglable collapse">(Excluding champions. Showing the percentage of decks containing at least 1 copy in main or material deck.)</p>
     <div class="tabs togglable collapse">
         <button class="tab activetab" onclick="opentab(this, '#top-cards-{{slugify(arche.name)}}')">Overall</button>
@@ -148,23 +175,12 @@
             {% endif %}
         {% endfor %}
     </div>
-
-    <h3 class="togglable collapse">Averages</h3>
-    <p class="explanation togglable collapse">(Maindeck cards only. Cards with multiple types count for each type. Floating memory counts if a deck has any champion that can use it.)</p>
-    <ul class="averages togglable collapse">
-        <li><b>Average Floating Memory:</b> {{arche.average_floating|int}}</li>
-        {% for cardtype,avg in arche.average_of_type.items() %}
-        {% if avg|int > 0 %}
-        <li><b>Average {{cardtype|title}} Cards:</b> {{avg|int}}</li>
-        {% endif %}
-        {% endfor %}
-    </ul>
 </section>
 
 {% if arche.name != "Rogue Decks" %}
 <section id="arche-results">
     <h2>Results By Season</h2>
-    <button onclick="toggle('#arche-results > .togglable')">Glimpse Results</button>
+    <button onclick="toggle('#arche-results > .togglable')">Glimpse results</button>
 
     {% for season, szn in seasons.items() %}
     {% if szn.archedata.exists_for(arche.name) %}
@@ -188,7 +204,7 @@
 
 <section id="sightings">
     <h2>Sightings</h2>
-    <button onclick="toggle('#sightings > .togglable')">Glimpse List</button>
+    <button onclick="toggle('#sightings > .togglable')">Glimpse list</button>
     <div class="togglable collapse event-filters">
         {{ macros.event_filters(EVENT_TYPES, lesser=True) }}
     </div>
