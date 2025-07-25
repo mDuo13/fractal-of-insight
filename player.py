@@ -182,6 +182,7 @@ class Player:
         self.track_rivals()
         self.analyze_judging()
         self.check_achievements()
+        self.analyze_prices()
         
     def analyze_champions(self):
         self.elements = ElementStats()
@@ -254,6 +255,20 @@ class Player:
         else:
             self.hipster = 0
 
+    def analyze_prices(self):
+        """
+        Rate the average price of decks the player has played.
+        """
+        total_price = 0
+        num_decks = 0
+        for e in self.events:
+            if e.deck:
+                total_price += e.deck.price_num
+                num_decks += 1
+        if not num_decks:
+            self.avg_deck_price = "Unavailable"
+        else:
+            self.avg_deck_price = f"${round(total_price/num_decks, 2):.2f} USD"
 
     def mostplayed(self):
         topchamps = self.champdata.top()

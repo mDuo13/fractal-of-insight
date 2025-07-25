@@ -3,15 +3,17 @@ import re
 import requests
 from requests.adapters import HTTPAdapter, Retry
 from time import sleep
-from os import makedirs, scandir
+from os import makedirs, scandir, path
 
 from shared import slugify, fix_case
-from cards import ERRATA
+from cards import ERRATA, PRIZE_EQUIVALENTS
+from tcgplayer import TCG_ABBR, TCGP_CARDNAMES
 
 API_DELAY = 0.5
 COMMENT_REGEX = re.compile(r"# (?P<comment>.*)$")
 CARD_REGEX = re.compile(r"(?P<quantity>[0-9]+) (?P<card>.*)$")
 CARDS_FOLDER = "./data/index/"
+PRICES_FOLDER = "./data/prices/"
 
 class ForceReDL(Exception):
     pass
@@ -216,6 +218,9 @@ for cardname, card in carddata.items():
     if card.get("back"):
         back_img = card["back"]["edition"]["image"]
         card["back"]["img"] = f"https://api.gatcg.com{back_img}"
+        card["fullname"] = f"{card['name']} // {card['back']['name']}"
+    else:
+        card["fullname"] = card["name"]
 
 def get_card_img(cardname, at=0, from_set_group=None):
     """
@@ -332,3 +337,93 @@ def get_card_references(cardname):
     """
     refs = carddata[cardname].get("references", [])
     return [carddata[r.get("name")] for r in refs if r.get("direction") == "TO" and r.get("kind") in ("SUMMON", "MASTERY", "GENERATE")]
+
+# Load tcgcsv price data
+try:
+    pricedata = {}
+    for entry in scandir(PRICES_FOLDER):
+        if entry.is_file() and entry.name[-5:] == ".json" and entry.name != "price-meta.json":
+            with open(entry) as f:
+                pricelist = json.load(f)
+            pricedata[entry.name[:-5]] = pricelist
+            
+except FileNotFoundError:
+    print("Didn't find cached price data")
+    pricedata = {}
+
+try:
+    with open(path.join(PRICES_FOLDER, "price-meta.json")) as f:
+        PRICE_META = json.load(f)
+except FileNotFoundError:
+    print("Didn't find price metadata")
+    PRICE_META = {"Updated": "Never", "prefixes": []}
+
+def format_price(price):
+    """
+    Convert a price to a string in the format of "$NN.NN",
+    or "Unavailable" if it's None
+    """
+    if price == 0.001:
+        return f"N/A (Proxia's Vault)"
+    elif price:
+        return f"${price:.2f}"
+    return "Unavailable"
+
+def get_card_price(cardname, sub_prizes=False):
+    """
+    Return the price for the cheapest version of the given cardname,
+    """
+    if sub_prizes and cardname in PRIZE_EQUIVALENTS.keys():
+        # Get the price of regular Spirit of Wind, for example, instead of Kaze
+        cardname = PRIZE_EQUIVALENTS[cardname]
+    card = carddata[cardname]
+    fullname = fix_case(card["fullname"]) # For double-faced cards for example
+    if fullname in TCGP_CARDNAMES.keys():
+        fullname = TCGP_CARDNAMES[fullname]
+    prices = []
+    for ed in card["editions"]:
+        prefix = ed["set"]["prefix"]
+        if prefix == "PRXY":
+            # Proxia's Vault cards are, by definition, free to proxy.
+            # But let's return a nonzero price so it doesn't get
+            # treated the same as None.
+            return 0.001
+        ed_price = low_price_by_edition(fullname, prefix)
+        if ed_price:
+            prices.append(ed_price)
+    if prices:
+        price = min(prices)
+        return price
+        
+    print(f"Couldn't get a price for {fullname}.")
+    return None
+
+def low_price_by_edition(fullname, prefix):
+    low_price = None
+    if prefix in TCG_ABBR.keys():
+        for abbr in TCG_ABBR[prefix]:
+            for item in pricedata[abbr].values():
+                if item.get("name") == fullname:
+                    new_price = low_price_for_product(item)
+                    if not new_price: # could be None for no listings
+                        continue
+                    if not low_price or new_price < low_price:
+                        low_price = new_price
+    else: # Prefix should match
+        for item in pricedata[prefix].values():
+            trimmed_name = re.sub(r"\(\w+\)", "", item.get("name","")).strip()
+            if trimmed_name == fullname:
+                new_price = low_price_for_product(item)
+                if not new_price: # could be None for no listings
+                    continue
+                if not low_price or new_price < low_price:
+                    low_price = new_price
+    return low_price
+
+def low_price_for_product(item):
+    # May have multiple price listings, like foil vs nonfoil
+    all_prices = [p["lowPrice"] for p in item["prices"] if p.get("lowPrice")]
+    if not all_prices:
+        # No price data, maybe no listings
+        return None
+    return min(all_prices)

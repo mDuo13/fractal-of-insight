@@ -9,7 +9,7 @@ from math import ceil
 from collections import defaultdict
 
 import config
-from datalayer import carddata, get_event, set_groups, get_card_img
+from datalayer import carddata, get_event, set_groups, get_card_img, get_card_price, format_price
 from shared import slugify, OVERALL, REGIONS
 from omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
 from season import Season, SEASONS, Format, FORMATS
@@ -112,8 +112,9 @@ class PageBuilder:
     
     def write_card_page(self, cardname, cardstat, events=[]):
         max_page = ceil(len(cardstat.appearances) / CARD_SIGHTINGS_PER_PAGE)
+        card_price = format_price(get_card_price(cardname))
 
-        self.render("card.html.jinja2", f"card/{slugify(cardname)}.html", card=carddata[cardname], cardstat=cardstat, events=events, ERRATA=ERRATA, BANLIST=BANLIST, page_number=1, page_start=0, page_end=CARD_SIGHTINGS_PER_PAGE, max_page=max_page)
+        self.render("card.html.jinja2", f"card/{slugify(cardname)}.html", card=carddata[cardname], cardstat=cardstat, events=events, ERRATA=ERRATA, BANLIST=BANLIST, card_price=card_price, page_number=1, page_start=0, page_end=CARD_SIGHTINGS_PER_PAGE, max_page=max_page)
 
         # Actually printing all these sightings is like 4.5 gigs of data oops
         # if max_page > 1:

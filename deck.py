@@ -2,7 +2,7 @@ from time import strftime, gmtime
 from collections import defaultdict
 
 from shared import slugify, fix_case, lineage, element_sortkey
-from datalayer import get_card_img, carddata, card_is_floating, get_card_references
+from datalayer import get_card_img, carddata, card_is_floating, get_card_references, get_card_price
 from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST
 from archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
 from cardstats import ALL_CARD_STATS
@@ -44,6 +44,7 @@ class Deck:
         self.find_archetypes()
         self.cardlist_imgs()
         self.is_topcut_deck = is_topcut_deck
+        self.calc_price()
 
         self.videos = [] # populated in OmniEvent.load_videos()
         
@@ -335,6 +336,21 @@ class Deck:
                 continue
             self.hipster += (ALL_CARD_STATS[card_o["card"]].hipster) * card_o["quantity"]
         self.hipster = round(self.hipster / 100, 1)
+
+    def calc_price(self):
+        total_price = 0
+        prices_unavailable = []
+        for sect in ("material", "main", "sideboard"):
+            for card_o in self.dl[sect]:
+                price = get_card_price(card_o["card"], sub_prizes=True)
+                if price:
+                    total_price += price * card_o["quantity"]
+                else:
+                    prices_unavailable.append(card_o["card"])
+        self.price_num = total_price
+        self.price = f"${total_price:.2f}"
+        if prices_unavailable:
+            self.price += f"* (*Price data could not be found for the following cards: {', '.join(prices_unavailable)})"
 
     def tts_json(self):
         """

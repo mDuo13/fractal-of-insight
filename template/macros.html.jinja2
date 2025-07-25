@@ -450,6 +450,14 @@
                         <li><b>{{cardtype|title}} Cards:</b> {{cardcount}}</li>
                         {% endfor %}
                     </ul>
+
+                    <h4>Other Stats</h4>
+                    <ul>
+                        <li><b>Hipster rating:</b> {{deck.hipster}}</li>
+                        <li><b>Price on TCGPlayer:</b> {{deck.price}}
+                            <span class="explanation">(Prices are approximate, using lowest price variant of each card. Prize cards are priced as their common equivalents.)</span>
+                        </li>
+                    </ul>
                 </div>
                 <div class="counts-by-element">
                     <h4>Elements</h4>
@@ -495,7 +503,6 @@
                 <p>None.</p>
                 {% endif %}
             </div>
-            <p><b>Hipster rating:</b> {{deck.hipster}}</p>
         </div>
     </div>
 </div>

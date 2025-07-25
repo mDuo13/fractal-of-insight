@@ -25,6 +25,8 @@
         {% if player.judge_level %}<li><b>Judge Level:</b> {{player.judge_level}}{% endif %}
         {% if player.hipster %}<li><b>Hipster Level:</b> {{player.hipster}}
             <span class="explanation">(Based on popularity of cards in the player's public decklists. A higher rating means they played more obscure cards.)</span></li>{% endif %}
+        <li><b>Average deck price:</b> {{player.avg_deck_price}}
+            <span class="explanation">(Based on current TCGPlayer listings, using the cheapest version of each card and substituting common equivalents for prize cards.)</span></li>
     </ul>
 </section>
 
