@@ -724,3 +724,11 @@ add_archetype(
         "Dawn of Ashes",
     ]
 )
+
+# add_archetype(
+#     "Specter",
+#     [
+#         "Rile the Abyss",
+#         "Lure the Abyss"
+#     ]
+# )

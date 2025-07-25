@@ -29,11 +29,11 @@ ERRATA = {
         "before": 1741334400000, #2025-03-07
         "img": "https://api.gatcg.com/cards/images/scepter-of-lumina-prxy-001.jpg"
     },
-    # TODO: uncomment & update when Index has both versions
-    # "Polaris, Twinkling Cauldron": {
-    #     "before": 1753401600000, #2025-07-25
-    #     "img": "https://api.gatcg.com/cards/images/polaris-twinkling-cauldron-prxy.jpg"
-    # }
+    
+    "Polaris, Twinkling Cauldron": {
+        "before": 1753401600000, #2025-07-25
+        "img": "https://api.gatcg.com/cards/images/polaris-twinkling-cauldron-prxy-006.jpg"
+    }
 }
 
 BANLIST = [
@@ -47,3 +47,20 @@ BANLIST = [
     "Dissonant Fractal",
     "Lost in Thought",
 ]
+
+PRIZE_EQUIVALENTS = {
+    "Apotheosis Rite": "Grand Crusader's Ring",
+    "Sacramental Rite": "Quicksilver Grail",
+    "Morrigan, Lost Spirit": "Lost Spirit",
+    "Priscilla, Lost Spirit": "Lost Spirit",
+    "Aithne, Spirit of Fire": "Spirit of Fire",
+    "Vyra, Spirit of Fire": "Spirit of Fire",
+    "Hanabi, Spirit of Fire": "Spirit of Fire",
+    "Shira, Lost Spirit": "Lost Spirit",
+    "Sabrina, Spirit of Water": "Spirit of Water",
+    "Minthe, Spirit of Water": "Spirit of Water",
+    "Miao, Spirit of Water": "Spirit of Water",
+    "Gwendolyn, Spirit of Wind": "Spirit of Wind",
+    "Brissa, Spirit of Wind": "Spirit of Wind",
+    "Kaze, Spirit of Wind": "Spirit of Wind",
+}

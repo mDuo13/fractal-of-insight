@@ -139,6 +139,7 @@ SEASONS = {
     "Offseason": "OFF",
     "Mercurial Heart": "MRC",
     "Alchemical Revolution": "ALC",
+    "Distorted Reflections": "DTR",
 }
 
 FORMATS = {}
@@ -214,5 +215,10 @@ add_format("HVN + MRC Alter",
 )
 add_format("HVN Post-June Ban",
     start="2025-06-02",
+    end="2025-07-25",
     desc="Dissonant fractal banned."
+)
+add_format("DTR Release",
+    start="2025-07-25",
+    desc="Distorted Reflections released."
 )
