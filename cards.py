@@ -31,7 +31,7 @@ ERRATA = {
     },
     
     "Polaris, Twinkling Cauldron": {
-        "before": 1753401600000, #2025-07-25
+        "before": 1753419600000, #2025-07-25 in CST
         "img": "https://api.gatcg.com/cards/images/polaris-twinkling-cauldron-prxy-006.jpg"
     }
 }

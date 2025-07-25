@@ -30,4 +30,5 @@ TCGP_CARDNAMES = {
     "Fatestone of Heaven // Heavenly Drake": "Fatestone of Heaven",
     "Companion Fatestone // Fatebound Caracal": "Companion Fatestone",
     "Wrathful Slime": "WrathfulSlime",
+    "Fabled Azurite Fatestone // Seiryuu, Azure Dragon": "Fabled Azurite Fatestone", #tcgp has both, but the one with the // is the sapphire promo only
 }
