@@ -119,12 +119,14 @@ class Format(Season):
         Returns True if evt occurs during this format's timeframe.
         """
         if evt.evt["format"] != "standard":
+            # Omit Team Standard from stats because it's weird.
             return False
         fmt_start = strptime(self.start_time, ISOFMT)
         if self.end_time:
             fmt_end = strptime(self.end_time, ISOFMT)
         
-        evt_start = gmtime(evt.evt["startAt"]/1000)
+        tz_offset = -5 * 60 * 60 # Weebs' seasons are set by CST in the USA
+        evt_start = gmtime(evt.evt["startAt"]/1000 + tz_offset)
         if fmt_start <= evt_start and (not self.end_time or evt_start < fmt_end):
             return True
         return False
@@ -134,12 +136,12 @@ class Format(Season):
 
 
 SEASONS = {
+    "Offseason": "OFF",
+    "Distorted Reflections": "DTR",
     "Abyssal Heaven": "HVN",
     "Mortal Ambition": "AMB",
-    "Offseason": "OFF",
     "Mercurial Heart": "MRC",
     "Alchemical Revolution": "ALC",
-    "Distorted Reflections": "DTR",
 }
 
 FORMATS = {}
@@ -216,9 +218,9 @@ add_format("HVN + MRC Alter",
 add_format("HVN Post-June Ban",
     start="2025-06-02",
     end="2025-07-25",
-    desc="Dissonant fractal banned."
+    desc="Dissonant Fractal banned."
 )
 add_format("DTR Release",
     start="2025-07-25",
-    desc="Distorted Reflections released."
+    desc="Distorted Reflections released; Lost in Thought banned; Polaris, Twinkling Cauldron received errata."
 )

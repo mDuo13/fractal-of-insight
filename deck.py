@@ -207,7 +207,7 @@ class Deck:
         self.main_deck_els = []
         for el,quant in el_counts.items():
             pct = round(quant/n*100, 1)
-            self.main_deck_els.append((el, quant, pct))
+            self.main_deck_els.append((el.title(), quant, pct))
         self.main_deck_els.sort(key=lambda x:element_sortkey(x[0]))
         
         self.main_total = n
@@ -391,6 +391,8 @@ class Deck:
     
     def __str__(self):
         spiritstr = ""
+        if len(self.dl["material"]) > 12:
+            return "(Invalid decklist)"
         if len(self.spirits) < 1:
             spiritstr = "(Spiritless???) "
         elif len(self.spirits) > 1:

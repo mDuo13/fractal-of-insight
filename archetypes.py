@@ -248,6 +248,9 @@ water_allies = add_archetype(
         "Lunete, Frostbinder Priest",
         "Jueying, Shadowmare",
         "Imperial Panzer",
+        "Aquifer Seneschal",
+        "Vigil Rempart",
+        "Sablier Guard",
     ],
     exclude_cards=[
         "Spirit Blade: Ensoul",
@@ -348,11 +351,12 @@ add_archetype(
         "Relentless Outburst",
         "Ghosts of Pendragon",
         "Dungeon Guide",
+        "Ashen Riffle", # Suited is its own category for now
     ]
 )
 
 add_archetype(
-    "Astra",
+    "Astra Cleric",
     [
         "Cosmic Bolt",
         "Cometfall",
@@ -361,7 +365,11 @@ add_archetype(
         "Astral Seal",
         "Prima Materia",
         "Astromech Attendant",
-    ]
+    ],
+    exclude_cards=[
+        "Diana, Moonpiercer",
+    ],
+    shortname="Astra",
 )
 
 add_archetype(
@@ -377,6 +385,9 @@ add_archetype(
         "Umbral Tithe",
         "False Step",
         "Gloamspire Wraith",
+    ],
+    exclude_cards=[
+        "Ciel, Mirage's Grave"
     ],
     shortname="Umbra"
 )
@@ -461,7 +472,7 @@ add_archetype(
     ]
 )
 
-slimes = add_archetype(
+add_archetype(
     "Slimes",
     [
         "Storm Slime",
@@ -725,10 +736,68 @@ add_archetype(
     ]
 )
 
-# add_archetype(
-#     "Specter",
-#     [
-#         "Rile the Abyss",
-#         "Lure the Abyss"
-#     ]
-# )
+add_archetype(
+    "Suited",
+    [
+        "Ashen Riffle",
+        "Noire, Ace of Spades",
+        "Rouge, Ace of Hearts",
+        "Verita, Queen of Hearts",
+    ]
+)
+
+add_archetype(
+    "Specter",
+    [
+        "Rile the Abyss",
+    ]
+)
+add_archetype(
+    "Umbra Guardian",
+    [
+        "Beguiling Coup",
+        "Baleful Oblation",
+        "Carter, Synthetic Reaper",
+        "Extorting Blackjack",
+        "Soutirer Vortex",
+        "Ombreux Chevalier",
+    ],
+    exclude_cards=[
+        "Diana, Duskstalker",
+        "Diana, Cursebreaker",
+    ],
+    shortname="Umbra",
+)
+
+add_archetype(
+    "Astra Ranger",
+    [
+        "Constellation's Blessing",
+        "Guided Starlight",
+        "Meteoric Volley",
+        "Sidereal Spellshot",
+        "Poised Occlusion",
+    ],
+    shortname="Astra",
+)
+
+add_archetype(
+    "Aetherwing",
+    [
+        "Aetheric Calibration",
+        "Drown in Aether",
+        "Prudent Nock",
+        "Undercurrent Vantage",
+        "Charge the Soul",
+    ],
+    require_types={
+        "ACTION": 30,
+    }
+)
+
+add_archetype(
+    "Distortion",
+    [
+        "The Looking Glass",
+    ]
+)

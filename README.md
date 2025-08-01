@@ -22,3 +22,5 @@ This site shows information and analysis of Grand Archive tournament results. It
 - improve VOD list on archetype pages
 - show multiple regions for player profiles where players' home region has changed
 - improve presentation of price data
+- improve searching for players, cards. maybe make some tables sortable.
+- add new cards or per-season variants for archetype card lists

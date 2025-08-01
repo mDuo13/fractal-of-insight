@@ -134,7 +134,7 @@
     <p class="explanation collapse togglable">(Cards that have not been in any public decklist.)</p>
     <div class="top-cards collapse togglable">
     {% for cardname, card_o in carddata.items() %}
-        {% if cardname not in cardstats and "TOKEN" not in card_o["types"] and card_o.legality == None %}
+        {% if cardname not in cardstats and "TOKEN" not in card_o["types"] and "MASTERY" not in card_o["types"] and card_o.legality == None %}
             <a class="cardimg" href="https://index.gatcg.com/card/{{card_o['slug']}}" title="GA Index lookup"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /></a>
         {% endif %}
     {% endfor %}
