@@ -9,7 +9,7 @@ from math import ceil
 from collections import defaultdict
 
 import config
-from datalayer import carddata, get_event, set_groups, get_card_img, get_card_price, format_price
+from datalayer import carddata, get_event, set_groups, get_card_img, get_card_price, format_price, write_similarity_cache
 from shared import slugify, OVERALL, REGIONS
 from omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
 from season import Season, SEASONS, Format, FORMATS
@@ -50,6 +50,17 @@ class PageBuilder:
         whole_out_dir = os.path.join(config.OUTDIR, out_dir)
         makedirs(whole_out_dir, exist_ok=True)
         whole_out_file = os.path.join(whole_out_dir, out_file)
+        # experimental: skip overwriting matching files,
+        # which should hopefully save bandwidth on transferring
+        # identical files each time
+        try:
+            with open(whole_out_file, "r") as f:
+                if html == f.read():
+                    #print("Skipping unchanged file", whole_out_file)
+                    return
+        except FileNotFoundError:
+            pass
+        # end experimental section
         print("Writing to", whole_out_file)
         with open(whole_out_file, "w") as f:
             f.write(html)
@@ -131,6 +142,19 @@ class PageBuilder:
         whole_out_dir = os.path.join(config.OUTDIR, out_dir)
         makedirs(whole_out_dir, exist_ok=True)
         whole_out_file = os.path.join(whole_out_dir, out_file)
+
+        # experimental: skip overwriting matching files,
+        # which should hopefully save bandwidth on transferring
+        # identical files each time
+        try:
+            json_string = json.dumps(deck.tts_json())
+            with open(whole_out_file, "r") as f:
+                if json_string == f.read():
+                    #print("Skipping unchanged file", whole_out_file)
+                    return
+        except FileNotFoundError:
+            pass
+        # end experimental section
         print("Writing to", whole_out_file)
         with open(whole_out_file, "w") as f:
             json.dump(deck.tts_json(), f)
@@ -301,6 +325,8 @@ def main(args):
         i_s = str(i)
         get_event(i, force_redownload=args.update, save=True, dl_decklists=True)
     builder.write_all()
+    if config.SharedConfig.go_fast != True:
+        write_similarity_cache()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Summarize an Omnidex event (works better if decklists are public)")

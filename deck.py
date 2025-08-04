@@ -1,8 +1,10 @@
 from time import strftime, gmtime
 from collections import defaultdict
 
+from xxhash import xxh64
+
 from shared import slugify, fix_case, lineage, element_sortkey
-from datalayer import get_card_img, carddata, card_is_floating, get_card_references, get_card_price
+from datalayer import get_card_img, carddata, card_is_floating, get_card_references, get_card_price, get_cached_similarity, store_similarity
 from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST
 from archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
 from cardstats import ALL_CARD_STATS
@@ -37,6 +39,7 @@ class Deck:
         self.date = strftime(r"%Y-%m-%d", gmtime(self.entrant.evt_time/1000))
         self.similar_decks = []
         self.fix_dl()
+        self.calc_hash()
         self.find_spirits()
         self.find_champs()
         self.find_elements() # populates self.els
@@ -97,7 +100,7 @@ class Deck:
         # lump them into Rogue Decks.
         if len(self.dl["material"]) > 12:
             NO_ARCHETYPE.add_match(self)
-            print(f"Too-large mat deck: {self.entrant} @ {self.entrant.event}")
+            #print(f"Too-large mat deck: {self.entrant} @ {self.entrant.event}")
             return
 
         for archetype in ARCHETYPES.values():
@@ -169,6 +172,12 @@ class Deck:
         self.dl["main"].sort(key=lambda x:x["card"])
         self.dl["sideboard"].sort(key=lambda x:x["card"])
         self.dl["material"].sort(key=rank_mat_card)
+
+        if len(self.dl["material"]) > 12:
+            self.invalid_decklist = True
+        else:
+            # TODO: TBD what to do about decklists with accidentally no spirit
+            self.invalid_decklist = False
     
     def count_cards(self):
         """
@@ -246,6 +255,17 @@ class Deck:
             for card_o in self.dl[cat]:
                 card_o["img"] = get_card_img(card_o["card"], at=self.entrant.evt_time)
     
+    def calc_hash(self):
+        """
+        Calculate a fast hash of this deck's decklist, to aid similarity comparisons
+        """
+        dlstr = ""
+        for cat in ("material", "main", "sideboard"):
+            for card_o in self.dl[cat]:
+                dlstr += f"{card_o['quantity']} {card_o['card']}\n"
+        dlbytes = dlstr.encode("utf-8")
+        self.hash = xxh64(dlbytes).hexdigest()
+
     def similarity_to(self, other_deck):
         """
         Calculate a similarity score between two decks, as S/T, where
@@ -259,6 +279,13 @@ class Deck:
         T=118 if a deck has 12 material, 60 maindeck, and a 15-point sideboard.
         Returned as a percentage rounded to 1 decimal point.
         """
+        if self.hash == other_deck.hash:
+            # print("Deck hashes match")
+            return 100.0
+        
+        cached_sim = get_cached_similarity(self.hash, other_deck.hash)
+        if cached_sim is not None:
+            return cached_sim
         
         total_me = 3*self.mat_total + self.main_total + ((2/3)*self.side_points)
         total_them = 3*other_deck.mat_total + other_deck.main_total + ((2/3)*other_deck.side_points)
@@ -302,7 +329,9 @@ class Deck:
                 i+=1
                 j+=1
         
-        return round(100*s/t, 1)
+        similarity = round(100*s/t, 1)
+        store_similarity(self.hash, other_deck.hash, similarity)
+        return similarity
     
     def split_similar_decks(self, limit=10):
         decks_before = []
@@ -391,7 +420,7 @@ class Deck:
     
     def __str__(self):
         spiritstr = ""
-        if len(self.dl["material"]) > 12:
+        if self.invalid_decklist:
             return "(Invalid decklist)"
         if len(self.spirits) < 1:
             spiritstr = "(Spiritless???) "
@@ -465,3 +494,19 @@ class Deck:
     def side(self):
         for card_o in self.dl["sideboard"]:
             yield card_o
+
+    @property
+    def refs(self):
+        unique_refs = {}
+        for card_o in self.main:
+            for section in ("main", "material", "sideboard"):
+                for card_o in self.dl[section]:
+                    for raw_ref in get_card_references(card_o["card"]):
+                        unique_refs[raw_ref["name"]] = raw_ref
+
+        for ref in unique_refs.values():
+            yield {
+                "card": ref["name"],
+                "img": ref["img"],
+                "as_token": True
+            }

@@ -10,6 +10,7 @@ This site shows information and analysis of Grand Archive tournament results. It
 - refine archetype classification
     - use machine-learning clustering to identify archetypes?
     - archetype overlap chart?
+    - add advanced elements to name without needing them to be archetypes necessarily
 - calculate stats on upsets
 - make dynamic sections, i.e. flask app or something, for showing individual events or doing dynamic queries
 - track seasonal invites, if possible? (might require sideloading number of invites per event)

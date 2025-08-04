@@ -341,7 +341,7 @@
     {%- elif card['pct'] is defined and not hide_overlay -%}
     <span class="quant">{{card["pct"]}}%</span>
     {% endif %}
-    <div class="carddeets collapse"><a href="/card/{{slugify(card.card)}}.html">Card stats</a></div>
+    {% if not card.as_token %}<div class="carddeets collapse"><a href="/card/{{slugify(card.card)}}.html">Card stats</a></div>{% endif %}
 </{{el}}>
 {% endmacro %}
 
@@ -424,6 +424,22 @@
                     {{ cardimg(card_o) }}
                 {% endfor %}
             </div>
+            {% if deck.refs|list %}
+            <button onclick="toggle('#{{id}} .references')">Glimpse tokens</button>
+            <div class="references togglable collapse">
+                <h4>Tokens, Generated Cards, etc.</h4>
+                <ul class="deck_txt collapse">
+                    {% for card_o in deck.refs %}
+                    <li>{{card_o["card"]}}</li>
+                    {% endfor %}
+                </ul>
+                <div class="deck_gfx">
+                {% for card_o in deck.refs %}
+                    {{ cardimg(card_o, hide_overlay=True, link=False) }}
+                {% endfor %}
+                </div>
+            </div>
+            {% endif %}
             <textarea class="omniexport">
 # Material Deck
 {% for card_o in deck.mat %}

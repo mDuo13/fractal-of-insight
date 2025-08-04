@@ -165,6 +165,11 @@ class CardStatSet:
         self.items = keydefaultdict(CardStats)
     
     def add_deck(self, d):
+        if d.invalid_decklist:
+            # Don't pollute stats with invalid decklists.
+            # Also, don't award "first play" for that.
+            return
+
         for card in d: # Iterates material and main deck card names
             if "TOKEN" in carddata[card]["types"]:
                 # Some decklists mistakenly include tokens. Skip those.

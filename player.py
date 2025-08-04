@@ -155,6 +155,8 @@ class Player:
         self.past_usernames = []
         self.events = [entrant]
         self.region = entrant.region
+        self.past_regions = []
+        self.region_time = entrant.evt_time
         self.achievements = AchievementSet()
         self.peak_elo = entrant.rank_elo
         self.vp = entrant.vp
@@ -166,13 +168,24 @@ class Player:
             self.peak_elo = entrant.elo
         # Handle username updates. As of 2025, these are rarely, but occasionally
         # offered to players who qualify for high-level events.
-        if entrant.username != self.username and entrant.evt_time > self.username_time:
-            if self.username not in self.past_usernames:
-                self.past_usernames.append(self.username)
-            self.username = entrant.username
-            self.username_time = entrant.evt_time
+        if entrant.username != self.username:
+            if entrant.evt_time > self.username_time:
+                if self.username not in self.past_usernames:
+                    self.past_usernames.append(self.username)
+                self.username = entrant.username
+                self.username_time = entrant.evt_time
+            else:
+                if entrant.username not in self.past_usernames:
+                    self.past_usernames.append(entrant.username)
         if entrant.region != self.region:
-            print("Player region change:", self, self.region, "→", entrant.region)
+            if entrant.evt_time > self.region_time:
+                if self.region not in self.past_regions:
+                    self.past_regions.append(self.region)
+                self.region = entrant.region
+                self.region_time = entrant.evt_time
+            else:
+                if entrant.region not in self.past_regions:
+                    self.past_regions.append(entrant.region)
     
     def analyze(self):
         # To be called after all event entries have been added

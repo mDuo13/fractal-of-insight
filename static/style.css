@@ -478,10 +478,6 @@ fieldset label {
     text-decoration: none;
     font-size: 20px;
 }
-.deck_gfx:last-child {
-    /* Force scrollbar to leave room for expanded card view */
-    margin-bottom: 175px;
-}
 
 .tabs > button {
     padding: 5px;

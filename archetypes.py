@@ -289,6 +289,7 @@ wind_allies = add_archetype(
         "Oath of the Sakura",
         "Liu Bei, Oathkeeper",
         "Imperial Panzer",
+        "Unrelenting Warden",
     ],
     exclude_cards=[
         "Spirit Blade: Ascension",

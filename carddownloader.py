@@ -37,8 +37,21 @@ for cardname, card in carddata.items():
                 ooed = oo["edition"]
                 out_path = os.path.join(CARD_IMG_DIR, ooed["set"]["prefix"], ooed["slug"]+".jpg")
                 if os.path.exists(out_path):
-                    print(f"Skipping already-downloaded file: {out_path}")
+                    #print(f"Skipping already-downloaded file: {out_path}")
+                    pass
                 else:
                     img_url = f"https://api.gatcg.com{ooed['image']}"
                     save_img_from_url(img_url, out_path)
+        
+        for circ in ced.get("circulations", []):
+            if circ.get("variants", []):
+                for variant in circ["variants"]:
+                    card_fname = os.path.basename(variant["image"])
+                    out_path = os.path.join(CARD_IMG_DIR, ced["set"]["prefix"], card_fname)
+                    if os.path.exists(out_path):
+                        #print(f"Skipping already-downloaded file: {out_path}")
+                        pass
+                    else:
+                        img_url = f"https://api.gatcg.com{variant['image']}"
+                        save_img_from_url(img_url, out_path)
         
