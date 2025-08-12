@@ -235,6 +235,14 @@ NO_ARCHETYPE  = Archetype(
     shortname=""
 )
 
+add_archetype(
+    # Putting this early so it shows up earlier in the list of names
+    "Specter",
+    [
+        "Rile the Abyss",
+    ]
+)
+
 water_allies = add_archetype(
     "Water Allies",
     [
@@ -374,11 +382,6 @@ add_archetype(
 )
 
 add_archetype(
-    "Ensoul",
-    ["Spirit Blade: Ensoul"]
-)
-
-add_archetype(
     "Umbra Ranger",
     [
         "Carter, Synthetic Reaper",
@@ -470,6 +473,9 @@ add_archetype(
         "Erratic Bolt",
         "Voltaic Sphere",
         "Spellshield: Arcane",
+    ],
+    exclude_cards=[
+        "Baleful Oblation",
     ]
 )
 
@@ -532,6 +538,11 @@ crux.add_subtype(
     ],
     require_element="Wind",
     shortname="Humans",
+)
+
+crux.add_subtype(
+    "Ensoul",
+    ["Spirit Blade: Ensoul"]
 )
 
 shadowstrike = add_archetype(
@@ -747,27 +758,34 @@ add_archetype(
     ]
 )
 
-add_archetype(
-    "Specter",
-    [
-        "Rile the Abyss",
-    ]
-)
-add_archetype(
+umbra_guardian = add_archetype(
     "Umbra Guardian",
     [
         "Beguiling Coup",
-        "Baleful Oblation",
         "Carter, Synthetic Reaper",
         "Extorting Blackjack",
         "Soutirer Vortex",
         "Ombreux Chevalier",
+        "Baleful Oblation",
     ],
     exclude_cards=[
         "Diana, Duskstalker",
         "Diana, Cursebreaker",
     ],
     shortname="Umbra",
+)
+
+umbra_guardian.add_subtype(
+    "Oblation",
+    [
+        "Baleful Oblation",
+    ],
+    require_combos=[
+        [
+            "Baleful Oblation",
+            "Advent of the Stormcaller",
+        ]
+    ]
 )
 
 add_archetype(
@@ -796,9 +814,9 @@ add_archetype(
     }
 )
 
-add_archetype(
-    "Distortion",
-    [
-        "The Looking Glass",
-    ]
-)
+# add_archetype(
+#     "Distortion",
+#     [
+#         "The Looking Glass",
+#     ]
+# )
