@@ -73,6 +73,7 @@ class OmniEvent:
             "Grand",
             "Archive",
             "TCG",
+            "GA",
             "Storechamp",
             "Store",
             "Championships",
@@ -87,7 +88,7 @@ class OmniEvent:
             "Abyssal", "Heaven",
             "Standard",
             "Constructed",
-            "DOA", "FTC", "ALC", "MRC", "AMB", "HVN",
+            "DOA", "FTC", "ALC", "MRC", "AMB", "HVN", "DTR",
         ]]
         name_words = re.split(r"\W+", self.name.lower())
         testname = ""

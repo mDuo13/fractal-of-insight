@@ -137,11 +137,11 @@ class Format(Season):
 
 SEASONS = {
     "Distorted Reflections": "DTR",
-    "Offseason": "OFF",
     "Abyssal Heaven": "HVN",
     "Mortal Ambition": "AMB",
     "Mercurial Heart": "MRC",
     "Alchemical Revolution": "ALC",
+    "Offseason": "OFF",
 }
 
 FORMATS = {}

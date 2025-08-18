@@ -31,7 +31,7 @@ class Archetype:
         self.subtype_of = None
 
         self.matched_decks = []
-    
+
     def match(self, deck):
         """
         To be called on a Deck instance that has already
@@ -44,15 +44,19 @@ class Archetype:
         for cardname in deck:
             if cardname in self.exclude:
                 return False
-            
+
             if cardname in self.require:
                 # Keep looking in case an exclude card comes later
                 found_cards += 1
-        
+
         for t,tcount in self.require_types.items():
-            if t in deck.card_types.keys() and deck.card_types[t] < tcount:
-                return False
-        
+            if tcount > 0:
+                if t not in deck.card_types.keys() or deck.card_types[t] < tcount:
+                    return False
+            if tcount < 0: # negative require_types means it's a maximum
+                if t in deck.card_types.keys() and deck.card_types[t] > abs(tcount):
+                    return False
+
         if self.require_combos:
             combo_found = False
             for combo in self.require_combos:
@@ -96,18 +100,18 @@ class Archetype:
             if lineage not in self.champ_subtypes.keys():
                 self.champ_subtypes[lineage] = Champtype(lineage, self)
             self.champ_subtypes[lineage].matched_decks.append(deck)
-        
+
         for deck_el in deck.els:
             if deck_el not in self.el_subtypes.keys():
                 self.el_subtypes[deck_el] = Eltype(deck_el, self)
             self.el_subtypes[deck_el].matched_decks.append(deck)
 
-    
+
     def analyze(self):
         self.matched_decks.sort(key=lambda d: d.entrant.evt_time *1000 + 9999-d.entrant.placement, reverse=True)
         if self.matched_decks:
             self.earliest = self.matched_decks[-1].date
-        
+
         self.elements = ElementStats()
         self.champdata = ChampStats()
         wins = 0
@@ -118,11 +122,11 @@ class Archetype:
             wins += d.entrant.wins
             wins += d.entrant.ties/2
             matches += d.entrant.wins+d.entrant.losses+d.entrant.ties
-        
+
         if matches:
             self.winrate = round(100*wins/matches, 1)
             self.total_matches = matches
-        
+
         self.analyze_card_freq()
         self.analyze_card_stats()
         if self.subtypes:
@@ -143,7 +147,7 @@ class Archetype:
             self.el_subtypes = {k:v for k,v in sorted_subtypes}
             for et in self.el_subtypes.values():
                 et.analyze()
-        
+
     def analyze_card_freq(self):
         card_freqs = {
             "mat": defaultdict(int),
@@ -171,7 +175,7 @@ class Archetype:
                     "banned": (True if c in BANLIST else False),
                 } for c,f in cf_sorted
             }
-    
+
     def analyze_card_stats(self):
         total_decks = 0
         total_floating = 0
@@ -812,6 +816,26 @@ add_archetype(
     require_types={
         "ACTION": 30,
     }
+)
+
+add_archetype(
+    "Wakeup Combo",
+    [
+        "Second Wind",
+        "Rallied Advance",
+        "Draught of Stamina",
+    ],
+    exclude_cards=[
+        "Seiryuu's Command",
+        "Incarnate Majesty",
+    ],
+    require_types={
+        # Compared to "Wind Allies" decks, these decks run far fewer allies
+        # and really try to combo off by making one tall ally and attacking
+        # multiple times in one turn.
+        "ALLY": -20
+    },
+    shortname="Wakeup",
 )
 
 # add_archetype(

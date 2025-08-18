@@ -31,7 +31,11 @@
     {% if a.require_types %}<li><b>Card type counts (in mainboard):</b>
         <ul>
             {% for t,tcount in a.require_types.items() %}
-            <li>{{t}}: at least {{tcount}}</li>
+                {% if tcount > 0 %}
+                <li>{{t}}: at least {{tcount}}</li>
+                {% else %}
+                <li>{{t}}: at most {{tcount|abs}}</li>
+                {% endif %}
             {% endfor %}
         </ul>
     </li>{% endif %}
