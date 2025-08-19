@@ -56,7 +56,7 @@ class OmniEvent:
 
         self.judges = [JudgeEvt(jdata, self) for jdata in self.evt.get("judges", [])]
 
-        
+
         self.winner = None
         self.load_players() # populates self.players, self.num_decklists, self.decklist_status
         self.load_videos()
@@ -67,7 +67,7 @@ class OmniEvent:
             self.parse_top_cut() # populates self.top_cut
             # For Team3v3, this needs to happen after parse_teams()
         self.analyze_day2()
-    
+
     def fix_generic_name(self):
         GENERIC_WORDS = [w.lower() for w in [
             "Grand",
@@ -86,6 +86,7 @@ class OmniEvent:
             "Mercurial", "Heart",
             "Mortal", "Ambition",
             "Abyssal", "Heaven",
+            "Distorted", "Reflections",
             "Standard",
             "Constructed",
             "DOA", "FTC", "ALC", "MRC", "AMB", "HVN", "DTR",
@@ -98,7 +99,7 @@ class OmniEvent:
         if not testname:
             # add the store name to make it less generic
             self.name = self.evt["store"]["name"] + " " + self.name
-    
+
     def load_players(self):
         self.num_decklists = 0
         self.players = []
@@ -119,7 +120,7 @@ class OmniEvent:
             self.decklist_status = "partial"
         if self.track_elo:
             self.average_elo = round(sum([p.elo for p in self.players]) / len(self.players), 1)
-    
+
     def load_videos(self):
         self.videos = get_event_videos(self.id)
         for vid in self.videos:
@@ -149,7 +150,7 @@ class OmniEvent:
                         if d and viddata not in d.videos:
                             d.videos.append(viddata)
 
-    
+
     def analyze(self):
         self.elements = ElementStats()
         self.archedata = ArcheStats()
@@ -167,7 +168,7 @@ class OmniEvent:
             self.regiondata.add_player(p)
         self.calc_draw_pct()
         self.calc_sideboards()
-    
+
     def analyze_day2(self):
         # TODO: maybe turn this into a list of stages?
         keepN = self.evt.get("keepN")
@@ -196,7 +197,7 @@ class OmniEvent:
                     self.day2stats['archedata'].add_unknown()
                     self.day2stats['champdata'].add_unknown()
                 self.day2stats['regiondata'].add_player(p)
-        
+
         if self.top_cut:
             self.topcutstats = {
                 "elements": ElementStats(),
@@ -226,12 +227,12 @@ class OmniEvent:
             if self.format != TEAM_STANDARD:
                 self.winner = self.players[0]
             return
-        
+
         finalstage = self.evt["stages"][-1]
         if finalstage["type"] != "single-elimination":
             print("Final stage isn't single elim??", finalstage)
             return
-        
+
         for rnd in finalstage["rounds"]:
             if rnd == finalstage["rounds"][-1]:
                 # Final stage of single elim needs special treatment
@@ -240,7 +241,7 @@ class OmniEvent:
                 if len(matches) > 1:
                     if len(matches) > 2:
                         print("WARNING: 3+ matches in final stage of single-elim?")
-                    
+
                     if self.format == TEAM_STANDARD:
                         bronze_contenders = [t.name.lower() for t in self.top_cut[-2:]]
                     else:
@@ -260,7 +261,7 @@ class OmniEvent:
                 else:
                     bronze_match = None
                     finals_match = matches[0]
-                
+
                 if bronze_match:
                     if bronze_match["pairing"][0]["status"] == "loser":
                         place4_id = bronze_match["pairing"][0]["id"]
@@ -268,7 +269,7 @@ class OmniEvent:
                     else:
                         place3_id = bronze_match["pairing"][0]["id"]
                         place4_id = bronze_match["pairing"][1]["id"]
-                    
+
                     if self.format == TEAM_STANDARD:
                         tier.append(self.teams[place4_id.lower()])
                         tier.append(self.teams[place3_id.lower()])
@@ -278,7 +279,7 @@ class OmniEvent:
                     # Remove 3rd/4th from top cut list so we can re-add them in
                     # the correct order below
                     self.top_cut = self.top_cut[:-2]
-                
+
                 if finals_match["pairing"][0]["status"] == "loser":
                     place2_id = finals_match["pairing"][0]["id"]
                     place1_id = finals_match["pairing"][1]["id"]
@@ -291,7 +292,7 @@ class OmniEvent:
                 else:
                     tier.append(self.pdict[place2_id])
                     tier.append(self.pdict[place1_id])
-            
+
             else:
                 tier = []
                 for match in rnd["matches"]:
@@ -312,7 +313,7 @@ class OmniEvent:
                 tier.sort(key=lambda x:x.sortkey())
 
             self.top_cut += tier
-            
+
         self.top_cut.reverse()
         # Correct placement for top cut
         for i,p in enumerate(self.top_cut):
@@ -320,7 +321,7 @@ class OmniEvent:
         self.winner = self.top_cut[0]
         if self.format == TEAM_STANDARD:
             self.winner = None # use self.winning_team instead
-    
+
     def calc_draw_pct(self):
         total_matches = 0
         ties = 0
@@ -341,11 +342,11 @@ class OmniEvent:
         self.nat_draws = ties_not_00
         self.draw_pct = round(100*ties/total_matches, 1)
         self.nat_draw_pct = round(100*ties_not_00/total_matches, 1)
-    
+
     def calc_sideboards(self):
         total_decks = 0
         sb_cards = defaultdict(int)
-        
+
         for p in self.players:
             if p.deck:
                 total_decks += 1
@@ -363,13 +364,13 @@ class OmniEvent:
 
         sb_cards_sorted = []
         self.sideboard_stats = [{
-                            "card": card, 
+                            "card": card,
                             "pct": round(100*cc/total_decks,1),
                             "mb_pct": round(100*sb_main_cards[card]/total_decks,1),
                             "img": get_card_img(card),
                            } for card, cc in sb_cards.items()]
         self.sideboard_stats.sort(key=lambda x:x["pct"], reverse=True)
-        
+
 
     def calc_headtohead(self, threshold=None, track_elo=False):
         return BattleChart.from_event(self, threshold=threshold, track_elo=track_elo)
@@ -377,7 +378,7 @@ class OmniEvent:
     # def calc_conversion_rates(self):
     #     if len(self.evt['stages']) <= 1:
     #         return
-        
+
 
 
     def __repr__(self):
@@ -400,7 +401,7 @@ class Team:
         self.gwp = data["statsPercentGW"]
         self.ogw = data["statsPercentOGW"]
         self.record = f"{self.wins + self.byes}-{self.losses}-{self.ties}"
-    
+
     def sortkey(self):
         return self.score + (self.omw/100) + (self.gwp / 100000) + (self.ogw / 10000000)
 
@@ -434,13 +435,13 @@ class Team3v3Event(OmniEvent):
         teams.sort(key=lambda x:x.sortkey(), reverse=True)
         self.teams = {t.name.lower(): t for t in teams}
         self.winning_team = teams[0]
-    
+
     def fix_placement(self):
         for i, team in enumerate(self.teams.values()):
             team.placement = i+1
             for p in team.members:
                 p.placement = i+1
-    
+
     def analyze_seats(self):
         self.seatdata = [SeatIn3v3(i) for i in range(3)]
         for team in self.teams.values():
@@ -459,7 +460,7 @@ class Team3v3Event(OmniEvent):
     def calc_headtohead(self, threshold=None, track_elo=False):
         # Nah, it's just team standard.
         return {}
-    
+
     def analyze_day2(self):
         # Maybe someday.
         pass
