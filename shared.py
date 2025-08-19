@@ -1,7 +1,7 @@
 import re
 from collections import defaultdict
 
-from cards import ELEMENTS
+from cards import ELEMENTS, SPECIAL_ELEMENTS
 
 OVERALL = "__overall__"
 
@@ -44,20 +44,21 @@ def fix_case(cardname):
 
     return cardname
 
-def element_sortkey(el):
+def element_sortkey(el, inverse=False):
     """
     Key for sorting element strings.
-    Sort elements with Norm first, then other basic elements in alphabetical order, then advanced elements in alphabetical order.
-    TBD: what to do about exalted.
+    Sort elements with Norm first, then other basic elements alphabetically,
+    then advanced elements alphabetically, then special elements like Exalted.
     """
     el = el.title()
     if el == "Norm":
         return "0"+el
-    elif el in ELEMENTS: #Basic elements
+    elif el in ELEMENTS: # Basic elements
         return "1"+el
+    elif el in SPECIAL_ELEMENTS: # Just Exalted at the moment
+        return "3"+el
     else:
         return "2"+el
-
 
 class keydefaultdict(defaultdict):
     # https://stackoverflow.com/questions/2912231/is-there-a-clever-way-to-pass-the-key-to-defaultdicts-default-factory
@@ -72,7 +73,7 @@ class ElementStats:
     def __init__(self):
         self.elements = {el: 0 for el in ELEMENTS}
         self.total_items = 0
-    
+
     def add_deck(self, deck):
         self.total_items += 1
         if not deck.els: # avoid div/0
@@ -80,14 +81,14 @@ class ElementStats:
         el_frac = 1/len(deck.els)
         for el in deck.els:
             self.elements[el] += el_frac
-    
+
     def add_unknown(self):
         self.total_items += 1
         if "Unknown" in self.elements.keys():
             self.elements["Unknown"] += 1
         else:
             self.elements["Unknown"] = 1
-    
+
     def __iter__(self):
         for el,quant in self.elements.items():
             if self.total_items:
@@ -102,7 +103,7 @@ class TypeStats:
         self.total_items = 0
         self.items = {}
         self.item_elements = {}
-    
+
     def add_unknown(self):
         self.total_items += 1
 
@@ -115,7 +116,7 @@ class TypeStats:
         #     self.items["Unknown"] = 1
         #     self.item_elements["Unknown"] = ElementStats()
         #     self.item_elements["Unknown"].add_unknown()
-    
+
     def exists_for(self, item):
         if item == OVERALL:
             return False
@@ -154,7 +155,7 @@ class ChampStats(TypeStats):
         self.total_items += 1
         if not deck.lineages:
             return
-        
+
         # TODO: fractional numbers for multi-lineage decks?
         #lin_frac = 1/len(deck.lineages)
         for lineage in deck.lineages:
@@ -165,7 +166,7 @@ class ChampStats(TypeStats):
                 self.items[lineage] = 1
                 self.item_elements[lineage] = ElementStats()
                 self.item_elements[lineage].add_deck(deck)
-    
+
 
 class ArcheStats(TypeStats):
     def __init__(self):
@@ -176,7 +177,7 @@ class ArcheStats(TypeStats):
         self.total_items += 1
         if not deck.archetypes:
             return
-        
+
         for arche in deck.archetypes:
             if arche in self.items.keys():
                 self.items[arche] += 1
@@ -185,7 +186,7 @@ class ArcheStats(TypeStats):
                 self.items[arche] = 1
                 self.item_elements[arche] = ElementStats()
                 self.item_elements[arche].add_deck(deck)
-        
+
         for arche in deck.subtypes:
             if arche in self.items.keys():
                 self.items[arche] += 1
@@ -195,7 +196,7 @@ class ArcheStats(TypeStats):
                 self.items[arche] = 1
                 self.item_elements[arche] = ElementStats()
                 self.item_elements[arche].add_deck(deck)
-    
+
     def __iter__(self):
         for item, pct, quant, elstats in super().__iter__():
             if item in self.known_subtypes:
@@ -215,7 +216,7 @@ class RegionStats:
             self.items[region] += 1
         else:
             self.items[region] = 1
-    
+
     def __iter__(self):
         regdata = [(i,q) for i,q in self.items.items()]
         regdata.sort(key=lambda x:x[1], reverse=True)

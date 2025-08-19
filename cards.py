@@ -5,6 +5,10 @@ ELEMENTS = [
     "Norm",
 ]
 
+SPECIAL_ELEMENTS = [
+    "Exalted",
+]
+
 LINEAGE_BREAK = [
     "Allen, Beast Beckoner",
     "Polkhawk, Bombastic Shot",
@@ -29,7 +33,7 @@ ERRATA = {
         "before": 1741334400000, #2025-03-07
         "img": "https://api.gatcg.com/cards/images/scepter-of-lumina-prxy-001.jpg"
     },
-    
+
     "Polaris, Twinkling Cauldron": {
         "before": 1753419600000, #2025-07-25 in CST
         "img": "https://api.gatcg.com/cards/images/polaris-twinkling-cauldron-prxy-006.jpg"

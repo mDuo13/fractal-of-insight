@@ -9,15 +9,24 @@ from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST
 from archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
 from cardstats import ALL_CARD_STATS
 
-def rank_mat_card(card_o):
-    cardname = card_o["card"]
-    return rank_mat_cardname(cardname)
-def rank_mat_cardname(cardname):
+def rank_card(card_o):
+    return rank_cardname(card_o["card"])
+def rank_cardname(cardname):
     card = carddata[cardname]
+    # First sort: Champs by level, Regalia, Maindeck
     if card["level"] is not None:
-        return str(card["level"]) + cardname
-    return cardname
-
+        rank = str(card["level"])
+    elif "REGALIA" in card["types"]:
+        rank = "B"
+    else:
+        rank = "C"
+    # Second sort: Norm, Basic Element, Advanced Element
+    # with multi-element cards ranked based on primary element, then secondary
+    el_keys = [element_sortkey(e) for e in card["elements"]]
+    el_keys.sort()
+    el_rank = "/".join(el_keys)
+    # Third sort: alphabetical, case-insensitive
+    return rank + el_rank + "-" + cardname.lower()
 
 def trim_similar(dlist, limit):
     """
@@ -50,7 +59,7 @@ class Deck:
         self.calc_price()
 
         self.videos = [] # populated in OmniEvent.load_videos()
-        
+
         ALL_CARD_STATS.add_deck(self)
 
     def find_spirits(self):
@@ -60,7 +69,7 @@ class Deck:
             card = carddata[cardname]
             if card.get("level") == 0:
                 self.spirits.append(cardname)
-    
+
     def find_champs(self):
         self.champs = []
         self.fatestones = []
@@ -71,7 +80,7 @@ class Deck:
         for card_o in self.mat:
             cardname = card_o["card"]
             card = carddata[cardname]
-            
+
             if "CHAMPION" in card.get("types", []):
                 if card["level"] == 1 or cardname in LINEAGE_BREAK:
                     lineages.append(lineage(cardname))
@@ -91,11 +100,11 @@ class Deck:
 
         self.lineages = list(dict.fromkeys(lineages)) # Uniquified
 
-    
+
     def find_archetypes(self):
         self.archetypes = []
         self.subtypes = []
-        
+
         # Special case to exclude "junk" decks from polluting stats,
         # lump them into Rogue Decks.
         if len(self.dl["material"]) > 12:
@@ -109,11 +118,11 @@ class Deck:
                 for st in archetype.subtypes:
                     if st.match(self):
                         self.subtypes.append(st.name)
-        
+
         if not self.archetypes:
             NO_ARCHETYPE.add_match(self)
 
-    
+
     def find_elements(self):
         """
         Set the list of basic elements provided by the deck's spirit(s).
@@ -129,7 +138,7 @@ class Deck:
         if not els:
             els.append("Norm")
         self.els = els
-    
+
     def fix_dl(self):
         """
         Clean up the decklist and add some extra metadata such as
@@ -167,18 +176,18 @@ class Deck:
             for card_o in self.dl["material"]:
                 if card_o["card"] == "Gate of Alterity":
                     card_o["card"] = "Polaris, Twinkling Cauldron"
-        
 
-        self.dl["main"].sort(key=lambda x:x["card"])
-        self.dl["sideboard"].sort(key=lambda x:x["card"])
-        self.dl["material"].sort(key=rank_mat_card)
+
+        self.dl["main"].sort(key=rank_card)
+        self.dl["sideboard"].sort(key=rank_card)
+        self.dl["material"].sort(key=rank_card)
 
         if len(self.dl["material"]) > 12:
             self.invalid_decklist = True
         else:
             # TODO: TBD what to do about decklists with accidentally no spirit
             self.invalid_decklist = False
-    
+
     def count_cards(self):
         """
         Count various quantities of cards in the deck, such as the number
@@ -212,13 +221,13 @@ class Deck:
                 # Count the combination of elements
                 el_combo="/".join(sorted(card["elements"]))
                 el_counts[el_combo] += card_o["quantity"]
-        
+
         self.main_deck_els = []
         for el,quant in el_counts.items():
             pct = round(quant/n*100, 1)
             self.main_deck_els.append((el.title(), quant, pct))
         self.main_deck_els.sort(key=lambda x:element_sortkey(x[0]))
-        
+
         self.main_total = n
         card_types_sorted = [(k,v) for k,v in card_types.items()]
         card_types_sorted.sort(key=lambda x:x[0])
@@ -237,7 +246,7 @@ class Deck:
                 self.guns += 1
         self.side_total = b
         self.side_points = p
-    
+
     def quantity_of(self, cardname, search_sections=("material","main")):
         """
         Count how many copies of a card are in the mainboard/materials for the deck.
@@ -248,13 +257,13 @@ class Deck:
                 if card_o["card"] == cardname:
                     n += card_o["quantity"]
         return n
-        
+
 
     def cardlist_imgs(self):
         for cat in ("material", "main", "sideboard"):
             for card_o in self.dl[cat]:
                 card_o["img"] = get_card_img(card_o["card"], at=self.entrant.evt_time)
-    
+
     def calc_hash(self):
         """
         Calculate a fast hash of this deck's decklist, to aid similarity comparisons
@@ -282,11 +291,11 @@ class Deck:
         if self.hash == other_deck.hash:
             # print("Deck hashes match")
             return 100.0
-        
+
         cached_sim = get_cached_similarity(self.hash, other_deck.hash)
         if cached_sim is not None:
             return cached_sim
-        
+
         total_me = 3*self.mat_total + self.main_total + ((2/3)*self.side_points)
         total_them = 3*other_deck.mat_total + other_deck.main_total + ((2/3)*other_deck.side_points)
         t = max(total_me, total_them)
@@ -304,11 +313,11 @@ class Deck:
                 # TODO: make prize spirits to count the same as basic spirits?
                 card_o = self.dl[sect][i]
                 them_o = other_deck.dl[sect][j]
-                # Use rank_mat_card instead of comparing names so sure prize spirits don't screw up the ordering
-                if rank_mat_card(card_o) < rank_mat_card(them_o):
+                # Use rank_card instead of comparing names so sure prize spirits don't screw up the ordering
+                if rank_card(card_o) < rank_card(them_o):
                     i += 1
                     continue
-                elif rank_mat_card(card_o) > rank_mat_card(them_o):
+                elif rank_card(card_o) > rank_card(them_o):
                     j += 1
                     continue
                 # Else the names match, compare quantities
@@ -323,16 +332,16 @@ class Deck:
                         use_mult = 2/3
                 else:
                     use_mult = mult
-                    
+
                 s += use_mult * min(q_me, q_them)
 
                 i+=1
                 j+=1
-        
+
         similarity = round(100*s/t, 1)
         store_similarity(self.hash, other_deck.hash, similarity)
         return similarity
-    
+
     def split_similar_decks(self, limit=10):
         decks_before = []
         decks_sameday = []
@@ -344,9 +353,9 @@ class Deck:
                 decks_sameday.append([d,sim])
             else:
                 decks_after.append([d,sim])
-        
+
         return trim_similar(decks_before, limit), trim_similar(decks_sameday, limit), trim_similar(decks_after, limit)
-    
+
     def rate_hipster(self, ALL_CARD_STATS):
         self.hipster = 0
         for card_o in self.mat:
@@ -417,7 +426,7 @@ class Deck:
                 "image": r["img"]
             })
         return j
-    
+
     def __str__(self):
         spiritstr = ""
         if self.invalid_decklist:
@@ -443,7 +452,7 @@ class Deck:
             for keyword in SPIRITTYPES:
                 if keyword in spirit:
                     spiritstr += keyword + " "
-            
+
             spiritstr += "/".join(self.els)
 
         if len(self.lineages) == 1:
@@ -455,7 +464,7 @@ class Deck:
             champstr = ""
         if self.is_hybrid:
             champstr += " Hybrid"
-        
+
         # if self.fatestones:
         #     champstr = " ".join(self.fatestones) + " " + champstr
 
@@ -470,7 +479,7 @@ class Deck:
             archetypestr = " ".join(archetype_list)
 
         return " ".join((spiritstr, archetypestr, champstr)).replace("  "," ")
-    
+
     def __iter__(self):
         for card_o in self.dl["material"]:
             yield card_o["card"]
