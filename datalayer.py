@@ -81,7 +81,7 @@ def sideload_deck(p_id, evt_id, fname=None):
         fname = f"data/event_{evt_id}/sideload/deck_{p_id}.txt"
     with open(fname) as f:
         dl_txt = f.read()
-    
+
     deck = {"material": [], "main": [], "sideboard": []}
     active_deck = None
     for line in dl_txt.split("\n"):
@@ -109,7 +109,7 @@ def sideload_deck(p_id, evt_id, fname=None):
             })
     #print("Sideloaded deck:", json.dumps(deck, indent=2))
     return deck
-            
+
 
 try:
     carddata = {}
@@ -164,7 +164,7 @@ try:
     set_groups_list.reverse() # Put them with, generally, oldest group first
     set_groups = {s["name"]:s for s in set_groups_list}
     set_groups["Other"] = {"name": "Other", "sets": []}
-    
+
     for card in carddata.values():
         in_sets = [ed["set"]["prefix"] for ed in card["editions"]]
         found_sg = False
@@ -226,12 +226,12 @@ for cardname, card in carddata.items():
 def get_card_img(cardname, at=0, from_set_group=None):
     """
     Get an appropriate image URL for the card, looking it up on Index if necessary.
-    
+
     Params:
     at - the time of the event where the card appears, in case of cards that
          have different versions because of errata
-    from_set_group - if provided, should be the name of an Index-defined set 
-                     group, such as 'Mercurial Heart' (which includes ReCo 
+    from_set_group - if provided, should be the name of an Index-defined set
+                     group, such as 'Mercurial Heart' (which includes ReCo
                      decks & MRC Alter). Will return the image URL for the
                      corresponding edition if possible.
     """
@@ -354,7 +354,7 @@ try:
             with open(entry) as f:
                 pricelist = json.load(f)
             pricedata[entry.name[:-5]] = pricelist
-            
+
 except FileNotFoundError:
     print("Didn't find cached price data")
     pricedata = {}
@@ -402,8 +402,8 @@ def get_card_price(cardname, sub_prizes=False):
     if prices:
         price = min(prices)
         return price
-        
-    print(f"Couldn't get a price for {fullname}.")
+
+    #print(f"Couldn't get a price for {fullname}.")
     return None
 
 def low_price_by_edition(fullname, prefix):
@@ -476,4 +476,3 @@ def store_similarity(hash1, hash2, sim):
 def write_similarity_cache():
     with open(DECK_SIMILARITY_FILE, "w", encoding="utf-8") as f:
         json.dump(DECK_SIMILARITY_CACHE, f)
-        

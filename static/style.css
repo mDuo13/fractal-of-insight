@@ -94,7 +94,7 @@ tr.subtype {
 }
 
 .favored .bc-inner {
-    background-color: #68935B; 
+    background-color: #68935B;
     color: white;
     background-image: url(swirl.svg);
     background-repeat: repeat-y;
@@ -125,9 +125,9 @@ tr.subtype {
     background-position: right;
 }
 .no_data .bc-inner {
-    background-color: #343434; 
-    font-size: 15px; 
-    color: white; 
+    background-color: #343434;
+    font-size: 15px;
+    color: white;
     padding: 14px 8px;
 }
 
@@ -186,7 +186,7 @@ th {
     border: none;
     border-collapse: separate;
 }
-/* 
+/*
 .playername:active::after {
     content: attr(title);
     position: absolute;
@@ -633,7 +633,7 @@ fieldset label {
     margin: 0;
     text-align: center;
 }
-.el-pct, 
+.el-pct,
 .el-quant {
 	text-align: center;
 	font-size: 16px;
@@ -820,6 +820,7 @@ fieldset label {
     text-align: center;
     position: relative;
     margin: 0;
+    min-height: 150px;
 }
 
 .season h2 a img {
@@ -852,13 +853,13 @@ h1 {
 h1::before {
     content: "";
     background-color: black;
-    clip-path: polygon(0 0, 
-                       0 100%, 
-                       2px 100%, 
-                       2px 2px, 
-                       calc(100% - 21.5px) 2px, 
-                       calc(100% - 2.5px) 50%, 
-                       calc(100% - 21.5px) calc(100% - 2px), 
+    clip-path: polygon(0 0,
+                       0 100%,
+                       2px 100%,
+                       2px 2px,
+                       calc(100% - 21.5px) 2px,
+                       calc(100% - 2.5px) 50%,
+                       calc(100% - 21.5px) calc(100% - 2px),
                        2px calc(100% - 2px),
                        2px 100%,
                        calc(100% - 20px) 100%,
@@ -880,7 +881,7 @@ ul.scooped-corners {
     --border-color: black;
     --background: var(--ui-bg);
     display: inline-block;
-    /* filter: drop-shadow(var(--main-shadow)); // doesn't work with evt-info clip-path */ 
+    /* filter: drop-shadow(var(--main-shadow)); // doesn't work with evt-info clip-path */
 }
 
 #main-nav {
@@ -1014,6 +1015,11 @@ a.achievement {
     width: 135px;
     height: 165px;
     margin: 6px;
+}
+
+.subtypes-radios label {
+    white-space: nowrap;
+    line-height: 30px;
 }
 
 :root {

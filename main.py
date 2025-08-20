@@ -37,10 +37,10 @@ class PageBuilder:
         self.env.globals["OVERALL"] = OVERALL
         self.env.globals["ACHIEVEMENTS"] = ACHIEVEMENTS
         self.env.filters["slugify"] = slugify
-    
+
     def render(self, template, write_to, **kwargs):
         """
-        Load the template with the given name, and write the HTML file in the 
+        Load the template with the given name, and write the HTML file in the
         configured output directory, passing kwargs as context to the template.
         """
         t = self.env.get_template(template)
@@ -50,7 +50,7 @@ class PageBuilder:
         whole_out_dir = os.path.join(config.OUTDIR, out_dir)
         makedirs(whole_out_dir, exist_ok=True)
         whole_out_file = os.path.join(whole_out_dir, out_file)
-        # experimental: skip overwriting matching files,
+        # skip overwriting matching files,
         # which should hopefully save bandwidth on transferring
         # identical files each time
         try:
@@ -60,11 +60,10 @@ class PageBuilder:
                     return
         except FileNotFoundError:
             pass
-        # end experimental section
         print("Writing to", whole_out_file)
         with open(whole_out_file, "w") as f:
             f.write(html)
-    
+
     def write_event(self, e):
         """
         Write an Omnidex event page.
@@ -75,7 +74,7 @@ class PageBuilder:
         else:
             template = "event.html.jinja2"
         self.render(template, e_path, evt=e)
-    
+
     def write_season(self, season):
         """
         Write a season summary page.
@@ -106,13 +105,13 @@ class PageBuilder:
         arche_path = f"deck/{slug}.html"
         # The "Sightings" table is too much, so paginate it.
         max_page = ceil(len(archetype.matched_decks) / SIGHTINGS_PER_PAGE)
-        self.render("archetype.html.jinja2", arche_path, arche=archetype, players=players, events=events, seasons=seasons, wins=wins, 
+        self.render("archetype.html.jinja2", arche_path, arche=archetype, players=players, events=events, seasons=seasons, wins=wins,
                     page_number=1, page_start=0, page_end=SIGHTINGS_PER_PAGE, max_page=max_page)
         if max_page > 1:
             for i in range(1, max_page):
                 page_number = i+1
-                self.render("archetype-sightings-page.html.jinja2", f"deck/{slug}-{page_number}.html", 
-                            arche=archetype, players=players, events=events, seasons=seasons, wins=wins, 
+                self.render("archetype-sightings-page.html.jinja2", f"deck/{slug}-{page_number}.html",
+                            arche=archetype, players=players, events=events, seasons=seasons, wins=wins,
                             page_number=page_number, max_page=max_page, page_start=(i*SIGHTINGS_PER_PAGE), page_end=((i+1)*SIGHTINGS_PER_PAGE))
 
     def write_archetype_index(self, archetypes, aew, cswr):
@@ -120,7 +119,7 @@ class PageBuilder:
 
     def write_card_index(self, card_stats_by_set):
         self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata, set_groups=set_groups, get_card_img=get_card_img, card_stats_by_set=card_stats_by_set, PAD_UNTIL=PAD_UNTIL)
-    
+
     def write_card_page(self, cardname, cardstat, events=[]):
         max_page = ceil(len(cardstat.appearances) / CARD_SIGHTINGS_PER_PAGE)
         card_price = format_price(get_card_price(cardname))
@@ -132,7 +131,7 @@ class PageBuilder:
         #     for i in range(1, max_page):
         #         page_number = i+1
         #         self.render("card-sightings-page.html.jinja2", f"card/{slugify(cardname)}-{page_number}.html", card=carddata[cardname], cardstat=cardstat, events=events, page_number=page_number, page_start=(i*CARD_SIGHTINGS_PER_PAGE), page_end=((i+1)*CARD_SIGHTINGS_PER_PAGE), max_page=max_page)
-    
+
     def write_decklist_tts(self, deck):
         if deck.is_topcut_deck:
             write_to = f"tts/event_{deck.entrant.evt_id}/{deck.entrant.id}_topcut.json"
@@ -143,9 +142,7 @@ class PageBuilder:
         makedirs(whole_out_dir, exist_ok=True)
         whole_out_file = os.path.join(whole_out_dir, out_file)
 
-        # experimental: skip overwriting matching files,
-        # which should hopefully save bandwidth on transferring
-        # identical files each time
+        # skip overwriting matching files
         try:
             json_string = json.dumps(deck.tts_json())
             with open(whole_out_file, "r") as f:
@@ -154,21 +151,20 @@ class PageBuilder:
                     return
         except FileNotFoundError:
             pass
-        # end experimental section
         print("Writing to", whole_out_file)
         with open(whole_out_file, "w") as f:
             json.dump(deck.tts_json(), f)
-    
+
     def write_achievement(self, achievement):
         write_to = f"achievement/{slugify(achievement.name)}.html"
         self.render("achievement.html.jinja2", write_to, achievement=achievement, astats=GAS[achievement.name])
-    
+
     def write_achievements_index(self):
         self.render("achievements.html.jinja2", "achievement/index.html", GAS=GAS)
 
     def write_spoilers(self, spoilers):
         self.render("spoilers.html.jinja2", "spoilers/index.html", spoilers=spoilers)
-    
+
     def write_all(self):
         """
         Write all known event pages as well as homepage, season landings, and player profiles.
@@ -216,8 +212,9 @@ class PageBuilder:
                 events_judged.sort(key=lambda x:x.event.date)
                 known_players[jid].events_judged = events_judged
             else:
-                print(f"Judge with no player instances? {judge}")
-        
+                #print(f"Judge with no player instances? {judge}")
+                pass
+
         seasons_sorted = {k:seasons[v] for k,v in SEASONS.items() if v in seasons.keys()}
 
         for szn in seasons.values():
@@ -225,7 +222,7 @@ class PageBuilder:
 
         formats_desc = list(reversed(FORMATS.values()))
         self.write_formats(formats_desc)
-        
+
         # Card stats has to come before player stuff for "first play" to work.
         for cardname, cardstat in ALL_CARD_STATS:
             cardstat.analyze()
@@ -249,7 +246,7 @@ class PageBuilder:
 
         known_pids_sorted = [pid for pid, pl in known_players.items()]
         known_pids_sorted.sort(key=lambda x: known_players[x].sortkey())
-        
+
         for pid in known_pids_sorted:
             known_players[pid].analyze_hipster(HIPSTER_FLOOR)
 
@@ -299,7 +296,7 @@ class PageBuilder:
 
         for e in all_events.values():
             self.write_event(e)
-        
+
         self.write_card_index(card_stats_by_set)
 
         GAS.total_players = len(known_players)

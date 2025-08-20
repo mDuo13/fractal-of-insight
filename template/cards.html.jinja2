@@ -26,8 +26,8 @@
     {% for cardname, cardstat in cardstats %}
         {% if loop.index0 < 20 %}
             {% set card_o = {
-                'card': cardname, 
-                'img': carddata[cardname]['img'], 
+                'card': cardname,
+                'img': carddata[cardname]['img'],
                 'quantity': cardstat.num_appearances~'×'
             } %}
             {{ macros.cardimg(card_o, link=True) }}
@@ -80,8 +80,8 @@
     {% for cardname, cardstat in cardstats.winningest.items() %}
         {% if loop.index0 < 20 %}
             {% set card_o = {
-                'card': cardname, 
-                'img': carddata[cardname]['img'], 
+                'card': cardname,
+                'img': carddata[cardname]['img'],
                 'pct': cardstat.weighted_winrate
             } %}
             {{ macros.cardimg(card_o, link=True) }}
@@ -99,8 +99,8 @@
     {% for cardname, cardstat in cardstats.hottest.items() %}
         {% if loop.index0 < 20 %}
             {% set card_o = {
-                'card': cardname, 
-                'img': carddata[cardname]['img'], 
+                'card': cardname,
+                'img': carddata[cardname]['img'],
                 'pct': cardstat.hot_rating
             } %}
             {{ macros.cardimg(card_o, link=True) }}
@@ -141,5 +141,4 @@
     </div>
 </section>
 
-{% include "deckviewscript.html.jinja2" %}
 {% endblock %}

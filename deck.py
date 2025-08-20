@@ -50,7 +50,7 @@ class Deck:
         self.fix_dl()
         self.calc_hash()
         self.find_spirits()
-        self.find_champs()
+        self.find_champs() # populates self.champs, self.lineages, self.classes
         self.find_elements() # populates self.els
         self.count_cards() # populates self.card_types and self.floating as well as total counts
         self.find_archetypes()
@@ -519,3 +519,7 @@ class Deck:
                 "img": ref["img"],
                 "as_token": True
             }
+
+    @property
+    def subtype_list(self):
+        return self.els + self.lineages + self.subtypes

@@ -18,7 +18,7 @@
 <section id="sightings">
     <h2>Sightings</h2>
     <div class="togglable event-filters">
-        {{ macros.event_filters(EVENT_TYPES, lesser=True) }}
+        {{ macros.event_filters(EVENT_TYPES, lesser=True, arche=arche) }}
     </div>
     <button id="wins-filter" class="togglable collapse" onclick="show_wins()">Show event winners only</button>
     <p id="wins-expl" class="explanation collapse">Showing only events where the deck won overall</p>
@@ -49,7 +49,5 @@
 {{ macros.decklist(d.entrant, "deck_"~d.entrant.evt_id~"_"~d.entrant.id, events[d.entrant.evt_id], True) }}
 {% endif %}
 {% endfor %}
-
-{% include "deckviewscript.html.jinja2" %}
 
 {% endblock %}

@@ -116,7 +116,7 @@
 <section id="deck-composition">
     <h2>Deck Composition</h2>
     <button onclick="toggle('#deck-composition > .togglable')">Glimpse Deck Composition</button>
-    
+
     {% if not arche.require_element %}
     <h3 class="togglable collapse">Elements</h3>
     <div class="element-meta collapse togglable">
@@ -192,7 +192,7 @@
         <h3>{{szn.name}}</h3>
         <ul>
             <li><b>Share of meta</b>: {{szn.archedata[arche.name][1]}}%</li>
-            <li><b>Events won</b>: 
+            <li><b>Events won</b>:
                 {% if szn.arche_wins[arche.name]|length %}
                 {{szn.arche_wins[arche.name]|length}} events
                 {% else %}None{% endif %}
@@ -210,7 +210,7 @@
     <h2>Sightings</h2>
     <button onclick="toggle('#sightings > .togglable')">Glimpse list</button>
     <div class="togglable collapse event-filters">
-        {{ macros.event_filters(EVENT_TYPES, lesser=True) }}
+        {{ macros.event_filters(EVENT_TYPES, lesser=True, arche=arche) }}
     </div>
     <button id="wins-filter" class="togglable collapse" onclick="show_wins()">Show event winners only</button>
     <p id="wins-expl" class="explanation collapse">Showing only events where the deck won overall</p>
@@ -268,7 +268,5 @@
 {{ macros.decklist(d.entrant, "deck_"~d.entrant.evt_id~"_"~d.entrant.id, events[d.entrant.evt_id], True) }}
 {% endif %}
 {% endfor %}
-
-{% include "deckviewscript.html.jinja2" %}
 
 {% endblock %}

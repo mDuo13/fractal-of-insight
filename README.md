@@ -26,4 +26,5 @@ This site shows information and analysis of Grand Archive tournament results. It
 - add new cards or per-season variants for archetype card lists
 - report more stats in a rolling window or seasonal basis
 - backfill old store champs
-
+- improve archetypes index page to have tabs per season or something
+- show money cards on archetype page

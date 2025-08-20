@@ -488,6 +488,9 @@ add_archetype(
     [
         "Storm Slime",
         "Ethereal Slime",
+    ],
+    exclude_cards=[
+        "Merlin, Kingslayer"
     ]
 )
 
@@ -686,7 +689,6 @@ add_archetype(
     "Fractal",
     [
         "Burst Asunder",
-        "Shimmering Refraction",
     ],
     exclude_cards=[
         "Dungeon Guide",

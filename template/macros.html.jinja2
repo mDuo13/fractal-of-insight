@@ -178,10 +178,10 @@
     {% if deck.is_topcut_deck %}
         {% set anchor = anchor~'_topcut' %}
     {% endif %}
-    <tr class="p-row n-styles-{{deck.els|length+deck.archetypes|length+deck.lineages|length}}{% if event.winner.deck == deck %} winner{% endif %}" data-decklists="{{event.num_decklists}}" data-category="{{slugify(event.category['name'])}}">
+    <tr class="p-row n-styles-{{deck.els|length+deck.archetypes|length+deck.lineages|length}}{% if event.winner.deck == deck %} winner{% endif %}" data-decklists="{{event.num_decklists}}" data-category="{{slugify(event.category['name'])}}" data-subtypes='{{deck.subtype_list|tojson}}'>
         <td class="p_date">{{deck.date}}</td>
         <td class="playername" title="Elo: {{deck.entrant.elo}}"><a href="/player/{{deck.entrant.id}}.html">{{deck.entrant}}</a></td>
-        
+
         <td class="p_event"><a href="/{{event.season}}/{{event.id}}.html">{{event.name}}</a></td>
         <td class="p_deck"><a href="{{anchor}}" onclick="opendecklist('{{anchor}}')">{{deck}}</a>
             <div class="deck-bgs">
@@ -225,8 +225,8 @@
 </a>
 {% endmacro %}
 
-{% macro event_filters(event_types, lesser=False) %}
-<form>
+{% macro event_filters(event_types, lesser=False, arche=None) %}
+<form class="event-filtering">
     <fieldset>
         <legend>Filter events</legend>
         {% if not lesser %}
@@ -244,9 +244,43 @@
         {% if not lesser %}
         </fieldset>
         {% endif %}
+        {% if arche %}
+        <fieldset class="subtypes-radios">
+            <legend>Deck subtypes</legend>
+                <label for="rd_all_st">
+                    <input type="radio" name="subtype" id="rd_all_st" value="(All)" onclick="update_evt_filtering()" checked />
+                    (All)
+                </label>
+            {% for st in arche.subtypes %}
+                <label for="rd_st_{{slugify(st.name)}}">
+                    <input type="radio" name="subtype" id="rd_st_{{slugify(st.name)}}" value="{{st.name}}" onclick="update_evt_filtering()" />
+                    {{st.name}}
+                </label>
+            {% endfor %}
+            {% if not arche.require_element %}
+                {% for et in arche.el_subtypes.values() %}
+                    {% if et.matched_decks|length > 1 %}
+                <label for="rd_et_{{slugify(et.name)}}">
+                    <input type="radio" name="subtype" id="rd_et_{{slugify(et.name)}}" value="{{et.name}}" onclick="update_evt_filtering()" />
+                    {{et.name}}
+                </label>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% for c,ct in arche.champ_subtypes.items() %}
+                {% if ct.matched_decks|length > 1 %}
+                <label for="rd_ct_{{slugify(ct.name)}}">
+                    <input type="radio" name="subtype" id="rd_ct_{{slugify(ct.name)}}" value="{{ct.name}}" onclick="update_evt_filtering()" />
+                    {{ct.name}}
+                </label>
+                {% endif %}
+            {% endfor %}
+        </fieldset>
+        {% endif %}
     </fieldset>
 </form>
 {% endmacro %}
+
 
 {% macro battlechart(bc, only_show=False, link_matches=False, collapse=True) %}
 <table class="battlechart {% if collapse %}collapse togglable{% endif %}">
@@ -559,7 +593,7 @@
 {% else %}
     {% set el="div" %}
 {% endif %}
-<{{el}} {% if is_link %}href="{{href}}"{% endif %}div class="achievement achieved" title="Achieved{% if a.date %} on {{a.date}} @ {{a.event.name|e}}{% if a.details %} ({{a.details|e}}){% endif %}{% endif %}">
+<{{el}} {% if is_link %}href="{{href}}" {% endif %}class="achievement achieved" title="Achieved{% if a.date %} on {{a.date}} @ {{a.event.name|e}}{% if a.details %} ({{a.details|e}}){% endif %}{% endif %}">
     <h4>{% if a.shortname %}{{a.shortname}}{% else %}{{a.name}}{% endif %}</h4>
 {% if a.emoji %}
     <div class="achievement-emoji">{{a.emoji}}</div>

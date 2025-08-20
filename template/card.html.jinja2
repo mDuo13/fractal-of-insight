@@ -70,7 +70,7 @@
     <div class="element-meta collapse togglable">
         {{macros.elementpie(cardstat.elements)}}
     </div>
-    
+
     <h3 class="togglable collapse">Champions</h3>
     {{ macros.elementbars(cardstat.champdata) }}
 
@@ -127,7 +127,5 @@
 {{ macros.decklist(e, "deck_"~e.evt_id~"_"~e.id, events[e.evt_id], True) }}
 {% endif %}
 {% endfor %}
-
-{% include "deckviewscript.html.jinja2" %}
 
 {% endblock %}

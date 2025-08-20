@@ -31,7 +31,7 @@ function togglegfx() {
 function showteammatches(tslug) {
     hide("#matches .match") // hide all
     show(`#matches .t_${tslug}`) // show matching
-    
+
     show("#matches > .togglable")
     show("#matchreset")
     show("#keymatch-expl")
@@ -61,7 +61,7 @@ function showmatches(pid) {
     // show all matches with a given player
     hide("#matches .match")
     show(`#matches .p_${pid}`)
-    
+
     show("#matches > .togglable")
     show("#matchreset")
     hide("#keymatch-expl")
@@ -100,11 +100,11 @@ function show_arche_matches(arche1) {
 function show_key_matches() {
     hide("#keymatches")
     show("#matchreset")
-    
+
     // Switch the labels
     hide("#keymatch-expl")
     show("#keymatch-showing")
-    
+
     hide("#matches .match")
     show("#matches > .togglable")
     show("#matches .keymatch")
@@ -162,6 +162,20 @@ function update_evt_filtering() {
     if (small_evts_cb) {
         small_events = small_evts_cb.checked
     }
+    const st_radios = document.getElementsByName("subtype")
+    let checked_subtype = ""
+    if (st_radios.length) {
+        for (el of st_radios) {
+            if (el.checked) {
+                if (el.value === "(All)") {
+                    // Leave checked_subtype as empty
+                    break
+                }
+                checked_subtype = el.value
+                break
+            }
+        }
+    }
 
     const show_cats = []
     document.querySelectorAll('input[name="category"]').forEach( el => {
@@ -169,11 +183,14 @@ function update_evt_filtering() {
             show_cats.push(el.value)
         }
     })
-    //console.log("show_cats", show_cats)
+
+    // Filter events (e.g. on homepage, season page)
     document.querySelectorAll('.evt').forEach( el => {
         if (decklists_only && el.dataset["decklists"] == "0") {
             el.classList.add("collapse")
-        } else if (!small_events && parseInt(el.dataset["playercount"]) < 20) {
+        } else if (!small_events && parseInt(el.dataset["playercount"]) < 20
+                    && el.dataset["category"] !== "worlds") {
+                    // Special case: show Worlds (2024) even though it's "small"
             el.classList.add("collapse")
         } else {
             if ( show_cats.includes(el.dataset["category"]) ) {
@@ -183,13 +200,21 @@ function update_evt_filtering() {
             }
         }
     })
+
+    // Filter rows (e.g. on archetype page)
     document.querySelectorAll('.p-row').forEach( el => {
+        let el_sts = []
+        if (el.dataset.hasOwnProperty("subtypes")) {
+            el_sts = JSON.parse(el.dataset["subtypes"])
+        }
+
         if (decklists_only && el.dataset["decklists"] == "0") {
             el.classList.add("collapse")
         } else if (!small_events && parseInt(el.dataset["playercount"]) < 20) {
             el.classList.add("collapse")
         } else {
-            if ( show_cats.includes(el.dataset["category"]) ) {
+            if ( show_cats.includes(el.dataset["category"]) &&
+                 ( !checked_subtype || el_sts.includes(checked_subtype) ) ) {
                 el.classList.remove("collapse")
             } else {
                 el.classList.add("collapse")
@@ -219,5 +244,45 @@ function flipcard(event, c) {
     event.stopPropagation()
     c.querySelector(".cardfront").classList.toggle("flipped")
     c.querySelector(".cardback").classList.toggle("flipped")
-
 }
+
+function ready(callback) {
+  if (document.readyState != "loading") callback()
+  else document.addEventListener("DOMContentLoaded", callback)
+}
+
+ready(() => {
+    // Open hash on page-load
+    if (window.location.hash) {
+        //console.debug("hash:",window.location.hash)
+        const defaultobj = document.querySelector(window.location.hash)
+        if (defaultobj && defaultobj.classList.contains("collapse")) {
+            defaultobj.classList.remove("collapse")
+        } else {
+            q = `${window.location.hash} > .togglable.collapse`
+            //collapsedChildren = document.querySelectorAll(q)
+            show(q)
+        }
+    }
+
+    // Re-apply event filters
+    if (document.querySelector(".event-filtering")) {
+        update_evt_filtering()
+    }
+
+    // Attach decklist closing events
+    document.querySelectorAll(".decklist").forEach(el => {
+        el.addEventListener("click", (evt) => {
+            if (evt.target.href) {
+                // is a link, do the default after closing this
+                el.classList.add("collapse")
+            }
+            else if (!evt.target.classList.contains("decklist")) {
+                evt.preventDefault()
+            } else {
+                el.classList.add("collapse")
+                history.replaceState("", document.title, window.location.pathname+window.location.search)
+            }
+        })
+    })
+})
