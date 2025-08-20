@@ -507,7 +507,6 @@ crux = add_archetype(
     "Crux",
     [
         "The Majestic Spirit",
-        "Prismatic Edge",
         "Ghosts of Pendragon",
         "Spirit Blade: Ascension",
     ],
@@ -578,6 +577,9 @@ add_archetype(
         "Blade of Creation",
         "Smash with Obelisk",
         "Amorphous Strike",
+    ],
+    exclude_cards=[
+        "Beguiling Coup", # Aside: this doesn't even work the way you want it to
     ]
 )
 

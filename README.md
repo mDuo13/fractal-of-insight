@@ -13,15 +13,17 @@ This site shows information and analysis of Grand Archive tournament results. It
     - add advanced elements to name without needing them to be archetypes necessarily
 - calculate stats on upsets
 - make dynamic sections, i.e. flask app or something, for showing individual events or doing dynamic queries
-- track seasonal invites, if possible? (might require sideloading number of invites per event)
+- track invite points/cards, if possible? (might require sideloading number of invites per event)
 - sideboard / tech cards prevalence rate (season/format)
 - path of silver data
 - conversion rate to top cut / day 2
-- advanced elements stats - number of decks with them, ratios in decks (average), etc. as charts preferably.
-- achievement for advanced elements
+- achievement for advanced elements; more achievements in general
 - top users per card
 - improve VOD list on archetype pages
 - show multiple regions for player profiles where players' home region has changed
 - improve presentation of price data
 - improve searching for players, cards. maybe make some tables sortable.
 - add new cards or per-season variants for archetype card lists
+- report more stats in a rolling window or seasonal basis
+- backfill old store champs
+
