@@ -20,7 +20,7 @@ class GlobalAchievementStats:
         self.first_achieved = {}
         self.achieved_by = defaultdict(list)
         self.total_players = 0 # Update this before calling for_achievement
-    
+
     def achieve(self, achieved, entrant):
         aname = achieved.name
         self.count_achieved[aname] += 1
@@ -53,20 +53,22 @@ class Achieved:
         self.name = achievement_name
         self.emoji = emoji
         self.description = description
-        self.event = entrant.event
+        if entrant:
+            self.event = entrant.event
         if skip_date:
             self.date = ""
         else:
             self.date = entrant.event.date
         self.details = details
-    
+        self.atype = "normal"
+
     @classmethod
     def from_template(cls, achievement_name, entrant, details=""):
         emoji = ACHIEVEMENTS[achievement_name].emoji
         description = ACHIEVEMENTS[achievement_name].description
         skip_date = ACHIEVEMENTS[achievement_name].skip_date
         return cls(achievement_name, emoji, description, entrant, details=details, skip_date=skip_date)
-    
+
     @classmethod
     def card_first(cls, cardname, entrant):
         name = f"First Play: {cardname}"
@@ -75,9 +77,20 @@ class Achieved:
         self = cls(name, emoji, description, entrant)
         self.img = get_card_img(cardname)
         self.shortname = "First Play"
-        self.is_card_first = True
+        self.atype = "first"
         return self
-        
+
+    @classmethod
+    def card_top_user(cls, cardname, score, rank):
+        name = f"Top {rank} User: {cardname}"
+        emoji = ""
+        description = cardname
+        details = f"Score: {score}"
+        self = cls(name, emoji, description, None, details=details, skip_date=True)
+        self.img = get_card_img(cardname)
+        self.atype = "top"
+        self.shortname = f"#{rank} Wielder"
+        return self
 
 
 class AchievementSet:
@@ -98,6 +111,10 @@ class AchievementSet:
     def add_card_first(self, cardname, entrant):
         # Maybe check for duplicate firsts here? Shouldn't be needed though
         a = Achieved.card_first(cardname, entrant)
+        self.achieved[a.name] = a
+
+    def add_card_top(self, cardname, score, rank):
+        a = Achieved.card_top_user(cardname, score, rank)
         self.achieved[a.name] = a
 
     def __iter__(self):

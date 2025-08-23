@@ -50,28 +50,29 @@ class Entrant:
             if 3*(self.wins + self.byes) + self.ties <= self.score and self.byes > 0:
                 print(f"event {evt_id}: byes NOT counted in wins when expected")
                 exit(1)
-            
+
         try:
             is_public = data.get("isDecklistPublic")
             dl = get_deck(self.id, evt_id, is_public)
             self.deck = Deck(dl, self)
         except (NoDeck):
             self.deck = None
-        
+
         # Special case for Worlds where you can switch decks for top cut:
         try:
             dl = get_topcut_deck(self.id, evt_id)
             self.topcut_deck = Deck(dl, self, is_topcut_deck=True)
         except (NoDeck):
             self.topcut_deck = None
-            
-        
+
+
         self.first_plays = [] # List of card names first played in this deck.
                               # Populated by cardstats.
-    
+        self.top_cards = []
+
     def sortkey(self):
         return self.score + (self.omw/100) + (self.gwp / 100000) + (self.ogw / 10000000)
-    
+
     def __str__(self):
         return f'{self.username} #{self.id}'
 
@@ -96,7 +97,7 @@ class JudgeEvt:
         self.exp = data["judgeExperience"]
         self.event = evt
         self.calc_judge_level()
-    
+
     def calc_judge_level(self):
         self.level = 0
         if self.exp == 0:
@@ -105,7 +106,7 @@ class JudgeEvt:
         while exp_left >= exp_for_level(self.level+1):
             self.level += 1
             exp_left -= exp_for_level(self.level)
-    
+
     def __str__(self):
         return f'{self.username} #{self.id}'
 
@@ -116,11 +117,11 @@ class Rivalry:
         self.wins = 0
         self.losses = 0
         self.draws = 0
-    
+
     @property
     def matches(self):
         return self.wins+self.losses+self.draws
-    
+
     @property
     def pct(self):
         if self.matches == 0:
@@ -142,7 +143,7 @@ def is_upset(event, pairing):
     if winner.elo - loser.elo >= UPSET_CUTOFF:
         return True
     return False
-    
+
 
 class Player:
     """
@@ -161,7 +162,7 @@ class Player:
         self.peak_elo = entrant.rank_elo
         self.vp = entrant.vp
         self.events_judged = []
-    
+
     def add_entry(self, entrant):
         self.events.append(entrant)
         if entrant.elo > self.peak_elo:
@@ -186,7 +187,7 @@ class Player:
             else:
                 if entrant.region not in self.past_regions:
                     self.past_regions.append(entrant.region)
-    
+
     def analyze(self):
         # To be called after all event entries have been added
         self.events.sort(key=lambda x: x.evt_time, reverse=True)
@@ -195,7 +196,7 @@ class Player:
         self.track_rivals()
         self.analyze_judging()
         self.check_achievements()
-        
+
     def analyze_champions(self):
         self.elements = ElementStats()
         self.champdata = ChampStats()
@@ -229,7 +230,7 @@ class Player:
                                     rivalries[oppid].wins += 1
                                 elif mpl["status"] == "tied":
                                     rivalries[oppid].draws += 1
-    
+
         rivalries_sorted = [r for r in rivalries.values() if r.matches >= RIVAL_THRESHOLD]
         rivalries_sorted.sort(key=lambda x:x.matches, reverse=True)
 
@@ -244,13 +245,13 @@ class Player:
             else:
                 # Prefer an oversized list to an empty one
                 break
-    
+
     def analyze_judging(self):
         if not self.events_judged:
             self.judge_level = None
             return
         self.judge_level = max([e.level for e in self.events_judged])
-    
+
     def analyze_hipster(self, low):
         """
         Give the player a hipster rating based on the average of their decks,
@@ -301,7 +302,7 @@ class Player:
                 if len(visited_countries) > 2:
                     self.achievements.add("Globetrotter", e, details=", ".join(visited_countries))
                     break
-        
+
         # Match results achievements
         for e in events_chrono:
             if e.event.matchformat_swiss != "bo3":
@@ -331,7 +332,7 @@ class Player:
                                 self.achievements.add("Titan Slayer", e, details=f"Round {rnd_num+1} vs {opp.username}")
                             if p["status"] == "winner" and round(opp.elo, 0) >= 1600:
                                 self.achievements.add("Attack and Dethrone God", e, details=f"Round {rnd_num+1} vs {opp.username}")
-        
+
         # Achievements for entering & winning different event types
         regionals_by_season = defaultdict(int)
         in_person_regionals_by_season = defaultdict(int)
@@ -355,7 +356,7 @@ class Player:
                     in_person_regionals_by_season[e.event.season] += 1
                     if in_person_regionals_by_season[e.event.season] >= 2:
                         self.achievements.add("True Nomad", e)
-                
+
             elif e.event.category["name"] == "Ascent":
                 self.achievements.add("Mountain Climber", e)
                 # Don't award top performances for ongoing Ascents/etc.
@@ -374,7 +375,7 @@ class Player:
                 self.achievements.add("World-Class Competitor", e)
                 if e.event.winner and e.placement == 1:
                     self.achievements.add("Ascendant", e)
-        
+
         # Achievements for decklist quirks
         elements_used = set()
         classes_used = set()
@@ -403,7 +404,7 @@ class Player:
                     self.achievements.add("Antigravity", e, details=str(e.deck))
                 if e.deck.guns >= 3:
                     self.achievements.add("We Need Guns. Lots of Guns", e, details=str(e.deck))
-        
+
         # Four Seasons
         seasons_played = set()
         for e in events_chrono:
@@ -430,7 +431,7 @@ class Player:
                     all_after.sort(key=lambda d: d.date)
                     netdecked_by = all_after[0]
                     self.achievements.add("I Made This", netdecked_by.entrant, details=f"{netdecked_by.entrant}'s {netdecked_by}")
-        
+
         # We Meet Again
         for e in events_chrono:
             opps_played = set()
@@ -443,7 +444,7 @@ class Player:
                         self.achievements.add("We Meet Again", e)
                     else:
                         opps_played.add(opp)
-        
+
         # Elo achievements
         for e in events_chrono:
             if round(e.elo_diff,0) >= 50:
@@ -452,34 +453,40 @@ class Player:
                 self.achievements.add("Deadly Duelist", e)
             if round(e.elo, 0) >= 1600:
                 self.achievements.add("Demigod", e)
-        
+
         # Capped Veteran
         for e in events_chrono:
             if e.vp >= 800:
                 self.achievements.add("Capped Veteran", e)
-        
+
         # Technically Undefeated
         for e in events_chrono:
             if e.losses == 0 and e.ties >= 2:
                 self.achievements.add("Technically Undefeated", e, details=e.record)
-        
+
         # Movie Star
         for e in events_chrono:
             for vid in e.event.videos:
                 if e.id in (vid["p1"], vid["p2"]):
                     self.achievements.add("Movie Star", e, details=f"Stage {vid.get('stage', 1)}, round {vid['round']}")
-        
+
         # JUDGE!
         if self.events_judged:
             self.achievements.add("JUDGE!", self.events_judged[0])
-        
-        
+
+
         # First card plays
         for e in events_chrono:
             for cardname in e.first_plays:
                 self.achievements.add_card_first(cardname, e)
 
-    
+        # Top card usage
+        for e in events_chrono:
+            if hasattr(e, "top_cards"):
+                for (cardname, score, rank) in e.top_cards:
+                    self.achievements.add_card_top(cardname, score, rank)
+
+
     def sortkey(self):
         # Sort players by # of tracked events entered descending
         # then alphabetically by username (case-insensitive) ascending

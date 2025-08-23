@@ -10,6 +10,7 @@ from shared import ElementStats, ChampStats, ArcheStats
 MIN_SIGHTINGS = 1 # temp: trying disabled since the weighting should handle this
 PAD_UNTIL = 500
 M_PER_APP = 6 # Empirically, an average "appearance" consists of ~5.9 matches.
+MAX_TOP_USERS = 10 # How many players can be considered "top users" of a card.
 
 HOT_CARDS_WINDOW = 60*60*24*61 # last ~60 days in seconds
 PAD_HOT_MATCHES = 500 # for hot cards, weight for this many *matches* (not appearances)
@@ -20,12 +21,12 @@ class TopCutAppearance:
     def __init__(self, e):
         self.entrant = e
         self.calc_topcut_record()
-    
+
     def __getattr__(self, attr):
         if attr == "deck":
             return self.entrant.topcut_deck
         return getattr(self.entrant, attr)
-    
+
     def calc_topcut_record(self):
         self.wins = 0
         self.losses = 0
@@ -60,6 +61,47 @@ class TopCutAppearance:
                     elif p2r["status"] == "tied":
                         self.ties += 1
 
+    def __str__(self):
+        return f'{self.entrant.username} #{self.entrant.id}'
+
+class TopPlayersOfCard:
+    def __init__(self, cardname):
+        self.name = cardname
+        self.users = defaultdict(int)
+        self.pdict = {} # Note: doesn't map to actual Player instances,
+                        # just an arbitrary Entrant instance for that player
+
+    def add(self, entrant):
+        if entrant.score <= 0:
+            # You don't get to be a top user if you don't score any points
+            return
+        if "REGALIA" in carddata[self.name]["types"] or "CHAMPION" in carddata[self.name]["types"]:
+            type_multiplier = 3
+        else:
+            type_multiplier = 1
+        card_quant_mat_main = entrant.deck.quantity_of(self.name)
+        # card_quant_maindeck = entrant.deck.quantity_of(self.name, search_sections=("main",))
+        card_quant_side = entrant.deck.quantity_of(self.name, search_sections=("sideboard",))
+
+        usage_score = entrant.score * type_multiplier * (
+            (card_quant_mat_main) +
+            (1/3 * card_quant_side)
+        )
+        self.users[entrant.id] += usage_score
+        self.pdict[entrant.id] = entrant
+
+    def sort(self):
+        sorted_users = [(uid,score) for uid,score in self.users.items()]
+        sorted_users.sort(key=lambda x: x[1], reverse=True)
+        self.users = {k:v for k,v in sorted_users}
+
+    def __iter__(self):
+        n = 0
+        for pid,score in self.users.items():
+            yield (self.pdict[pid],round(score, 1))
+            n += 1
+            if n >= MAX_TOP_USERS:
+                break
 
 
 class CardStats:
@@ -73,7 +115,8 @@ class CardStats:
         self.winrate = 0
         self.hipster = 0 # %ile rating of how uncommonly played the card is.
                          # Populated by CardStatSet.sort()
-    
+        self.top_users = TopPlayersOfCard(cardname)
+
     def add_entrant(self, e, is_topcut_deck=False):
         if is_topcut_deck:
             e = TopCutAppearance(e)
@@ -82,7 +125,7 @@ class CardStats:
         self.wins += e.wins
         self.losses += e.losses
         self.ties += e.ties
-    
+
     def analyze(self):
         self.appearances.sort(key=lambda e: e.evt_time*1000 + 9999-e.placement, reverse=True)
         if self.num_appearances:
@@ -96,16 +139,17 @@ class CardStats:
                     self.first_users.append(u)
                     u.first_plays.append(self.name)
                 i+= 1
-        
+
         self.elements = ElementStats()
         self.champdata = ChampStats()
         self.archedata = ArcheStats()
-        
+
         for e in self.appearances:
             self.elements.add_deck(e.deck)
             self.champdata.add_deck(e.deck)
             self.archedata.add_deck(e.deck)
-        
+            self.top_users.add(e)
+
         matches = self.wins+self.losses+self.ties
         winscore = self.wins + (self.ties/2)
         if matches:
@@ -140,9 +184,14 @@ class CardStats:
                 hot_t += (PAD_HOT_MATCHES - hot_matches)
                 hot_matches = PAD_HOT_MATCHES
             self.hot_rating = round(100*(hot_w + (hot_t / 2)) / hot_matches, 1)
-        
+
         self.analyze_associated_cards()
-    
+
+        self.top_users.sort()
+        for i, (e,score) in enumerate(self.top_users):
+            e.top_cards.append((self.name, score, i+1))
+
+
     def analyze_associated_cards(self):
         card_freq = defaultdict(int)
         for e in self.appearances:
@@ -163,7 +212,7 @@ class CardStats:
 class CardStatSet:
     def __init__(self):
         self.items = keydefaultdict(CardStats)
-    
+
     def add_deck(self, d):
         if d.invalid_decklist:
             # Don't pollute stats with invalid decklists.
@@ -190,7 +239,7 @@ class CardStatSet:
             v.hipster = round(100 * i / len(statdata), 1)
             mostappearances[k] = v
         self.items = mostappearances
-        
+
         #statdata.sort(key=lambda x:x[1].winrate, reverse=True)
         statdata.sort(key=lambda x:x[1].weighted_winrate, reverse=True)
         self.winningest = {k:v for k,v in statdata if v.num_appearances >= MIN_SIGHTINGS}
@@ -212,17 +261,17 @@ class CardStatSet:
         for ss in setstats.values():
             ss.sort()
         return setstats
-    
+
     def __getitem__(self, item):
         return self.items[item]
-    
+
     def __iter__(self):
         for cardname, cardstats in self.items.items():
             yield cardname, cardstats
-    
+
     def __len__(self):
         return len(self.items)
-    
+
     def __contains__(self, item):
         return (item in self.items)
 

@@ -91,6 +91,26 @@
     </div>
 </section>
 
+<section id="top-wielders">
+    <h2>Top Wielders</h2>
+    <button onclick="toggle('#top-wielders > .togglable')">Glimpse top wielders</button>
+    <p class="explanation collapse togglable">(The players who have earned the most points using the card. Wins are worth 3 points and ties are worth 1 point, multiplied by the number of copies of the card. Material deck cards are worth triple, and copies cards in the sideboard are worth one third as much.)</p>
+    <table class="togglable collapse">
+        <thead><tr>
+            <th>Rank</th><th>Player</th><th>Score</th>
+        </tr></thead>
+        <tbody>
+        {% for p,score in cardstat.top_users %}
+            <tr>
+                <td>{{loop.index}} {% if loop.index == 1 %}👑{% endif %}</td>
+                <td><a href="/player/{{p.id}}.html">{{p}}</a></td>
+                <td>{{score}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
 <section id="sightings">
     <h2>Recent Sightings</h2>
     <button onclick="toggle('#sightings > .togglable')">Glimpse Sightings</button>

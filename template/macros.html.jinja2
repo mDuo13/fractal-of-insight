@@ -375,7 +375,7 @@
     {%- elif card['pct'] is defined and not hide_overlay -%}
     <span class="quant">{{card["pct"]}}%</span>
     {% endif %}
-    {% if not card.as_token %}<div class="carddeets collapse"><a href="/card/{{slugify(card.card)}}.html">Card stats</a></div>{% endif %}
+    {% if not link and not card.as_token %}<div class="carddeets collapse"><a href="/card/{{slugify(card.card)}}.html">Card stats</a></div>{% endif %}
 </{{el}}>
 {% endmacro %}
 
@@ -584,9 +584,12 @@
 {% endmacro %}
 
 {% macro achievement(a, is_link=True) -%}
-{% if a.is_card_first %}
+{% if a.atype == "first" %}
     {% set el="a" %}
     {% set href="/card/"~slugify(a.description)~".html" %}
+{% elif a.atype == "top" %}
+    {% set el="a" %}
+    {% set href="/card/"~slugify(a.description)~".html#top-wielders" %}
 {% elif is_link %}
     {% set el="a" %}
     {% set href="/achievement/"~slugify(a.name)~".html" %}

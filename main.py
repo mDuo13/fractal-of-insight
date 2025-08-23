@@ -249,7 +249,6 @@ class PageBuilder:
 
         for pid in known_pids_sorted:
             known_players[pid].analyze_hipster(HIPSTER_FLOOR)
-
             self.write_player(known_players[pid], all_events, known_players)
         self.write_player_index(players=[known_players[pid] for pid in known_pids_sorted], events=all_events)
 
