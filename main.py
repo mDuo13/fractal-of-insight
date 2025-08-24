@@ -263,6 +263,8 @@ class PageBuilder:
         for a in ARCHETYPES.values():
             # if a.shortname == "": # Quasi-sub archetypes like Fatestone
             #     continue
+            if not a.matched_decks:
+                continue
             if a.name not in aew.keys():
                 aew[a.name] = []
             a.analyze()

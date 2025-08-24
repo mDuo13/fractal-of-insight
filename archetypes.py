@@ -1,5 +1,6 @@
 from collections import defaultdict
 from bisect import insort
+from logging import warning
 
 from config import SharedConfig
 from shared import ElementStats, ChampStats, lineage
@@ -186,7 +187,8 @@ class Archetype:
             for k,v in deck.card_types.items():
                 total_of_type[k] += v
         if total_decks == 0:
-            raise ZeroDivisionError(f"No decks for archetype {self.name}")
+            warning(f"No decks for archetype {self.name}")
+            return
         self.average_floating = round(total_floating / total_decks, 0)
         total_of_type_sorted = [(k,v) for k,v in total_of_type.items()]
         total_of_type_sorted.sort(key=lambda x:x[1], reverse=True)

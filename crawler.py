@@ -37,21 +37,19 @@ def due_for_update(evt_data):
         return True
     if evt_data.get("status") in ("complete", "stale", "canceled", "deleted", "canceled-suspended"):
         return False
-    return True
+    #return True
 
     ## Old logic: didn't update in-progress events, sometimes fooled by
     ## events that were initially scheduled in the far future.
     # if evt_data.get("status") in ("started", "completable", "404"):
     #     return True
 
-    # if evt_data.get("status") == "rsvp":
-    #     start_time = evt_data.get("startAt", 0) / 1000
-    #     if start_time > time():
-    #         # Scheduled for future, don't bother updating yet
-    #         return False
-    #     return True
-    
-    # return False
+    if evt_data.get("status") == "rsvp":
+        start_time = evt_data.get("startAt", 0) / 1000
+        if start_time > time() + 86400:
+            # Scheduled for more than 1 day in future, don't bother updating yet
+            return False
+    return True
 
 def crawl_event(i): # TODO: implement a force_redownload
     evt_data = crawldata["events"].get(str(i))
@@ -69,7 +67,7 @@ def crawl_event(i): # TODO: implement a force_redownload
                 updated = True
             else:
                 evt_full = {"status": "404"}
-    
+
         interesting = is_interesting(evt_full)
         if interesting:
             print(f"""
@@ -81,7 +79,7 @@ Category: {evt_full.get('category')}
 Decklists? {"Yes" if evt_full.get("decklists") else "No"}
 """)
             save_event_json(evt_full)
-        
+
         evt_data = {
             "status": evt_full["status"],
             "interesting": interesting
@@ -104,10 +102,9 @@ def is_interesting(evt):
             print("Event has been ongoing > 2 days; marking stale.")
             evt["status"] = "stale"
             return 0
-        else:
-            print("Ongoing...")
-            return 0
-    if evt.get("status") in ("rsvp", "canceled", "started", "stale", "deleted"):
+    if evt.get("status") in ("stale", "deleted", "canceled"):
+        return 0
+    if evt.get("status") in ("rsvp", "started", "completable"):
         print("Status:",evt.get("status"))
         if evt.get("category") in ("ascent", "nationals", "worlds"):
             # These are interesting even while ongoing
@@ -119,33 +116,33 @@ def is_interesting(evt):
     if not evt.get('ranked'):
         print("Unranked")
         return 0
-    
+
     players = evt.get("players", [])
     # if len(players) < config.INTERESTING_PLAYER_COUNT:
     #     print(f"Only {len(players)} players")
     #     return 0
-    
+
     if evt.get("category") == "regular" and not evt.get("decklists"):
         if len(players) >= config.INTERESTING_PLAYER_COUNT:
             print(f"Big locals? #{evt['id']} ({len(players)} players): {evt['name']}")
         if len(players) > config.REALLY_INTERESTING_PLAYER_COUNT:
             return 1
         return 0
-    
+
     total_public_dls = sum([1 for p in evt["players"] if p.get("isDecklistPublic", False)])
     if total_public_dls < 1 and evt.get("category") == "regular":
         print(f"Private decklists only. Mid-size online event?")
         return 0
 
     return 1
-    
+
 
 def main(args):
     interesting_events = {}
     start = args.event_id
     # if start < 0:
     #     start = crawldata["max_crawled"] + 1
-    
+
     unsaved_data = 0
     consecutive404s = 0
     try:
@@ -161,7 +158,7 @@ def main(args):
                 consecutive404s += 1
                 if consecutive404s >= config.MAX_404_STREAK:
                     raise Consecutive404Streak
-            
+
     except (KeyboardInterrupt, Consecutive404Streak):
         save_crawldata()
         print(f"\n{len(interesting_events)} new interesting events:")
