@@ -269,6 +269,7 @@ water_allies = add_archetype(
     exclude_cards=[
         "Spirit Blade: Ensoul",
         "Dawn of Ashes",
+        "Fabled Sapphire Fatestone",
     ],
     require_types={
         "ALLY": 20
@@ -842,6 +843,19 @@ add_archetype(
         "ALLY": -20
     },
     shortname="Wakeup",
+)
+
+add_archetype(
+    "Horse and Taxes",
+    [
+        "Vanitas, Dominus Rex",
+    ],
+    require_combos=[[
+        "Dilu, Auspicious Charger",
+        "Red Hare, Unrivaled Stallion",
+        "Dungeon Guide",
+    ]],
+    require_element="Fire"
 )
 
 # add_archetype(
