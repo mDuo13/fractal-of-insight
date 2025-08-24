@@ -251,6 +251,32 @@ function ready(callback) {
   else document.addEventListener("DOMContentLoaded", callback)
 }
 
+function search_table() {
+    const searchbox = document.querySelector(".searchbox")
+    const search_query = searchbox.value
+    const target_el = document.querySelector(searchbox.dataset["target"])
+    const trs = target_el.querySelectorAll("body tr")
+
+    for (const tr of trs) {
+        if(tr.textContent.toLowerCase().includes(search_query.toLowerCase())) {
+            tr.classList.remove("collapse")
+        } else {
+            tr.classList.add("collapse")
+        }
+    }
+}
+
+function reset_search(el) {
+    const wrap_el = document.querySelector(el.dataset["target"])
+    const searchbox = wrap_el.querySelector(".searchbox")
+    searchbox.value = ""
+    // search_table()
+    const trs = wrap_el.querySelectorAll("body tr")
+    for (const tr of trs) {
+        tr.classList.remove("collapse")
+    }
+}
+
 ready(() => {
     // Open hash on page-load
     if (window.location.hash) {
@@ -285,4 +311,15 @@ ready(() => {
             }
         })
     })
+
+    // Set up find-as-you-type delay (if needed)
+    let typingTimer
+    const typeInterval = 200
+    const searchbox = document.querySelector(".searchbox")
+    if (searchbox) {
+        searchbox.addEventListener('keyup', () => {
+            clearTimeout(typingTimer)
+            typingTimer = setTimeout(search_table, typeInterval)
+        })
+    }
 })

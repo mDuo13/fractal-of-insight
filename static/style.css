@@ -1022,6 +1022,15 @@ a.achievement {
     line-height: 30px;
 }
 
+.searchbox {
+	margin-bottom: 5px;
+	width: 350px;
+}
+
+.reset-button {
+    margin-bottom: 5px;
+}
+
 :root {
     --ui-bg: linear-gradient(0deg, #e1e0db, #f2efe5);
     --ui-bg-sub: linear-gradient(0deg, #cbcac6, #e1e0db);
