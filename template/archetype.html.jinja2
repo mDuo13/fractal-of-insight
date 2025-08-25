@@ -16,7 +16,7 @@
     <li><b>At least one of the following combos:</b>
         <ul>
             {% for combo in a.require_combos %}
-            <li>{{combo|join(", ")}}</li>
+            <li>{{combo|join(" + ")}}</li>
             {% endfor %}
         </ul>
     </li>
