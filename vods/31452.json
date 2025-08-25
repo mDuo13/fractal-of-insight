@@ -1,0 +1,45 @@
+{"videos": [
+    {
+        "round": 1,
+        "p1": 10891,
+        "p2": 3441,
+        "link": "https://www.youtube.com/live/hSaLxBBZ5LU?feature=shared&t=3981"
+    },
+    {
+        "round": 2,
+        "p1": 2273,
+        "p2": 12211,
+        "link": "https://www.youtube.com/live/hSaLxBBZ5LU?feature=shared&t=8622"
+    },
+    {
+        "round": 3,
+        "p1": 888,
+        "p2": 462,
+        "link": "https://www.youtube.com/live/hSaLxBBZ5LU?feature=shared&t=13592"
+    },
+    {
+        "round": 4,
+        "p1": 10430,
+        "p2": 307,
+        "link": "https://www.youtube.com/live/hSaLxBBZ5LU?feature=shared&t=21399"
+    },
+    {
+        "round": 5,
+        "p1": 9051,
+        "p2": 755,
+        "link": "https://www.youtube.com/live/hSaLxBBZ5LU?feature=shared&t=26430"
+    },
+    {
+        "round": 6,
+        "p1": 182,
+        "p2": 9108,
+        "link": "https://www.youtube.com/live/hSaLxBBZ5LU?feature=shared&t=31301"
+    },
+    {
+        "round": 7,
+        "p1": 2373,
+        "p2": 18505,
+        "link": "https://www.youtube.com/live/hSaLxBBZ5LU?feature=shared&t=36147",
+        "//": "Round 8 is cut off by Youtube"
+    }
+]}
