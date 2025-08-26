@@ -15,7 +15,7 @@ class Season:
 
     def add_event(self, e):
         self.events.append(e)
-        
+
         if not self.data:
             if self.code == "OFF":
                 self.name = "Offseason"
@@ -42,7 +42,7 @@ class Season:
         self.bc_top = self.calc_headtohead(True)
         self.analyze_finishes()
         self.analyze_draws()
-    
+
     def analyze_players(self):
         for e in self.events:
             for p in e.players:
@@ -69,7 +69,7 @@ class Season:
             bc_list = [e.battlechart for e in self.events]
         bc = BattleChart.from_merge(bc_list)
         return bc
-    
+
     def analyze_finishes(self):
         self.arche_wins = {}
         for e in self.events:
@@ -79,7 +79,7 @@ class Season:
                         self.arche_wins[arche].append(e)
                     else:
                         self.arche_wins[arche] = [e]
-    
+
     def analyze_draws(self):
         if not self.events:
             return
@@ -110,10 +110,10 @@ class Format(Season):
         self.events = []
         self.data = None
         self.pdict = defaultdict(list)
-    
+
     def add_event(self, e):
         self.events.append(e)
-    
+
     def should_include(self, evt):
         """
         Returns True if evt occurs during this format's timeframe.
@@ -124,13 +124,13 @@ class Format(Season):
         fmt_start = strptime(self.start_time, ISOFMT)
         if self.end_time:
             fmt_end = strptime(self.end_time, ISOFMT)
-        
+
         tz_offset = -5 * 60 * 60 # Weebs' seasons are set by CST in the USA
         evt_start = gmtime(evt.evt["startAt"]/1000 + tz_offset)
         if fmt_start <= evt_start and (not self.end_time or evt_start < fmt_end):
             return True
         return False
-    
+
     def __repr__(self):
         return self.name
 
@@ -222,5 +222,10 @@ add_format("HVN Post-June Ban",
 )
 add_format("DTR Release",
     start="2025-07-25",
+    end="2025-08-25",
     desc="Distorted Reflections released; Lost in Thought banned; Polaris, Twinkling Cauldron received errata."
+)
+add_format("DTR + Thurible",
+    start="2025-08-25",
+    desc="Purifying Thurible added to Proxia's Vault"
 )

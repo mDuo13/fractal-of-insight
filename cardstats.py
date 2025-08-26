@@ -1,7 +1,8 @@
 from collections import defaultdict
 from time import time
 
-from datalayer import carddata, get_card_img
+from season import SEASONS
+from datalayer import carddata, get_card_img, is_valid_in_decklists
 from shared import keydefaultdict
 from shared import ElementStats, ChampStats, ArcheStats
 
@@ -212,6 +213,7 @@ class CardStats:
 class CardStatSet:
     def __init__(self):
         self.items = keydefaultdict(CardStats)
+        self.seasons = {szn: keydefaultdict(CardStats) for szn in SEASONS.values() if szn != "OFF"}
 
     def add_deck(self, d):
         if d.invalid_decklist:
@@ -219,19 +221,33 @@ class CardStatSet:
             # Also, don't award "first play" for that.
             return
 
-        for card in d: # Iterates material and main deck card names
-            if "TOKEN" in carddata[card]["types"]:
-                # Some decklists mistakenly include tokens. Skip those.
+        szn = d.entrant.event.season
+
+        for cardname in d: # Iterates material and main deck card names
+            if not is_valid_in_decklists(cardname):
+                # Some decklists mistakenly include tokens and masteries. Skip those.
                 continue
-            self.items[card].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
+            self.items[cardname].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
+            if szn != "OFF":
+                self.seasons[szn][cardname].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
         for card_o in d.side:
-            if "TOKEN" in carddata[card_o["card"]]["types"]:
-                # Skip tokens again
+            cardname = card_o["card"]
+            if not is_valid_in_decklists(cardname):
                 continue
-            if card_o["card"] not in d: # Don't double-add a deck if a card is in main+side
-                self.items[card_o["card"]].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
+            if cardname not in d: # Don't double-add a deck if a card is in main+side
+                self.items[cardname].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
+                if szn != "OFF":
+                    self.seasons[szn][cardname].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
+
+    def analyze(self):
+        for cardstat in self.items.values():
+            cardstat.analyze()
+        for szn_stats in self.seasons.values():
+            for cardstat in szn_stats.values():
+                cardstat.analyze()
 
     def sort(self):
+        # Must be called after self.analyze() has populated the sort criteria
         mostappearances = keydefaultdict(CardStats)
         statdata = [(k,v) for k,v in self.items.items()]
         statdata.sort(key=lambda x:x[1].num_appearances, reverse=True)
@@ -249,6 +265,21 @@ class CardStatSet:
 
         statdata.sort(key=lambda x:x[0])
         self.alphabetical = {k:v for k,v in statdata}
+
+        # Also calc most played & winningest by season
+        szn_statdata = {}
+        self.most_played_by_season = {}
+        for szn,sznstats in self.seasons.items():
+            statdata = [(k,v) for k,v in sznstats.items()]
+            statdata.sort(key=lambda x:x[1].num_appearances, reverse=True)
+            szn_statdata[szn] = statdata
+            self.most_played_by_season[szn] = {k:v for k,v in statdata}
+
+        self.winningest_by_season = {}
+        for szn,statdata in szn_statdata.items():
+            statdata.sort(key=lambda x:x[1].weighted_winrate, reverse=True)
+            self.winningest_by_season[szn] = {k:v for k,v in statdata if v.num_appearances >= MIN_SIGHTINGS}
+
 
     def split_by_set(self):
         setstats = {}

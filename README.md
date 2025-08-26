@@ -6,7 +6,6 @@ This site shows information and analysis of Grand Archive tournament results. It
 ## TODO / Planned Features
 
 - improve performance of large event pages (e.g. team standard 2025, Ascent KL)
-- fix automatic mid-event updates for multi-day events
 - refine archetype classification
     - use machine-learning clustering to identify archetypes?
     - archetype overlap chart?
@@ -21,9 +20,11 @@ This site shows information and analysis of Grand Archive tournament results. It
 - improve VOD list on archetype pages
 - show multiple regions for player profiles where players' home region has changed
 - improve presentation of price data
-- improve searching for players, cards. maybe make some tables sortable.
+- maybe make some tables sortable.
 - add new cards or per-season variants for archetype card lists
-- report more stats in a rolling window or seasonal basis
+- report even more stats in a rolling window or seasonal basis
+    - e.g. individual card stats (on card page)
 - backfill old store champs
 - improve archetypes index page to have tabs per season or something
 - show money cards on archetype page
+- add landing page(s) for champions

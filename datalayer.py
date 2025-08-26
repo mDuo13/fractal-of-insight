@@ -346,6 +346,18 @@ def get_card_references(cardname):
             reflist.append(carddata[r.get("name")])
     return reflist
 
+def is_valid_in_decklists(cardname):
+    """
+    Returns true if the card should appear in decklists.
+    Returns false if the card should not, such as tokens or masteries.
+    """
+    card = carddata[cardname]
+    if "TOKEN" in card["types"]:
+        return False
+    if "MASTERY" in card["types"]:
+        return False
+    return True
+
 # Load tcgcsv price data
 try:
     pricedata = {}

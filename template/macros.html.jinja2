@@ -216,6 +216,17 @@
 <a class="evt {{slugify(evt.category['name'])}}{% if evt.decklist_status == 'none' or (evt.players|length < 20 and evt.category.name != 'worlds') %} collapse{% endif %}" href="/{{evt.season}}/{{evt.id}}.html" data-decklists="{{evt.num_decklists}}" data-category="{{slugify(evt.category['name'])}}" data-playercount="{{evt.players|length}}">
     <div class="evt-mainbox">
         <h3>{{evt.name}}</h3>
+        {% if evt.winner and evt.winner.topcut_deck %}
+        <img class="winnerbadge" src="/static/icon/icon-{{evt.winner.topcut_deck.els[0]|slugify}}.png" alt="Winner icon: {{evt.winner.topcut_deck.els[0]}}" />
+            {% if evt.winner.topcut_deck.representative_champion %}
+        <img class="winnerbadge" src="/static/icon/icon-{{evt.winner.topcut_deck.representative_champion|slugify}}.png" alt="{{evt.winner.topcut_deck.representative_champion}}" />
+            {% endif %}
+        {% elif evt.winner and evt.winner.deck %}
+        <img class="winnerbadge" src="/static/icon/icon-{{evt.winner.deck.els[0]|slugify}}.png" alt="Winner icon: {{evt.winner.deck.els[0]}}" />
+            {% if evt.winner.deck.representative_champion %}
+        <img class="winnerbadge" src="/static/icon/icon-{{evt.winner.deck.representative_champion|slugify}}.png" alt="{{evt.winner.deck.representative_champion}}" />
+            {% endif %}
+        {% endif %}
         <div class="date_loc">{{evt.date}} {{flag(evt.country)}}</div>
         <div class="playercount">{{evt.players|length}} entrants</div>
         <div class="decklistcount">{% if evt.decklist_status == "full" %}All decklists{% elif evt.decklist_status == "partial" %}{{evt.num_decklists}} decklists{% endif %}</div>

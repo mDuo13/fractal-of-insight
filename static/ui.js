@@ -127,15 +127,28 @@ function reset_matches() {
     show("#keymatch-expl")
     hide("#keymatch-showing")
 }
+
 function opentab(tabbutton, selector) {
     const tabbuttons = tabbutton.parentElement.querySelectorAll(".tab")
     tabbuttons.forEach(el => {el.classList.remove("activetab")})
     tabbutton.classList.add("activetab")
 
-    const tabcontent = document.querySelector(selector)
-    const tabs = tabcontent.parentElement.querySelectorAll(".tabcontent")
-    tabs.forEach(el => {el.classList.add("collapse")})
-    tabcontent.classList.remove("collapse")
+    if (selector === undefined) {
+        const tabfor = tabbutton.dataset.tabfor
+        selector = `[data-tabof="${tabfor}"]`
+    }
+
+    const tabparent = tabbutton.parentElement.parentElement
+    const target_tab = tabparent.querySelector(selector)
+    // Only sibling tabs and not tabs of other groups in the same area
+    const tabs = target_tab.parentElement.querySelectorAll(".tabcontent")
+    for (const tab of tabs) {
+        if (tab === target_tab) {
+            tab.classList.remove("collapse")
+        } else {
+            tab.classList.add("collapse")
+        }
+    }
 }
 
 function opentabs(tabbutton) {

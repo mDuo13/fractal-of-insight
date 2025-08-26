@@ -766,6 +766,20 @@ fieldset label {
     font-size: 14px;
 }
 
+.winnerbadge {
+    display: none;
+}
+@media (min-width: 1400px) {
+    .winnerbadge {
+        display: block;
+        position: absolute;
+        right: 35px;
+        bottom: 3px;
+        height: 100px;
+        width: 100px;
+    }
+}
+
 .explanation {
     font-size: 13px;
     font-style: italic;

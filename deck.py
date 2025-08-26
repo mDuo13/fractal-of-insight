@@ -480,6 +480,19 @@ class Deck:
 
         return " ".join((spiritstr, archetypestr, champstr)).replace("  "," ")
 
+    @property
+    def representative_champion(self):
+        if len(self.lineages) == 0:
+            return ""
+        elif len(self.lineages) > 0:
+            if "Luxem Assassin" in self.archetypes:
+                return "Luxem Zander"
+            if "Shadowstrike" in self.archetypes:
+                return "Shadowstrike Tristan"
+            if "Diana, Aether Dilettante" in self.champs:
+                return "Aether Diana"
+            return self.lineages[-1] #TODO: handle hybrid lineages better
+
     def __iter__(self):
         for card_o in self.dl["material"]:
             yield card_o["card"]

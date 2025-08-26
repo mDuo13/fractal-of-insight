@@ -37,6 +37,8 @@ class PageBuilder:
         self.env.globals["OVERALL"] = OVERALL
         self.env.globals["ACHIEVEMENTS"] = ACHIEVEMENTS
         self.env.filters["slugify"] = slugify
+        self.env.trim_blocks = True
+        self.env.autoescape = True
 
     def render(self, template, write_to, **kwargs):
         """
@@ -224,8 +226,7 @@ class PageBuilder:
         self.write_formats(formats_desc)
 
         # Card stats has to come before player stuff for "first play" to work.
-        for cardname, cardstat in ALL_CARD_STATS:
-            cardstat.analyze()
+        ALL_CARD_STATS.analyze()
         ALL_CARD_STATS.sort()
         card_stats_by_set = ALL_CARD_STATS.split_by_set()
 
@@ -315,7 +316,6 @@ class PageBuilder:
         self.render("index.html.jinja2", "index.html", seasons=seasons_sorted)
 
 def main(args):
-
     if args.fast:
         config.SharedConfig.go_fast = True
     builder = PageBuilder()
