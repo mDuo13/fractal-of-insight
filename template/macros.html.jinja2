@@ -487,17 +487,17 @@
             {% endif %}
             <textarea class="omniexport">
 # Material Deck
-{% for card_o in deck.mat %}
+{%+ for card_o in deck.mat +%}
 {{card_o["quantity"]}} {{card_o["card"]}}
-{%- endfor %}
+{%- endfor +%}
 
 # Main Deck
-{% for card_o in deck.main %}
+{%+ for card_o in deck.main +%}
 {{card_o["quantity"]}} {{card_o["card"]}}
-{%- endfor %}
+{%- endfor +%}
 
 # Sideboard
-{% for card_o in deck.side %}
+{%+ for card_o in deck.side +%}
 {{card_o["quantity"]}} {{card_o["card"]}}
 {%- endfor -%}
             </textarea>

@@ -127,9 +127,9 @@ class CardStats:
         self.losses += e.losses
         self.ties += e.ties
 
-    def analyze(self):
+    def analyze(self, grant_achievements=True):
         self.appearances.sort(key=lambda e: e.evt_time*1000 + 9999-e.placement, reverse=True)
-        if self.num_appearances:
+        if grant_achievements and self.num_appearances:
             self.first_users = [self.appearances[-1]]
             self.appearances[-1].first_plays.append(self.name)
             i = 2
@@ -188,9 +188,10 @@ class CardStats:
 
         self.analyze_associated_cards()
 
-        self.top_users.sort()
-        for i, (e,score) in enumerate(self.top_users):
-            e.top_cards.append((self.name, score, i+1))
+        if grant_achievements:
+            self.top_users.sort()
+            for i, (e,score) in enumerate(self.top_users):
+                e.top_cards.append((self.name, score, i+1))
 
 
     def analyze_associated_cards(self):
@@ -244,7 +245,7 @@ class CardStatSet:
             cardstat.analyze()
         for szn_stats in self.seasons.values():
             for cardstat in szn_stats.values():
-                cardstat.analyze()
+                cardstat.analyze(grant_achievements=False)
 
     def sort(self):
         # Must be called after self.analyze() has populated the sort criteria
