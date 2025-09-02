@@ -385,6 +385,8 @@
     <span class="quant">{{card["quantity"]}}</span>
     {%- elif card['pct'] is defined and not hide_overlay -%}
     <span class="quant">{{card["pct"]}}%</span>
+    {%- elif card['price'] is defined and not hide_overlay -%}
+    <span class="quant">${{'%0.2f' % card["price"]}}</span>
     {% endif %}
     {% if not link and not card.as_token %}<div class="carddeets collapse"><a href="/card/{{slugify(card.card)}}.html">Card stats</a></div>{% endif %}
 </{{el}}>

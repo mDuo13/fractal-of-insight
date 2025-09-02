@@ -178,15 +178,19 @@
     <input class="searchbox togglable collapse" data-target="#all-cards" placeholder="Search" />
     <button class="reset-button togglable collapse" data-target="#all-cards" title="Reset search" onclick="reset_search(this)">❌</button>
     <table class="togglable collapse">
-        <thead>
-            <tr><th>Card</th><th>Appearances</th><th>Lifetime Win Rate</th></tr>
-        </thead>
+        <thead><tr>
+            <th>Card</th>
+            <th>Appearances</th>
+            <th>Lifetime Win Rate</th>
+            <th>Price</th>
+        </tr></thead>
         <tbody>
         {% for cardname, cardstat in cardstats.alphabetical.items() %}
             <tr>
                 <td><a href="/card/{{slugify(cardname)}}.html">{{cardname}}</a></td>
                 <td>{{cardstat.num_appearances}}</td>
                 <td>{{cardstat.winrate}}%</td>
+                <td>{{card_prices[cardname]}}</td>
             </tr>
         {%- endfor %}
         </tbody>

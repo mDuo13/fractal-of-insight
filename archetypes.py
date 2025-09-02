@@ -5,10 +5,14 @@ from logging import warning
 from config import SharedConfig
 from shared import ElementStats, ChampStats, lineage
 from cards import BANLIST
-from datalayer import get_card_img, carddata
+from datalayer import get_card_img, carddata, get_card_price
 
 SIMILAR_DECKS_CUTOFF = 85
-
+MAT_DIFF_CARD_LIMIT = 12
+MAIN_DIFF_CARD_LIMIT = 15
+SIDE_DIFF_CARD_LIMIT = 8
+MONEY_CARD_COUNT = 20
+MONEY_CARD_PRICE_CUTOFF = 5.00 # Only include cards that cost at least $ this
 SUBTYPES = {}
 
 class Archetype:
@@ -130,6 +134,7 @@ class Archetype:
 
         self.analyze_card_freq()
         self.analyze_card_stats()
+        self.analyze_money_cards()
         if self.subtypes:
             self.subtypes.sort(key=lambda x: len(x.matched_decks), reverse=True)
             for st in self.subtypes:
@@ -193,6 +198,26 @@ class Archetype:
         total_of_type_sorted = [(k,v) for k,v in total_of_type.items()]
         total_of_type_sorted.sort(key=lambda x:x[1], reverse=True)
         self.average_of_type = {k: round(v / total_decks, 0) for k,v in total_of_type_sorted}
+
+    def analyze_money_cards(self):
+        money_cards = []
+        for sect,limit in ( ("mat", MAT_DIFF_CARD_LIMIT),
+                            ("main", MAIN_DIFF_CARD_LIMIT),
+                            ("side", SIDE_DIFF_CARD_LIMIT) ):
+            for cardname in list(self.card_freqs[sect].keys())[:limit]:
+                price = get_card_price(cardname)
+                if price:
+                    money_cards.append( (cardname, price) )
+        money_cards.sort(key=lambda x:x[1], reverse=True)
+        self.money_cards = {}
+        for cardname,price in money_cards[:MONEY_CARD_COUNT]:
+            if price >= MONEY_CARD_PRICE_CUTOFF:
+                self.money_cards[cardname] = {
+                    "card": cardname,
+                    "price": price,
+                    "img": get_card_img(cardname)
+                }
+
 
     def load_videos(self):
         self.videos = []

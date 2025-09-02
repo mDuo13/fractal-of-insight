@@ -15,7 +15,7 @@ from omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
 from season import Season, SEASONS, Format, FORMATS
 from competition import EVENT_TYPES, TEAM_STANDARD
 from player import Player
-from archetypes import ARCHETYPES, NO_ARCHETYPE
+from archetypes import ARCHETYPES, NO_ARCHETYPE, MAT_DIFF_CARD_LIMIT, MAIN_DIFF_CARD_LIMIT, SIDE_DIFF_CARD_LIMIT
 from spoiler import SpoilerEvent, SPOILER_SEASONS
 from cards import ERRATA, BANLIST
 from cardstats import ALL_CARD_STATS, PAD_UNTIL
@@ -107,8 +107,14 @@ class PageBuilder:
         arche_path = f"deck/{slug}.html"
         # The "Sightings" table is too much, so paginate it.
         max_page = ceil(len(archetype.matched_decks) / SIGHTINGS_PER_PAGE)
-        self.render("archetype.html.jinja2", arche_path, arche=archetype, players=players, events=events, seasons=seasons, wins=wins,
-                    page_number=1, page_start=0, page_end=SIGHTINGS_PER_PAGE, max_page=max_page)
+        self.render("archetype.html.jinja2", arche_path, arche=archetype,
+                    players=players, events=events, seasons=seasons, wins=wins,
+                    page_number=1, page_start=0, page_end=SIGHTINGS_PER_PAGE,
+                    MAIN_DIFF_CARD_LIMIT=MAIN_DIFF_CARD_LIMIT,
+                    MAT_DIFF_CARD_LIMIT=MAT_DIFF_CARD_LIMIT,
+                    SIDE_DIFF_CARD_LIMIT=SIDE_DIFF_CARD_LIMIT,
+                    max_page=max_page
+        )
         if max_page > 1:
             for i in range(1, max_page):
                 page_number = i+1
@@ -119,14 +125,13 @@ class PageBuilder:
     def write_archetype_index(self, archetypes, aew, cswr):
         self.render("archetypes.html.jinja2", "deck/index.html", archetypes=archetypes, aew=aew, cswr=cswr)
 
-    def write_card_index(self, card_stats_by_set):
-        self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata, set_groups=set_groups, get_card_img=get_card_img, card_stats_by_set=card_stats_by_set, PAD_UNTIL=PAD_UNTIL)
+    def write_card_index(self, card_stats_by_set, card_prices):
+        self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata, set_groups=set_groups, get_card_img=get_card_img, card_stats_by_set=card_stats_by_set, card_prices=card_prices, PAD_UNTIL=PAD_UNTIL)
 
-    def write_card_page(self, cardname, cardstat, events=[]):
+    def write_card_page(self, cardname, cardstat, price="", events=[]):
         max_page = ceil(len(cardstat.appearances) / CARD_SIGHTINGS_PER_PAGE)
-        card_price = format_price(get_card_price(cardname))
 
-        self.render("card.html.jinja2", f"card/{slugify(cardname)}.html", card=carddata[cardname], cardstat=cardstat, events=events, ERRATA=ERRATA, BANLIST=BANLIST, card_price=card_price, page_number=1, page_start=0, page_end=CARD_SIGHTINGS_PER_PAGE, max_page=max_page)
+        self.render("card.html.jinja2", f"card/{slugify(cardname)}.html", card=carddata[cardname], cardstat=cardstat, events=events, ERRATA=ERRATA, BANLIST=BANLIST, card_price=price, page_number=1, page_start=0, page_end=CARD_SIGHTINGS_PER_PAGE, max_page=max_page)
 
         # Actually printing all these sightings is like 4.5 gigs of data oops
         # if max_page > 1:
@@ -242,8 +247,11 @@ class PageBuilder:
                     if p.topcut_deck.hipster < HIPSTER_FLOOR:
                         HIPSTER_FLOOR = p.topcut_deck.hipster
 
+        card_prices = {}
         for cardname, cardstat in ALL_CARD_STATS:
-            self.write_card_page(cardname, cardstat, events=all_events)
+            price = format_price(get_card_price(cardname))
+            card_prices[cardname] = price
+            self.write_card_page(cardname, cardstat, price, events=all_events)
 
         known_pids_sorted = [pid for pid, pl in known_players.items()]
         known_pids_sorted.sort(key=lambda x: known_players[x].sortkey())
@@ -299,7 +307,7 @@ class PageBuilder:
         for e in all_events.values():
             self.write_event(e)
 
-        self.write_card_index(card_stats_by_set)
+        self.write_card_index(card_stats_by_set, card_prices)
 
         GAS.total_players = len(known_players)
         for achievement in ACHIEVEMENTS.values():

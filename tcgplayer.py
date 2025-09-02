@@ -29,6 +29,7 @@ TCGP_CARDNAMES = {
     "Fatestone of Revelations // Young Wyrmling": "Fatestone of Revelations",
     "Fatestone of Heaven // Heavenly Drake": "Fatestone of Heaven",
     "Companion Fatestone // Fatebound Caracal": "Companion Fatestone",
+    "Lavaplume Fatestone // Firebird Trailblazer": "Lavaplume Fatestone",
     "Wrathful Slime": "WrathfulSlime",
     "Fabled Azurite Fatestone // Seiryuu, Azure Dragon": "Fabled Azurite Fatestone", #tcgp has both, but the one with the // is the sapphire promo only
 }
