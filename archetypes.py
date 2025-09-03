@@ -865,7 +865,7 @@ add_archetype(
         # Compared to "Wind Allies" decks, these decks run far fewer allies
         # and really try to combo off by making one tall ally and attacking
         # multiple times in one turn.
-        "ALLY": -20
+        "ALLY": -21
     },
     shortname="Wakeup",
 )
