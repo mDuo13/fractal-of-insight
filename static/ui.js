@@ -1,7 +1,7 @@
 function toggle(q) {
     const togtarget = document.querySelectorAll(q)
     togtarget.forEach(el => {el.classList.toggle("collapse") })
-    const anchor = q.match(/#[a-z\-]+/)
+    const anchor = q.match(/#[a-z_\-]+/)
     if (anchor && anchor[0]) {
         history.replaceState("", document.title, window.location.pathname+anchor)
     }
