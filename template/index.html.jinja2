@@ -20,12 +20,26 @@
 
     {{ macros.event_filters(EVENT_TYPES) }}
 
+    {% set ns = namespace(events_printed = 0, seasons_printed=[]) %}
     {% for seasonname, season in seasons.items() %}
+    {% if loop.index0 == 0 or ns.events_printed < 10 %}
     <section class="season" id="{{season['code']}}">
         <h2><a href="{{season['code']}}/">{% if season.name == "Offseason" %}Offseasons{% else %}<img alt="{{season}}" src="/static/{{season['code']}}_logo.png" />{% endif %}</a></h2>
         {% for evt in season["events"] %}
         {{ macros.eventbox(evt) }}
+        {%- set ns.events_printed = ns.events_printed + 1 %}
         {% endfor %}
     </section>
+    {% set _ = ns.seasons_printed.append(seasonname) %}
+    {% endif %}
     {% endfor %}
+
+    <h2>Past Seasons</h2>
+    <section class="season" id="past-seasons">
+        {% for seasonname, season in seasons.items() %}
+        {% if seasonname not in ns.seasons_printed %}
+            <h3><a href="{{season['code']}}/">{% if season.name == "Offseason" %}Offseasons{% else %}<img alt="{{season}}" src="/static/{{season['code']}}_logo.png" />{% endif %}</a></h3>
+        {% endif %}
+        {% endfor %}
+    </section>
 {% endblock %}

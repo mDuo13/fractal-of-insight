@@ -830,14 +830,16 @@ fieldset label {
     margin: 0 0 20px 0;
 }
 
-.season h2 {
+.season h2,
+#past-seasons h3 {
     text-align: center;
     position: relative;
     margin: 0;
     min-height: 150px;
 }
 
-.season h2 a img {
+.season h2 a img,
+.season h3 a img {
     position: absolute;
     top: 0; right: 0; bottom: 0; left: 0;
     margin: auto;
@@ -845,7 +847,8 @@ fieldset label {
     max-width: 100%;
 }
 
-.season h2 a:hover img {
+.season h2 a:hover img,
+.season h3 a:hover img {
     transform: scale(1.1);
 }
 
@@ -1126,4 +1129,56 @@ a.achievement {
         var(--border-stop) var(--border-stop),
         calc(100% - var(--border-stop) * 2) 100%,
         100% calc(100% - var(--border-stop) * 2);
+}
+
+@media screen and (max-width: 720px) {
+    button {
+        font-size: 28px;
+    }
+
+    .nav-item {
+        display: inline-block;
+        padding: 5px 35px 15px 0;
+    }
+
+    .archetype {
+        width: 160px;
+    }
+    .el-pct,
+    .el-quant {
+        font-size: 24px;
+        line-height: 28px;
+    }
+    .el-pct {
+        margin-top: 20px;
+    }
+    .archetype h4 {
+        font-size: 28px;
+        line-height: 24px;
+    }
+    .top-cards .cardimg, .top-cards .cardimg > img {
+        width: 225px;
+        height: 315px;
+    }
+    .top-cards {
+        font-size: 0;
+        line-height: 0;
+    }
+    .top-cards p {
+        font-size: 24px;
+        line-height: 24px;
+    }
+
+    .top-cards .cardimg .quant {
+        font-size: 24px;
+        line-height: 24px;
+    }
+    .subquant {
+        font-size: 18px;
+        line-height: 18px;
+    }
+    .showmatches button {
+        font-size: 14px;
+        line-height: 14px;
+    }
 }
