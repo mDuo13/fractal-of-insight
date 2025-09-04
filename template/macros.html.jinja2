@@ -78,7 +78,7 @@
     <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}">
         <td class="p_rank">{{loop.index}}</td>
         <td class="playername" title="Elo: {{p.elo}}">{% if p.id > 0 %}<a href="/player/{{p.id}}.html">{{p}}</a>{% else %}{{p}}{% endif %}</td>
-        <td class="p_record">{{p.record}}</td>
+        <td class="p_record">{{p.record}}{% if show_matches %}<button class="mobile-only" onclick="showmatches({{p.id}})">Glimpse</button>{% endif %}</td>
         <td class="p_deck">{% if p.deck %}<a href="{{anchor|default('#deck_'~p.id, true)}}" onclick="opendecklist('{{anchor|default('#deck_'~p.id, true)}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
             <div class="deck-bgs">
             {% for el in p.deck.els %}
@@ -95,7 +95,7 @@
         <td class="elodiff">{% if p.elo_diff > 0 %}+{% endif %}{{p.elo_diff|round|int}}</td>
         {% if show_matches %}
         <td class="showmatches">
-            <button onclick="showmatches({{p.id}})">Show Matches</button>
+            <button onclick="showmatches({{p.id}})">Glimpse</button>
         </td>
         {% endif %}
     </tr>
@@ -241,16 +241,23 @@
     <fieldset>
         <legend>Filter events</legend>
         {% if not lesser %}
-        <input type="checkbox" id="cb_decklists" checked="checked" onclick="update_evt_filtering()" />
-        <label for="cb_decklists">Only events with decklists</label>
-        <input type="checkbox" id="cb_small_events" onclick="update_evt_filtering()" />
-        <label for="cb_small_events">Small events (&lt; 20p)</label>
+        <label for="cb_decklists">
+            <input type="checkbox" id="cb_decklists" checked="checked" onclick="update_evt_filtering()" />
+            Only events with decklists
+        </label>
+        
+        <label for="cb_small_events">
+            <input type="checkbox" id="cb_small_events" onclick="update_evt_filtering()" />
+            Small events (&lt; 20p)
+        </label>
         <fieldset>
             <legend>Event Category</legend>
         {% endif %}
             {% for cat in event_types.values() %}
-            <input type="checkbox" name="category" id="cb_cat_{{cat.shortname}}" value="{{cat.shortname}}" checked="checked" onclick="update_evt_filtering()" />
-            <label for="cb_cat_{{cat.shortname}}">{{cat.name}}</label>
+            <label for="cb_cat_{{cat.shortname}}">
+                <input type="checkbox" name="category" id="cb_cat_{{cat.shortname}}" value="{{cat.shortname}}" checked="checked" onclick="update_evt_filtering()" />
+                {{cat.name}}
+            </label>
             {% endfor %}
         {% if not lesser %}
         </fieldset>

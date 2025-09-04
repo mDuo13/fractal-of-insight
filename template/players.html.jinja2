@@ -14,9 +14,34 @@
 
 <section id="player-list">
     <h1>Grand Archive Players</h1>
-    <input class="searchbox" data-target="#player-list" placeholder="Search" />
-    <button class="reset-button" data-target="#player-list" title="Reset search" onclick="reset_search(this)">❌</button>
-    <table class="togglable">
+    <input class="searchbox" data-target="#player-list .pprofile" placeholder="Search" />
+    <button class="reset-button" data-target="#player-list .pprofile" title="Reset search" onclick="reset_search(this)">❌</button>
+    <div class="player-grid">
+    {% for p in players %}
+        {% set e = events[p.events[0].evt_id] %}
+        <div class="pprofile" data-name="{{p.username}}" data-eventcount="{{p.events|length}}" data-omniid="{{p.id}}">
+            <a href="/player/{{p.id}}.html">
+                <span class="p-name">{{p}}</span>
+                <span class="p-avatar">
+                {% if p.most_played_element() %}
+                    <img src="/static/icon/icon-{{p.most_played_element()|slugify}}.png" alt="{{p.most_played_element()}}" />
+                {% endif %}
+                {% if p.most_played_champ() %}
+                    <img src="/static/icon/icon-{{p.most_played_champ()|slugify}}.png" alt="{{p.most_played_champ()}}" />
+                {% endif %}
+                    <span class="p-region">{{macros.flag(p.region)}}</span>
+                </span>
+            </a>
+            <p class="events-recorded">Events recorded:
+                <span class="event-count">{{p.events|length}}</span>
+            </p>
+            <p class="last-seen">Last seen:
+                <a href="/{{e.season}}/{{e.id}}.html">{{e.name}}</a>
+            </p>
+        </div>
+    {% endfor %}
+    </div>
+    {#<table class="togglable">
         <thead><tr>
             <th>Username</th>
             <th>Events Recorded</th>
@@ -30,12 +55,12 @@
             <tr>
                 <td><a href="/player/{{p.id}}.html">{{p.username}} #{{p.id}}</a></td>
                 <td>{{p.events|length}}</td>
-                <td>{{macros.flag(p.region)}}
+                <td>{{macros.flag(p.region)}}</td>
                 <td><a href="/{{e.season}}/{{e.id}}.html">{{e.name}}</a></td>
                 <td>{{p.mostplayed()}}</td>
             </tr>
         {% endfor %}
         </tbody>
-    </table>
+    </table>#}
 </section>
 {% endblock %}

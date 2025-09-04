@@ -90,31 +90,39 @@
 </section>
 
 {% macro top_cards(a, collapse=True) %}
-    <div class="top-cards tabcontent{% if collapse %} collapse{% endif %}" id="top-cards-{{slugify(a.name)}}">
+    <div class="tabcontent{% if collapse %} collapse{% endif %}" id="top-cards-{{slugify(a.name)}}">
         <p class="explanation">(Based on {{a.matched_decks|length}} decks with a combined win rate of {{a.winrate}}%.)</p>
         <h4>Material</h4>
+        <div class="top-cards">
         {% for card_o in a.card_freqs.mat.values() %}
             {% if loop.index0 < MAT_DIFF_CARD_LIMIT %}
             {{ macros.cardimg(card_o, link=True)}}
             {% endif %}
         {% endfor %}
+        </div>
         <h4>Maindeck</h4>
+        <div class="top-cards">
         {% for card_o in a.card_freqs.main.values() %}
             {% if loop.index0 < MAIN_DIFF_CARD_LIMIT %}
             {{ macros.cardimg(card_o, link=True)}}
             {% endif %}
         {% endfor %}
+        </div>
         <h4>Sideboard</h4>
+        <div class="top-cards">
         {% for card_o in a.card_freqs.side.values() %}
             {% if loop.index0 < SIDE_DIFF_CARD_LIMIT %}
             {{ macros.cardimg(card_o, link=True)}}
             {% endif %}
         {% endfor %}
+        </div>
         <h3>Most expensive cards</h3>
+        <div class="top-cards">
         <p class="explanation">(Costing at least $5.00 USD.)</p>
         {% for card_o in a.money_cards.values() %}
             {{ macros.cardimg(card_o, link=True)}}
         {% endfor %}
+        </div>
     </div>
 {% endmacro %}
 

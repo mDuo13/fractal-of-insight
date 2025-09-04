@@ -98,6 +98,15 @@ class ElementStats:
             pct = round(dec*100, 1)
             yield (el, quant, pct)
 
+    def top(self):
+        typedata = [(i,q) for i,q in self.elements.items() if i != "Unknown" and q>0]
+        if not typedata:
+            return []
+        typedata.sort(key=lambda x:x[1], reverse=True)
+        top_quant = typedata[0][1]
+        tied_top = [t[0] for t in typedata if t[1] >= top_quant]
+        return tied_top
+
 class TypeStats:
     def __init__(self):
         self.total_items = 0

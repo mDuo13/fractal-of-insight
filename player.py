@@ -285,11 +285,19 @@ class Player:
     #     else:
     #         self.avg_deck_price = f"${round(total_price/num_decks, 2):.2f} USD"
 
-    def mostplayed(self):
+    def most_played_champ(self):
         topchamps = self.champdata.top()
-        if not topchamps:
-            return "?"
-        return "/".join(topchamps)
+        if topchamps:
+            return topchamps[0]
+        else:
+            return ""
+
+    def most_played_element(self):
+        topels = self.elements.top()
+        if topels:
+           return topels[0]
+        else:
+            return ""
 
     def check_achievements(self):
         events_chrono = list(reversed(self.events))
@@ -492,3 +500,6 @@ class Player:
         # then alphabetically by username (case-insensitive) ascending
         # Assumes no player will enter 10,000+ events
         return f"{10000-len(self.events):05d} {self.username.lower()}"
+
+    def __str__(self):
+        return f'{self.username} #{self.id}'

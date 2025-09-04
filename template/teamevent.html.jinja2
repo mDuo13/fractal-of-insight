@@ -35,7 +35,7 @@
     <h3 class="collapse togglable" id="topcut">Single Elimination Top Cut</h3>
     <table class="collapse togglable">
          <thead><tr>
-            <th>Rank</th><th>Team</th><th>Record</th><th>Player A</th><th>Player B</th><th>Player C</th><th>Matches</th>
+            <th>Rank</th><th>Team</th><th>Record</th><th>Player A</th><th>Player B</th><th>Player C</th><th class="showmatches">Matches</th>
         </tr></thead>
         <tbody>
         {% for t in evt.top_cut %}
@@ -47,7 +47,7 @@
                 {{macros.team_member_cell(member)}}
                 {% endfor %}
                 <td class="showmatches">
-                    <button onclick="showteammatches('{{slugify(t.name)}}')">Show Matches</button>
+                    <button onclick="showteammatches('{{slugify(t.name)}}')">Glimpse</button>
                 </td>
             </tr>
         {% endfor %}
@@ -59,7 +59,7 @@
 
     <table class="collapse togglable">
         <thead><tr>
-            <th>Rank</th><th>Team</th><th>Record</th><th>Player A</th><th>Player B</th><th>Player C</th><th>Matches</th>
+            <th>Rank</th><th>Team</th><th>Record</th><th>Player A</th><th>Player B</th><th>Player C</th><th class="showmatches">Matches</th>
         </tr></thead>
         <tbody>
         {% for t in evt.teams.values() %}
@@ -72,7 +72,7 @@
                 {{macros.team_member_cell(member)}}
                 {% endfor %}
                 <td class="showmatches">
-                    <button onclick="showteammatches('{{slugify(t.name)}}')">Show Matches</button>
+                    <button onclick="showteammatches('{{slugify(t.name)}}')">Glimpse</button>
                 </td>
             </tr>
             {% endif %}

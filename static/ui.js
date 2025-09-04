@@ -264,11 +264,10 @@ function ready(callback) {
   else document.addEventListener("DOMContentLoaded", callback)
 }
 
-function search_table() {
-    const searchbox = document.querySelector(".searchbox")
+function search_table(el) {
+    const searchbox = el.parentElement.querySelector(".searchbox")
     const search_query = searchbox.value
-    const target_el = document.querySelector(searchbox.dataset["target"])
-    const trs = target_el.querySelectorAll("body tr")
+    const trs = document.querySelectorAll(searchbox.dataset["target"])
 
     for (const tr of trs) {
         if(tr.textContent.toLowerCase().includes(search_query.toLowerCase())) {
@@ -280,11 +279,9 @@ function search_table() {
 }
 
 function reset_search(el) {
-    const wrap_el = document.querySelector(el.dataset["target"])
-    const searchbox = wrap_el.querySelector(".searchbox")
+    const searchbox = el.parentElement.querySelector(".searchbox")
     searchbox.value = ""
-    // search_table()
-    const trs = wrap_el.querySelectorAll("body tr")
+    const trs = document.querySelectorAll(el.dataset["target"])
     for (const tr of trs) {
         tr.classList.remove("collapse")
     }
@@ -330,9 +327,9 @@ ready(() => {
     const typeInterval = 200
     const searchbox = document.querySelector(".searchbox")
     if (searchbox) {
-        searchbox.addEventListener('keyup', () => {
+        searchbox.addEventListener('keyup', (event) => {
             clearTimeout(typingTimer)
-            typingTimer = setTimeout(search_table, typeInterval)
+            typingTimer = setTimeout(() => {search_table(event.target)}, typeInterval)
         })
     }
 })

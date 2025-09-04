@@ -57,7 +57,7 @@
     <table class="collapse togglable">
     {% if evt.category.shortname == "worlds" %}
         <thead><tr>
-            <th>Rank</th><th>Player</th><th>Deck</th><th>Elo Change</th>
+            <th>Rank</th><th>Player</th><th>Deck</th><th class="elodiff">Elo</th>
         </tr></thead>
         <tbody>
         {% for p in evt.top_cut %}
@@ -65,7 +65,7 @@
         {% endfor %}
     {% else %}
         <thead><tr>
-            <th>Rank</th><th>Player</th><th>Swiss Record</th><th>Deck</th><th>Elo Change</th><th>Matches</th>
+            <th>Rank</th><th>Player</th><th>Swiss Record</th><th>Deck</th><th class="elodiff">Elo</span></th><th class="showmatches">Matches</th>
         </tr></thead>
         <tbody>
         {% for p in evt.top_cut %}
@@ -84,7 +84,7 @@
 
     <table class="collapse togglable">
         <thead><tr>
-            <th>Rank</th><th>Player</th><th>Record</th><th>Deck</th><th>Elo Change</th><th>Matches</th>
+            <th>Rank</th><th>Player</th><th>Record</th><th>Deck</th><th>Elo</th><th class="showmatches">Matches</th>
         </tr></thead>
         <tbody>
         {% for p in evt.players %}

@@ -21,9 +21,6 @@ h1, h2, h3, h4, h5 {
     margin-top: 1.5em;
     margin-bottom: .5em;
 }
-h1 {
-    margin-top: .25em;
-}
 
 button {
     font-size: 14px;
@@ -184,7 +181,6 @@ th {
 
 #players table, #players th, #players td, table.archetypes, .archetypes th, .archetypes td {
     border: none;
-    border-collapse: separate;
 }
 /*
 .playername:active::after {
@@ -332,6 +328,21 @@ th {
     padding: 10vh 10vw;
     font-size: 14px;
     z-index: 3;
+}
+
+.deck_gfx {
+    font-size: 0;
+    line-height: 0;
+}
+
+.carddeets {
+    font-size: 16px;
+    line-height: 16px;
+}
+
+.quant {
+    font-size: 14px;
+    line-height: 22.4px;
 }
 
 .decklist-inner {
@@ -780,6 +791,46 @@ fieldset label {
     }
 }
 
+.player-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 5px;
+}
+
+.pprofile {
+    position: relative;
+    padding: 5px 5px 5px 90px;
+    border: 1.5px groove #777;
+    border-radius: 2px;
+    background: var(--ui-bg-vis);
+    min-height: 71px;
+}
+.pprofile p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 15px;
+}
+
+.pprofile .last-seen a {
+	font-size: 14px;
+	line-height: 12px;
+}
+
+.p-avatar img {
+    display: block;
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    height: 75px;
+    width: 75px;
+}
+
+.p-region {
+    position: absolute;
+    left: 50px;
+    top: 55px;
+}
+
 .explanation {
     font-size: 13px;
     font-style: italic;
@@ -856,10 +907,11 @@ h1 {
     background: var(--ui-bg);
     padding: 15px;
     margin-right: 20%;
+    margin-top: 10px;
     position: relative;
     clip-path: polygon(0% 0%, calc(100% - 20px) 0%, 100% 50%, calc(100% - 20px) 100%, 0% 100%);
-    font-size: 2em;
-    line-height: 1.25em;
+    font-size: 32px;
+    line-height: 30px;
 }
 
 #evt-info h1 img,
@@ -956,6 +1008,10 @@ footer {
     }
 }
 
+.achievementlist {
+    font-size: 0;
+}
+
 .achievement {
     display: inline-flex;
     flex-direction: column;
@@ -988,6 +1044,7 @@ a.achievement {
     text-shadow: var(--main-shadow);
 }
 .achievement h4 {
+    font-size: 18px;
     margin: 0;
     line-height: 16px;
 }
@@ -1034,6 +1091,7 @@ a.achievement {
     margin: 6px;
 }
 
+.event-filtering label,
 .subtypes-radios label {
     white-space: nowrap;
     line-height: 30px;
@@ -1131,54 +1189,152 @@ a.achievement {
         100% calc(100% - var(--border-stop) * 2);
 }
 
-@media screen and (max-width: 720px) {
-    button {
-        font-size: 28px;
+@media screen and (max-width: 1199.98px) {
+    .player-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.mobile-only {
+    display: none;
+}
+
+@media screen and (max-width: 575.98px) {
+    .mobile-only {
+        display: block;
+    }
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        margin-right: 0;
     }
 
     .nav-item {
         display: inline-block;
-        padding: 5px 35px 15px 0;
+        padding: 10px;
+        margin: 4px;
+        border: 1.5px solid transparent;
+    }
+    a.nav-item {
+        border: 1.5px groove #777;
+        border-radius: 2px;
+        background-color: #d5d5d5;
     }
 
-    .archetype {
-        width: 160px;
+    .season {
+        grid-template-columns: 1fr;
     }
-    .el-pct,
-    .el-quant {
-        font-size: 24px;
-        line-height: 28px;
+
+    .searchbox {
+        margin-bottom: 5px;
+        width: calc(100% - 50px);
     }
+
+    .player-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .element-meta {
+        flex-direction: column;
+        align-items: center;
+    }
+
     .el-pct {
         margin-top: 20px;
-    }
-    .archetype h4 {
-        font-size: 28px;
-        line-height: 24px;
-    }
-    .top-cards .cardimg, .top-cards .cardimg > img {
-        width: 225px;
-        height: 315px;
-    }
-    .top-cards {
-        font-size: 0;
-        line-height: 0;
-    }
-    .top-cards p {
-        font-size: 24px;
-        line-height: 24px;
-    }
-
-    .top-cards .cardimg .quant {
-        font-size: 24px;
-        line-height: 24px;
-    }
-    .subquant {
-        font-size: 18px;
-        line-height: 18px;
     }
     .showmatches button {
         font-size: 14px;
         line-height: 14px;
+    }
+
+    .top-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 3px;
+    }
+    .top-cards .cardimg,
+    .top-cards .cardimg img {
+        width: 100%;
+        height: 100%;
+    }
+
+    #all-cards th:nth-child(2) {
+        font-size: 10px;
+    }
+    #all-cards th:nth-child(3) {
+        font-size: 12px;
+    }
+    #all-cards td:first-child {
+        font-size: 16px;
+    }
+
+    .deck-bg {
+        animation: unset;
+        top: 0;
+    }
+
+    .decklist h3 {
+        margin-top: 0;
+    }
+    .decklist-inner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(100vw - 10px);
+        height: calc(100vh - 10px);
+        padding: 5px;
+    }
+    .decklist-inner button {
+        margin-bottom: 5px;
+    }
+    .decklist-viewbox {
+        width: calc(100vw - 10px);
+        height: calc(90vh - 10px);
+    }
+    .decklist .cardimg, .decklist .cardimg img {
+        width: 120px;
+        height: 168px;
+    }
+    .deck-card-counts {
+        display: block;
+    }
+    .decklist p {
+        margin: 0;
+    }
+
+    .deck-card-counts ul,
+    .similar-decks ul {
+        padding-inline-start: 15px;
+    }
+
+    #players th {
+        font-size: 16px;
+    }
+    #players th:first-child {
+        font-size: 14px;
+    }
+    .showmatches {
+        display: none;
+    }
+    .p_record button {
+        font-size: 10px;
+    }
+    .p-row td {
+        font-size: 16px;
+        padding: 3px;
+    }
+    table .playername {
+        word-break: break-word;
+    }
+
+    .achievement {
+        width: 95px;
+        height: 95px;
+        padding: 5px;
+    }
+    .achievement h4 {
+        font-size: 15px;
     }
 }
