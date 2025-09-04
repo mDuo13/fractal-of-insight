@@ -444,6 +444,8 @@ fieldset label {
     padding: 5px;
     background: #333;
     color: white;
+    font-size: 18px;
+    line-height: 18px;
     font-weight: bold;
     border-radius: 3px;
     border: 2px solid white;
@@ -481,6 +483,8 @@ fieldset label {
     background: white;
     padding: 5px 10px;
     border-radius: 3px;
+    font-size: 14px;
+    line-height: 14px;
 }
 
 .decklist .permalink {
