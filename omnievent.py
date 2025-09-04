@@ -1,5 +1,4 @@
 from collections import defaultdict
-from time import strftime, gmtime
 import re
 
 from player import Entrant, JudgeEvt
@@ -9,7 +8,7 @@ from archetypes import ARCHETYPES
 from cards import ELEMENTS
 from competition import EVENT_TYPES, TEAM_STANDARD
 from season import SEASONS
-from shared import ElementStats, ArcheStats, ChampStats, RegionStats
+from shared import ElementStats, ArcheStats, ChampStats, RegionStats, ms_to_date
 from config import TOP_CUTOFF
 
 class IsTeamEvent(Exception):
@@ -40,7 +39,7 @@ class OmniEvent:
         self.name = self.evt["name"]
         self.host = self.evt["store"]["name"]
         self.fix_generic_name()
-        self.date = strftime(r"%Y-%m-%d", gmtime(self.evt["startAt"]/1000))
+        self.date = ms_to_date(self.evt["startAt"])
         if "season" in self.evt:
             self.season = SEASONS.get(self.evt["season"]["name"], "OTHER")
             self.track_elo = True

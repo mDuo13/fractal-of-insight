@@ -27,6 +27,7 @@
         {% if player.judge_level %}<li><b>Judge Level:</b> {{player.judge_level}}{% endif %}
         {% if player.hipster %}<li><b>Hipster Level:</b> {{player.hipster}}
             <span class="explanation">(Based on popularity of cards in the player's public decklists. A higher rating means they played more obscure cards.)</span></li>{% endif %}
+        {% if player.banned_until %}<li><b>Banned until:</b> {{player.banned_until}}</li>{% endif %}
     </ul>
 </section>
 

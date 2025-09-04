@@ -1,5 +1,7 @@
 import re
 from collections import defaultdict
+from datetime import datetime
+from time import strftime, gmtime
 
 from cards import ELEMENTS, SPECIAL_ELEMENTS
 
@@ -16,6 +18,23 @@ def slugify(s):
 
 def lineage(champname):
     return champname.split(",",1)[0]
+
+ISOFMT = r"%Y-%m-%d"
+
+def ms_to_date(time_ms):
+    return strftime(ISOFMT, gmtime(time_ms/1000))
+
+def date_to_ms(date_string, weebs_time=False):
+    if weebs_time: # Weebs' seasons are set by CST in the USA
+        tz = "+0500"
+    else:
+        tz = "+0000"
+    d = datetime.strptime(date_string+tz, ISOFMT+"%z")
+    ts = d.timestamp()
+    return int(ts*1000)
+    
+
+
 
 def fix_case(cardname):
     repls = {

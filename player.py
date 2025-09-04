@@ -1,9 +1,10 @@
 from collections import defaultdict
+from time import time
 
 from deck import Deck
 from datalayer import get_deck, get_topcut_deck, NoDeck
 from cards import ELEMENTS
-from shared import keydefaultdict, ElementStats, ChampStats, ArcheStats
+from shared import keydefaultdict, ElementStats, ChampStats, ArcheStats, ms_to_date
 from competition import TEAM_STANDARD
 from achievements import AchievementSet
 from config import UPSET_CUTOFF
@@ -37,6 +38,8 @@ class Entrant:
         if "team" in data:
             self.team = data["team"]
             self.seat = data["teamSlot"]
+        self.dq = data.get("disqualified", False)
+        self.banned_until = data.get("suspendedUntil")
 
         # At some point Omnidex changed from the "wins" number being inclusive of byes
         # to it not being.
@@ -71,6 +74,8 @@ class Entrant:
         self.top_cards = []
 
     def sortkey(self):
+        if self.dq:
+            return -self.score
         return self.score + (self.omw/100) + (self.gwp / 100000) + (self.ogw / 10000000)
 
     def __str__(self):
@@ -162,6 +167,12 @@ class Player:
         self.peak_elo = entrant.rank_elo
         self.vp = entrant.vp
         self.events_judged = []
+        self.banned_until = ""
+        if entrant.banned_until:
+            if entrant.banned_until > time()*1000:
+                self.banned_until = ms_to_date(entrant.banned_until)
+            else:
+                print(f"Ban served: {self.username} #{self.id} until {entrant.banned_until}")
 
     def add_entry(self, entrant):
         self.events.append(entrant)
@@ -187,6 +198,14 @@ class Player:
             else:
                 if entrant.region not in self.past_regions:
                     self.past_regions.append(entrant.region)
+        if entrant.banned_until:
+            if entrant.banned_until > time()*1000:
+                new_ban = ms_to_date(entrant.banned_until)
+                if new_ban > self.banned_until:
+                    self.banned_until = new_ban
+            else:
+                #print(f"Ban served: {self.username} #{self.id} until {entrant.banned_until}")
+                pass
 
     def analyze(self):
         # To be called after all event entries have been added

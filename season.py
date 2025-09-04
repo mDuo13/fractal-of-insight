@@ -1,10 +1,7 @@
-from time import strftime, strptime, gmtime
 from collections import defaultdict
 
-from shared import ElementStats, ArcheStats, ChampStats, OVERALL
+from shared import ElementStats, ArcheStats, ChampStats, OVERALL, date_to_ms, ms_to_date
 from battlechart import BattleChart
-
-ISOFMT = r"%Y-%m-%d"
 
 class Season:
     def __init__(self, season):
@@ -29,8 +26,8 @@ class Season:
                 data = e.evt["season"]
                 self.name = data["name"]
                 self.id = data["id"]
-                self.start_time = strftime(ISOFMT, gmtime(data["startsAt"]/1000))
-                self.end_time = strftime(ISOFMT, gmtime(data["endsAt"]/1000))
+                self.start_time = ms_to_date(data["startsAt"])
+                self.end_time = ms_to_date(data["endsAt"])
                 self.season_guide = data["file"]
 
     def analyze(self):
@@ -121,12 +118,12 @@ class Format(Season):
         if evt.evt["format"] != "standard":
             # Omit Team Standard from stats because it's weird.
             return False
-        fmt_start = strptime(self.start_time, ISOFMT)
-        if self.end_time:
-            fmt_end = strptime(self.end_time, ISOFMT)
 
-        tz_offset = -5 * 60 * 60 # Weebs' seasons are set by CST in the USA
-        evt_start = gmtime(evt.evt["startAt"]/1000 + tz_offset)
+        fmt_start = date_to_ms(self.start_time, weebs_time=True)
+        if self.end_time:
+            fmt_end = date_to_ms(self.start_time, weebs_time=True)
+
+        evt_start = evt.evt["startAt"]
         if fmt_start <= evt_start and (not self.end_time or evt_start < fmt_end):
             return True
         return False

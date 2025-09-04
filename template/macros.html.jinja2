@@ -75,9 +75,9 @@
 {% endmacro %}
 
 {% macro p_row(p, loop, anchor=None, show_matches=True) %}
-    <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}">
-        <td class="p_rank">{{loop.index}}</td>
-        <td class="playername" title="Elo: {{p.elo}}">{% if p.id > 0 %}<a href="/player/{{p.id}}.html">{{p}}</a>{% else %}{{p}}{% endif %}</td>
+    <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}{% if p.dq %} disqualified{% endif %}{% if p.banned_until %} banned{% endif %}">
+        <td class="p_rank">{% if p.dq %}<abbr title="Disqualified">DQ</abbr>{% else %}{{loop.index}}{% endif %}</td>
+        <td class="playername" {% if p.banned_until %}title="Banned until {{p.banned_until|ms_to_date}}"{% else %}title="Elo: {{p.elo}}"{% endif %}>{% if p.id > 0 %}<a href="/player/{{p.id}}.html">{{p}}</a>{% else %}{{p}}{% endif %}</td>
         <td class="p_record">{{p.record}}{% if show_matches %}<button class="mobile-only" onclick="showmatches({{p.id}})">Glimpse</button>{% endif %}</td>
         <td class="p_deck">{% if p.deck %}<a href="{{anchor|default('#deck_'~p.id, true)}}" onclick="opendecklist('{{anchor|default('#deck_'~p.id, true)}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
             <div class="deck-bgs">
@@ -132,7 +132,7 @@
         <td class="p_placement">{% if event.winning_team == t %}{{winner()}} {% endif %}{{t.placement}}/{{event.teams|length}} teams</td>
         <td class="p_record">{{t.record}}</td>
         {% else %}
-        <td class="p_placement"{% if p.topcut_deck %} rowspan="2"{% endif%}>{% if event.winner == p %}{{winner()}} {% endif %}{{p.placement}}/{{event.players|length}}</td>
+        <td class="p_placement"{% if p.topcut_deck %} rowspan="2"{% endif%}>{% if event.winner == p %}{{winner()}} {% endif %}{% if p.dq %}<abbr title="Disqualified">DQ</abbr>{% else %}{{p.placement}}/{{event.players|length}}{% endif %}</td>
         <td class="p_record"{% if p.topcut_deck %} rowspan="2"{% endif%}>{{p.record}}</td>
         {% endif %}
         <td class="p_deck">{% if p.deck %}<a href="#deck_{{event.id}}" onclick="opendecklist('#deck_{{event.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}{% if p.topcut_deck %} (Swiss){% endif %}
@@ -201,7 +201,7 @@
         <td class="p_placement">{% if event.winning_team == t %}{{winner()}} {% endif %}{{t.placement}}/{{event.teams|length}} teams</td>
         <td class="p_record">{{t.record}}</td>
         {% else %}
-        <td class="p_placement">{% if event.winner == deck.entrant %}{{winner()}} {% endif %}{{deck.entrant.placement}}/{{event.players|length}}</td>
+        <td class="p_placement">{% if event.winner == deck.entrant %}{{winner()}} {% endif %}{% if deck.entrant.dq %}<abbr title="Disqualified">DQ</abbr>{% else %}{{deck.entrant.placement}}/{{event.players|length}}{% endif %}</td>
         <td class="p_record">{{deck.entrant.record}}</td>
         {% endif %}
     </tr>

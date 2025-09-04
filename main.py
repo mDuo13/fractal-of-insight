@@ -10,7 +10,7 @@ from collections import defaultdict
 
 import config
 from datalayer import carddata, get_event, set_groups, get_card_img, get_card_price, format_price, write_similarity_cache
-from shared import slugify, OVERALL, REGIONS
+from shared import slugify, OVERALL, REGIONS, ms_to_date
 from omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
 from season import Season, SEASONS, Format, FORMATS
 from competition import EVENT_TYPES, TEAM_STANDARD
@@ -37,6 +37,7 @@ class PageBuilder:
         self.env.globals["OVERALL"] = OVERALL
         self.env.globals["ACHIEVEMENTS"] = ACHIEVEMENTS
         self.env.filters["slugify"] = slugify
+        self.env.filters["ms_to_date"] = ms_to_date
         self.env.trim_blocks = True
         self.env.autoescape = True
 

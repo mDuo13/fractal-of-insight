@@ -1,9 +1,8 @@
-from time import strftime, gmtime
 from collections import defaultdict
 
 from xxhash import xxh64
 
-from shared import slugify, fix_case, lineage, element_sortkey
+from shared import slugify, fix_case, lineage, element_sortkey, ms_to_date
 from datalayer import get_card_img, carddata, card_is_floating, get_card_references, get_card_price, get_cached_similarity, store_similarity
 from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST
 from archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
@@ -45,7 +44,7 @@ class Deck:
     def __init__(self, dl, entrant, is_topcut_deck=False):
         self.dl = dl
         self.entrant = entrant
-        self.date = strftime(r"%Y-%m-%d", gmtime(self.entrant.evt_time/1000))
+        self.date = ms_to_date(self.entrant.evt_time)
         self.similar_decks = []
         self.fix_dl()
         self.calc_hash()

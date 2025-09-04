@@ -182,6 +182,10 @@ th {
 #players table, #players th, #players td, table.archetypes, .archetypes th, .archetypes td {
     border: none;
 }
+.banned .playername {
+    text-decoration: line-through;
+}
+
 /*
 .playername:active::after {
     content: attr(title);
@@ -333,6 +337,10 @@ th {
 .deck_gfx {
     font-size: 0;
     line-height: 0;
+}
+.deck_gfx * {
+    font-size: 16px;
+    line-height: 16px;
 }
 
 .carddeets {

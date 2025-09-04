@@ -26,5 +26,4 @@ This site shows information and analysis of Grand Archive tournament results. It
     - e.g. individual card stats (on card page)
 - backfill old store champs
 - improve archetypes index page to have tabs per season or something
-- show money cards on archetype page
 - add landing page(s) for champions
