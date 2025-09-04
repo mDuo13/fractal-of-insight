@@ -883,6 +883,13 @@ add_archetype(
     require_element="Fire"
 )
 
+add_archetype(
+    "Triskit",
+    [
+        "Triskit, Guidance Angel"
+    ]
+)
+
 # add_archetype(
 #     "Distortion",
 #     [
