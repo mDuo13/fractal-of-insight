@@ -39,7 +39,11 @@ class Entrant:
             self.team = data["team"]
             self.seat = data["teamSlot"]
         self.dq = data.get("disqualified", False)
-        self.banned_until = data.get("suspendedUntil")
+        ban = data.get("suspendedUntil", 0)
+        if ban > time()*1000:
+            self.banned_until = ban
+        else:
+            self.banned_until = 0
 
         # At some point Omnidex changed from the "wins" number being inclusive of byes
         # to it not being.
