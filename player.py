@@ -105,6 +105,17 @@ class JudgeEvt:
         self.events_judged = data["judgeEvents"]
         self.exp = data["judgeExperience"]
         self.event = evt
+        self.evt_time = evt.evt["startAt"]
+        self.region = data.get("addressCountryCode")
+        self.vp = round(data.get("scoreVP",0))
+
+        # I would hope that judges aren't likely to get banned, but...
+        ban = data.get("suspendedUntil", 0)
+        if ban > time()*1000:
+            self.banned_until = ban
+        else:
+            self.banned_until = 0
+
         self.calc_judge_level()
 
     def calc_judge_level(self):
@@ -163,14 +174,17 @@ class Player:
         self.username = entrant.username
         self.username_time = entrant.evt_time
         self.past_usernames = []
-        self.events = [entrant]
+        if isinstance(entrant, JudgeEvt):
+            self.events = []
+            self.events_judged = [entrant]
+        else:
+            self.events = [entrant]
+            self.events_judged = []
         self.region = entrant.region
         self.past_regions = []
         self.region_time = entrant.evt_time
         self.achievements = AchievementSet()
-        self.peak_elo = entrant.rank_elo
         self.vp = entrant.vp
-        self.events_judged = []
         self.banned_until = ""
         if entrant.banned_until:
             if entrant.banned_until > time()*1000:
@@ -180,8 +194,6 @@ class Player:
 
     def add_entry(self, entrant):
         self.events.append(entrant)
-        if entrant.elo > self.peak_elo:
-            self.peak_elo = entrant.elo
         # Handle username updates. As of 2025, these are rarely, but occasionally
         # offered to players who qualify for high-level events.
         if entrant.username != self.username:
@@ -501,9 +513,14 @@ class Player:
                 if e.id in (vid["p1"], vid["p2"]):
                     self.achievements.add("Movie Star", e, details=f"Stage {vid.get('stage', 1)}, round {vid['round']}")
 
-        # JUDGE!
+        # Judge achievements
         if self.events_judged:
             self.achievements.add("JUDGE!", self.events_judged[0])
+            for j in self.events_judged:
+                if j.event.evt.get("rounds",0) >= 7:
+                    self.achievements.add("Juuuuuuudge!", j)
+                if j.event.category["name"] == "Ascent":
+                    self.achievements.add("Wisdom of the Mountain", j)
 
 
         # First card plays
@@ -511,7 +528,7 @@ class Player:
             for cardname in e.first_plays:
                 self.achievements.add_card_first(cardname, e)
 
-        # Top card usage
+        # Top card wielder
         for e in events_chrono:
             if hasattr(e, "top_cards"):
                 for (cardname, score, rank) in e.top_cards:

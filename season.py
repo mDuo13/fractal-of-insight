@@ -11,6 +11,8 @@ class Season:
         self.pdict = defaultdict(list) # list of events entered by player ID
 
     def add_event(self, e):
+        if e in self.events:
+            raise ValueError(f"Duplicate event: {e}")
         self.events.append(e)
 
         if not self.data:

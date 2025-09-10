@@ -21,7 +21,7 @@
         {% if player.region %}<li><b>Region:</b> {{macros.flag(player.region, True)}}{% if player.past_regions %}<br />
             Past region(s): {% for pr in player.past_regions %}{{macros.flag(pr, True)}} {% endfor %}
         {% endif %}</li>{% endif %}
-        <li><b>Recent Elo</b>: {{player.events[0].elo}}</li>
+        {% if player.events %}<li><b>Recent Elo</b>: {{player.events[0].elo}}</li>{% endif %}
         <li><b>Recorded events</b>: {{player.events|length}}</li>
         {% if player.rivals %}<li><b>Rival(s)</b>: <ul>{% for r in player.rivals %}<li><a href="/player/{{r.opp_id}}.html">{{players[r.opp_id].username}} #{{r.opp_id}}</a> ({{r.wins}}-{{r.losses}}-{{r.draws}})</li>{% endfor %}</ul><span class="explanation">(Rivals are players you've faced the most times in tracked events, minimum 3 matches.)</span></li>{% endif %}
         {% if player.judge_level %}<li><b>Judge Level:</b> {{player.judge_level}}{% endif %}
@@ -45,6 +45,7 @@
 
 </section>
 
+{% if player.events|length %}
 <section id="entered-events">
     <h2>Events Entered</h2>
     <button onclick="toggle('#entered-events > .togglable')">Glimpse List</button>
@@ -62,6 +63,7 @@
         </tbody>
     </table>
 </section>
+{% endif %}
 
 {% if player.num_decklists %}
 <section id="deck-trends">

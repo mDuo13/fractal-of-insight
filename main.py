@@ -192,7 +192,7 @@ class PageBuilder:
                     all_events[e.id] = e
                 except NotStarted:
                     print(f"Event #{entry.name[6:]} not started.")
-                    pass
+                    continue
                 if not seasons.get(e.season):
                     seasons[e.season] = Season(e.season)
                 seasons[e.season].add_event(e)
@@ -221,7 +221,8 @@ class PageBuilder:
                 known_players[jid].events_judged = events_judged
             else:
                 #print(f"Judge with no player instances? {judge}")
-                pass
+                known_players[jid] = Player(events_judged[0])
+                known_players[jid].events_judged = events_judged
 
         seasons_sorted = {k:seasons[v] for k,v in SEASONS.items() if v in seasons.keys()}
 

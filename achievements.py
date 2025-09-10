@@ -175,3 +175,5 @@ add_achievement("Movie Star", "🎥", "Play an on-stream match.")
 
 # Judging
 add_achievement("JUDGE!", "⚖️", "Judge an event.")
+add_achievement("Juuuuuuudge!", "🗯", "Judge a 7+ round event.")
+add_achievement("Wisdom of the Mountain", "🦉", "Judge an Ascent.")

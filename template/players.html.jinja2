@@ -18,7 +18,6 @@
     <button class="reset-button" data-target="#player-list .pprofile" title="Reset search" onclick="reset_search(this)">❌</button>
     <div class="player-grid">
     {% for p in players %}
-        {% set e = events[p.events[0].evt_id] %}
         <div class="pprofile" data-name="{{p.username}}" data-eventcount="{{p.events|length}}" data-omniid="{{p.id}}">
             <a href="/player/{{p.id}}.html">
                 <span class="p-name">{{p}}</span>
@@ -35,32 +34,14 @@
             <p class="events-recorded">Events recorded:
                 <span class="event-count">{{p.events|length}}</span>
             </p>
+            {% if p.events|length %}
+            {% set e = events[p.events[0].evt_id] %}
             <p class="last-seen">Last seen:
                 <a href="/{{e.season}}/{{e.id}}.html">{{e.name}}</a>
             </p>
+            {% endif %}
         </div>
     {% endfor %}
     </div>
-    {#<table class="togglable">
-        <thead><tr>
-            <th>Username</th>
-            <th>Events Recorded</th>
-            <th>Region</th>
-            <th>Latest Event</th>
-            <th>Most-played Champion</th>
-        </tr></thead>
-        <tbody>
-        {% for p in players %}
-            {% set e = events[p.events[0].evt_id] %}
-            <tr>
-                <td><a href="/player/{{p.id}}.html">{{p.username}} #{{p.id}}</a></td>
-                <td>{{p.events|length}}</td>
-                <td>{{macros.flag(p.region)}}</td>
-                <td><a href="/{{e.season}}/{{e.id}}.html">{{e.name}}</a></td>
-                <td>{{p.mostplayed()}}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>#}
 </section>
 {% endblock %}

@@ -45,6 +45,9 @@
             <p class="explanation">(Assuming matches with a 0-0 score are intentional draws.)</p>{% endif %}
         </li>
         {% if evt.track_elo %}<li><b>Average Elo:</b> {{evt.average_elo}}</li>{% endif %}
+        {% if evt.judges|length %}<li><b>Judges:</b> {% for j in evt.judges %}
+            <a href="/player/{{j.id}}.html">{{j}}</a>{% if not loop.last %}, {% endif %}
+        {% endfor %}</li>{% endif %}
     </ul>
 </section>
 
