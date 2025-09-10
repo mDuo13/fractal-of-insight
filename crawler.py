@@ -6,7 +6,7 @@ import requests
 from time import sleep, time
 
 import config
-from datalayer import get_event, save_event_json, EventNotFound
+from datalayer import get_event, get_deck, save_event_json, EventNotFound, NoDeck
 
 try:
     with open(config.CRAWLER_FILE) as f:
@@ -51,11 +51,11 @@ def due_for_update(evt_data):
             return False
     return True
 
-def crawl_event(i): # TODO: implement a force_redownload
+def crawl_event(i, force_redownload=False):
     evt_data = crawldata["events"].get(str(i))
     updated = False
 
-    if due_for_update(evt_data):
+    if force_redownload or due_for_update(evt_data):
         try:
             evt_full = get_event(i, force_redownload=True, save=False)
             if i > crawldata["max_crawled"]:
@@ -79,6 +79,7 @@ Category: {evt_full.get('category')}
 Decklists? {"Yes" if evt_full.get("decklists") else "No"}
 """)
             save_event_json(evt_full)
+            get_decks_from_event(evt_full)
 
         evt_data = {
             "status": evt_full["status"],
@@ -90,6 +91,14 @@ Decklists? {"Yes" if evt_full.get("decklists") else "No"}
 
     return evt_data, updated
 
+def get_decks_from_event(evt):
+    for p in evt["players"]:
+        is_public = p.get("isDecklistPublic")
+        if is_public:
+            try:
+                get_deck(p["id"], evt["id"], is_public)
+            except (NoDeck):
+                print(f"Decklist public but not? Evt #{evt['id']} {p['username']}#{p['id']}")
 
 def is_interesting(evt):
     if evt.get("status") == "rsvp":
@@ -114,7 +123,7 @@ def is_interesting(evt):
         print(f"Unknown status: {evt['status']}")
         return 0
     if not evt.get('ranked'):
-        print("Unranked")
+        #print("Unranked")
         return 0
 
     players = evt.get("players", [])
@@ -147,7 +156,7 @@ def main(args):
     consecutive404s = 0
     try:
         for i in range(start, 99999999):
-            evt_data, updated = crawl_event(i)
+            evt_data, updated = crawl_event(i, force_redownload=args.update)
             if evt_data.get("interesting") and updated:
                 interesting_events[i] = evt_data
             unsaved_data += 1
@@ -169,6 +178,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Iterate over Omnidex events to look for interesting ones")
     parser.add_argument("event_id", type=int, help="Omnidex event ID to start at", nargs="?", default=1)
+    parser.add_argument("-u", "--update", action="store_true", help="Redownload events regardless of cached status")
     #parser.add_argument("--reverse", "-r", help="Count down instead of up")
     args = parser.parse_args()
     main(args)
