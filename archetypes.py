@@ -330,6 +330,7 @@ wind_allies = add_archetype(
         "Liu Bei, Oathkeeper",
         "Imperial Panzer",
         "Unrelenting Warden",
+        "Chrysalis, Hazy Caterpillar",
     ],
     exclude_cards=[
         "Spirit Blade: Ascension",
@@ -861,12 +862,26 @@ add_archetype(
         "Seiryuu's Command",
         "Incarnate Majesty",
     ],
-    require_types={
-        # Compared to "Wind Allies" decks, these decks run far fewer allies
-        # and really try to combo off by making one tall ally and attacking
-        # multiple times in one turn.
-        "ALLY": -21
-    },
+    require_combos=[
+        [
+            "Mad Hatter, Morose Heritor",
+            "Ranger Strides",
+        ],
+        [
+            "Invective Instruction",
+            "Second Wind",
+        ],
+        [
+            "Invigorating Concoction",
+            "Draught of Stamina",
+        ]
+    ],
+    # require_types={
+    #     # Compared to "Wind Allies" decks, these decks run far fewer allies
+    #     # and really try to combo off by making one tall ally and attacking
+    #     # multiple times in one turn.
+    #     "ALLY": -21
+    # },
     shortname="Wakeup",
 )
 

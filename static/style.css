@@ -343,11 +343,6 @@ th {
     line-height: 16px;
 }
 
-.carddeets {
-    font-size: 16px;
-    line-height: 16px;
-}
-
 .quant {
     font-size: 14px;
     line-height: 22.4px;
@@ -482,17 +477,18 @@ fieldset label {
 .flipped {
     transform: rotateY(180deg);
 }
-.carddeets {
+.deck_gfx .carddeets {
     z-index: 5;
     position: absolute;
-    bottom: calc(-100% - 32px);
+    bottom: calc(-100% - 18px);
     left: 75px;
-    width: 50%;
+    width: 80px;
     background: white;
     padding: 5px 10px;
     border-radius: 3px;
     font-size: 14px;
     line-height: 14px;
+    text-align: center;
 }
 
 .decklist .permalink {
@@ -639,7 +635,7 @@ fieldset label {
 .archetype {
     position: relative;
     display: inline-flex;
-    width: 120px;
+    width: 115px;
     flex-direction: column;
     justify-content: end;
     vertical-align: bottom;
@@ -1294,6 +1290,7 @@ a.achievement {
         position: absolute;
         top: 0;
         left: 0;
+        right: 0;
         width: calc(100vw - 10px);
         height: calc(100vh - 10px);
         padding: 5px;
