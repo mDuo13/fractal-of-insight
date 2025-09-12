@@ -64,10 +64,10 @@
         {% if p.deck %}<a href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
             <div class="deck-bgs">
             {% for el in p.deck.els %}
-                <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(el)}}.jpg" alt="" />
             {% endfor%}
             {% for lineage in p.deck.lineages %}
-                <img class="deck-bg" src="/static/bg-{{slugify(lineage)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(lineage)}}.jpg" alt="" />
             {% endfor%}
             </div>
     </div>
@@ -82,13 +82,13 @@
         <td class="p_deck">{% if p.deck %}<a href="{{anchor|default('#deck_'~p.id, true)}}" onclick="opendecklist('{{anchor|default('#deck_'~p.id, true)}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
             <div class="deck-bgs">
             {% for el in p.deck.els %}
-                <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(el)}}.jpg" alt="" />
             {% endfor%}
             {% for arche in p.deck.archetypes %}
-                <img class="deck-bg" src="/static/bg-{{slugify(arche)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(arche)}}.jpg" alt="" />
             {% endfor%}
             {% for lineage in p.deck.lineages %}
-                <img class="deck-bg" src="/static/bg-{{slugify(lineage)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(lineage)}}.jpg" alt="" />
             {% endfor%}
             </div>
         </td>
@@ -109,13 +109,13 @@
         <td class="p_deck">{% if p.topcut_deck %}<a href="{{'#deck_'~p.id~'_topcut'}}" onclick="opendecklist('{{'#deck_'~p.id~'_topcut'}}')">{{p.topcut_deck}}</a>{% else %}No decklist{% endif %}
             <div class="deck-bgs">
             {% for el in p.topcut_deck.els %}
-                <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(el)}}.jpg" alt="" />
             {% endfor%}
             {% for arche in p.topcut_deck.archetypes %}
-                <img class="deck-bg" src="/static/bg-{{slugify(arche)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(arche)}}.jpg" alt="" />
             {% endfor%}
             {% for lineage in p.topcut_deck.lineages %}
-                <img class="deck-bg" src="/static/bg-{{slugify(lineage)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(lineage)}}.jpg" alt="" />
             {% endfor%}
             </div>
         </td>
@@ -138,13 +138,13 @@
         <td class="p_deck">{% if p.deck %}<a href="#deck_{{event.id}}" onclick="opendecklist('#deck_{{event.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}{% if p.topcut_deck %} (Swiss){% endif %}
             <div class="deck-bgs">
             {% for el in p.deck.els %}
-                <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(el)}}.jpg" alt="" />
             {% endfor%}
             {% for arche in p.deck.archetypes %}
-                <img class="deck-bg" src="/static/bg-{{slugify(arche)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(arche)}}.jpg" alt="" />
             {% endfor%}
             {% for lineage in p.deck.lineages %}
-                <img class="deck-bg" src="/static/bg-{{slugify(lineage)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(lineage)}}.jpg" alt="" />
             {% endfor%}
             </div>
         </td>
@@ -156,13 +156,13 @@
         <td class="p_deck"><a href="#deck_{{event.id}}_topcut" onclick="opendecklist('#deck_{{event.id}}_topcut')">{{p.topcut_deck}}</a> (Top Cut)
             <div class="deck-bgs">
             {% for el in p.topcut_deck.els %}
-                <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(el)}}.jpg" alt="" />
             {% endfor%}
             {% for arche in p.topcut_deck.archetypes %}
-                <img class="deck-bg" src="/static/bg-{{slugify(arche)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(arche)}}.jpg" alt="" />
             {% endfor%}
             {% for lineage in p.topcut_deck.lineages %}
-                <img class="deck-bg" src="/static/bg-{{slugify(lineage)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(lineage)}}.jpg" alt="" />
             {% endfor%}
             </div>
         </td>
@@ -186,13 +186,13 @@
         <td class="p_deck"><a href="{{anchor}}" onclick="opendecklist('{{anchor}}')">{{deck}}</a>
             <div class="deck-bgs">
             {% for el in deck.els %}
-                <img class="deck-bg" src="/static/bg-{{slugify(el)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(el)}}.jpg" alt="" />
             {% endfor%}
             {% for arche in deck.archetypes %}
-                <img class="deck-bg" src="/static/bg-{{slugify(arche)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(arche)}}.jpg" alt="" />
             {% endfor%}
             {% for lineage in deck.lineages %}
-                <img class="deck-bg" src="/static/bg-{{slugify(lineage)}}.jpg" alt="" />
+                <img class="deck-bg" src="/static/bg/{{slugify(lineage)}}.jpg" alt="" />
             {% endfor%}
             </div>
         </td>
