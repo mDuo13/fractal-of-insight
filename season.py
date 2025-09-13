@@ -123,7 +123,7 @@ class Format(Season):
 
         fmt_start = date_to_ms(self.start_time, weebs_time=True)
         if self.end_time:
-            fmt_end = date_to_ms(self.start_time, weebs_time=True)
+            fmt_end = date_to_ms(self.end_time, weebs_time=True)
 
         evt_start = evt.evt["startAt"]
         if fmt_start <= evt_start and (not self.end_time or evt_start < fmt_end):
