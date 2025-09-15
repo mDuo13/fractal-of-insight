@@ -17,12 +17,18 @@ function hide(q) {
 function opendecklist(q) {
     hide(".decklist")
     show(q)
+    const title = document.querySelector(q).querySelector("h3").innerText
+    document.og_title = document.title
+    document.title = `${title} - ${document.og_title}`
     window.location.replace(window.location.pathname+window.location.search+q)
+
 }
 function closedecklist(q) {
     hide(q)
-    //window.location.replace(window.location.pathname+window.location.search)
-    history.replaceState("", document.title, window.location.pathname+window.location.search)
+    if (document.og_title) {
+        document.title = document.og_title
+    }
+    history.replaceState(null, "", window.location.pathname+window.location.search)
 }
 function togglegfx() {
     toggle(".deck_gfx")
@@ -317,7 +323,10 @@ ready(() => {
                 evt.preventDefault()
             } else {
                 el.classList.add("collapse")
-                history.replaceState("", document.title, window.location.pathname+window.location.search)
+                history.replaceState(null, "", window.location.pathname+window.location.search)
+                if (document.og_title) {
+                    document.title = document.og_title
+                }
             }
         })
     })

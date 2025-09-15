@@ -54,7 +54,13 @@
         "p1": 596,
         "p2": 142,
         "link": "https://www.youtube.com/live/tWjsNOfIW4c?feature=shared&t=38731",
-        "//": "Round 9 is cut off by youtube."
+    },
+    {
+        "stage": 1,
+        "round": 9,
+        "p1": 2150,
+        "p2": 879,
+        "link": "https://www.youtube.com/watch?v=DohJv2OzcF8"
     },
     {
         "stage": 1,

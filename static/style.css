@@ -1114,11 +1114,79 @@ a.achievement {
     margin-bottom: 5px;
 }
 
+.vodgrid {
+    display: grid;
+    /* grid-template-columns: 1fr 1fr; */
+    grid-template-columns: repeat(auto-fill, minmax(min(575px, 100%), 1fr));
+    grid-gap: 10px;
+}
+.vodgrid .vod {
+    padding: 5px;
+    border: 1.5px groove #777;
+    border-radius: 2px;
+    display: grid;
+    grid-template-columns: [p1] 5fr [vs] 2fr [p2] 5fr;
+    background: var(--ui-bg);
+}
+.vod .p1 {
+    grid-column: p1;
+    position: relative;
+    padding-left: 85px;
+}
+.vod .p2 {
+    grid-column: p2;
+    position: relative;
+    padding-right: 85px;
+    text-align: right;
+}
+.vod .p2 .p-avatar img {
+    left: auto;
+    right: 3px;
+}
+.vod .p2 .p-region {
+    left: auto;
+    right: 5px;
+}
+.vod .p-name {
+    display: block;
+    font-weight: bold;
+}
+.vod .vid {
+    grid-column: vs;
+    justify-content: center;
+    text-align: center;
+}
+.vod .event-of-vid {
+    grid-column: 1 / 4;
+    text-align: center;
+    font-size: 16px;
+    
+}
+
+.holo::after {
+    content: "";
+    background-image: repeating-linear-gradient( 110deg, var(--violet), var(--blue), var(--green), var(--yellow), var(--red), var(--violet), var(--blue), var(--green), var(--yellow), var(--red), var(--violet), var(--blue), var(--green), var(--yellow), var(--red) );
+
+	background-position: calc(((50% - var(--background-x)) * 2.6) + 50%) calc(((50% - var(--background-y)) * 3.5) + 50%), center center;
+	background-size: 400% 400%, cover;
+	background-blend-mode: overlay;
+	filter: brightness(1.1) contrast(1.1) saturate(1.2);
+	mix-blend-mode: color-dodge;
+}
+
 :root {
     --ui-bg: linear-gradient(0deg, #e1e0db, #f2efe5);
     --ui-bg-sub: linear-gradient(0deg, #cbcac6, #e1e0db);
     --ui-bg-vis: #cccbc6;
     --main-shadow: 3px 3px 5px #55504d;
+
+    /* vars for holo overlay. https://poke-holo.simey.me/ */
+    --clip: inset( 9.85% 8% 52.85% 8% );
+    --red: #f80e35;
+    --yellow: #eedf10;
+    --green: #21e985;
+    --blue: #0dbde9;
+    --violet: #c929f1;
 }
 
 

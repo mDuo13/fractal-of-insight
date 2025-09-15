@@ -220,9 +220,14 @@ class Archetype:
 
 
     def load_videos(self):
-        self.videos = []
+        videos = []
         for d in self.matched_decks:
-            self.videos += d.videos
+            videos += d.videos
+        self.videos = []
+        for v in videos:
+            if v not in self.videos:
+                self.videos.append(v)
+        self.videos.sort(key=lambda v:v["event"].date, reverse=True)
 
     def add_subtype(self, *args, **kwargs):
         st = Archetype(*args, **kwargs)

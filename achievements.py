@@ -139,9 +139,19 @@ add_achievement("Ascendant", "🌞", "Win a Worlds event.")
 # Deck quirks
 add_achievement("Antigravity", "🛰", "Play 30+ floating memory.")
 add_achievement("Big Deck Energy", "💪", "Play over 60 cards in your main deck.")
-add_achievement("Crux is Fine", "👌",  "Play a Crux deck.")
 add_achievement("Hybrid Theory", "🌓",  "Play a deck with a hybrid lineage.")
 add_achievement("We Need Guns. Lots of Guns", "🔫", "Play a deck with 3+ guns.")
+
+# Deck elements
+add_achievement("Stormchaser", "⛈", "Play an Arcane deck.")
+add_achievement("The Best at Space", "☄", "Play an Astra deck.")
+add_achievement("Crux is Fine", "👌",  "Play a Crux deck.")
+add_achievement("Too Angry to Die", "😡", "Play an Exia deck.")
+add_achievement("Flashy", "🎇", "Play a Luxem deck.")
+add_achievement("Is that Jimmy Le?", "🌆", "Play a Neos deck.")
+add_achievement("One with Nature", "🌱", "Play a Tera deck.")
+add_achievement("In the Shadows", "😈", "Play an Umbra deck.")
+
 
 # Decklist similarity
 add_achievement("Team Builder", "👬",  "Play the same list as another entrant in the same event.")

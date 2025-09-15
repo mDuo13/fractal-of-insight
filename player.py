@@ -437,8 +437,6 @@ class Player:
                     champ_times[lineage] += 1
                     if champ_times[lineage] >= 5:
                         self.achievements.add("Loyalist", e, details=lineage)
-                if "Crux" in e.deck.archetypes:
-                    self.achievements.add("Crux is Fine", e, details=str(e.deck))
                 if e.deck.is_hybrid:
                     self.achievements.add("Hybrid Theory", e, details="/".join(e.deck.lineages))
                 if e.deck.main_total > 60:
@@ -447,6 +445,24 @@ class Player:
                     self.achievements.add("Antigravity", e, details=str(e.deck))
                 if e.deck.guns >= 3:
                     self.achievements.add("We Need Guns. Lots of Guns", e, details=str(e.deck))
+
+                # Advanced element achievements
+                if "Arcane" in e.deck.archetypes:
+                    self.achievements.add("Stormchaser", e, details=str(e.deck))
+                if "Astra Cleric" in e.deck.archetypes or "Astra Ranger" in e.deck.archetypes:
+                    self.achievements.add("The Best at Space", e, details=str(e.deck))
+                if "Crux" in e.deck.archetypes:
+                    self.achievements.add("Crux is Fine", e, details=str(e.deck))
+                if "Exia" in e.deck.archetypes:
+                    self.achievements.add("Too Angry to Die", e, details=str(e.deck))
+                if "Luxem Assassin" in e.deck.archetypes or "Luxem Tamer" in e.deck.archetypes:
+                    self.achievements.add("Flashy", e,  details=str(e.deck))
+                if "Neos" in e.deck.archetypes:
+                    self.achievements.add("Is that Jimmy Le?", e,  details=str(e.deck))
+                if "Tera Tamer" in e.deck.archetypes or "Tera Mage" in e.deck.archetypes or "Tera Cleric" in e.deck.archetypes:
+                    self.achievements.add("One with Nature", e,  details=str(e.deck))
+                if "Umbra Ranger" in e.deck.archetypes or "Shadowstrike" in e.deck.archetypes or "Umbra Guardian" in e.deck.archetypes:
+                    self.achievements.add("In the Shadows", e,  details=str(e.deck))
 
         # Four Seasons
         seasons_played = set()

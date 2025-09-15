@@ -34,6 +34,6 @@ for cardset in all_sets:
 
 print("Fetching featured set groups...")
 groups = requests.get("https://api.gatcg.com/featured-sets").json()
-fname = os.path.join(CARDS_FOLDER, "set-groups.json")
+fname = os.path.join(CARDS_FOLDER, "_set-groups.json")
 with open(fname, "w") as f:
     json.dump(groups, f)

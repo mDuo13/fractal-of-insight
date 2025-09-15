@@ -139,7 +139,9 @@ class OmniEvent:
                         "p1": self.pdict[p1],
                         "p2": self.pdict[p2],
                         "link": vid["link"],
-                        "event": self
+                        "event": self,
+                        "stage": stage,
+                        "round": rnd
                     }
                     for pn in (p1, p2):
                         if self.category['shortname'] == "worlds" and stage > 1:

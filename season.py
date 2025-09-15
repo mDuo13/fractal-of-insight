@@ -226,5 +226,10 @@ add_format("DTR Release",
 )
 add_format("DTR + Thurible",
     start="2025-08-25",
+    end="2025-09-15",
     desc="Purifying Thurible added to Proxia's Vault"
+)
+add_format("DTR Post-Taipei",
+    start="2025-09-15",
+    desc="Rile the Abyss banned; Purifying Thurible removed from Proxia's Vault."
 )

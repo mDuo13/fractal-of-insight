@@ -114,7 +114,7 @@ def sideload_deck(p_id, evt_id, fname=None):
 try:
     carddata = {}
     for entry in scandir(CARDS_FOLDER):
-        if entry.is_file() and entry.name[-5:] == ".json" and entry.name != "set-groups.json":
+        if entry.is_file() and entry.name[-5:] == ".json" and entry.name[:1] != "_":
             with open(entry) as f:
                 setlist = json.load(f)
             for card in setlist:
@@ -159,7 +159,7 @@ except FileNotFoundError:
 ## Identify which edition a card first appeared in and add it as
 ## a 'set_introduced' field for the card data
 try:
-    with open("data/index/set-groups.json") as f:
+    with open("data/index/_set-groups.json") as f:
         set_groups_list = json.load(f)
     set_groups_list.reverse() # Put them with, generally, oldest group first
     set_groups = {s["name"]:s for s in set_groups_list}
