@@ -6,7 +6,7 @@ from time import sleep
 from os import makedirs, scandir, path
 
 from shared import slugify, fix_case
-from cards import ERRATA, PRIZE_EQUIVALENTS
+from cards import ERRATA, PRIZE_EQUIVALENTS, REMOVED_FROM_PRXY
 from tcgplayer import TCG_ABBR, TCGP_CARDNAMES
 
 API_DELAY = 0.5
@@ -158,6 +158,24 @@ except FileNotFoundError:
 
 ## Identify which edition a card first appeared in and add it as
 ## a 'set_introduced' field for the card data
+def add_set_introduced(card):
+    in_sets = [ed["set"]["prefix"] for ed in card["editions"]]
+    found_sg = False
+    for prefix in in_sets:
+        for sg in set_groups.values():
+            for sgs in sg["sets"]:
+                if sgs["prefix"] in in_sets:
+                    card["set_introduced"] = sg["name"]
+                    found_sg = True
+                    break
+            if found_sg:
+                break
+        if found_sg:
+            break
+    if not found_sg:
+        #print("Couldn't find set group for card:", card["name"])
+        card["set_introduced"] = "Other"
+
 try:
     with open("data/index/_set-groups.json") as f:
         set_groups_list = json.load(f)
@@ -166,22 +184,7 @@ try:
     set_groups["Other"] = {"name": "Other", "sets": []}
 
     for card in carddata.values():
-        in_sets = [ed["set"]["prefix"] for ed in card["editions"]]
-        found_sg = False
-        for prefix in in_sets:
-            for sg in set_groups.values():
-                for sgs in sg["sets"]:
-                    if sgs["prefix"] in in_sets:
-                        card["set_introduced"] = sg["name"]
-                        found_sg = True
-                        break
-                if found_sg:
-                    break
-            if found_sg:
-                break
-        if not found_sg:
-            #print("Couldn't find set group for card:", card["name"])
-            card["set_introduced"] = "Other"
+        add_set_introduced(card)
 except FileNotFoundError:
     print("No data on set groups. Can't determine oldest edition of cards accurately")
     # Fallback method relies on set release_date field which is not a reliable
@@ -191,6 +194,16 @@ except FileNotFoundError:
         oldest_ed = eds[0]
         card["set_introduced"] = oldest_ed["set"]["prefix"]
 
+# Add legacy card data for cards that have been removed from Proxia's Vault
+for cardname,fname in REMOVED_FROM_PRXY.items():
+    with open(f"data/index/{fname}") as f:
+        old_data = json.load(f)
+        for oldcard in old_data:
+            if oldcard["name"] == cardname:
+                add_set_introduced(oldcard)
+                oldcard["removed"] = True
+                carddata[cardname] = oldcard
+                break
 
 try:
     with open("data/card_spoilers.json") as f:

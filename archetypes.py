@@ -4,7 +4,7 @@ from logging import warning
 
 from config import SharedConfig
 from shared import ElementStats, ChampStats, lineage
-from cards import BANLIST
+from cards import BANLIST, REMOVED_FROM_PRXY
 from datalayer import get_card_img, carddata, get_card_price
 
 SIMILAR_DECKS_CUTOFF = 85
@@ -179,6 +179,7 @@ class Archetype:
                     "pct": round(100*f/total_decks, 1),
                     "img": get_card_img(c),
                     "banned": (True if c in BANLIST else False),
+                    "removed": (True if c in REMOVED_FROM_PRXY.keys() else False),
                 } for c,f in cf_sorted
             }
 

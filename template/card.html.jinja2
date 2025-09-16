@@ -59,6 +59,9 @@
     {% if card.name in BANLIST %}
         <li><b>Banned in Standard play</b></li>
     {% endif %}
+    {% if card.removed %}
+        <li><b>Removed from Proxia's Vault</b>.</li>
+    {% endif %}
         <li><b>Low price on TCGPlayer</b>: {{card_price}}</li>
     </ul>
 </section>

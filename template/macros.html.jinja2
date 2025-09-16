@@ -385,7 +385,7 @@
 {% else %}
     {% set el = "div" %}
 {% endif %}
-<{{el}} class="cardimg{% if card["newspoiler"] %} newspoiler{% endif %}{% if card["banned"] %} banned{% endif%}" {% if link %}href="/card/{{slugify(card['card'])}}.html"{% else %}onclick="carddetail(this)"{% endif %}>
+<{{el}} class="cardimg{% if card.newspoiler %} newspoiler{% endif %}{% if card.banned %} banned{% endif%}{% if card.removed %} removed{% endif %}" {% if link %}href="/card/{{slugify(card['card'])}}.html"{% else %}onclick="carddetail(this)"{% endif %}>
     <img src="{{card['img']}}" alt="{{card['card']}}" loading="lazy" class="cardfront" />
     {% if card.back %}<img src="{{card.back.img}}" alt="{{card.back.card}}" loading="lazy" class="cardback flipped" /><span class="flipper" onclick="flipcard(event, this.parentElement)">↩️</span>{% endif %}
     {%- if card['quantity'] is defined and not hide_overlay -%}

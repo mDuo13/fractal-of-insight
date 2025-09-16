@@ -395,7 +395,22 @@ th {
 	font-size: 25px;
     text-shadow: 2px 2px 3px black;
 }
-.cardimg.dblclicked:not(.banned) {
+.cardimg.removed::after {
+	content: "REMOVED";
+	color: #404040;
+	position: absolute;
+	z-index: 5;
+	left: -5%;
+	top: 30%;
+	backdrop-filter: blur(5px) grayscale(0.5);
+	font-weight: bold;
+	transform: rotate(45deg);
+	padding: 10px;
+	border-radius: 50%;
+	font-size: 25px;
+    text-shadow: 2px 2px 3px black;
+}
+.cardimg.dblclicked:not(.banned):not(.removed) {
     z-index: 6;
 }
 
@@ -1155,6 +1170,9 @@ a.achievement {
     grid-column: vs;
     justify-content: center;
     text-align: center;
+}
+.vod .vid a:hover img {
+    filter: drop-shadow(#63498e 0 0 10px);
 }
 .vod .event-of-vid {
     grid-column: 1 / 4;

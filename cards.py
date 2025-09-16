@@ -52,6 +52,10 @@ BANLIST = [
     "Lost in Thought",
 ]
 
+REMOVED_FROM_PRXY = {
+    "Purifying Thurible": "_PRXY_with_Thurible.json"
+}
+
 PRIZE_EQUIVALENTS = {
     "Apotheosis Rite": "Grand Crusader's Ring",
     "Sacramental Rite": "Quicksilver Grail",

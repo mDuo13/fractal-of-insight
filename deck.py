@@ -4,7 +4,7 @@ from xxhash import xxh64
 
 from shared import slugify, fix_case, lineage, element_sortkey, ms_to_date
 from datalayer import get_card_img, carddata, card_is_floating, get_card_references, get_card_price, get_cached_similarity, store_similarity
-from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST
+from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST, REMOVED_FROM_PRXY
 from archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
 from cardstats import ALL_CARD_STATS
 
@@ -150,6 +150,8 @@ class Deck:
             card_o["card"] = fix_case(card_o["card"])
             if card_o["card"] in BANLIST:
                 card_o["banned"] = True
+            if card_o["card"] in REMOVED_FROM_PRXY.keys():
+                card_o["removed"] = True
             card_back = carddata[card_o["card"]].get("back")
             if card_back:
                 card_o["back"] = card_back
@@ -158,6 +160,8 @@ class Deck:
             card_o["card"] = fix_case(card_o["card"])
             if card_o["card"] in BANLIST:
                 card_o["banned"] = True
+            if card_o["card"] in REMOVED_FROM_PRXY.keys():
+                card_o["removed"] = True
             card_back = carddata[card_o["card"]].get("back")
             if card_back:
                 card_o["back"] = card_back
@@ -166,6 +170,8 @@ class Deck:
             card_o["card"] = fix_case(card_o["card"])
             if card_o["card"] in BANLIST:
                 card_o["banned"] = True
+            if card_o["card"] in REMOVED_FROM_PRXY.keys():
+                card_o["removed"] = True
             card_back = carddata[card_o["card"]].get("back")
             if card_back:
                 card_o["back"] = card_back
