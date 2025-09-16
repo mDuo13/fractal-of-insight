@@ -50,6 +50,7 @@ BANLIST = [
     "Icebound Slam",
     "Dissonant Fractal",
     "Lost in Thought",
+    "Rile the Abyss",
 ]
 
 REMOVED_FROM_PRXY = {
