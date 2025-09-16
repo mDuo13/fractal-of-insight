@@ -53,8 +53,14 @@
         "round": 8,
         "p1": 983,
         "p2": 14443,
-        "link": "https://www.youtube.com/watch?v=gL-S2tAI6bk&t=36977s",
-        "//": "Round 9 is cut off in the VOD, may be re-upped separetely later"
+        "link": "https://www.youtube.com/watch?v=gL-S2tAI6bk&t=36977s"
+    },
+    {
+        "stage": 1,
+        "round": 9,
+        "p1": 17964,
+        "p2": 3756,
+        "link": "https://www.youtube.com/watch?v=7dgCm7_DxD4"
     },
     {
         "stage": 1,
