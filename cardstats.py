@@ -65,7 +65,7 @@ class TopCutAppearance:
     def __str__(self):
         return f'{self.entrant.username} #{self.entrant.id}'
 
-class TopPlayersOfCard:
+class TopWielders:
     def __init__(self, cardname):
         self.name = cardname
         self.users = defaultdict(int)
@@ -74,7 +74,7 @@ class TopPlayersOfCard:
 
     def add(self, entrant):
         if entrant.score <= 0:
-            # You don't get to be a top user if you don't score any points
+            # You don't get to be a top wielder if you don't score any points
             return
         if "REGALIA" in carddata[self.name]["types"] or "CHAMPION" in carddata[self.name]["types"]:
             type_multiplier = 3
@@ -116,7 +116,7 @@ class CardStats:
         self.winrate = 0
         self.hipster = 0 # %ile rating of how uncommonly played the card is.
                          # Populated by CardStatSet.sort()
-        self.top_users = TopPlayersOfCard(cardname)
+        self.top_users = TopWielders(cardname)
 
     def add_entrant(self, e, is_topcut_deck=False):
         if is_topcut_deck:

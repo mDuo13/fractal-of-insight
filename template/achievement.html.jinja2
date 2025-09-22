@@ -19,7 +19,7 @@
     <li>{{macros.achievement(achievement, is_link=False)}}</li>
     <li><strong>Achieved:</strong> {{astats.count}} times</li>
     <li><strong>Rate:</strong> {{astats.rate}}% of players</li>
-    {% if achievement.first and not achievement.skip_date %}<li><strong>First achieved by:</strong> {{astats.first}}</li>{% endif %}
+    {% if astats.first and not achievement.skip_date %}<li><strong>First achieved by:</strong> {{astats.first}}</li>{% endif %}
 </ul>
 
 <section id="achieving-players">
@@ -30,13 +30,15 @@
                 <th>Player</th>
                 <th>Date</th>
                 <th>Event</th>
+                <th>Details</th>
         </tr></thead>
         <tbody>
-        {% for p in astats.players %}
+        {% for p,a in astats.players %}
             <tr>
                 <td><a href="/player/{{p.id}}.html">{{p}}</a></td>
                 <td>{{p.event.date}}</td>
                 <td><a href="/{{p.event.season}}/{{p.event.id}}.html">{{p.event.name}}</a></td>
+                <td>{{a.details}}</td>
             </tr>
         {% endfor %}
         </tbody>

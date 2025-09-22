@@ -489,7 +489,7 @@ class Player:
                 if all_after:
                     all_after.sort(key=lambda d: d.date)
                     netdecked_by = all_after[0]
-                    self.achievements.add("I Made This", netdecked_by.entrant, details=f"{netdecked_by.entrant}'s {netdecked_by}")
+                    self.achievements.add("I Made This", e, details=f"{netdecked_by.entrant}'s {netdecked_by}")
 
         # We Meet Again
         for e in events_chrono:

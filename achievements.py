@@ -18,7 +18,7 @@ class GlobalAchievementStats:
     def __init__(self):
         self.count_achieved = defaultdict(int)
         self.first_achieved = {}
-        self.achieved_by = defaultdict(list)
+        self.achieved_by = defaultdict(list) # list of (entrant,achievement) pairs
         self.total_players = 0 # Update this before calling for_achievement
 
     def achieve(self, achieved, entrant):
@@ -29,12 +29,12 @@ class GlobalAchievementStats:
                 self.first_achieved[aname] = achieved
         else:
             self.first_achieved[aname] = achieved
-        self.achieved_by[aname].append(entrant)
+        self.achieved_by[aname].append((entrant, achieved))
 
     def __getitem__(self, aname):
         rate = round(100 * self.count_achieved[aname] / self.total_players, 1)
         players = self.achieved_by[aname]
-        players.sort(key=lambda x:x.event.date, reverse=True)
+        players.sort(key=lambda x:x[0].event.date, reverse=True)
         if aname not in self.first_achieved.keys():
             print("Unachieved achievement:", aname)
             first = None
