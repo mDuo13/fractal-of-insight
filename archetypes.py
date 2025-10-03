@@ -391,6 +391,7 @@ add_archetype(
         "Rending Flames",
         "Blazing Bowman",
         "Cinder Geyser",
+        "Peppered Chef",
     ],
     require_element="Fire",
     shortname="Aggro",
@@ -515,6 +516,7 @@ add_archetype(
     ],
     exclude_cards=[
         "Baleful Oblation",
+        "Guo Jia, Heaven's Favored",
     ]
 )
 
@@ -584,6 +586,12 @@ crux.add_subtype(
 crux.add_subtype(
     "Ensoul",
     ["Spirit Blade: Ensoul"]
+)
+
+crux.add_subtype(
+    "Sword Saint's Vow",
+    ["Sword Saint's Vow"],
+    shortname="Vow",
 )
 
 shadowstrike = add_archetype(
@@ -736,7 +744,7 @@ add_archetype(
     [
         "Felicitous Flock",
         "Fatestone of Heaven",
-        "Excalibur, Cleansing Light",
+        # "Excalibur, Cleansing Light", # Genbu decks with a couple Excaliburs for Nullifying Lantern shouldn't qualify as a different archetype
         "Glorious Presence",
         # "Sunblessed Gazelle", # Try to split these from Seiryuu decks
     ],
@@ -752,6 +760,9 @@ add_archetype(
     "Seiryuu",
     [
         "Fabled Azurite Fatestone"
+    ],
+    exclude_cards=[
+        "Rai, Archmage",
     ]
 )
 add_archetype(
@@ -851,6 +862,8 @@ add_archetype(
         "Prudent Nock",
         "Undercurrent Vantage",
         "Charge the Soul",
+        "Manabolt Convergence",
+        "Blazing Cindercharge",
     ],
     require_types={
         "ACTION": 30,
