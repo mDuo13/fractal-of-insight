@@ -891,6 +891,10 @@ add_archetype(
             "Second Wind",
         ],
         [
+            "Ranger Strides",
+            "Second Wind",
+        ],
+        [
             "Invigorating Concoction",
             "Draught of Stamina",
         ]
