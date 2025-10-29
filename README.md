@@ -28,3 +28,6 @@ This site shows information and analysis of Grand Archive tournament results. It
 - add landing page(s) for champions
 - fix bugs in listing of players for "I Made This" achievement (duplicates? players who don't have the achievement?)
 - on card pages, show other arts for card
+- do more with link unfurling
+    - populate meta tags on pages other than events
+    - add images for more pages

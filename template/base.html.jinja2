@@ -12,10 +12,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/static/style.css?v=39" />
-    <script type="text/javascript" src="/static/ui.js?v=27"></script>
+    <script type="text/javascript" src="/static/ui.js?v=28"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     
     {% import "macros.html.jinja2" as macros %}
+    {% block endhead %}
+    {% endblock endhead %}
 </head>
 <body>
 {% block body %}

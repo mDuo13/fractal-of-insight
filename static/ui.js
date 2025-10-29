@@ -14,20 +14,47 @@ function hide(q) {
     const els = document.querySelectorAll(q)
     els.forEach(el => {el.classList.add("collapse")})
 }
+function settitle(q) {
+    try {
+        const title = document.querySelector(q).querySelector("h3").innerText
+        document.og_title = document.title
+        document.title = `${title} - ${document.og_title}`
+        const metatitle = document.querySelector("#metatitle")
+        if (metatitle) {
+            metatitle.setAttribute("content", `${title} - ${document.og_title}`)
+        }
+    } catch(e) {console.debug(`not setting title for ${q}; probably no h3 (err: ${e})`)}
+}
+function unsetmeta() {
+    if (document.og_title) {
+        document.title = document.og_title
+        const metatitle = document.querySelector("#metatitle")
+        if (metatitle) {
+            metatitle.setAttribute("content", document.og_title)
+        }
+    }
+    const metaimage = document.querySelector("#metaimage")
+    if (metaimage) {
+        metaimage.setAttribute("content", "")
+    }
+}
+function setmetaimage(q) {
+    const img_url = document.querySelector(q).querySelector(".rep-image").src
+    const metaimage = document.querySelector("#metaimage")
+    if (img_url && metaimage) {
+        metaimage.setAttribute("content", img_url)
+    }
+}
 function opendecklist(q) {
     hide(".decklist")
     show(q)
-    const title = document.querySelector(q).querySelector("h3").innerText
-    document.og_title = document.title
-    document.title = `${title} - ${document.og_title}`
+    settitle(q)
+    setmetaimage(q)
     window.location.replace(window.location.pathname+window.location.search+q)
-
 }
 function closedecklist(q) {
     hide(q)
-    if (document.og_title) {
-        document.title = document.og_title
-    }
+    unsetmeta()
     history.replaceState(null, "", window.location.pathname+window.location.search)
 }
 function togglegfx() {
@@ -300,6 +327,7 @@ ready(() => {
         const defaultobj = document.querySelector(window.location.hash)
         if (defaultobj && defaultobj.classList.contains("collapse")) {
             defaultobj.classList.remove("collapse")
+            settitle(window.location.hash)
         } else {
             q = `${window.location.hash} > .togglable.collapse`
             //collapsedChildren = document.querySelectorAll(q)

@@ -574,6 +574,14 @@
                 {% endif %}
             </div>
         </div>
+        {% if deck.archetypes|length %}
+        <img style="display:none" class="rep-image" src="/static/bg/{{slugify(deck.archetypes[0])}}.jpg" alt="" />
+        {% elif deck.lineages|length %}
+        <img style="display:none" class="rep-image" src="/static/bg/{{slugify(deck.lineages[-1])}}.jpg" alt="" />
+        {% else %}
+        <img style="display:none" class="rep-image" src="/static/bg/{{slugify(deck.els[0])}}.jpg" alt="" />
+        {% endif %}
+
     </div>
 </div>
 {% endmacro %}
