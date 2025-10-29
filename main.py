@@ -269,7 +269,7 @@ class PageBuilder:
                 if arche in aew.keys():
                     aew[arche] += wins
                 else:
-                    aew[arche] = wins
+                    aew[arche] = [w for w in wins]
 
         for a in ARCHETYPES.values():
             # if a.shortname == "": # Quasi-sub archetypes like Fatestone

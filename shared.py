@@ -297,5 +297,6 @@ REGIONS = {
     "SK": {"name": "Slovakia","flag":"🇸🇰"},
     "TH": {"name": "Thailand", "flag": "🇹🇭"},
     "TW": {"name": "Taiwan","flag": "🇹🇼"},
+    "UM": {"name": "United States Minor Outlying Islands", "flag": "🇺🇸"},
     "US": {"name": "United States of America","flag": "🇺🇸"},
 }
