@@ -2,11 +2,6 @@
 
 {% block subtitle %}{{evt.name}} Analysis - {% endblock %}
 
-{% block endhead %}
-<meta property="og:title" content="{{evt.name|escape}} - Fractal of Insight" id="metatitle" />
-<meta property="og:image" content="" id="metaimage" />
-{% endblock %}
-
 {% macro regiontable(regiondata, id, collapse=True) %}
 <table class="tabcontent togglable {% if collapse %}collapse{% endif %}" id="{{id}}">
     <thead><tr>

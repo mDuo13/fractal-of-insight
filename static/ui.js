@@ -19,42 +19,22 @@ function settitle(q) {
         const title = document.querySelector(q).querySelector("h3").innerText
         document.og_title = document.title
         document.title = `${title} - ${document.og_title}`
-        const metatitle = document.querySelector("#metatitle")
-        if (metatitle) {
-            metatitle.setAttribute("content", `${title} - ${document.og_title}`)
-        }
     } catch(e) {console.debug(`not setting title for ${q}; probably no h3 (err: ${e})`)}
 }
-function unsetmeta() {
+function unsettitle() {
     if (document.og_title) {
         document.title = document.og_title
-        const metatitle = document.querySelector("#metatitle")
-        if (metatitle) {
-            metatitle.setAttribute("content", document.og_title)
-        }
-    }
-    const metaimage = document.querySelector("#metaimage")
-    if (metaimage) {
-        metaimage.setAttribute("content", "")
-    }
-}
-function setmetaimage(q) {
-    const img_url = document.querySelector(q).querySelector(".rep-image").src
-    const metaimage = document.querySelector("#metaimage")
-    if (img_url && metaimage) {
-        metaimage.setAttribute("content", img_url)
     }
 }
 function opendecklist(q) {
     hide(".decklist")
     show(q)
     settitle(q)
-    setmetaimage(q)
     window.location.replace(window.location.pathname+window.location.search+q)
 }
 function closedecklist(q) {
     hide(q)
-    unsetmeta()
+    unsettitle()
     history.replaceState(null, "", window.location.pathname+window.location.search)
 }
 function togglegfx() {
