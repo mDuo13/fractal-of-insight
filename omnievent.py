@@ -228,7 +228,9 @@ class OmniEvent:
             print("Unknown cutSize value:", self.evt.get("cutSize"))
             cutsize = 0
         if not cutsize:
-            if self.format != TEAM_STANDARD:
+            if self.evt["status"] == "complete":
+                self.winner = None
+            elif self.format != TEAM_STANDARD:
                 self.winner = self.players[0]
             return
 
@@ -322,7 +324,8 @@ class OmniEvent:
         # Correct placement for top cut
         for i,p in enumerate(self.top_cut):
             p.placement = i+1
-        self.winner = self.top_cut[0]
+        if self.evt["status"] == "complete":
+            self.winner = self.top_cut[0]
         if self.format == TEAM_STANDARD:
             self.winner = None # use self.winning_team instead
 
