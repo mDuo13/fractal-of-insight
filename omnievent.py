@@ -228,7 +228,7 @@ class OmniEvent:
             print("Unknown cutSize value:", self.evt.get("cutSize"))
             cutsize = 0
         if not cutsize:
-            if self.evt["status"] == "complete":
+            if self.evt["status"] != "complete":
                 self.winner = None
             elif self.format != TEAM_STANDARD:
                 self.winner = self.players[0]
