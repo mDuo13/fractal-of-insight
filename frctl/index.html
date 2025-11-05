@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>FRⱯCTL</title>
+    <link rel="stylesheet" href="frctl.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+    <h1>FRⱯCTL <a class="return-link" href="/">⮤ Return to the Archive</a></h1>
+    <form id="guessform">
+        <fieldset id="guessing-area">
+            <label for="guessbox">
+                <p class="explanation">(Input a Grand Archive card name. Partial names are OK.)</p>
+                <input type="text" id="guessbox" list="autocomplete" />
+            </label>
+            <input id="guess-butt" type="submit" value="Guess" />
+            <datalist id="autocomplete">
+            </datalist>
+            <button id="hint-plz">I need a hint</button>
+            <br><button id="next-puz" class="collapse">Next puzzle</button>
+        </fieldset>
+        <fieldset id="difficulty-select">
+            <h3>Difficulty Select</h3>
+            <p class="explanation">(Higher difficulty = more obscure cards. No difference in prizing.)</p>
+            <label for="dif-easy"><input type="radio" name="difficulty" id="dif-easy" value="easy" checked /> Easy</label>
+            <label for="dif-med"><input type="radio" name="difficulty" id="dif-med" value="med" /> Medium</label>
+            <label for="dif-hard"><input type="radio" name="difficulty" id="dif-hard" value="hard" /> Hard</label>
+            <label for="dif-maniac"><input type="radio" name="difficulty" id="dif-maniac" value="maniac" /> Maniac</label>
+        </fieldset>
+        <fieldset id="prize-area">
+            <h3>🎁 Prizes</h3>
+        </fieldset>
+    </form>
+    <h2>Guesses</h2>
+    <div id="guesshistory">
+    </div>
+
+    <div id="overlay-bg" class="overlay-animated">&nbsp;</div>
+    <div id="dialog-overlay" class="overlay-animated collapse">
+        <div id="dialog-contain">
+            <button id="close-dialog-button">✖️</button>
+            <img class="speaker-image" id="tweedledee" src="tweedledee-cutout.png" alt="Tweedledee" />
+            <img class="speaker-image" id="tweedledum" src="tweedledum-cutout.png" alt="Tweedledum" />
+            <img id="spoiler-img" src="" alt="" class="collapse" />
+            <div id="dialog-box">
+                <div id="speaker-name">
+                </div>
+                <div id="dialog-text">
+                </div>
+            </div>
+            <button id="next-button" data-dname="startup" data-nextpage="0">»</button>
+        </div>
+    </div>
+    <script src="frctl.js"></script>
+</body>
+</html>
