@@ -234,7 +234,7 @@ a:hover {
 }
 #dialog-overlay {
     z-index: 1;
-    width: 1000px;
+    width: 80vw;
     height: 80vh;
     position: absolute;
     left: 10vw;
@@ -250,6 +250,20 @@ a:hover {
     display: flex;
     flex-direction: column;
     justify-content: end;
+}
+@media (max-width: 830.1px) {
+    #dialog-overlay {
+        width: 90vw;
+        left: 5vw;
+        top: auto;
+        bottom: 5vh;
+        height: auto;
+    }
+    #dialog-contain .speaker-image {
+        position: static;
+        flex-grow: 1;
+        object-fit: cover;
+    }
 }
 #dialog-box {
     background-color: #545434;
