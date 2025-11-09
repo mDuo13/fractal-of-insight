@@ -19,7 +19,8 @@ async function populateautocomplete(cards) {
     for (const c of cards) {
         const o = document.createElement("option")
         o.innerText = c.name
-        o.value="🔤"+c.slug
+        // o.value="🔤"+c.slug
+        o.value = c.name
         ac.appendChild(o)
     }
 }
@@ -50,6 +51,13 @@ async function submitguess(name) {
         console.warn(`No card matching "${name}"`)
         return {"card":null, "results":false}
     } else if (resp.length > 1) {
+        // check for an exact match
+        for (const result of resp) {
+            if (result.name.toLowerCase() == name.toLowerCase()) {
+                return await guesscard(result.slug)
+            }
+        }
+        // no exact match
         console.debug(`Multiple cards matching "${name}"`)
         populateautocomplete(resp)
         return {"card":null, "results":false}
