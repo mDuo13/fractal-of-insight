@@ -5,11 +5,20 @@
     <title>FRⱯCTL</title>
     <link rel="stylesheet" href="frctl.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon_180.png">
+    <link rel="icon" href="/favicon_180.png" sizes="180x180">
+    <link rel="icon" href="/favicon_32.png" sizes="32x32">
 </head>
 <body>
     <h1>FRⱯCTL <a class="return-link" href="/">⮤ Return to the Archive</a></h1>
+    <div id="ui-tabs-mobile">
+        <button id="tab-guess" class="active-tab" data-tabfor="#guessing-area">Guess</button>
+        <button id="tab-difficulty" data-tabfor="#difficulty-select">Difficulty</button>
+        <button id="tab-prizes" data-tabfor="#prize-area">Prizes</button>
+    </div>
     <form id="guessform">
-        <fieldset id="guessing-area">
+        <fieldset id="guessing-area" class="mobile-active">
             <label for="guessbox">
                 <p class="explanation">(Input a Grand Archive card name. Partial names are OK.)</p>
                 <input type="text" id="guessbox" list="autocomplete" />
@@ -20,7 +29,7 @@
             <button id="hint-plz">I need a hint</button>
             <br><button id="next-puz" class="collapse">Next puzzle</button>
         </fieldset>
-        <fieldset id="difficulty-select">
+        <fieldset id="difficulty-select" class="mobile-inactive">
             <h3>Difficulty Select</h3>
             <p class="explanation">(Higher difficulty = more obscure cards. No difference in prizing.)</p>
             <label for="dif-easy"><input type="radio" name="difficulty" id="dif-easy" value="easy" checked /> Easy</label>
@@ -28,8 +37,10 @@
             <label for="dif-hard"><input type="radio" name="difficulty" id="dif-hard" value="hard" /> Hard</label>
             <label for="dif-maniac"><input type="radio" name="difficulty" id="dif-maniac" value="maniac" /> Maniac</label>
         </fieldset>
-        <fieldset id="prize-area">
+        <fieldset id="prize-area" class="mobile-inactive">
             <h3>🎁 Prizes</h3>
+            <p class="explanation">(Earn up to 3 spoilers by solving puzzles.)</p>
+            <button id="replay-intro">Replay intro</button>
         </fieldset>
     </form>
     <h2>Guesses</h2>

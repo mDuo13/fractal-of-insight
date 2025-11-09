@@ -50,6 +50,9 @@ a:hover {
     display: flex;
     margin-bottom: 20px;
 }
+#guessing-area, #difficulty-select, #prize-area {
+    background-color: rgba(128,128,128,0.35);
+}
 #difficulty-select {
     border: 2px double white;
 }
@@ -82,6 +85,7 @@ a:hover {
     grid-template-columns: 2fr 2fr 1fr 3fr 2fr;
     grid-template-rows: 40px 1fr;
     border: 1px dashed white;
+    background-color: var(--overlay-bg);
 }
 #guesshistory dt {
     grid-row: 1;
@@ -103,6 +107,7 @@ a:hover {
 .hint-record {
     border: 1px dashed white;
     padding: 10px;
+    background-color: var(--overlay-bg);
 }
 .card {
     border-radius: 8px;
@@ -251,20 +256,6 @@ a:hover {
     flex-direction: column;
     justify-content: end;
 }
-@media (max-width: 830.1px) {
-    #dialog-overlay {
-        width: 90vw;
-        left: 5vw;
-        top: auto;
-        bottom: 5vh;
-        height: auto;
-    }
-    #dialog-contain .speaker-image {
-        position: static;
-        flex-grow: 1;
-        object-fit: cover;
-    }
-}
 #dialog-box {
     background-color: #545434;
     width: 100%;
@@ -301,6 +292,9 @@ a:hover {
     max-width: 500px;
     height: 700px;
     border-radius: 4%;
+    object-fit: contain;
+    margin: auto;
+    overflow: scroll;
 }
 
 #next-button {
@@ -325,4 +319,95 @@ a:hover {
     border-radius: 4px;
     color: white;
     font-weight: bold;
+}
+
+#ui-tabs-mobile {
+    display: none;
+}
+#ui-tabs-mobile button {
+    position: relative;
+}
+
+.tab-notif::after {
+	content: " ";
+	position: absolute;
+	top: -4px;
+	right: -5px;
+	padding: 4px;
+	border-radius: 6px;
+	background-color: red;
+	border: 2px solid #ccc;
+}
+
+@media (max-width: 830.1px) {
+    #ui-tabs-mobile {
+        display: flex;
+        justify-content: space-between;
+        padding: 2px 2px 0 2px;
+    }
+    #ui-tabs-mobile button {
+    	margin: 10px 0 0 0;
+        padding: 5px 10px;
+        background-color: aliceblue;
+        color: black;
+        border-radius: 8px 8px 0 0;
+    }
+    #ui-tabs-mobile .active-tab {
+        background-color: var(--overlay-bg);
+        color: white;
+        bottom: -2px;
+    }
+    .mobile-inactive {
+        display: none;
+    }
+    #dialog-overlay {
+        width: 90vw;
+        left: 5vw;
+        top: auto;
+        bottom: 5vh;
+        height: auto;
+    }
+    #dialog-contain .speaker-image {
+        position: static;
+        flex-grow: 1;
+        object-fit: cover;
+    }
+    #guessing-area, #difficulty-select, #prize-area {
+        width: 100%;
+    }
+    #spoiler-img {
+        width: 100%;
+    }
+
+    #guesshistory dl {
+        display: grid;
+        grid-template-columns: 3fr 4fr;
+        grid-template-rows: auto auto auto auto auto;
+        border: 1px dashed white;
+        background-color: var(--overlay-bg);
+    }
+    #guesshistory dt {
+        grid-row: auto;
+        grid-column: 1;
+        border-bottom: 1px solid gold;
+        padding-bottom: 5px;
+    }
+    #guesshistory dd {
+        grid-row: auto;
+        grid-column: 2;
+        justify-content: center;
+        border-bottom: 1px solid gold;
+        padding-bottom: 5px;
+    }
+    #guesshistory dt:last-of-type,
+    #guesshistory dd:last-of-type {
+        border-bottom-color: transparent;
+    }
+    #guesshistory .subtypes {
+        display: block;
+    }
+}
+
+:root {
+    --overlay-bg: rgba(128,128,128,0.35);
 }

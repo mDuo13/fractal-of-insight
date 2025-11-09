@@ -264,7 +264,7 @@ function addguess(card, results) {
             <dt>Guess</dt><dd>${card.name}</dd>
             <dt>Element(s)</dt><dd>${results.elements} ${elementdisplay}</dd>
             <dt>Cost</dt><dd>${results.cost} ${costdisplay}</dd>
-            <dt>Types - Subtypes</dt><dd class="card-types">${results.types} ${card.types.map((s)=>s.toLowerCase()).join(" ")} - ${results.subtypes} ${card.subtypes.map((s)=>s.toLowerCase()).join(" ")}</dd>
+            <dt>Types - <span class="subtypes">Subtypes</span></dt><dd class="card-types">${results.types} ${card.types.map((s)=>s.toLowerCase()).join(" ")} - <span class="subtypes">${results.subtypes} ${card.subtypes.map((s)=>s.toLowerCase()).join(" ")}</span></dd>
             <dt>Stats</dt><dd>${results.stats} (Overall)<br>${statdisplay}</dd>
         </dl>
     ` + gh.innerHTML
@@ -276,8 +276,10 @@ function choosecardauto() {
     const chosendiff = document.querySelector("#difficulty-select input:checked")
     if (chosendiff) {
         choosecard(chosendiff.value)
+        return chosendiff.value
     } else {
         choosecard("easy")
+        return "easy"
     }
 }
 
@@ -295,7 +297,8 @@ async function choosecard(difficulty) {
         past_cards = []
     }
     mysterycard = await indexlookup(chosen_slug)
-    console.debug(`Chose answer: ${mysterycard.name}`)
+    // console.debug(`Chose answer: ${mysterycard.name}`)
+
 }
 
 function nextpuzzle(event) {
@@ -303,11 +306,11 @@ function nextpuzzle(event) {
     const guessbut = document.querySelector("#guess-butt")
     const hintbut = document.querySelector("#hint-plz")
     nextpuzbut.classList.add("collapse")
-    choosecardauto()
+    const diff = choosecardauto()
     guessbut.disabled = false
     hintbut.disabled = false
     const gh = document.querySelector("#guesshistory")
-    gh.innerHTML=""
+    gh.innerHTML=`<div class="choose-note">Playing on ${diff} difficulty.</div>`
     hints_given = []
     const ac = document.querySelector("#autocomplete")
     ac.innerHTML = ""
@@ -322,6 +325,9 @@ function advancedialog(event) {
     if (pagenum >= ALLDIALOG[dname].length) {
         //console.debug(`Page ${pagenum} is past the end of ${dname}`)
         enddialog()
+        if (dname == "startup") {
+            window.localStorage.setItem("introseen", true)
+        }
         return
     }
     const page = ALLDIALOG[dname][pagenum]
@@ -337,6 +343,9 @@ function enddialog() {
             el.classList.add("collapse")
             el.classList.remove("fadeOut")
         })
+    }
+    for (const el of document.querySelectorAll(".hint-record.collapse")) {
+        el.classList.remove("collapse")
     }
 }
 
@@ -458,7 +467,7 @@ function givehint(event) {
     nextbut.dataset.nextpage = 9999
     showdialogpage(parsedpage, true)
 
-    let hinttext = `<div class="hint-record"><span class="hint-label">Hint</span>`
+    let hinttext = `<div class="hint-record collapse"><span class="hint-label">Hint</span>`
     for (const line of parsedpage.lines) {
         hinttext = hinttext + `<p>${line}</p>`
     }
@@ -470,41 +479,102 @@ function givehint(event) {
 function addprize() {
     victories += 1
     past_cards.push(mysterycard.slug)
-    
+    window.localStorage.setItem("victories", victories)
+    updateprizing()
+}
+
+function updateprizing() {
     const pa = document.querySelector("#prize-area")
     const nextbut = document.querySelector("#next-button")
-    if (victories == 1) {
+    if (victories >= 1 && !document.querySelector("#spoiler-btn-1")) {
         const spl1 = document.createElement("button")
         spl1.innerText = "Spoiler 1/3"
+        spl1.id = "spoiler-btn-1"
+        const spoilerseen = window.localStorage.getItem("seenspoiler1")
+        if (!spoilerseen) {
+            spl1.classList.add("tab-notif")
+        }
         spl1.addEventListener("click", (evt) => {
+            spl1.classList.remove("tab-notif")
+            window.localStorage.setItem("seenspoiler1", true)
             nextbut.dataset.dname = "spoiler1"
             nextbut.dataset.nextpage = 0
             advancedialog()
+            update_prizetab_notif()
         })
         pa.appendChild(spl1)
         spl1.classList.add("fadeInRel")
-    } else if (victories == 2) {
+    }
+    if (victories >= 2 && !document.querySelector("#spoiler-btn-2")) {
         const spl2 = document.createElement("button")
         spl2.innerText = "Spoiler 2/3"
+        spl2.id = "spoiler-btn-2"
+        const spoilerseen = window.localStorage.getItem("seenspoiler2")
+        if (!spoilerseen) {
+            spl2.classList.add("tab-notif")
+        }
         spl2.addEventListener("click", (evt) => {
+            spl2.classList.remove("tab-notif")
+            window.localStorage.setItem("seenspoiler2", true)
             nextbut.dataset.dname = "spoiler2"
             nextbut.dataset.nextpage = 0
             advancedialog()
+            update_prizetab_notif()
         })
         pa.appendChild(spl2)
         spl2.classList.add("fadeInRel")
-    } else if (victories == 3) {
+    }
+    if (victories >= 3 && !document.querySelector("#spoiler-btn-3")) {
         const spl3 = document.createElement("button")
+        spl3.id = "spoiler-btn-3"
         spl3.innerText = "Spoiler 3/3"
+        const spoilerseen = window.localStorage.getItem("seenspoiler3")
+        if (!spoilerseen) {
+            spl3.classList.add("tab-notif")
+        }
         spl3.addEventListener("click", (evt) => {
+            spl3.classList.remove("tab-notif")
+            window.localStorage.setItem("seenspoiler3", true)
             nextbut.dataset.dname = "spoiler3"
             nextbut.dataset.nextpage = 0
             advancedialog()
+            update_prizetab_notif()
         })
         pa.appendChild(spl3)
         spl3.classList.add("fadeInRel")
     }
-    // else out of prizes
+    update_prizetab_notif()
+}
+
+function update_prizetab_notif() {
+    const prizetab = document.querySelector("#tab-prizes")
+    let notif_count = 0
+    const splbuts = document.querySelectorAll("#prize-area > button")
+    for (const prize of splbuts) {
+        if (prize.classList.contains("tab-notif")) {
+            notif_count += 1
+        }
+    }
+    if (notif_count) {
+        prizetab.classList.add("tab-notif")
+    } else {
+        prizetab.classList.remove("tab-notif")
+    }
+}
+
+function selecttab(event) {
+    const tabs = document.querySelectorAll("#ui-tabs-mobile button")
+    for (const el of tabs) {
+        if (el === event.target) {
+            el.classList.add("active-tab")
+            document.querySelector(el.dataset.tabfor).classList.add("mobile-active")
+            document.querySelector(el.dataset.tabfor).classList.remove("mobile-inactive")
+        } else {
+            el.classList.remove("active-tab")
+            document.querySelector(el.dataset.tabfor).classList.remove("mobile-active")
+            document.querySelector(el.dataset.tabfor).classList.add("mobile-inactive")
+        }
+    }
 }
 
 function ready(callback) {
@@ -526,6 +596,12 @@ ready(async () => {
         diffbut.addEventListener("change", difficultychange)
     }
 
+    const savedVictories = window.localStorage.getItem("victories")
+    if (savedVictories) {
+        victories = parseInt(savedVictories)
+        updateprizing()
+    }
+
     const closebut = document.querySelector("#close-dialog-button")
     closebut.addEventListener("click", enddialog)
     const hintbut = document.querySelector("#hint-plz")
@@ -534,5 +610,23 @@ ready(async () => {
     nextbut.addEventListener("click", advancedialog)
     const nextpuzbut = document.querySelector("#next-puz")
     nextpuzbut.addEventListener("click", nextpuzzle)
-    advancedialog()
+    
+    const mobiletabs = document.querySelectorAll("#ui-tabs-mobile button")
+    for (const tab of mobiletabs) {
+        tab.addEventListener("click", selecttab)
+    }
+    
+    const introSeen = window.localStorage.getItem("introseen")
+    if (!introSeen) {
+        advancedialog()
+    } else {
+        enddialog()
+    }
+
+    const replayintrobut = document.querySelector("#replay-intro")
+    replayintrobut.addEventListener("click", (event) => {
+        nextbut.dataset.dname = "startup"
+        nextbut.dataset.nextpage = 0
+        advancedialog()
+    })
 })
