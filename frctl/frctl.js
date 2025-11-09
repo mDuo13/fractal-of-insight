@@ -25,11 +25,18 @@ async function populateautocomplete(cards) {
     }
 }
 
+async function updateguessbox(event) {
+    const gb = document.querySelector("#guessbox")
+    const acf = document.querySelector("#autocomplete-feedback")
+    gb.classList.remove("multiple-options")
+    gb.classList.remove("no-options")
+    acf.innerText = ""
+}
+
 async function pressguess(event) {
     event.preventDefault()
     const gb = document.querySelector("#guessbox")
     const guesstext = gb.value
-    gb.value = ""
     if (guesstext.length == 0) {
         return
     }
@@ -42,26 +49,37 @@ async function pressguess(event) {
 }
 
 async function submitguess(name) {
+    const gb = document.querySelector("#guessbox")
+    const acf = document.querySelector("#autocomplete-feedback")
     if (name.slice(0,2) === "🔤") {
+        gb.value = ""
         // special case for slugs
         return await guesscard(name.slice(2))
     }
     const resp = await (await fetch(`https://api.gatcg.com/cards/autocomplete?name=${name}`)).json()
     if (resp.length === 0) {
-        console.warn(`No card matching "${name}"`)
+        acf.innerText=`No card matching "${name}"`
+        gb.classList.add("no-options")
+        gb.focus()
+        gb.selectionStart = gb.selectionEnd = gb.value.length
         return {"card":null, "results":false}
     } else if (resp.length > 1) {
         // check for an exact match
         for (const result of resp) {
             if (result.name.toLowerCase() == name.toLowerCase()) {
+                gb.value = ""
                 return await guesscard(result.slug)
             }
         }
         // no exact match
-        console.debug(`Multiple cards matching "${name}"`)
+        acf.innerText=`Multiple cards matching "${name}"`
         populateautocomplete(resp)
+        gb.classList.add("multiple-options")
+        gb.focus()
+        gb.selectionStart = gb.selectionEnd = gb.value.length
         return {"card":null, "results":false}
     }
+    gb.value = ""
     return await guesscard(resp[0].slug)
 }
 
@@ -598,6 +616,8 @@ ready(async () => {
 
     const gf = document.querySelector("#guessform")
     gf.addEventListener("submit", pressguess)
+    const gb = document.querySelector("#guessbox")
+    gb.addEventListener("change", updateguessbox)
 
     const diffbuttons = document.querySelectorAll("#difficulty-select input")
     for (const diffbut of diffbuttons) {

@@ -62,6 +62,13 @@ a:hover {
 }
 #guessbox {
     font-size: 16px;
+    border: 2px solid aliceblue;
+}
+#guessbox.multiple-options {
+    border-color: gold;
+}
+#guessbox.no-options {
+    border-color: red;
 }
 
 #prize-area button, #guessform button, #guess-butt {
