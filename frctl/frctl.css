@@ -87,6 +87,10 @@ a:hover {
     display: block;
 }
 
+#guesshistory > * {
+    margin: 10px 0;
+}
+
 #guesshistory dl {
     display: grid;
     grid-template-columns: 2fr 2fr 1fr 3fr 2fr;

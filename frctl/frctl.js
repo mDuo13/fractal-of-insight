@@ -231,12 +231,24 @@ async function guesscard(slug) {
     return {"card":guess, "results":results}
 }
 
+function toclipboard() {
+    const rh = document.querySelector("#resulthistory")
+    if (window.isSecureContext) {
+        navigator.clipboard.writeText(rh.value)
+    } else {
+        console.warn("Can't write to clipboard—not a secure browser window")
+        console.log(rh.value)
+    }
+}
+
 function addguess(card, results) {
     const gh = document.querySelector("#guesshistory")
     if (results === true) {
         gh.innerHTML = `
             <div class="guess correct">
-                <h3> 🎉 Correct! </h3>
+                <h3> 🎉 Correct! 
+                    <button onclick="toclipboard()">Share (copy to clipboard)</button>
+                </h3>
                 <img src="https://api.gatcg.com${card.result_editions[0].image}" alt="${card.name}" width="250" height="350" class="card" />
             </div>
         ` + gh.innerHTML
@@ -246,6 +258,8 @@ function addguess(card, results) {
         nextpuz.classList.remove("collapse")
         guessbut.disabled = true
         hintbut.disabled = true
+        const rh = document.querySelector("#resulthistory")
+        rh.value = rh.value + `🎉 Got it in ${rh.value.split("\n").length-1}\nhttps://fractalofin.site/frctl/`
         addprize()
         return
     }
@@ -294,6 +308,9 @@ function addguess(card, results) {
             <dt>Stats</dt><dd>${results.stats} (Overall)<br>${statdisplay}</dd>
         </dl>
     ` + gh.innerHTML
+
+    const rh = document.querySelector("#resulthistory")
+    rh.value = rh.value + results.elements + results.cost + results.types + results.subtypes + results.stats + "\n"
 }
 
 function choosecardauto() {
@@ -340,6 +357,8 @@ function nextpuzzle(event) {
     hints_given = []
     const ac = document.querySelector("#autocomplete")
     ac.innerHTML = ""
+    const rh = document.querySelector("#resulthistory")
+    rh.value = `FRⱯCTL - ${diff}\n`
 }
 
 function advancedialog(event) {
@@ -500,6 +519,9 @@ function givehint(event) {
     hinttext = hinttext + "</div>"
     const gh = document.querySelector("#guesshistory")
     gh.innerHTML = hinttext + gh.innerHTML
+
+    rh = document.querySelector("#resulthistory")
+    rh.value = rh.value + "➡️🇭​🇮​🇳​🇹\n"
 }
 
 function addprize() {
@@ -612,7 +634,9 @@ ready(async () => {
     ALLSLUGS = await (await fetch("./slugs.json")).json()
     ALLDIALOG = await (await fetch("./dialog.json")).json()
     
-    choosecardauto()
+    const diff = choosecardauto()
+    const rh = document.querySelector("#resulthistory")
+    rh.value = `FRⱯCTL - ${diff}\n`
 
     const gf = document.querySelector("#guessform")
     gf.addEventListener("submit", pressguess)
