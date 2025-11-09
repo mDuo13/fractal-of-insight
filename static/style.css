@@ -1433,3 +1433,30 @@ a.achievement {
         font-size: 15px;
     }
 }
+
+.ptm-spoilers {
+    text-shadow: #e4baef 1px 1px 2px;
+    position: relative;
+    background-image: url(rabbithole.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    display: inline-block;
+    width: 100px;
+    height: 23px;
+    vertical-align: bottom;
+    background-position-x: 15px;
+    margin-bottom: -5px;
+}
+.fadeout-text {
+    mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 70px, rgba(0, 0, 0, 0) 95px);
+    transition: padding 0.5s ease;
+    text-indent: 0;
+    line-height: 23px;
+    overflow: hidden;
+    display: inline-block;
+    white-space: pre;
+    text-decoration: underline;
+}
+.ptm-spoilers:hover .fadeout-text {
+    padding-left: 100%;
+}
