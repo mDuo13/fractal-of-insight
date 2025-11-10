@@ -61,7 +61,6 @@ async function submitguess(name) {
         acf.innerText=`No card matching "${name}"`
         gb.classList.add("no-options")
         gb.focus()
-        gb.selectionStart = gb.selectionEnd = gb.value.length
         return {"card":null, "results":false}
     } else if (resp.length > 1) {
         // check for an exact match
@@ -402,6 +401,7 @@ async function showdialogpage(page) {
 
     const dlg_spk = document.querySelector("#speaker-name")
     const dlg_text = document.querySelector("#dialog-text")
+    const dlg_box = document.querySelector("#dialog-box")
     const spimg = document.querySelector("#spoiler-img")
     for (const spkr_img of document.querySelectorAll(".speaker-image")) {
         if (spkr_img.alt == page.speaker) {
@@ -418,10 +418,12 @@ async function showdialogpage(page) {
         dlg_text.classList.add("collapse")
         dlg_spk.innerText=""
         dlg_spk.classList.add("collapse")
+        dlg_box.classList.add("collapse")
     } else {
         spimg.classList.add("collapse")
         dlg_spk.innerText = page.speaker
         dlg_spk.classList.remove("collapse")
+        dlg_box.classList.remove("collapse")
         dlg_text.innerHTML=""
         for (const line of page.lines) {
             const p = document.createElement("p")
@@ -632,7 +634,7 @@ function ready(callback) {
 
 ready(async () => {
     ALLSLUGS = await (await fetch("./slugs.json")).json()
-    ALLDIALOG = await (await fetch("./dialog.json")).json()
+    ALLDIALOG = await (await fetch("./dialog-nospoilers.json")).json()
     
     const diff = choosecardauto()
     const rh = document.querySelector("#resulthistory")

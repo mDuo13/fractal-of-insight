@@ -301,8 +301,8 @@ a:hover {
 }
 #spoiler-img {
     max-width: 500px;
-    height: 700px;
-    border-radius: 4%;
+    max-height: 700px;
+    border-radius: 20px;
     object-fit: contain;
     margin: auto;
     overflow: scroll;
@@ -330,6 +330,7 @@ a:hover {
     border-radius: 4px;
     color: white;
     font-weight: bold;
+    z-index: 2;
 }
 
 #ui-tabs-mobile {
@@ -416,6 +417,35 @@ a:hover {
     }
     #guesshistory .subtypes {
         display: block;
+    }
+}
+
+
+@media (max-height: 500.1px) {
+    #dialog-text {
+        padding: 20px 0 5px 0;
+    }
+    #dialog-text p {
+        padding-bottom: 10px;
+        border-top-width: 0;
+    }
+    #dialog-contain {
+        display: grid;
+        grid-template-columns: 4fr 3fr;
+        position: relative;
+    }
+    #dialog-box {
+        grid-column: 2;
+        height: 100%;
+    }
+    #dialog-contain .speaker-image {
+        grid-column: 1;
+        height: 100%;
+        position: absolute;
+    }
+    #spoiler-img {
+        grid-column: 1 / span 2;
+        height: 100%;
     }
 }
 
