@@ -5,6 +5,18 @@ let victories = 0
 let ALLSLUGS
 let ALLDIALOG
 
+const RARITIES = {
+    1: "C",
+    2: "U",
+    3: "R",
+    4: "SR",
+    5: "UR",
+    6: "PR",
+    7: "CSR",
+    8: "CUR",
+    9: "CPR"
+}
+
 function sleep (delayInMs) {
   return new Promise((resolve) => setTimeout(resolve, delayInMs))
 }
@@ -258,7 +270,7 @@ function addguess(card, results) {
         guessbut.disabled = true
         hintbut.disabled = true
         const rh = document.querySelector("#resulthistory")
-        rh.value = rh.value + `🎉 Got it in ${rh.value.split("\n").length-1}\nhttps://fractalofin.site/frctl/`
+        rh.value = rh.value + `${mysterycard.name}\n🎉 Got it in ${rh.value.split("\n").length-1}\nhttps://fractalofin.site/frctl/`
         addprize()
         return
     }
@@ -427,7 +439,8 @@ async function showdialogpage(page) {
         dlg_text.innerHTML=""
         for (const line of page.lines) {
             const p = document.createElement("p")
-            p.innerText=line
+            // p.innerText=line
+            p.innerHTML = line
             dlg_text.appendChild(p)
         }
         dlg_text.classList.remove("collapse")
@@ -486,9 +499,12 @@ function givehint(event) {
             need_subs["__TEXT__"] = card_text
         }
     }
-    if (rawpage.needs.includes("__SET__")) {
+    if (rawpage.needs.includes("__SET__") || rawpage.needs.includes("__RARITY__")) {
+        // Have these together so it uses the rarity for the right set
         let rnd_ed = mysterycard.result_editions[Math.floor(Math.random() * mysterycard.result_editions.length)]
         need_subs["__SET__"] = rnd_ed.set.prefix
+        const rarity = RARITIES[rnd_ed.rarity]
+        need_subs["__RARITY__"] = `<span class="rarity rarity-${rarity}">${rarity}</span>`
     }
     if (rawpage.needs.includes("__FLAVOR__")) {
         if (mysterycard.flavor) {

@@ -351,6 +351,30 @@ a:hover {
 	border: 2px solid #ccc;
 }
 
+.rarity-C {
+    color: #fff;
+}
+.rarity-U {
+    color: #63ff00;
+}
+.rarity-R {
+    color: #52b8ff;
+}
+.rarity-SR {
+    color: #8533ff;
+}
+.rarity-UR {
+    color: #ffb300;
+}
+.rarity-PR {
+    color: #de78ff;
+}
+.rarity-CSR,
+.rarity-CUR,
+.rarity-CPR {
+    color: #fff;
+}
+
 @media (max-width: 830.1px) {
     #ui-tabs-mobile {
         display: flex;

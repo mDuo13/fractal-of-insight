@@ -70,8 +70,9 @@
         {
             "speaker": "Tweedledee",
             "lines": ["Coming to me is a sure bet!",
-                      "In one of __EDCOUNT__ edition(s), __SET__ is the set."],
-            "needs": ["__EDCOUNT__", "__SET__"]
+                      "In one of __EDCOUNT__ edition(s), __SET__ is the set,",
+                      "and __RARITY__ is the rarity to get."],
+            "needs": ["__EDCOUNT__", "__SET__", "__RARITY__"]
         },
         {
             "speaker": "Tweedledum",
