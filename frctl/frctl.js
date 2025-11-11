@@ -213,6 +213,10 @@ async function guesscard(slug) {
                 } else {
                     statresults[st] = "⬆️"
                 }
+                if (results.stats == "❌") {
+                    // Upgrade from ❌ but not from 🔶
+                    results.stats = "↕️"
+                }
             }
         }
         if (guess.speed === null) {
