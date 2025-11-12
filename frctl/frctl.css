@@ -1,0 +1,478 @@
+@font-face {
+    font-family: "Fracturized-Biolinum";
+    src: url(../static/FracturizedBiolinum.woff) format("woff");
+}
+@font-face {
+    font-family: "Adobe Garamod Pro Semibold";
+    src: url(../static/AGaramondPro-Semibold.otf);
+}
+
+body {
+    background: url(frctl-bg.png) #3b2057;
+    color: white;
+    font-family: "Fracturized-Biolinum";
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+    padding: 20px;
+    margin: 0;
+}
+
+h1 {
+    font-family: "Fracturized-Biolinum";
+    font-size: 40px;
+}
+h1, h2, h3, p {
+    margin: 0 0 10px 0;
+}
+
+a {
+    color: gold;
+}
+a:active, a:visited, a:focus {
+    color: goldenrod;
+}
+a:hover {
+    color: wheat;
+}
+
+.return-link {
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: normal;
+    vertical-align: middle;
+}
+
+.explanation {
+    font-size: 14px;
+    font-style: italic;
+}
+#guessform {
+    display: flex;
+    margin-bottom: 20px;
+}
+#guessing-area, #difficulty-select, #prize-area {
+    background-color: rgba(128,128,128,0.35);
+}
+#difficulty-select {
+    border: 2px double white;
+}
+#difficulty-select label {
+    white-space: nowrap;
+    margin-right: 20px;
+}
+#guessbox {
+    font-size: 16px;
+    border: 2px solid aliceblue;
+}
+#guessbox.multiple-options {
+    border-color: gold;
+}
+#guessbox.no-options {
+    border-color: red;
+}
+
+#prize-area button, #guessform button, #guess-butt {
+	margin: 10px 0;
+	padding: 5px 10px;
+	background-color: aliceblue;
+	color: black;
+	border-radius: 4px;
+}
+#prize-area button:disabled, #guessform button:disabled, #guess-butt:disabled {
+	background-color: #555;
+	color: #aaa;
+	text-decoration: line-through;
+}
+#prize-area button {
+    display: block;
+}
+
+#guesshistory > * {
+    margin: 10px 0;
+}
+
+#guesshistory dl {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr 3fr 2fr;
+    grid-template-rows: 40px 1fr;
+    border: 1px dashed white;
+    background-color: var(--overlay-bg);
+}
+#guesshistory dt {
+    grid-row: 1;
+    justify-content: center;
+    border-bottom: 4px double gold;
+    margin: 5px 10px;
+}
+#guesshistory dd {
+    grid-row: 2;
+    justify-content: center;
+    margin: 5px 10px;
+}
+.hint-label {
+    font-weight: bold;
+    border-bottom: 4px double gold;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+.hint-record {
+    border: 1px dashed white;
+    padding: 10px;
+    background-color: var(--overlay-bg);
+}
+.card {
+    border-radius: 8px;
+}
+
+.reserve-cost {
+    display: inline-flex;
+    justify-content: center;
+    width: 1.5em;
+    height: 1.5em;
+    line-height: 1.5em;
+    color: black;
+    background-color: yellow;
+    font-weight: bold;
+    border-radius: 50%;
+}
+
+.memory-cost {
+    display: inline-flex;
+    justify-content: center;
+    width: 1.5em;
+    height: 1.5em;
+    line-height: 1.5em;
+    color: black;
+    background-color: lightblue;
+    font-weight: bold;
+    border-radius: 50%;
+}
+
+.card-types, .stat, .element-name {
+    text-transform: capitalize;
+}
+
+.stat.life, .stat.power, .stat.durability {
+    font-size: 0;
+}
+.stat.life::after {
+    font-size: 16px;
+    content: "♥";
+}
+.stat.power::after {
+    font-size: 16px;
+    content: "🗡";
+}
+.stat.durability::after {
+    font-size: 16px;
+    content: "🛡";
+}
+
+.sv-speed {
+    color: white;
+    font-weight: bold;
+    background-color: black;
+    border-radius: 10px;
+    padding: 1px 6px;
+}
+.sv-true {
+    color: lightcoral;
+}
+.sv-false {
+    color: lightblue;
+}
+.invis {
+    opacity: 0;
+}
+.collapse {
+    display: none !important;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        top: 15vh;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        top: 5vh;
+    }
+    100% {
+        opacity: 1;
+        top: 10vh;
+    }
+}
+@keyframes fadeInRel {
+    0% {
+        opacity: 0;
+        top: -5%;
+    }
+    100% {
+        opacity: 1;
+        top: 0;
+    }
+}
+
+.fadeOut {
+    animation-duration: 0.2s;
+    animation-name: fadeOut;
+    animation-fill-mode: forwards;
+}
+
+.fadeIn {
+    animation-duration: 0.2s;
+    animation-name: fadeIn;
+    animation-fill-mode: forwards;
+}
+
+.fadeInRel {
+    animation-duration: 0.2s;
+    animation-name: fadeInRel;
+    animation-fill-mode: forwards;
+    position: relative;
+}
+
+#overlay-bg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    background-color: rgba(0,0,0,0.75);
+    transition: opacity 0.5s;
+}
+#dialog-overlay {
+    z-index: 1;
+    width: 80vw;
+    height: 80vh;
+    position: absolute;
+    left: 10vw;
+    top: 10vh;
+    border: 4px solid #333;
+    border-radius: 4px;
+    background-color: rgba(0,0,0,0.75);
+}
+#dialog-contain {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
+#dialog-box {
+    background-color: #545434;
+    width: 100%;
+    position: relative;
+    flex-grow: 0;
+}
+.speaker-image {
+	max-height: 100%;
+	max-width: 100%;
+	object-fit: cover;
+	position: absolute;
+}
+#speaker-name {
+	background: #222;
+	border-top-right-radius: 10px 50%;
+	border-bottom-right-radius: 10px 50%;
+	position: absolute;
+    padding: 10px 40px 10px 10px;
+	top: -20px;
+    font-family: "Adobe Garamod Pro Semibold";
+    font-size: 26px;
+}
+#dialog-text {
+    padding: 30px 0 30px;
+    border-top: 4px solid #222;
+}
+
+#dialog-text p {
+    margin: 0;
+    text-indent: -10px;
+    padding: 0 10px 10px 20px;
+}
+#spoiler-img {
+    max-width: 500px;
+    max-height: 700px;
+    border-radius: 20px;
+    object-fit: contain;
+    margin: auto;
+    overflow: scroll;
+}
+
+#next-button {
+    position: absolute;
+    bottom: -20px;
+    right: -4px;
+    width: 40px;
+    background-color: #333;
+    padding: 10px;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+}
+
+#close-dialog-button {
+    position: absolute;
+    top: -20px;
+    right: -4px;
+    width: 40px;
+    background-color: red;
+    padding: 10px;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    z-index: 2;
+}
+
+#ui-tabs-mobile {
+    display: none;
+}
+#ui-tabs-mobile button {
+    position: relative;
+}
+
+.tab-notif::after {
+	content: " ";
+	position: absolute;
+	top: -4px;
+	right: -5px;
+	padding: 4px;
+	border-radius: 6px;
+	background-color: red;
+	border: 2px solid #ccc;
+}
+
+.rarity-C {
+    color: #fff;
+}
+.rarity-U {
+    color: #63ff00;
+}
+.rarity-R {
+    color: #52b8ff;
+}
+.rarity-SR {
+    color: #8533ff;
+}
+.rarity-UR {
+    color: #ffb300;
+}
+.rarity-PR {
+    color: #de78ff;
+}
+.rarity-CSR,
+.rarity-CUR,
+.rarity-CPR {
+    color: #fff;
+}
+
+@media (max-width: 830.1px) {
+    #ui-tabs-mobile {
+        display: flex;
+        justify-content: space-between;
+        padding: 2px 2px 0 2px;
+    }
+    #ui-tabs-mobile button {
+    	margin: 10px 0 0 0;
+        padding: 5px 10px;
+        background-color: aliceblue;
+        color: black;
+        border-radius: 8px 8px 0 0;
+    }
+    #ui-tabs-mobile .active-tab {
+        background-color: var(--overlay-bg);
+        color: white;
+        bottom: -2px;
+    }
+    .mobile-inactive {
+        display: none;
+    }
+    #dialog-overlay {
+        width: 90vw;
+        left: 5vw;
+        top: auto;
+        bottom: 5vh;
+        height: auto;
+    }
+    #dialog-contain .speaker-image {
+        position: static;
+        flex-grow: 1;
+        object-fit: cover;
+    }
+    #guessing-area, #difficulty-select, #prize-area {
+        width: 100%;
+    }
+    #spoiler-img {
+        width: 100%;
+    }
+
+    #guesshistory dl {
+        display: grid;
+        grid-template-columns: 3fr 4fr;
+        grid-template-rows: auto auto auto auto auto;
+        border: 1px dashed white;
+        background-color: var(--overlay-bg);
+    }
+    #guesshistory dt {
+        grid-row: auto;
+        grid-column: 1;
+        border-bottom: 1px solid gold;
+        padding-bottom: 5px;
+    }
+    #guesshistory dd {
+        grid-row: auto;
+        grid-column: 2;
+        justify-content: center;
+        border-bottom: 1px solid gold;
+        padding-bottom: 5px;
+    }
+    #guesshistory dt:last-of-type,
+    #guesshistory dd:last-of-type {
+        border-bottom-color: transparent;
+    }
+    #guesshistory .subtypes {
+        display: block;
+    }
+}
+
+
+@media (max-height: 500.1px) {
+    #dialog-text {
+        padding: 20px 0 5px 0;
+    }
+    #dialog-text p {
+        padding-bottom: 10px;
+        border-top-width: 0;
+    }
+    #dialog-contain {
+        display: grid;
+        grid-template-columns: 4fr 3fr;
+        position: relative;
+    }
+    #dialog-box {
+        grid-column: 2;
+        height: 100%;
+    }
+    #dialog-contain .speaker-image {
+        grid-column: 1;
+        height: 100%;
+        position: absolute;
+    }
+    #spoiler-img {
+        grid-column: 1 / span 2;
+        height: 100%;
+    }
+}
+
+:root {
+    --overlay-bg: rgba(128,128,128,0.35);
+}
