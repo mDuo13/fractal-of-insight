@@ -2,6 +2,7 @@ let mysterycard
 let hints_given = []
 let past_cards = []
 let victories = 0
+let daily
 let ALLSLUGS
 let ALLDIALOG
 
@@ -16,6 +17,17 @@ const RARITIES = {
     8: "CUR",
     9: "CPR"
 }
+
+const DIFFICULTY_BY_DAY = [
+    // 0–6 = Sunday – Saturday
+    "hard",
+    "maniac", // Maniac Monday
+    "easy",
+    "med",
+    "hard",
+    "maniac",
+    "med",
+]
 
 function sleep (delayInMs) {
   return new Promise((resolve) => setTimeout(resolve, delayInMs))
@@ -274,7 +286,14 @@ function addguess(card, results) {
         guessbut.disabled = true
         hintbut.disabled = true
         const rh = document.querySelector("#resulthistory")
-        rh.value = rh.value + `${mysterycard.name}\n🎉 Got it in ${rh.value.split("\n").length-1}\nhttps://fractalofin.site/frctl/`
+        const tries = rh.value.split("\n").length-1
+        if (document.querySelector("#dif-daily").checked) {
+            window.localStorage.setItem("daily", card.slug)
+            document.querySelector("#daily-done").innerText = "✅"
+        } else {
+            rh.value = rh.value + mysterycard.name + "\n"
+        }
+        rh.value = rh.value + `🎉 Got it in ${tries}\nhttps://fractalofin.site/frctl/`
         addprize()
         return
     }
@@ -342,6 +361,10 @@ function choosecardauto() {
 }
 
 async function choosecard(difficulty) {
+    if (difficulty === "daily") {
+        mysterycard = daily.word
+        return
+    }
     let rndi = Math.floor(Math.random() * ALLSLUGS[difficulty].length)
     let chosen_slug = ALLSLUGS[difficulty][rndi]
     let retries=0
@@ -363,6 +386,15 @@ function nextpuzzle(event) {
     const nextpuzbut = document.querySelector("#next-puz")
     const guessbut = document.querySelector("#guess-butt")
     const hintbut = document.querySelector("#hint-plz")
+    if (document.querySelector("#dif-daily").checked &&
+            window.localStorage.getItem("daily") === daily.word.slug) {
+        document.querySelector("#autocomplete-feedback").innerText = "Already solved today's daily"
+
+        guessbut.disabled = true
+        hintbut.disabled = true
+        nextpuzbut.classList.add("collapse")
+        return
+    }
     nextpuzbut.classList.add("collapse")
     const diff = choosecardauto()
     guessbut.disabled = false
@@ -374,6 +406,7 @@ function nextpuzzle(event) {
     ac.innerHTML = ""
     const rh = document.querySelector("#resulthistory")
     rh.value = `FRⱯCTL - ${diff}\n`
+    document.querySelector("#autocomplete-feedback").innerText = ""
 }
 
 function advancedialog(event) {
@@ -409,7 +442,29 @@ function enddialog() {
     }
 }
 
+async function wordoftheday(daynum) {
+    if (daynum === undefined) {
+        const ref = Date.UTC(2025, 10, 12)
+        const now = new Date()
+        const delta = (now - ref) / (86400000)
+        daynum = Math.floor(delta)
+    }
+    // calculate day of the week, but on the same sched as the main turnover
+    const diff = DIFFICULTY_BY_DAY[(daynum+2) % 7]
+    const chosen_slug = ALLSLUGS[diff][daynum % ALLSLUGS[diff].length]
+    wotd = await indexlookup(chosen_slug)
+    return {
+        "word": wotd,
+        "diff": diff,
+        "day": daynum
+    }
+}
+
 async function showdialogpage(page) {
+    const spimg = document.querySelector("#spoiler-img")
+    if (page.nextspoiler) { // Preload
+        spimg.src = page.nextspoiler
+    }
     const el = document.querySelector("#dialog-overlay")
     el.classList.remove("fadeIn")
     el.classList.add("fadeOut")
@@ -418,7 +473,6 @@ async function showdialogpage(page) {
     const dlg_spk = document.querySelector("#speaker-name")
     const dlg_text = document.querySelector("#dialog-text")
     const dlg_box = document.querySelector("#dialog-box")
-    const spimg = document.querySelector("#spoiler-img")
     for (const spkr_img of document.querySelectorAll(".speaker-image")) {
         if (spkr_img.alt == page.speaker) {
             spkr_img.classList.remove("collapse")
@@ -653,9 +707,15 @@ function ready(callback) {
 }
 
 ready(async () => {
-    ALLSLUGS = await (await fetch("./slugs.json")).json()
-    ALLDIALOG = await (await fetch("./dialog-nospoilers.json")).json()
-    
+    try {
+        ALLSLUGS = await (await fetch("./slugs-v2.json")).json()
+        ALLDIALOG = await (await fetch("./dialog.json")).json()
+    } catch {
+        alert("Error loading data files. Try refreshing without cache")
+    }
+    daily = await wordoftheday()
+    document.querySelector("#daily-diff").innerText = daily.diff
+
     const diff = choosecardauto()
     const rh = document.querySelector("#resulthistory")
     rh.value = `FRⱯCTL - ${diff}\n`
@@ -703,4 +763,16 @@ ready(async () => {
         nextbut.dataset.nextpage = 0
         advancedialog()
     })
+
+    let daily_saved = window.localStorage.getItem("daily")
+    if (daily_saved == daily.word.slug) {
+        document.querySelector("#daily-done").innerText = "✅"
+        if (document.querySelector("#dif-daily").checked) {
+            const guessbut = document.querySelector("#guess-butt")
+            const hintbut = document.querySelector("#hint-plz")
+            document.querySelector("#autocomplete-feedback").innerText = "Already solved today's daily"
+            guessbut.disabled = true
+            hintbut.disabled = true
+        }
+    }
 })

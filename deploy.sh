@@ -1,5 +1,6 @@
 # Copy static files to local build
 rsync -avh --delete static/ /another/site/fractal-of-insight/static/
+rsync -avh --delete frctl/ /another/site/fractal-of-insight/frctl/
 
 cd /another/site/fractal-of-insight/
 

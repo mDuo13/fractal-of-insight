@@ -96,7 +96,8 @@
             "lines": ["A victory earned, was that so hard?",
                       "As promised, we will spoil a card.",
                       "The first of three: the vanguard."
-                    ]
+                    ],
+            "nextspoiler": "2d2f04b2.png"
         },
         {
             "spoiler": "2d2f04b2.png"
@@ -108,7 +109,8 @@
             "lines": ["A second win? You're doing swell.",
                       "The deal is dealt, a card I'll tell.",
                       "From me myself to you: a poetic belle."
-                    ]
+                    ],
+            "nextspoiler": "9987f81a.png"
         },
         {
             "spoiler": "9987f81a.png"
@@ -120,7 +122,8 @@
             "lines": ["That's it! Your the third and final answer,",
                       "I'll share the truth about myself, a dancer,",
                       "but also a formiddable lancer."
-                    ]
+                    ],
+            "nextspoiler": "527b66b5.png"
         },
         {
             "spoiler": "527b66b5.png"
