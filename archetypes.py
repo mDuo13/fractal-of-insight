@@ -273,8 +273,7 @@ NO_ARCHETYPE  = Archetype(
 )
 
 add_archetype(
-    # Putting this early so it shows up earlier in the list of names
-    "Specter",
+    "Rile",
     [
         "Rile the Abyss",
     ]
@@ -854,7 +853,7 @@ add_archetype(
     shortname="Astra",
 )
 
-add_archetype(
+aetherwing = add_archetype(
     "Aetherwing",
     [
         "Aetheric Calibration",
@@ -868,6 +867,12 @@ add_archetype(
     require_types={
         "ACTION": 30,
     }
+)
+aetherwing.add_subtype(
+    "Carpsong",
+    [
+        "Carpsong Coda"
+    ]
 )
 
 add_archetype(
@@ -927,10 +932,3 @@ add_archetype(
         "Triskit, Guidance Angel"
     ]
 )
-
-# add_archetype(
-#     "Distortion",
-#     [
-#         "The Looking Glass",
-#     ]
-# )
