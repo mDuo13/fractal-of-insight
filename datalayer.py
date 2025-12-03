@@ -442,6 +442,8 @@ def low_price_by_edition(fullname, prefix):
                         continue
                     if not low_price or new_price < low_price:
                         low_price = new_price
+    elif prefix not in pricedata.keys():
+        print(f"No tcgp data for set '{prefix}'")
     else: # Prefix should match
         for item in pricedata[prefix].values():
             trimmed_name = re.sub(r"\(\w+\)", "", item.get("name","")).strip()
