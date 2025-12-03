@@ -15,10 +15,14 @@ TCG_ABBR = {
     "P23": ["P"],
     "P24": ["P"],
     "P25": ["P"],
+    "PTMEVP": ["PHME"],
+    "PTM 1st": ["PTM"],
+    "PTMLGS": ["PTM"],
     "ReC-HVF": ["HVNFV"],
     "ReC-IDY": ["IDLCRS"],
-    "ReC-SHD": ["SHD"],
+    "ReC-SHD": ["SHD", "SHDLTE"],
     "ReC-SLM": ["SLM", "SLMLTE"],
+    "ReC-BRV": ["BRLVST"],
 }
 
 TCGP_CARDNAMES = {
