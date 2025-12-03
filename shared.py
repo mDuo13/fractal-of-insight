@@ -283,6 +283,7 @@ REGIONS = {
     "JP": {"name": "Japan","flag": "🇯🇵"},
     "KR": {"name": "South Korea","flag": "🇰🇷"},
     "KW": {"name": "Kuwait","flag": "🇰🇼"},
+    "LV": {"name": "Latvia","flag": "🇱🇻"},
     "MX": {"name": "Mexico","flag": "🇲🇽"},
     "MY": {"name": "Malaysia","flag": "🇲🇾"},
     "NL": {"name": "Netherlands","flag": "🇳🇱"},
