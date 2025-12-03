@@ -624,7 +624,7 @@
 {% else %}
     {% set el="div" %}
 {% endif %}
-<{{el}} {% if is_link %}href="{{href}}" {% endif %}class="achievement achieved" title="Achieved{% if a.date %} on {{a.date}} @ {{a.event.name|e}}{% if a.details %} ({{a.details|e}}){% endif %}{% endif %}">
+<{{el}} {% if is_link %}href="{{href}}" {% endif %}class="achievement achieved{% if a.refracted %} refracted{% endif %}" title="Achieved{% if a.date %} on {{a.date}} @ {{a.event.name|e}}{% if a.details %} ({{a.details|e}}){% endif %}{% endif %}">
     <h4>{% if a.shortname %}{{a.shortname}}{% else %}{{a.name}}{% endif %}</h4>
 {% if a.emoji %}
     <div class="achievement-emoji">{{a.emoji}}</div>

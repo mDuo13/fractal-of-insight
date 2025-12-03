@@ -3,15 +3,25 @@ from collections import defaultdict
 from datalayer import get_card_img
 
 class Achievement:
-    def __init__(self, name, emoji, description, skip_date=False):
+    def __init__(self, name, emoji, description, skip_date=False, 
+                 refracted=False, notes="", artist="", artisturl=""):
         self.name = name
         self.emoji = emoji
         self.description = description
-        self.skip_date=skip_date
+        self.skip_date = skip_date
+        self.refracted = refracted
+        self.notes = notes
+        self.artist = artist
+        self.artisturl = artisturl
 
 ACHIEVEMENTS = {}
 def add_achievement(name, emoji, description, skip_date=False):
     a = Achievement(name, emoji, description, skip_date)
+    ACHIEVEMENTS[name] = a
+
+def add_refracted(name, description, notes="", artist="", artisturl=""):
+    a = Achievement(name, "🚧", description, refracted=True,
+                    notes=notes, artist=artist, artisturl=artisturl)
     ACHIEVEMENTS[name] = a
 
 class GlobalAchievementStats:
@@ -39,7 +49,7 @@ class GlobalAchievementStats:
             print("Unachieved achievement:", aname)
             first = None
         else:
-            first = self.first_achieved[aname]
+            first = self.first_achieved[aname].entrant
         return {
             "count": self.count_achieved[aname],
             "first": first,
@@ -49,25 +59,33 @@ class GlobalAchievementStats:
 GAS = GlobalAchievementStats()
 
 class Achieved:
-    def __init__(self, achievement_name, emoji, description, entrant, details="", skip_date=False):
+    def __init__(self, achievement_name, emoji, description, entrant, details="", skip_date=False, refracted=False):
         self.name = achievement_name
         self.emoji = emoji
         self.description = description
         if entrant:
             self.event = entrant.event
+            self.entrant = entrant
+        else:
+            self.entrant = None
         if skip_date:
             self.date = ""
         else:
             self.date = entrant.event.date
         self.details = details
-        self.atype = "normal"
+        if refracted:
+            self.atype = "refracted"
+            # TODO: add automatic image for refracted achievements?
+        else:
+            self.atype = "normal"
 
     @classmethod
     def from_template(cls, achievement_name, entrant, details=""):
         emoji = ACHIEVEMENTS[achievement_name].emoji
         description = ACHIEVEMENTS[achievement_name].description
         skip_date = ACHIEVEMENTS[achievement_name].skip_date
-        return cls(achievement_name, emoji, description, entrant, details=details, skip_date=skip_date)
+        refracted = ACHIEVEMENTS[achievement_name].refracted
+        return cls(achievement_name, emoji, description, entrant, details=details, skip_date=skip_date, refracted=refracted)
 
     @classmethod
     def card_first(cls, cardname, entrant):
@@ -187,3 +205,25 @@ add_achievement("Movie Star", "🎥", "Play an on-stream match.")
 add_achievement("JUDGE!", "⚖️", "Judge an event.")
 add_achievement("Juuuuuuudge!", "🗯", "Judge a 7+ round event.")
 add_achievement("Wisdom of the Mountain", "🦉", "Judge an Ascent.")
+
+# Refracted Achievements -------------------------------------------------------
+add_refracted("Look, Two Hands", "Have 14+ influence.", notes="Must be counted when state-based effects are checked. For example, it wouldn't count if Creative Shock draws you to 14 and discards down to 13.")
+add_refracted("One Punch!", "Deal 25+ combat damage in one attack.", notes="Damage can be dealt to a champion or an ally. Generally still counts if opponent concedes as attack is being declared.")
+add_refracted("Perfect Quartet", "Control 4 non-token objects with the same name.")
+add_refracted("Guidance Angel", "Make Triskit, Guidance Angel your champion.")
+add_refracted("Wrath Incarnate", "Make Lu Bu, Wrath Incarnate your champion.")
+add_refracted("White Tiger", "Transform Fabled Emerald Fatestone.")
+add_refracted("Bloodmonger", "Draw 3 cards with Zhang Liao, Bloodmonger's effect.")
+add_refracted("Muda muda muda", "Attack 3+ times with the same unit in one turn.", notes="It's OK if the attacks never finished—for example, due to Song of Frost.")
+add_refracted("In Resonance", "Get the Harmonize effect of a card.")
+add_refracted("Trace...on!", "Control a Weapon token.")
+add_refracted("A Bouquet, for You", "Make your opponent summon 3+ Flower tokens.", notes="Achieved by resolving Bloom: Summer's Glow, Bloom: Winter's Chill, or Bloom: Autumn's Fall while an opponent has 3 or more Flowerbud tokens.")
+add_refracted("Leap Through Time", "Cause time to be distorted.", notes="Achieved by resolving Chronowarp.")
+add_refracted("The Infinite Stars", "Play Scry the Stars during The Elysian Astrolabe's effect.", notes="After resolving The Elysian Astrolabe's activated ability, Scry the Stars lets you play your whole deck by starcalling indefinitely. Generally still counts if opponent concedes as the player is about to activate Scry the Stars.")
+add_refracted("El Scry Congroo", "Glimpse 10+.")
+add_refracted("Restart from Zero", "Play a game that ends in a draw before time is up.", notes="For example, both champions died at the same time due to retaliation in combat.")
+add_refracted("Pretty Derby", "Get the Equestrian effect of a card.", notes="For static effects like Horse Archer or War Marshal, only counts if it affects the game state.")
+add_refracted("Atelier", "Brew a card.", notes="Aside from potions, Hide in Bush and Prima Materia also count.")
+add_refracted("Crit!", "Do double damage with a Critical attack.", notes="Coup de Grace, Bushwack Bandit, and Corhazi Lightblade are cards that can have the Critical keyword. Not awarded if the opponent chooses to discard to the Critical effect.")
+add_refracted("Trojan Horse", "Control a token Majestic Spirit.", notes="For example, one created using Duplicitous Replication.")
+add_refracted("Elite Four", "Attack with an ally that has Pride 4+.", notes="Causing the ally to lose Pride does not count.")

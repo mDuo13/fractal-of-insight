@@ -45,9 +45,14 @@
             <p class="explanation">(Assuming matches with a 0-0 score are intentional draws.)</p>{% endif %}
         </li>
         {% if evt.track_elo %}<li><b>Average Elo:</b> {{evt.average_elo}}</li>{% endif %}
-        {% if evt.judges|length %}<li><b>Judges:</b> {% for j in evt.judges %}
-            <a href="/player/{{j.id}}.html">{{j}}</a>{% if not loop.last %}, {% endif %}
-        {% endfor %}</li>{% endif %}
+        {% if evt.judges|length %}<li><b>Judges:</b>
+            {% if evt.judges|length == 1 %}<a href="/player/{{evt.judges[0].id}}.html">{{evt.judges[0]}}</a>{% else %}{{evt.judges|length}} judges
+            {% if evt.judges|length > 5 %}<button onclick="toggle('.evt-judges')">Glimpse judges</button> <div class="evt-judges collapse togglable">{% else %}<div class="evt-judges">{% endif %}(
+                {% for u in evt.judges %}
+                    <a href="/player/{{u.id}}.html">{{u}}</a>{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ){% endif %}
+        </li>{% endif %}
     </ul>
 </section>
 

@@ -1,0 +1,73 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}Refracted Achievement Submission Form - {% endblock %}
+
+{% block endhead %}
+<script src="/static/refracted.js"></script>
+{% endblock endhead %}
+
+{% block body %}
+<h1>Refracted Achievement Form</h1>
+<section id="selectevent">
+    <p class="explanation">(Data is saved locally per device and is never shared except when you submit it.)</p>
+    <button onclick="reset_evt()">New event</button>
+    <button onclick="load_saved()">Load saved:</button>
+</section>
+<form id="evt-select-form">
+    <ul id="evt-info" class="scooped-corners">
+        <li><label for="evt-omni-id">Event Omnidex ID: <input type="text" id="evt-omni-id" /></label> <input id="evt-fetch" type="submit" value="Fetch info" /><span id="evt-omni-id-loader" class="loader collapse">(loading)</span></li>
+        <li><b>Date:</b> <span id="evt-date"></span></li>
+        <li><b>Name:</b> <span id="evt-name"></span></li>
+        <li><b># Entrants:</b> <span id="evt-num-entrants"></span></li>
+    </ul>
+</form>
+
+<section id="achievements-list">
+    <h2>Award achievement</h2>
+    <p class="explanation">Click an achievement to award it to a player.</p>
+    {% for a in REFRACTED_ACHIEVEMENTS.values() %}
+    <div class="achievement-wrapper">
+        <a class="achievement refracted unachieved" href="#" onclick="show_add(this)" data-aname="{{a.name}}">
+            <h4>{{a.name}}</h4>
+            {% if a.emoji %}
+                <div class="achievement-emoji">{{a.emoji}}</div>
+            {% elif a.img %}
+                <div class="achievement-img">
+                    <img src="{{a.img}}" alt="{{a.name}}" loading="lazy" />
+                </div>
+            {% endif%}
+            <p class="achievement-desc">{{a.description}}</p>
+            {% if a.notes %}
+            <p class="achievement-notes collapse">{{a.notes}}</p>
+            {% endif %}
+        </a>
+    </div>
+    {% endfor %}
+</section>
+
+<section id="achievements-awarded">
+    <h2>Achievements earned this event</h2>
+</section>
+
+<fieldset id="add-achievement-popup" class="collapse">
+    <button class="closeX" onclick="cancel_add()">❌</button>
+    <h3 id="a-a-name">(Achievement Name Here)</h3>
+    <div class="achievement refracted" id="achievement-preview">
+        <div class="achievement-emoji"></div>
+        <div class="achievement-img">
+            <img src="" alt="" />
+        </div>
+        <p class="achievement-desc"></p>
+    </div>
+    <p class="explanation collapse" id="achievement-preview-notes"></p>
+    <label for="a-a-roundnum">Round number: <input type="number" min="0" step="1" id="a-a-roundnum" value="1" /></label>
+    <label for="a-a-p-id">Player:
+        <select id="a-a-player">
+            <option value="0">(Select)</option>
+        </select>
+    </label>
+    <button id="a-a-save" onclick="save_achievement()">✴️ Award achievement</button>
+</fieldset>
+
+
+{% endblock %}

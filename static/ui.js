@@ -300,6 +300,17 @@ function reset_search(el) {
     }
 }
 
+async function populate_avatar(el) {
+    const pid = el.dataset["pid"]
+    const avatardata = await (await fetch(`https://accounts.gatcg.com/user/avatar?userId=${pid}`)).json()
+    el.innerHTML = `
+    <img src="https://accounts.gatcg.com${avatardata.image}" 
+        alt="" class="avatar-image" />
+    <img src="https://accounts.gatcg.com${avatardata.frame}" 
+        alt="" class="avatar-frame" />
+    `
+}
+
 ready(() => {
     // Open hash on page-load
     if (window.location.hash) {
@@ -349,4 +360,6 @@ ready(() => {
             typingTimer = setTimeout(() => {search_table(event.target)}, typeInterval)
         })
     }
+
+    document.querySelectorAll(".player-omni-avatar").forEach(populate_avatar)
 })

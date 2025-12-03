@@ -2,6 +2,23 @@
 
 {% block subtitle %}Achievements - {% endblock %}
 
+{% macro achievement(a) %}
+<div class="achievement-wrapper">
+    <a href="/achievement/{{slugify(a.name)}}.html" class="achievement unachieved{% if a.refracted %} refracted{% endif %}">
+        <h4>{{a.name}}</h4>
+        {% if a.emoji %}
+            <div class="achievement-emoji">{{a.emoji}}</div>
+        {% elif a.img %}
+            <div class="achievement-img">
+                <img src="{{a.img}}" alt="{{a.name}}" loading="lazy" />
+            </div>
+        {% endif%}
+        <p class="achievement-desc">{{a.description}}</p>
+    </a>
+    <p class="achievement-stats">(Achieved by {{GAS[a.name].rate}}% of players)</p>
+</div>
+{% endmacro %}
+
 {% block body %}
 <nav id="main-nav">
     <a class="nav-item" href="/">⌂ Home</a>
@@ -18,20 +35,17 @@
 
 <section id="achievements-list">
     {% for a in ACHIEVEMENTS.values() %}
-    <div class="achievement-wrapper">
-        <a href="/achievement/{{slugify(a.name)}}.html" class="achievement unachieved">
-            <h4>{{a.name}}</h4>
-            {% if a.emoji %}
-                <div class="achievement-emoji">{{a.emoji}}</div>
-            {% elif a.img %}
-                <div class="achievement-img">
-                    <img src="{{a.img}}" alt="{{a.name}}" loading="lazy" />
-                </div>
-            {% endif%}
-            <p class="achievement-desc">{{a.description}}</p>
-        </a>
-        <p class="achievement-stats">(Achieved by {{GAS[a.name].rate}}% of players)</p>
-    </div>
+    {% if not a.refracted %}
+    {{ achievement(a) }}
+    {% endif %}
+    {% endfor %}
+
+    <h2>Refracted Achievements</h2>
+    <p class="explanation">(These achievements are only available at special Refracted events. More details to come.)</p>
+    {% for a in ACHIEVEMENTS.values() %}
+    {% if a.refracted %}
+    {{ achievement(a) }}
+    {% endif %}
     {% endfor %}
 </section>
 

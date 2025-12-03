@@ -16,6 +16,7 @@
 <section id="player-info">
     <h1>Player: {{player.username}}</h1>
     <ul class="scooped-corners">
+        <li class="player-omni-avatar" data-pid="{{player.id}}"></li>
         <li><b>Omnidex ID</b>: #{{player.id}}</li>
         {% if player.past_usernames|length %}<li><b>Past usernames:</b> {{",".join(player.past_usernames)}}</li>{% endif %}
         {% if player.region %}<li><b>Region:</b> {{macros.flag(player.region, True)}}{% if player.past_regions %}<br />

@@ -612,6 +612,10 @@ fieldset label {
     border-bottom: 1px solid black;
 }
 
+.evt-judges {
+    padding-left: 38px;
+}
+
 .upset {
     padding: 5px;
 }
@@ -1051,6 +1055,10 @@ footer {
     background: radial-gradient(circle, rgba(221,213,193,1) 0%, rgba(166,158,137,1) 75%, rgba(138,113,158,1) 100%);
     background-position: top left;
 }
+.refracted.achievement {
+    background: #6081cd;
+    background: radial-gradient(circle, #b5d6f3 0%, #6081cd 75%, #1d274d 100%);
+}
 a.achievement {
     text-decoration: none;
     color: black;
@@ -1059,6 +1067,14 @@ a.achievement {
     opacity: 0.5;
     border-style: dotted;
     filter: sepia(100%);
+}
+.refracted.achievement.unachieved {
+    filter: grayscale(75%);
+}
+.achievement.refracted.unachieved:hover {
+    filter: unset;
+    box-shadow: 0px 0px 20px 6px rgba(0,113,253,0.75);
+
 }
 .achievement.achieved {
     border-style: double;
@@ -1459,4 +1475,52 @@ a.achievement {
 }
 .ptm-spoilers:hover .fadeout-text {
     padding-left: 100%;
+}
+
+.player-omni-avatar {
+    position: relative;
+    height: 88px;
+    width: 88px;
+}
+
+#player-info .player-omni-avatar {
+    float: right;
+}
+
+.avatar-image {
+    position: absolute;
+    top: 14px;
+    left: 12px;
+    width: 64px;
+    height: 64px;
+}
+.avatar-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 88px;
+    height: 88px;
+}
+
+#add-achievement-popup {
+    position: fixed;
+    left: 0;
+    top: 0;
+    border-width: 10vh 10vw 10vh 10vw;
+    border-color: rgba(0,0,0,0.75);
+    border-style: solid;
+    width: 75vw;
+    height: 75vh;
+    padding: 2.5vh 2.5vw 2.5vh 2.5vw;
+    background-color: #c7c6c1;
+}
+#add-achievement-popup > * {
+    display: block;
+    padding: 5px;
+    margin: 10px;
+}
+
+#achievement-preview {
+    display: flex;
+    justify-content: center;
 }
