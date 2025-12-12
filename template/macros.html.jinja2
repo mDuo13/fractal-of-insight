@@ -322,7 +322,7 @@
                     <div class="matches">({{records.true_matchcount}} matches)</div>
                 {% endif %}
                 </div>
-                {% if records.subrows %}
+                {% if records.has_notable_subrows() %}
                 <button onclick="toggle('.stof-{{slugify(archetype)}}')">Glimpse Subtypes</button>
                 {% endif %}
             </div></th>
@@ -347,7 +347,7 @@
                 </td>
             {% endfor %}
         {% for subtype, subrecords in records.subrows.items() %}
-        {% if subrecords.true_matchcount >= 10 %}
+        {% if subrecords.true_matchcount >= config.SUBTYPE_MATCH_MIN and subrecords.true_matchcount != records.true_matchcount %}
         </tr>
         <tr class="subtype stof-{{slugify(archetype)}} collapse">
             <th><div class="st-name">{{subtype}}</div>

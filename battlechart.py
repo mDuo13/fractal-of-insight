@@ -1,5 +1,6 @@
 from shared import keydefaultdict
 from cards import ELEMENTS
+from config import SUBTYPE_MATCH_MIN
 
 LINEAGES = set()
 
@@ -146,6 +147,18 @@ class BCRow:
         self.subrows = new_subrows
         self.mirrors = int(self.mirrors)
     
+    def has_notable_subrows(self):
+        subrows_w_enough_matches = 0
+        for sr in self.subrows.values():
+            if (sr.true_matchcount >= SUBTYPE_MATCH_MIN and
+                    sr.true_matchcount != self.true_matchcount):
+                # Don't count subtypes with very few appearances or same match
+                # data as parent
+                subrows_w_enough_matches += 1
+                if subrows_w_enough_matches > 1:
+                    return True
+        return False
+    
     def sortkey(self):
         if self.name in ELEMENTS:
             key1 = 9
@@ -156,7 +169,7 @@ class BCRow:
 
         return f"{key1}{self.true_matchcount:07}"
         # return self.true_matchcount
-    
+
     @property
     def true_matchcount(self):
         # Fix double-counting of mirror matches

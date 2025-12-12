@@ -2,6 +2,7 @@ OUTDIR = "/another/site/fractal-of-insight"
 TOP_CUTOFF = 300 # Use this many players by Elo to make the "Top Players" charts
 UPSET_CUTOFF = 50 # Elo difference to consider something an upset
 TEMPLATE_DIR = "./template/"
+SUBTYPE_MATCH_MIN = 10 # Number of "true" matches a sub-archetype needs to be considered notable enough to show up in a battlechart
 
 # Crawler settings
 CRAWLER_FILE = "./data/crawler.json"
