@@ -405,7 +405,12 @@ function nextpuzzle(event) {
     const ac = document.querySelector("#autocomplete")
     ac.innerHTML = ""
     const rh = document.querySelector("#resulthistory")
-    rh.value = `FRⱯCTL - ${diff}\n`
+    if (diff == "daily") {
+        rh.value = `FRⱯCTL - ${diff} ${daily.day}\n`
+    } else {
+        rh.value = `FRⱯCTL - ${diff}\n`
+    }
+
     document.querySelector("#autocomplete-feedback").innerText = ""
 }
 

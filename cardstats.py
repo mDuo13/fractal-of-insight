@@ -172,10 +172,12 @@ class CardStats:
         hot_events = [e for e in self.appearances if e.evt_time > cutoff_time_ms]
         if not hot_events:
             self.hot_rating = 0
+            self.hot_appearances = 0
         else:
             hot_w = 0
             hot_l = 0
             hot_t = 0
+            self.hot_appearances = len(hot_events)
             for e in hot_events:
                 hot_w += e.wins
                 hot_l += e.losses

@@ -586,11 +586,25 @@ crux.add_subtype(
     "Ensoul",
     ["Spirit Blade: Ensoul"]
 )
-
 crux.add_subtype(
-    "Sword Saint's Vow",
-    ["Sword Saint's Vow"],
-    shortname="Vow",
+    "Spirit Ruler",
+    ["Lorraine, Spirit Ruler"],
+    shortname=""
+)
+crux.add_subtype(
+    "Crux Knight",
+    ["Lorraine, Crux Knight"],
+    shortname=""
+)
+crux.add_subtype(
+    "Kingslayer",
+    ["Merlin, Kingslayer"],
+    shortname=""
+)
+crux.add_subtype(
+    "Brilliant Vestige",
+    ["Merlin, Brilliant Vestige"],
+    shortname="Sheen"
 )
 
 shadowstrike = add_archetype(
@@ -872,7 +886,8 @@ aetherwing.add_subtype(
     "Carpsong",
     [
         "Carpsong Coda"
-    ]
+    ],
+    shortname=""
 )
 
 add_archetype(
@@ -930,5 +945,15 @@ add_archetype(
     "Triskit",
     [
         "Triskit, Guidance Angel"
+    ]
+)
+
+add_archetype(
+    "Chess",
+    [
+        "Field of Ranks and Files",
+        "Dropped Band",
+        "Summon Pawn",
+        "March On"
     ]
 )

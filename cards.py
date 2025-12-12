@@ -54,7 +54,7 @@ BANLIST = [
 ]
 
 REMOVED_FROM_PRXY = {
-    "Purifying Thurible": "_PRXY_with_Thurible.json"
+    # "Purifying Thurible": "_PRXY_with_Thurible.json" # returned via PTM
 }
 
 PRIZE_EQUIVALENTS = {

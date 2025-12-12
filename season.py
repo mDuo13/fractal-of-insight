@@ -136,12 +136,12 @@ class Format(Season):
 
 SEASONS = {
     "Phantom Monarchs": "PTM",
+    "Offseason": "OFF",
     "Distorted Reflections": "DTR",
     "Abyssal Heaven": "HVN",
     "Mortal Ambition": "AMB",
     "Mercurial Heart": "MRC",
     "Alchemical Revolution": "ALC",
-    "Offseason": "OFF",
 }
 
 FORMATS = {}
@@ -235,7 +235,6 @@ add_format("DTR Post-Taipei",
     desc="Rile the Abyss banned; Purifying Thurible removed from Proxia's Vault.",
     end="2025-12-05"
 )
-
 add_format("PTM Release",
     start="2025-12-05",
     desc="Phantom Monarchs released alongside Merlin Brilliant Vestige Re:Collection deck."

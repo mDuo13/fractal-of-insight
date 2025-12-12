@@ -496,6 +496,8 @@ class Deck:
                 return "Shadowstrike Tristan"
             if "Diana, Aether Dilettante" in self.champs:
                 return "Aether Diana"
+            if "Merlin, Memorite Vassal" in self.champs:
+                return "Sheen Merlin"
             return self.lineages[-1] #TODO: handle hybrid lineages better
 
     def __iter__(self):

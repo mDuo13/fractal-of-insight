@@ -15,7 +15,7 @@
         <a class="nav-item" href="/formats/">→ Format Stats</a>
         <a class="nav-item" href="/card/">→ Cards</a>
         <a class="nav-item" href="/achievement/">→ Achievements</a>
-        <a class="nav-item ptm-spoilers" href="/frctl/"><span class="fadeout-text">→ Spoilers</span></a>
+        <a class="nav-item" href="/frctl/">→ FRⱯCTL</a>
     </nav>
 
     {{ macros.event_filters(EVENT_TYPES) }}
@@ -24,7 +24,7 @@
     {% for seasonname, season in seasons.items() %}
     {% if loop.index0 == 0 or ns.events_printed < 10 %}
     <section class="season" id="{{season['code']}}">
-        <h2><a href="{{season['code']}}/">{% if season.name == "Offseason" %}Offseasons{% else %}<img alt="{{season}}" src="/static/{{season['code']}}_logo.png" />{% endif %}</a></h2>
+        <h2><a href="{{season['code']}}/">{% if season.name == "Offseason" %}Offseasons<p class="explanation">(All events occurring in between regular seasons.)</p>{% else %}<img alt="{{season}}" src="/static/{{season['code']}}_logo.png" />{% endif %}</a></h2>
         {% for evt in season["events"] %}
         {{ macros.eventbox(evt) }}
         {%- set ns.events_printed = ns.events_printed + 1 %}
