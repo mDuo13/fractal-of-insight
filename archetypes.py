@@ -391,6 +391,7 @@ add_archetype(
         "Blazing Bowman",
         "Cinder Geyser",
         "Peppered Chef",
+        "Vermilion Decree",
     ],
     require_element="Fire",
     shortname="Aggro",
