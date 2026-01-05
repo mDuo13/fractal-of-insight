@@ -440,25 +440,26 @@ class Deck:
             spiritstr = "(Spiritless???) "
         elif len(self.spirits) > 1:
             if len(self.els) == 1:
-                spirittypes = []
-                for spirit in self.spirits:
-                    for keyword in SPIRITTYPES:
-                        if keyword in spirit:
-                            spirittypes.append(keyword)
-                            break
-                    else:
-                        spirittypes.append("Regular")
-                spirittypes.sort(key=lambda x: "zzz" if x=="Regular" else x) #Sort "Regular" last
-                spiritstr = "/".join(spirittypes) + " " + self.els[0]
+                # spirittypes = []
+                # for spirit in self.spirits:
+                #     for keyword in SPIRITTYPES:
+                #         if keyword in spirit:
+                #             spirittypes.append(keyword)
+                #             break
+                #     else:
+                #         spirittypes.append("Regular")
+                # spirittypes.sort(key=lambda x: "zzz" if x=="Regular" else x) #Sort "Regular" last
+                # spiritstr = "/".join(spirittypes) + " " + self.els[0]
+                spiritstr = self.els[0]
             else:
                 spiritstr = "(Multi-Element) "
         else:
-            spirit = self.spirits[0]
-            for keyword in SPIRITTYPES:
-                if keyword in spirit:
-                    spiritstr += keyword + " "
+            spiritstr = self.els[0]
+            # for keyword in SPIRITTYPES:
+            #     if keyword in spirit:
+            #         spiritstr += keyword + " "
 
-            spiritstr += "/".join(self.els)
+            # spiritstr += "/".join(self.els)
 
         if len(self.lineages) == 1:
             champstr = list(self.lineages)[0]

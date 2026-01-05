@@ -89,9 +89,10 @@ class OmniEvent:
             "Mortal", "Ambition",
             "Abyssal", "Heaven",
             "Distorted", "Reflections",
+            "Phantom", "Monarch", "Monarchs",
             "Standard",
             "Constructed",
-            "DOA", "FTC", "ALC", "MRC", "AMB", "HVN", "DTR",
+            "DOA", "FTC", "ALC", "MRC", "AMB", "HVN", "DTR", "PTM",
         ]]
         name_words = re.split(r"\W+", self.name.lower())
         testname = ""

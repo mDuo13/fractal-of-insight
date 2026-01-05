@@ -336,6 +336,7 @@ wind_allies = add_archetype(
         "Imperial Panzer",
         "Unrelenting Warden",
         "Chrysalis, Hazy Caterpillar",
+        "Banner Knight",
     ],
     exclude_cards=[
         "Spirit Blade: Ascension",
@@ -344,6 +345,7 @@ wind_allies = add_archetype(
         "Wildgrowth Feline",
         "Dawn of Ashes",
         "Seiryuu's Command",
+        "Atmos Armor Type-Ares",
     ],
     require_types={
         "ALLY": 22
@@ -500,6 +502,7 @@ add_archetype(
     exclude_cards=[
         "Ravishing Finale",
         "Guo Jia, Blessed Scion",
+        "Burst Asunder",
     ],
     shortname="Mill"
 )
@@ -549,6 +552,7 @@ crux = add_archetype(
         "The Majestic Spirit",
         "Ghosts of Pendragon",
         "Spirit Blade: Ascension",
+        "Spirit Blade: Terminus", # TODO: probably split Assassin Merlin off
     ],
     exclude_cards=[
         "Rai, Mana Weaver"
@@ -670,13 +674,20 @@ add_archetype(
     exclude_cards=[
         "Kongming, Fel Eidolon",
         "Diao Chan, Idyll Corsage",
+        "Ciel, Mirage's Grave",
+        "Alice, Phantom Monarch",
     ],
     shortname="Tera"
 )
 
 add_archetype(
     "Overlord",
-    ["Overlord Mk III"]
+    ["Overlord Mk III"],
+    exclude_cards=[
+        "Mary Ann, Maladroit Maid",
+        "Awaken Ombre",
+        "Spectral Haunting"
+    ]
 )
 
 add_archetype(
@@ -735,12 +746,12 @@ add_archetype(
     ]
 )
 
-add_archetype(
-    "Dahlia",
-    [
-        "Dahlia, Idyllic Dreamer"
-    ]
-)
+# add_archetype(
+#     "Dahlia",
+#     [
+#         "Dahlia, Idyllic Dreamer"
+#     ]
+# )
 
 add_archetype(
     "Fractal",
@@ -791,11 +802,25 @@ add_archetype(
         "Fabled Emerald Fatestone"
     ]
 )
-add_archetype(
+suzaku = add_archetype(
     "Suzaku",
     [
         "Fabled Ruby Fatestone"
     ]
+)
+suzaku.add_subtype(
+    "Fatestone Midrange",
+    [
+        "Lavaplume Fatestone",
+    ],
+    require_types={
+        "ITEM": 10
+    },
+    exclude_cards=[
+        "Peppered Chef",
+        "Rococo, Explosive Maven",
+    ],
+    shortname="Midrange"
 )
 
 add_archetype(
@@ -839,6 +864,7 @@ umbra_guardian = add_archetype(
     exclude_cards=[
         "Diana, Duskstalker",
         "Diana, Cursebreaker",
+        "Alice, Phantom Monarch",
     ],
     shortname="Umbra",
 )
@@ -855,6 +881,32 @@ umbra_guardian.add_subtype(
         ]
     ]
 )
+umbra_guardian.add_subtype(
+    "Coup",
+    [
+        "Beguiling Coup",
+    ],
+    exclude_cards=[
+        "Baleful Oblation",
+    ]
+)
+umbra_guardian.add_subtype(
+    "Control",
+    [
+        "Regal Inquisition",
+    ],
+    require_combos=[
+        [
+            "Grim Pastiche",
+            "Profane Bindings",
+        ]
+    ],
+    exclude_cards=[
+        "Baleful Oblation",
+        "Beguiling Coup",
+    ]
+)
+
 
 add_archetype(
     "Astra Ranger",
@@ -875,7 +927,7 @@ aetherwing = add_archetype(
         "Drown in Aether",
         "Prudent Nock",
         "Undercurrent Vantage",
-        "Charge the Soul",
+        # "Charge the Soul", # Exclude because Wakeup decks also use it sometimes
         "Manabolt Convergence",
         "Blazing Cindercharge",
     ],
@@ -956,5 +1008,29 @@ add_archetype(
         "Dropped Band",
         "Summon Pawn",
         "March On"
+    ]
+)
+
+umbra_alice = add_archetype(
+    "Umbra Alice",
+    [
+        "Bandersnatch, Fruminous Foe",
+        "Remnant of Will",
+        "Overflow the Barrow",
+        "Lost Promises",
+        "Harrow the Saved",
+    ],
+    shortname="Umbra"
+)
+umbra_alice.add_subtype(
+    "Oblation",
+    [
+        "Baleful Oblation",
+    ],
+    require_combos=[
+        [
+            "Baleful Oblation",
+            "Advent of the Stormcaller",
+        ]
     ]
 )

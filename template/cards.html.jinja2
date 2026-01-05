@@ -76,7 +76,7 @@
                 {% if setname == "Other" %}
                 <p class="explanation">(All cards introduced in special sets like Proxia's Vault or promos.)</p>
                 {% else %}
-                <p class="explanation">(All cards introduced in the {{setname}} family of sets: {% for set_ in set_group.sets %}{% if loop.last %}and {% endif %}{{set_.name}}{% if not loop.last %}, {% endif %}{% endfor %}. {% if setname == "Abyssal Heaven" %} Note, Nullifying Mirror counts appearances from being pre-released in Proxia's Vault.{% endif %})</p>
+                <p class="explanation">(All cards introduced in the {{setname}} family of sets: {% for set_ in set_group.sets %}{% if loop.last %}and {% endif %}{{set_.name}}{% if not loop.last %}, {% endif %}{% endfor %}. {% if setname == "Abyssal Heaven" %} Note, Nullifying Mirror counts appearances from being pre-released in Proxia's Vault.{% elif setname == "Phantom Monarchs" %}Note, Purifying Thurible counts appearances from being pre-released in Proxia's Vault.{% endif %})</p>
                 {# <p class="explanation">(All cards introduced in the following sets: {{", ".join(set_group.sets|selectattr("name"))}})</p> #}
                 {% endif %}
                 <div class="top-cards">
