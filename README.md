@@ -15,7 +15,6 @@ This site shows information and analysis of Grand Archive tournament results. It
 - track invite points/cards, if possible? (might require sideloading number of invites per event)
 - sideboard / tech cards prevalence rate (season/format)
 - path of silver data
-- conversion rate to top cut / day 2
 - more achievements in general
 - show multiple regions for player profiles where players' home region has changed
 - improve presentation of price data
@@ -26,5 +25,4 @@ This site shows information and analysis of Grand Archive tournament results. It
 - backfill old store champs
 - improve archetypes index page to have tabs per season or something
 - add landing page(s) for champions
-- fix bugs in listing of players for "I Made This" achievement (duplicates? players who don't have the achievement?)
 - on card pages, show other arts for card

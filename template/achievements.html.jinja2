@@ -47,6 +47,8 @@
     {{ achievement(a) }}
     {% endif %}
     {% endfor %}
+
+    <p class="explanation">Refracted achievement art by {% for artist,url in REFRACTED_ARTISTS.items() %}{% if loop.last and not loop.index0 == 0 %}and {% endif %}<a href="{{url}}">{{artist}}</a>{% if not loop.last and REFRACTED_ARTISTS|length > 1 %}, {% endif %}{% endfor %}.</p>
 </section>
 
 {% endblock %}

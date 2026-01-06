@@ -17,6 +17,7 @@
 
 <ul class="scooped-corners">
     <li>{{macros.achievement(achievement, is_link=False)}}</li>
+    {% if achievement.artist %}<li>(Art by <a href="{{achievement.artisturl}}">{{achievement.artist}}</a>)</li>{% endif %}
     <li><strong>Achieved:</strong> {{astats.count}} times</li>
     <li><strong>Rate:</strong> {{astats.rate}}% of players</li>
     {% if astats.first and not achievement.skip_date %}<li><strong>First achieved by:</strong> {{astats.first}}</li>{% endif %}

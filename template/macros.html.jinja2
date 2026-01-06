@@ -1,3 +1,7 @@
+{% set el_colors = {"Norm": "#ba9", "Fire": "#b30", "Wind": "#6c3", "Water": "#06b", "Arcane": "#23a", "Astra": "#336", "Crux": "#a9d", "Exia": "#310", "Luxem": "#ec4", "Neos": "#a63", "Tera": "#164", "Umbra": "#214", "Exalted/Norm": "#ca7", "Exalted/Fire": "#ca7", "Exalted/Water": "#ca7", "Exalted/Wind": "#ca7", "Unknown": "#000"} %}
+
+{% macro el_indicator(el) %}<span class="el-indicator" style="background-color: {{el_colors[el]}};">&nbsp;</span>{% endmacro %}
+
 {% macro elementpie(elements) %}
     {% set el_colors = {"Norm": "#ba9", "Fire": "#b30", "Wind": "#6c3", "Water": "#03d", "Unknown": "#000"} %}
     {% set ns = namespace(cumu = 0) %}
@@ -12,7 +16,7 @@
         <tbody>
             {% for el, quant, pct in elements %}
             <tr>
-                <th>{{el}}</th>
+                <th>{{el_indicator(el)}} {{el}}</th>
                 <td>{{quant|int}}</td>
                 <td>{{pct}}%</td>
             </tr>
@@ -23,7 +27,6 @@
 
 {% macro deck_elementpie(elements) %}
 <div class="element-meta">
-    {% set el_colors = {"Norm": "#ba9", "Fire": "#b30", "Wind": "#6c3", "Water": "#06b", "Arcane": "#23a", "Astra": "#336", "Crux": "#a9d", "Exia": "#310", "Luxem": "#ec4", "Neos": "#a63", "Tera": "#164", "Umbra": "#214", "Exalted/Norm": "#ca7", "Exalted/Fire": "#ca7", "Exalted/Water": "#ca7", "Exalted/Wind": "#ca7", "Unknown": "#000"} %}
     {% set ns = namespace(cumu = 0) %}
     <div class="pie-chart" style="background: conic-gradient({% for el, quant, pct in elements %}{{el_colors[el]}} {{ns.cumu}}%{% set ns.cumu = ns.cumu + pct %}, {{el_colors[el]}} {{ns.cumu}}%{% if not loop.last%}, {% endif %}{% endfor %})">&nbsp;</div>
 
@@ -36,7 +39,7 @@
         <tbody>
             {% for el, quant, pct in elements %}
             <tr>
-                <th><span class="el-indicator" style="background-color: {{el_colors[el]}};">&nbsp;</span> {{el}}</th>
+                <th>{{el_indicator(el)}} {{el}}</th>
                 <td>{{quant|int}}</td>
                 <td>{{pct}}%</td>
             </tr>
@@ -635,4 +638,25 @@
 {% endif%}
     <p class="achievement-desc">{{a.description}}</p>
 </{{el}}>
+{%- endmacro %}
+
+{% macro cr_table(name, items) -%}
+<table class="conversion-rate-table">
+    <thead><tr>
+        <th>{{name}}</th>
+        <th>Conversion Rate</th>
+        <th>Vs Baseline Rate</th>
+        <th>Vs Expected Quantity</th>
+    </tr></thead>
+    <tbody>
+        {% for item, ratestats in items %}
+        <tr class="{% if name == 'Element'%}cr-element-row{% else %}cr-row{% endif %}">
+            <td>{% if name == "Element"%}{{el_indicator(item)}} {% else %}<div class="deck-bgs"><img class="deck-bg" src="/static/bg/{{slugify(item)}}.jpg" alt="" /></div>{% endif %}{{item}}</td>
+            <td>{{ratestats["rate"]}}% <div class="cr-quants">({{ratestats["day2"]}} of {{ratestats["day1"]}} deck{% if ratestats["day1"]>1%}s{% endif %})</div></td>
+            <td><div class="cr-inner {% if ratestats['mult'] > 1.1 %}rate-good{% elif ratestats['mult'] < 0.9 %}rate-bad{% else %}rate-even{% endif %}">{{ratestats["mult"]}}×</div></td>
+            <td>{% if ratestats["quant"] > 0 %}<div class="cr-inner {% if ratestats['quant'] >= 1.0 %}rate-good{% else %}rate-even{% endif %}">+{{ratestats["quant"]}} decks</div>{% else %}<div class="cr-inner {% if ratestats['quant'] <= -1.0%}rate-bad{% else %}rate-even{% endif %}">{{ratestats["quant"]}} decks</div>{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {%- endmacro %}

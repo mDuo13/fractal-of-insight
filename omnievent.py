@@ -25,6 +25,21 @@ def pct_with_archetype(players, arche):
     dec = nom / len(players)
     return round(dec*100, 1)
 
+def calc_conversion(d1_quant, d2_quant, bcr):
+    if d1_quant == 0:
+        cr = 0.0
+    else:
+        cr = d2_quant / d1_quant
+    rate_multiplier = cr / bcr
+    vs_expected_decks = d2_quant - (d1_quant * bcr)
+    return {
+        "rate": round(100*cr, 1),
+        "mult": round(rate_multiplier, 2),
+        "quant": round(vs_expected_decks, 1),
+        "day1": int(d1_quant),
+        "day2": int(d2_quant),
+    }
+
 class OmniEvent:
     def __init__(self, evt_id, force_redownload=False):
         self.id = evt_id
@@ -202,6 +217,46 @@ class OmniEvent:
                     self.day2stats['archedata'].add_unknown()
                     self.day2stats['champdata'].add_unknown()
                 self.day2stats['regiondata'].add_player(p)
+            
+            # Conversion rate stats
+            self.conversion_rate = {
+                "elements": {},
+                "archedata": {},
+                "champdata": {},
+            }
+            bcr = len(day2players) / len(self.players) # base conversion rate
+            self.bcr = round(100*bcr, 1)
+
+            for el, d2_quant, d2_pct in self.day2stats["elements"]:
+                d1_quant, d1_pct = self.elements[el]
+                self.conversion_rate["elements"][el] = calc_conversion(
+                    d1_quant, d2_quant, bcr
+                )
+            
+            conversions_arche = []
+            for arche, d1_pct, d1_quant, d1_elstats in self.archedata:
+                if self.day2stats["archedata"].exists_for(arche):
+                    d2_quant, d2_pct, d2_elstats = self.day2stats["archedata"][arche]
+                else:
+                    d2_quant = 0
+                conversions_arche.append( (arche, calc_conversion(
+                    d1_quant, d2_quant, bcr
+                )) )
+            conversions_arche.sort(key=lambda x:x[1]["day2"], reverse=True)
+            self.conversion_rate["archedata"] = {k:v for k,v in conversions_arche}
+            
+            conversions_champ = []
+            for champ, d1_pct, d1_quant, d1_elstats in self.champdata:
+                if self.day2stats["champdata"].exists_for(champ):
+                    d2_quant, d2_pct, d2_elstats = self.day2stats["champdata"][champ]
+                else:
+                    d2_quant = 0
+                conversions_champ.append( (champ, calc_conversion(
+                    d1_quant, d2_quant, bcr
+                )) )
+            conversions_champ.sort(key=lambda x:x[1]["day2"], reverse=True)
+            self.conversion_rate["champdata"] = {k:v for k,v in conversions_champ}
+
 
         if self.top_cut:
             self.topcutstats = {

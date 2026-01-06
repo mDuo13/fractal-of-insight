@@ -235,6 +235,34 @@
     </div>
 </section>
 
+{% if evt.conversion_rate %}
+<section id="conversion-rate">
+    <h2>Conversion Rate</h2>
+    <button onclick="toggle('#conversion-rate > .togglable')">Glimpse conversion rates</button>
+    <p class="togglable collapse explanation">(Percentage of decks making it to day 2 of the event.)</p>
+    <p class="togglable collapse"><strong>Baseline:</strong> {{evt.bcr}}%</p>
+
+    <div class="tabs togglable collapse">
+        <button class="tab activetab" onclick="opentab(this, '#conversion-rate-arche')">By Archetype</button>
+        <button class="tab" onclick="opentab(this, '#conversion-rate-champ')">By Champion</button>
+        <button class="tab" onclick="opentab(this, '#conversion-rate-el')">By Element</button>
+    </div>
+
+    <div class="tabwrapper togglable collapse">
+        <div class="tabcontent togglable" id="conversion-rate-arche">
+        {{macros.cr_table("Archetype", evt.conversion_rate["archedata"].items())}}
+        </div>
+        <div class="tabcontent togglable collapse" id="conversion-rate-champ">
+        {{macros.cr_table("Champion", evt.conversion_rate["champdata"].items())}}
+        </div>
+        <div class="tabcontent togglable collapse" id="conversion-rate-el">
+        {{macros.cr_table("Element", evt.conversion_rate["elements"].items())}}
+        </div>
+    </div>
+
+</section>
+{% endif %}
+
 <section id="head-to-head">
     <h2>Head-to-Head</h2>
     <button onclick="toggle('#head-to-head > .togglable')">Glimpse Head-to-Head Chart</button>

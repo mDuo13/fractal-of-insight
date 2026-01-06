@@ -116,6 +116,14 @@ class ElementStats:
                 dec = 0
             pct = round(dec*100, 1)
             yield (el, quant, pct)
+    
+    def __getitem__(self, el):
+        quant = self.elements[el]
+        if self.total_items == 0:
+            pct = 0.0
+        else:
+            pct = round(100*quant/self.total_items, 1)
+        return (quant, pct)
 
     def top(self):
         typedata = [(i,q) for i,q in self.elements.items() if i != "Unknown" and q>0]
@@ -167,7 +175,7 @@ class TypeStats:
     def __getitem__(self, item):
         quant = self.items[item]
         pct = round(100*quant/self.total_items, 1)
-        return (item, pct, self.item_elements[item])
+        return (quant, pct, self.item_elements[item])
 
     def top(self):
         if not self.items:

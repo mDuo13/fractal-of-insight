@@ -194,6 +194,8 @@ class Archetype:
                 total_of_type[k] += v
         if total_decks == 0:
             warning(f"No decks for archetype {self.name}")
+            self.average_floating = 0
+            self.average_of_type = {k:0 for k,v in total_of_type.items()}
             return
         self.average_floating = round(total_floating / total_decks, 0)
         total_of_type_sorted = [(k,v) for k,v in total_of_type.items()]

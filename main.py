@@ -19,10 +19,11 @@ from archetypes import ARCHETYPES, NO_ARCHETYPE, MAT_DIFF_CARD_LIMIT, MAIN_DIFF_
 from spoiler import SpoilerEvent, SPOILER_SEASONS
 from cards import ERRATA, BANLIST
 from cardstats import ALL_CARD_STATS, PAD_UNTIL
-from achievements import ACHIEVEMENTS, GAS
+from achievements import ACHIEVEMENTS, GAS, REFRACTED_ARTISTS
 
 SIGHTINGS_PER_PAGE = 200
 CARD_SIGHTINGS_PER_PAGE = 100
+FAST_CUTOFF = 5 # process a minimal number of events for "fast" mode (testing purposes)
 
 class PageBuilder:
     def __init__(self):
@@ -36,10 +37,16 @@ class PageBuilder:
         self.env.globals["TEAM_STANDARD"] = TEAM_STANDARD
         self.env.globals["OVERALL"] = OVERALL
         self.env.globals["ACHIEVEMENTS"] = ACHIEVEMENTS
+        self.env.globals["REFRACTED_ARTISTS"] = REFRACTED_ARTISTS
         self.env.filters["slugify"] = slugify
         self.env.filters["ms_to_date"] = ms_to_date
         self.env.trim_blocks = True
         self.env.autoescape = True
+
+        self.seasons = {}
+        self.known_players = {}
+        self.all_events = {}
+        self.known_judges = defaultdict(list)
 
     def render(self, template, write_to, **kwargs):
         """
@@ -173,60 +180,71 @@ class PageBuilder:
     def write_spoilers(self, spoilers):
         self.render("spoilers.html.jinja2", "spoilers/index.html", spoilers=spoilers)
 
-    def write_all(self):
+    def read_event(self, id_s):
+        try:
+            e = OmniEvent(id_s)
+            self.all_events[e.id] = e
+        except IsTeamEvent:
+            e = Team3v3Event(id_s)
+            self.all_events[e.id] = e
+        if not self.seasons.get(e.season):
+            self.seasons[e.season] = Season(e.season)
+        self.seasons[e.season].add_event(e)
+
+        for fmt in FORMATS.values():
+            if fmt.should_include(e):
+                fmt.add_event(e)
+                break
+
+        for entrant in e.players:
+            if entrant.id in self.known_players.keys():
+                self.known_players[entrant.id].add_entry(entrant)
+            else:
+                self.known_players[entrant.id] = Player(entrant)
+
+            if entrant.deck:
+                self.write_decklist_tts(entrant.deck)
+            if entrant.topcut_deck:
+                self.write_decklist_tts(entrant.topcut_deck)
+        for judge in e.judges:
+            self.known_judges[judge.id].append(judge)
+
+    def write_all(self, force_evts=[]):
         """
         Write all known event pages as well as homepage, season landings, and player profiles.
         """
-        seasons = {}
-        known_players = {}
-        all_events = {}
-        known_judges = defaultdict(list)
+        
+        evts_read = 0
         for entry in os.scandir("./data"):
+            if config.SharedConfig.go_fast and evts_read >= FAST_CUTOFF:
+                print("Skipping remaining events (fast mode)")
+                if force_evts:
+                    print("...but first, adding forced events")
+                    for id_s in force_evts:
+                        if id_s not in self.all_events.keys():
+                            self.read_event(id_s)
+                break
             if entry.is_dir() and entry.name[:6] == "event_":
                 print("Reading event#",entry.name[6:])
                 try:
-                    e = OmniEvent(entry.name[6:])
-                    all_events[e.id] = e
-                except IsTeamEvent:
-                    e = Team3v3Event(entry.name[6:])
-                    all_events[e.id] = e
+                    self.read_event(entry.name[6:])
                 except NotStarted:
                     print(f"Event #{entry.name[6:]} not started.")
                     continue
-                if not seasons.get(e.season):
-                    seasons[e.season] = Season(e.season)
-                seasons[e.season].add_event(e)
+                evts_read += 1
 
-                for fmt in FORMATS.values():
-                    if fmt.should_include(e):
-                        fmt.add_event(e)
-                        break
-
-                for entrant in e.players:
-                    if entrant.id in known_players.keys():
-                        known_players[entrant.id].add_entry(entrant)
-                    else:
-                        known_players[entrant.id] = Player(entrant)
-
-                    if entrant.deck:
-                        self.write_decklist_tts(entrant.deck)
-                    if entrant.topcut_deck:
-                        self.write_decklist_tts(entrant.topcut_deck)
-                for judge in e.judges:
-                    known_judges[judge.id].append(judge)
         # Add judges to player profiles where they exist
-        for jid, events_judged in known_judges.items():
-            if jid in known_players.keys():
+        for jid, events_judged in self.known_judges.items():
+            if jid in self.known_players.keys():
                 events_judged.sort(key=lambda x:x.event.date)
-                known_players[jid].events_judged = events_judged
+                self.known_players[jid].events_judged = events_judged
             else:
-                #print(f"Judge with no player instances? {judge}")
-                known_players[jid] = Player(events_judged[0])
-                known_players[jid].events_judged = events_judged
+                self.known_players[jid] = Player(events_judged[0])
+                self.known_players[jid].events_judged = events_judged
 
-        seasons_sorted = {k:seasons[v] for k,v in SEASONS.items() if v in seasons.keys()}
+        seasons_sorted = {k:self.seasons[v] for k,v in SEASONS.items() if v in self.seasons.keys()}
 
-        for szn in seasons.values():
+        for szn in self.seasons.values():
             self.write_season(szn)
 
         formats_desc = list(reversed(FORMATS.values()))
@@ -238,7 +256,7 @@ class PageBuilder:
         card_stats_by_set = ALL_CARD_STATS.split_by_set()
 
         HIPSTER_FLOOR = 99999
-        for e in all_events.values():
+        for e in self.all_events.values():
             for p in e.players:
                 if p.deck:
                     p.deck.rate_hipster(ALL_CARD_STATS)
@@ -253,18 +271,18 @@ class PageBuilder:
         for cardname, cardstat in ALL_CARD_STATS:
             price = format_price(get_card_price(cardname))
             card_prices[cardname] = price
-            self.write_card_page(cardname, cardstat, price, events=all_events)
+            self.write_card_page(cardname, cardstat, price, events=self.all_events)
 
-        known_pids_sorted = [pid for pid, pl in known_players.items()]
-        known_pids_sorted.sort(key=lambda x: known_players[x].sortkey())
+        known_pids_sorted = [pid for pid, pl in self.known_players.items()]
+        known_pids_sorted.sort(key=lambda x: self.known_players[x].sortkey())
 
         for pid in known_pids_sorted:
-            known_players[pid].analyze_hipster(HIPSTER_FLOOR)
-            self.write_player(known_players[pid], all_events, known_players)
-        self.write_player_index(players=[known_players[pid] for pid in known_pids_sorted], events=all_events)
+            self.known_players[pid].analyze_hipster(HIPSTER_FLOOR)
+            self.write_player(self.known_players[pid], self.all_events, self.known_players)
+        self.write_player_index(players=[self.known_players[pid] for pid in known_pids_sorted], events=self.all_events)
 
         aew = {} #archetype event wins
-        for szn in seasons.values():
+        for szn in self.seasons.values():
             for arche,wins in szn.arche_wins.items():
                 if arche in aew.keys():
                     aew[arche] += wins
@@ -280,9 +298,9 @@ class PageBuilder:
                 aew[a.name] = []
             a.analyze()
             a.load_videos()
-            self.write_archetype(a, known_players, all_events, seasons_sorted, aew[a.name])
+            self.write_archetype(a, self.known_players, self.all_events, seasons_sorted, aew[a.name])
         NO_ARCHETYPE.analyze()
-        self.write_archetype(NO_ARCHETYPE, known_players, all_events, seasons_sorted, [])
+        self.write_archetype(NO_ARCHETYPE, self.known_players, self.all_events, seasons_sorted, [])
 
         arches_sorted = [a for a in ARCHETYPES.values()]
         arches_sorted.sort(key=lambda x: len(x.matched_decks), reverse=True)
@@ -306,12 +324,12 @@ class PageBuilder:
             cswr[a] = round( 100*(csa_wins[a] + (csa_ties[a] / 2)) / csa_matches, 1)
         self.write_archetype_index(arches_sorted+[NO_ARCHETYPE], aew, cswr=cswr)
 
-        for e in all_events.values():
+        for e in self.all_events.values():
             self.write_event(e)
 
         self.write_card_index(card_stats_by_set, card_prices)
 
-        GAS.total_players = len(known_players)
+        GAS.total_players = len(self.known_players)
         for achievement in ACHIEVEMENTS.values():
             self.write_achievement(achievement)
         self.write_achievements_index()
@@ -329,10 +347,12 @@ def main(args):
     if args.fast:
         config.SharedConfig.go_fast = True
     builder = PageBuilder()
+    force_evts = []
     for i in args.event_id:
         i_s = str(i)
+        force_evts.append(i_s)
         get_event(i, force_redownload=args.update, save=True, dl_decklists=True)
-    builder.write_all()
+    builder.write_all(force_evts=force_evts)
     if config.SharedConfig.go_fast != True:
         write_similarity_cache()
 

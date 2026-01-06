@@ -90,20 +90,23 @@ tr.subtype {
     text-align: center;
 }
 
-.favored .bc-inner {
+.favored .bc-inner,
+.conversion-rate-table .rate-good {
     background-color: #68935B;
     color: white;
     background-image: url(swirl.svg);
     background-repeat: repeat-y;
     background-position: right;
 }
-.unfavored .bc-inner {
+.unfavored .bc-inner,
+.conversion-rate-table .rate-bad {
     background-color: #FDA0A0;
     background-image: url(jaggy.svg);
     background-repeat: repeat-y;
     background-position: right;
 }
-.even .bc-inner {
+.even .bc-inner,
+.conversion-rate-table .rate-even {
     background-color: #F0F0F0;
     background-image: url(zag.svg);
     background-repeat: repeat-y;
@@ -142,7 +145,7 @@ tr.subtype {
     font-weight: normal;
 }
 table, th, td {
-    border: 3px ridge black;
+    border: 3px ridge #bbb;
     border-collapse: collapse;
     padding: 5px;
 }
@@ -179,7 +182,7 @@ th {
     font-weight: normal;
 }
 
-#players table, #players th, #players td, table.archetypes, .archetypes th, .archetypes td {
+#players > table, #players > table th, #players > table td, table.archetypes, .archetypes th, .archetypes td {
     border: none;
 }
 .banned .playername {
@@ -223,6 +226,27 @@ th {
     height: 55px;
     margin-bottom: 5px;
 }
+.conversion-rate-table {
+    margin-top: 5px;
+}
+.cr-row {
+    position: relative;
+    height: 50px;
+}
+.cr-element-row td:first-child {
+    background-color: white;
+}
+.cr-inner {
+    margin: 5px 5px 7px 3px;
+    border-radius: 5px;
+    box-shadow: rgba(20,20,20,0.5) 3px 2px 0px;
+    padding: 6px 4px;
+    text-align: center;
+}
+.cr-quants {
+    font-size: 14px;
+    line-height: 12px;
+}
 
 .p-row a,
 .p-row a:visited,
@@ -235,7 +259,7 @@ th {
     color: black;
 }
 
-.p-row td, .team-member {
+.p-row td, .team-member, .cr-row td:first-child, .cr-row td:nth-child(2) {
     font-size: 23px;
     padding: 5px;
     text-shadow: white 1px 1px 2px,
@@ -272,7 +296,8 @@ th {
     animation-play-state: paused;
 }
 
-.p-row:hover .deck-bg {
+.p-row:hover .deck-bg,
+.cr-row:hover .deck-bg {
     animation-play-state: running;
 }
 
@@ -1046,8 +1071,8 @@ footer {
     display: inline-flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 105px;
-    height: 105px;
+    width: 125px;
+    height: 125px;
     margin: 5px;
     padding: 8px;
     border: 1px solid black;
@@ -1103,12 +1128,23 @@ a.achievement {
     height: 65px;
     overflow: hidden;
 }
+.refracted .achievement-img {
+    width: 100%;
+    height: 100%;
+}
 .achievement-img img {
     width: 125px;
     height: 65px;
     object-fit: cover;
     object-position: 0 22%;
     margin-left: -10px;
+}
+.refracted .achievement-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	object-position: center;
+	margin-left: 0;
 }
 .achievement-desc {
     padding: 0;
@@ -1128,9 +1164,10 @@ a.achievement {
 }
 .achievement-wrapper {
     display: inline-block;
-    width: 135px;
-    height: 165px;
-    margin: 6px;
+    width: 155px;
+    height: 185px;
+    margin: 3px;
+    vertical-align: top;
 }
 
 .event-filtering label,
@@ -1423,7 +1460,7 @@ a.achievement {
         padding-inline-start: 15px;
     }
 
-    #players th {
+    #players th, #conversion-rate th {
         font-size: 16px;
     }
     #players th:first-child {
@@ -1435,7 +1472,9 @@ a.achievement {
     .p_record button {
         font-size: 10px;
     }
-    .p-row td {
+    .p-row td, 
+    .cr-row td, .cr-row td:first-child, .cr-row td:nth-child(2),
+    .cr-element-row td {
         font-size: 16px;
         padding: 3px;
     }
@@ -1451,6 +1490,15 @@ a.achievement {
     .achievement h4 {
         font-size: 15px;
     }
+
+    .cr-inner {
+        line-height: 14px;
+    }
+
+    .cr-row .deck-bg {
+        top: -80%;
+    }
+
 }
 
 .ptm-spoilers {
