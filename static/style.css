@@ -63,10 +63,19 @@ form > fieldset {
 
 .battlechart thead th {
     font-size: 15px;
+    position: sticky;
+    top: 0;
+}
+.battlechart thead th:first-child {
+    z-index: 3;
+    top: 0;
+    left: 0;
 }
 
 .battlechart tbody th {
     min-width: 100px;
+    position: sticky;
+    left: 0;
 }
 
 .battlechart button {
