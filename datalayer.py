@@ -340,6 +340,25 @@ def get_event_videos(evt_id):
         vids = {"videos": []}
     return vids.get("videos", [])
 
+def get_event_refracted_achievements(evt_id):
+    try:
+        with open(f"data/refracted/{evt_id}.json") as f:
+            evt_refracteds = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        evt_refracteds = {
+            "event_id": int(evt_id),
+            "achievements":[]
+        }
+    if str(evt_refracteds["event_id"]) != str(evt_id):
+        print(f"Refracted event ID mismatch: {evt_id} vs {evt_refracteds['evt_id']}")
+        return []
+    for ra in evt_refracteds["achievements"]:
+        for key,kt in (("player",int), ("round",int), ("achievement",str)):
+            if key not in ra.keys() or type(ra[key]) != kt:
+                print(f"Evt#{evt_id}: Invalid refracted achievement data:",ra)
+                return []
+    return evt_refracteds.get("achievements", [])
+
 def save_event_json(evt):
     makedirs(f"data/event_{evt['id']}/", exist_ok=True)
     with open(f"data/event_{evt['id']}/event.json", "w") as f:

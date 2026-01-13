@@ -3,7 +3,7 @@ import re
 
 from player import Entrant, JudgeEvt
 from battlechart import BattleChart
-from datalayer import get_event, get_event_videos, get_card_img
+from datalayer import get_event, get_event_videos, get_card_img, get_event_refracted_achievements
 from archetypes import ARCHETYPES
 from cards import ELEMENTS
 from competition import EVENT_TYPES, TEAM_STANDARD
@@ -74,6 +74,7 @@ class OmniEvent:
         self.winner = None
         self.load_players() # populates self.players, self.num_decklists, self.decklist_status
         self.load_videos()
+        self.load_refracted_achievements()
         self.analyze() #populates self.elements, archedata, champdata, draw_pct, nat_draw_pct
         self.battlechart = self.calc_headtohead(track_elo=self.track_elo)
         self.bc_top = self.calc_headtohead(TOP_CUTOFF)
@@ -170,6 +171,13 @@ class OmniEvent:
                         if d and viddata not in d.videos:
                             d.videos.append(viddata)
 
+    def load_refracted_achievements(self):
+        self.refracted_achievements = get_event_refracted_achievements(self.id)
+        for ra in self.refracted_achievements:
+            pid = ra.get("player")
+            if not pid or pid not in self.pdict.keys():
+                print(f"Refracted: bad player ID #{pid} for this event?")
+                continue
 
     def analyze(self):
         self.elements = ElementStats()

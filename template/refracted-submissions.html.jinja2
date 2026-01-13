@@ -9,9 +9,11 @@
 {% block body %}
 <h1>Refracted Achievement Form</h1>
 <section id="selectevent">
-    <p class="explanation">(Data is saved locally per device and is never shared except when you submit it.)</p>
+    <p class="explanation">(Data is only saved locally per device.)</p>
     <button onclick="reset_evt()">New event</button>
     <button onclick="load_saved()">Load saved:</button>
+    <span id="saved-evt-list"></span>
+    <button id="copy-evt" onclick="copy_evt_to_clipboard()" disabled="disabled">Copy for Export</button>
 </section>
 <form id="evt-select-form">
     <ul id="evt-info" class="scooped-corners">
@@ -60,7 +62,7 @@
         <p class="achievement-desc"></p>
     </div>
     <p class="explanation collapse" id="achievement-preview-notes"></p>
-    <label for="a-a-roundnum">Round number: <input type="number" min="0" step="1" id="a-a-roundnum" value="1" /></label>
+    <label for="a-a-roundnum">Round number: <input type="number" min="1" max="99" step="1" id="a-a-roundnum" value="1" /></label>
     <label for="a-a-p-id">Player:
         <select id="a-a-player">
             <option value="0">(Select)</option>

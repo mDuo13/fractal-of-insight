@@ -41,7 +41,7 @@
     {% endfor %}
 
     <h2>Refracted Achievements</h2>
-    <p class="explanation">(These achievements are only available at special Refracted events. More details to come.)</p>
+    <p class="explanation">(These achievements are available at special Refracted events, or may be awarded for performing the achievement on-stream at an Ascent or higher level event. More details to come.)</p>
     {% for a in ACHIEVEMENTS.values() %}
     {% if a.refracted %}
     {{ achievement(a) }}

@@ -1016,6 +1016,7 @@ add_archetype(
 umbra_alice = add_archetype(
     "Umbra Alice",
     [
+        "Maledictum Vitae",
         "Bandersnatch, Fruminous Foe",
         "Remnant of Will",
         "Overflow the Barrow",

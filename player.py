@@ -6,7 +6,7 @@ from datalayer import get_deck, get_topcut_deck, NoDeck
 from cards import ELEMENTS
 from shared import keydefaultdict, ElementStats, ChampStats, ArcheStats, ms_to_date
 from competition import TEAM_STANDARD
-from achievements import AchievementSet
+from achievements import AchievementSet, REFRACTED_ACHIEVEMENTS
 from config import UPSET_CUTOFF
 
 RIVAL_THRESHOLD = 3 # min matches to count as a rival
@@ -550,6 +550,15 @@ class Player:
                 for (cardname, score, rank) in e.top_cards:
                     self.achievements.add_card_top(cardname, score, rank)
 
+        for e in events_chrono:
+            if hasattr(e.event, "refracted_achievements"):
+                for ra in e.event.refracted_achievements:
+                    if ra.get("player") == self.id:
+                        raname = ra.get("achievement")
+                        if raname not in REFRACTED_ACHIEVEMENTS.keys():
+                            print(f"Refracted: Mis-named or incorrect achievement for {self} in {e}: '{raname}'")
+                            continue
+                        self.achievements.add(raname, e, details=f"Round {ra['round']}")
 
     def sortkey(self):
         # Sort players by # of tracked events entered descending

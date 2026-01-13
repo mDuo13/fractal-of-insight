@@ -20,6 +20,7 @@ def add_achievement(name, emoji, description, skip_date=False):
     a = Achievement(name, emoji, description, skip_date)
     ACHIEVEMENTS[name] = a
 
+REFRACTED_ACHIEVEMENTS = {}
 def add_refracted(name, description, image="", notes="", artist="", artisturl=""):
     if image:
         image = "/static/refracted/"+image
@@ -29,6 +30,7 @@ def add_refracted(name, description, image="", notes="", artist="", artisturl=""
     a = Achievement(name, emoji, description, refracted=True, image=image,
                     notes=notes, artist=artist, artisturl=artisturl)
     ACHIEVEMENTS[name] = a
+    REFRACTED_ACHIEVEMENTS[name] = a
 
 class GlobalAchievementStats:
     def __init__(self):
@@ -81,6 +83,7 @@ class Achieved:
         self.details = details
         if refracted:
             self.atype = "refracted"
+            self.refracted = True
             # TODO: add automatic image for refracted achievements?
         else:
             self.atype = "normal"

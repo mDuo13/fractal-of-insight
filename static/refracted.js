@@ -19,7 +19,7 @@ function load_saved_events() {
         window.localStorage.setItem(EVT_LIST, "[]")
     }
 
-    const evtbox = document.querySelector("#selectevent")
+    const evtbox = document.querySelector("#saved-evt-list")
     for (const evt of eventList) {
         const evt_id = parseInt(evt.slice(STORAGE_PREFIX.length))
         const lbl = document.createElement("label")
@@ -39,8 +39,12 @@ function reset_evt() {
     document.querySelector("#evt-name").innerText = ""
     document.querySelector("#evt-num-entrants").innerText = ""
     document.querySelector("#a-a-player").innerHTML = DEFAULT_PLAYER_OPTION
+    document.querySelector("#copy-evt").disabled = true
     const records = document.querySelectorAll("#achievements-awarded .achievement-record")
     for (const arecord of records) { arecord.remove() }
+    const rndnumbox = document.querySelector("#a-a-roundnum")
+    rndnumbox.attributes["max"] = 99
+    
 }
 
 async function load_saved() {
@@ -58,7 +62,6 @@ async function load_saved() {
     for (const a of achievements) {
         show_achievement_record(a)
     }
-    
 }
 
 async function omnilookup(event_id) {
@@ -68,6 +71,7 @@ async function omnilookup(event_id) {
 }
 
 async function fetchevt(evt) {
+    // Reminder: for anything that gets mutated here, reset it in reset_evt()
     if (evt) { evt.preventDefault() }
     const event_id = document.querySelector("#evt-omni-id").value
     if (!event_id) {
@@ -79,7 +83,14 @@ async function fetchevt(evt) {
     hide("#evt-omni-id-loader")
     document.querySelector("#evt-name").innerText = currentEvent.name
     document.querySelector("#evt-num-entrants").innerText = currentEvent.players.length
-    const d = new Date(currentEvent.startedAt)
+    let d
+    if (currentEvent.startedAt) {
+        d = new Date(currentEvent.startedAt)
+    } else {
+        // some old events have null for startedAt, so fall back to startAt
+        // instead of making a date from null
+        d = new Date(currentEvent.startAt)
+    }
     document.querySelector("#evt-date").innerText = d.toLocaleDateString()
     const poptions = document.querySelector("#a-a-player")
     poptions.innerHTML = DEFAULT_PLAYER_OPTION
@@ -89,6 +100,9 @@ async function fetchevt(evt) {
         popt.innerText = `${p.username} #${p.id}`
         poptions.appendChild(popt)
     }
+    const rndnumbox = document.querySelector("#a-a-roundnum")
+    rndnumbox.attributes["max"] = currentEvent.swissRounds
+    document.querySelector("#copy-evt").disabled = false
 }
 
 async function show_add(atag) {
@@ -127,7 +141,26 @@ async function show_add(atag) {
     popup.classList.remove("collapse")
 }
 
-function write_evt() {
+function fmt_evt(id) {
+    // Save current set of achievements to local storage
+    const evt_json = {
+        "event_id": id,
+        "achievements": achievements
+    }
+    return JSON.stringify(evt_json, null, 0)
+}
+
+function fmt_evtlist(id) {
+    const storage_id = get_storage_id(id)
+    if (!eventList) {
+        eventList = [storage_id]
+    } else if (!eventList.includes(storage_id)) {
+        eventList.push(storage_id)
+    }
+    return JSON.stringify(eventList, null, 0)
+}
+
+function get_evt_id() {
     let id
     if (currentEvent) {
         id = currentEvent.id
@@ -135,22 +168,32 @@ function write_evt() {
         console.warn("Saving with no omni data")
         id = parseInt(document.querySelector("#evt-omni-id").value)
     }
-    // Save current set of achievements to local storage
-    const storage_id = `refractedEvent${id}`
-    const evt_json = {
-        "event_id": id,
-        "achievements": achievements
-    }
-    if (!eventList) {
-        eventList = [storage_id]
-    } else if (!eventList.includes(storage_id)) {
-        eventList.push(storage_id)
-    }
-    
-    const evt_str = JSON.stringify(evt_json, null, 0)
+    return id
+}
+
+function get_storage_id(id) {
+    return `refractedEvent${id}`
+}
+
+function write_evt() {
+    const id = get_evt_id()
+    const storage_id = get_storage_id(id)
+    const evt_str = fmt_evt(id)
     window.localStorage.setItem(storage_id, evt_str)
-    const evt_list_str = JSON.stringify(eventList, null, 0)
+    const evt_list_str = fmt_evtlist(id)
     window.localStorage.setItem(EVT_LIST, evt_list_str)
+}
+
+function copy_evt_to_clipboard() {
+    const id = get_evt_id()
+    const evt_str = fmt_evt(id)
+    const paste_str = `Here is a Refracted event to add:\n\n\`\`\`\n${evt_str}\n\`\`\`\n`
+    if (window.isSecureContext) {
+        navigator.clipboard.writeText(paste_str)
+    } else {
+        console.warn("Can't to clipboard (not a secure context)")
+        console.log(paste_str)
+    }
 }
 
 function save_achievement() {

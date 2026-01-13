@@ -19,7 +19,7 @@ from archetypes import ARCHETYPES, NO_ARCHETYPE, MAT_DIFF_CARD_LIMIT, MAIN_DIFF_
 from spoiler import SpoilerEvent, SPOILER_SEASONS
 from cards import ERRATA, BANLIST
 from cardstats import ALL_CARD_STATS, PAD_UNTIL
-from achievements import ACHIEVEMENTS, GAS, REFRACTED_ARTISTS
+from achievements import ACHIEVEMENTS, GAS, REFRACTED_ACHIEVEMENTS, REFRACTED_ARTISTS
 
 SIGHTINGS_PER_PAGE = 200
 CARD_SIGHTINGS_PER_PAGE = 100
@@ -176,6 +176,12 @@ class PageBuilder:
 
     def write_achievements_index(self):
         self.render("achievements.html.jinja2", "achievement/index.html", GAS=GAS)
+    
+    def write_refracted_form(self):
+        self.render("refracted-submissions.html.jinja2", 
+            "achievement/refracted-submissions.html",
+            REFRACTED_ACHIEVEMENTS=REFRACTED_ACHIEVEMENTS
+        )
 
     def write_spoilers(self, spoilers):
         self.render("spoilers.html.jinja2", "spoilers/index.html", spoilers=spoilers)
@@ -333,6 +339,7 @@ class PageBuilder:
         for achievement in ACHIEVEMENTS.values():
             self.write_achievement(achievement)
         self.write_achievements_index()
+        self.write_refracted_form()
 
         spoilers = {}
         for entry in os.scandir("./data/spoilers"):

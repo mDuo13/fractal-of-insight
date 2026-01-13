@@ -1584,3 +1584,7 @@ a.achievement {
     display: flex;
     justify-content: center;
 }
+
+#copy-evt {
+    display: block;
+}
