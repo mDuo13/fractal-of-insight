@@ -1,9 +1,10 @@
 from collections import defaultdict
 from bisect import insort
 from logging import warning
+from time import time
 
 from config import SharedConfig
-from shared import ElementStats, ChampStats, lineage
+from shared import ElementStats, ChampStats, lineage, HOT_WINDOW
 from cards import BANLIST, REMOVED_FROM_PRXY
 from datalayer import get_card_img, carddata, get_card_price
 
@@ -13,6 +14,8 @@ MAIN_DIFF_CARD_LIMIT = 15
 SIDE_DIFF_CARD_LIMIT = 8
 MONEY_CARD_COUNT = 20
 MONEY_CARD_PRICE_CUTOFF = 5.00 # Only include cards that cost at least $ this
+RISING_CARDS_CUTOFF_PCT = 0.0 # only include cards that gained by this much
+RISING_CARD_LIMIT = 10
 SUBTYPES = {}
 
 class Archetype:
@@ -133,6 +136,7 @@ class Archetype:
             self.total_matches = matches
 
         self.analyze_card_freq()
+        self.analyze_hot_cards()
         self.analyze_card_stats()
         self.analyze_money_cards()
         if self.subtypes:
@@ -154,14 +158,14 @@ class Archetype:
             for et in self.el_subtypes.values():
                 et.analyze()
 
-    def analyze_card_freq(self):
+    def calc_card_freq(self, matched_decks):
         card_freqs = {
             "mat": defaultdict(int),
             "main": defaultdict(int),
             "side": defaultdict(int)
         }
         card_etc = defaultdict(None)
-        for deck in self.matched_decks:
+        for deck in matched_decks:
             for card_o in deck.mat:
                 card_freqs["mat"][card_o["card"]] += 1
             for card_o in deck.main:
@@ -169,19 +173,55 @@ class Archetype:
             for card_o in deck.side:
                 card_freqs["side"][card_o["card"]] += 1
         total_decks = len(self.matched_decks)
-        self.card_freqs = {}
+        card_freqs2 = {}
         for cf_type, card_freq in card_freqs.items():
             cf_sorted = list(card_freq.items())
             cf_sorted.sort(key=lambda x:x[1], reverse=True)
-            self.card_freqs[cf_type] = {
+            card_freqs2[cf_type] = {
                 c: {
                     "card": c,
                     "pct": round(100*f/total_decks, 1),
+                    # "quant": f, # cardimg macro would use this instead of pct
                     "img": get_card_img(c),
                     "banned": (True if c in BANLIST else False),
                     "removed": (True if c in REMOVED_FROM_PRXY.keys() else False),
                 } for c,f in cf_sorted
             }
+        return card_freqs2
+
+    def analyze_card_freq(self):
+        self.card_freqs = self.calc_card_freq(self.matched_decks)
+
+    def analyze_hot_cards(self):
+        cutoff_time_ms = (int(time()) - HOT_WINDOW) * 1000
+        hot_decks  = [d for d in self.matched_decks
+                      if d.entrant.evt_time > cutoff_time_ms]
+        cold_decks = [d for d in self.matched_decks
+                      if d.entrant.evt_time <= cutoff_time_ms]
+
+        card_freqs_hot = self.calc_card_freq(hot_decks)
+        card_freqs_cold = self.calc_card_freq(cold_decks)
+
+        cf_merged = []
+        for cf_type, card_freq in card_freqs_hot.items():
+            if cf_type == "side":
+                # Disregard sideboards for now
+                continue
+            for c,f in card_freq.items():
+                if c in card_freqs_cold[cf_type].keys():
+                    pct_delta = f["pct"] - card_freqs_cold[cf_type][c]["pct"]
+                    # if pct_delta > 0:#TODO:remove
+                    #     print(f"Hot Card: {c}\n  before:{card_freqs_cold[cf_type][c]['pct']}\n  now:{f['pct']}\n  delta:{pct_delta}")
+                else:
+                    # card's % in cold decks is 0
+                    pct_delta = f["pct"]
+                f["pct"] = pct_delta
+            cf_merged += list(card_freq.items())
+        
+        cf_merged.sort(key=lambda x:x[1]["pct"], reverse=True)
+        self.card_freqs_hot = {k:v for k,v in cf_merged if v["pct"] > RISING_CARDS_CUTOFF_PCT}
+        for v in self.card_freqs_hot.values():
+            v["pct"] = f"+{v['pct']:.1f}"
 
     def analyze_card_stats(self):
         total_decks = 0
@@ -522,6 +562,7 @@ add_archetype(
     exclude_cards=[
         "Baleful Oblation",
         "Guo Jia, Heaven's Favored",
+        "Ciel, Mirage's Grave",
     ]
 )
 
@@ -1023,7 +1064,12 @@ umbra_alice = add_archetype(
         "Lost Promises",
         "Harrow the Saved",
     ],
-    shortname="Umbra"
+    shortname="Umbra",
+    exclude_cards=[
+        "Ciel, Mirage's Grave",
+        "Diana, Cursebreaker",
+        "Diana, Duskstalker",
+    ]
 )
 umbra_alice.add_subtype(
     "Oblation",

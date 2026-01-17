@@ -135,6 +135,15 @@
             {{ macros.cardimg(card_o, link=True)}}
         {% endfor %}
         </div>
+        <h3>Rising Cards</h3>
+        <div class="top-cards">
+        <p class="explanation">(Cards with the biggest percentage increase in appearances in the past ~60 days compared with before, excluding sideboards.)</p>
+        {% for card_o in a.card_freqs_hot.values() %}
+            {% if loop.index0 < RISING_CARD_LIMIT %}
+            {{ macros.cardimg(card_o, link=True)}}
+            {% endif %}
+        {% endfor %}
+        </div>
     </div>
 {% endmacro %}
 

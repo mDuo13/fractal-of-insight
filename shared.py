@@ -6,6 +6,7 @@ from time import strftime, gmtime
 from cards import ELEMENTS, SPECIAL_ELEMENTS
 
 OVERALL = "__overall__"
+HOT_WINDOW = 60*60*24*61 # last ~60 days in seconds
 
 def slugify(s):
     unacceptable_chars = re.compile(r"[^A-Za-z0-9 -]+")
@@ -32,9 +33,6 @@ def date_to_ms(date_string, weebs_time=False):
     d = datetime.strptime(date_string+tz, ISOFMT+"%z")
     ts = d.timestamp()
     return int(ts*1000)
-    
-
-
 
 def fix_case(cardname):
     repls = {

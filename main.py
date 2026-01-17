@@ -15,7 +15,7 @@ from omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
 from season import Season, SEASONS, Format, FORMATS
 from competition import EVENT_TYPES, TEAM_STANDARD
 from player import Player
-from archetypes import ARCHETYPES, NO_ARCHETYPE, MAT_DIFF_CARD_LIMIT, MAIN_DIFF_CARD_LIMIT, SIDE_DIFF_CARD_LIMIT
+from archetypes import ARCHETYPES, NO_ARCHETYPE, MAT_DIFF_CARD_LIMIT, MAIN_DIFF_CARD_LIMIT, SIDE_DIFF_CARD_LIMIT, RISING_CARD_LIMIT
 from spoiler import SpoilerEvent, SPOILER_SEASONS
 from cards import ERRATA, BANLIST
 from cardstats import ALL_CARD_STATS, PAD_UNTIL
@@ -121,6 +121,7 @@ class PageBuilder:
                     MAIN_DIFF_CARD_LIMIT=MAIN_DIFF_CARD_LIMIT,
                     MAT_DIFF_CARD_LIMIT=MAT_DIFF_CARD_LIMIT,
                     SIDE_DIFF_CARD_LIMIT=SIDE_DIFF_CARD_LIMIT,
+                    RISING_CARD_LIMIT=RISING_CARD_LIMIT,
                     max_page=max_page
         )
         if max_page > 1:

@@ -4,7 +4,7 @@ from time import time
 from season import SEASONS
 from datalayer import carddata, get_card_img, is_valid_in_decklists
 from shared import keydefaultdict
-from shared import ElementStats, ChampStats, ArcheStats
+from shared import ElementStats, ChampStats, ArcheStats, HOT_WINDOW
 
 # Minimum number of appearances for a card to be eligible for "winningest" list
 #MIN_SIGHTINGS = 20
@@ -13,7 +13,6 @@ PAD_UNTIL = 500
 M_PER_APP = 6 # Empirically, an average "appearance" consists of ~5.9 matches.
 MAX_TOP_USERS = 10 # How many players can be considered "top users" of a card.
 
-HOT_CARDS_WINDOW = 60*60*24*61 # last ~60 days in seconds
 PAD_HOT_MATCHES = 500 # for hot cards, weight for this many *matches* (not appearances)
 
 class TopCutAppearance:
@@ -168,7 +167,7 @@ class CardStats:
             self.weighted_winrate = round(100*winscore_padded/(matches+pad_amount), 1)
 
         ## Hot cards: only count wins in the past ~60 days.
-        cutoff_time_ms = (int(time()) - HOT_CARDS_WINDOW) * 1000
+        cutoff_time_ms = (int(time()) - HOT_WINDOW) * 1000
         hot_events = [e for e in self.appearances if e.evt_time > cutoff_time_ms]
         if not hot_events:
             self.hot_rating = 0
