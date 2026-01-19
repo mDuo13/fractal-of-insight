@@ -155,6 +155,9 @@ class Deck:
             card_back = carddata[card_o["card"]].get("back")
             if card_back:
                 card_o["back"] = card_back
+            if "TOKEN" in carddata[card_o["card"]].get("types"):
+                # Some people list tokens in their deck lists by accident.
+                card_o["as_token"] = True
         for card_o in self.dl["material"]:
             card_o["card"] = card_o["card"].strip()
             card_o["card"] = fix_case(card_o["card"])
@@ -165,6 +168,8 @@ class Deck:
             card_back = carddata[card_o["card"]].get("back")
             if card_back:
                 card_o["back"] = card_back
+            if "TOKEN" in carddata[card_o["card"]].get("types"):
+                card_o["as_token"] = True
         for card_o in self.dl["sideboard"]:
             card_o["card"] = card_o["card"].strip()
             card_o["card"] = fix_case(card_o["card"])
@@ -175,6 +180,8 @@ class Deck:
             card_back = carddata[card_o["card"]].get("back")
             if card_back:
                 card_o["back"] = card_back
+            if "TOKEN" in carddata[card_o["card"]].get("types"):
+                card_o["as_token"] = True
 
         # Special case for Yeti local 9/5/2024 which used Gate of Alterity as a placeholder for Polaris, Twinkling Cauldron
         if self.entrant.evt_time == 1725580800000:

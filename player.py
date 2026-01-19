@@ -451,7 +451,7 @@ class Player:
                     self.achievements.add("Stormchaser", e, details=str(e.deck))
                 if "Astra Cleric" in e.deck.archetypes or "Astra Ranger" in e.deck.archetypes:
                     self.achievements.add("The Best at Space", e, details=str(e.deck))
-                if "Crux" in e.deck.archetypes:
+                if "Crux Warrior" in e.deck.archetypes or "Crux Assassin" in e.deck.archetypes:
                     self.achievements.add("Crux is Fine", e, details=str(e.deck))
                 if "Exia" in e.deck.archetypes:
                     self.achievements.add("Too Angry to Die", e, details=str(e.deck))
@@ -461,7 +461,7 @@ class Player:
                     self.achievements.add("Is that Jimmy Le?", e,  details=str(e.deck))
                 if "Tera Tamer" in e.deck.archetypes or "Tera Mage" in e.deck.archetypes or "Tera Cleric" in e.deck.archetypes:
                     self.achievements.add("One with Nature", e,  details=str(e.deck))
-                if "Umbra Ranger" in e.deck.archetypes or "Shadowstrike" in e.deck.archetypes or "Umbra Guardian" in e.deck.archetypes:
+                if "Umbra Ranger" in e.deck.archetypes or "Shadowstrike" in e.deck.archetypes or "Umbra Guardian" in e.deck.archetypes or "Oblation" in e.deck.archetypes or "Umbra Alice" in e.deck.archetypes:
                     self.achievements.add("In the Shadows", e,  details=str(e.deck))
 
         # Four Seasons

@@ -4,7 +4,7 @@ from logging import warning
 from time import time
 
 from config import SharedConfig
-from shared import ElementStats, ChampStats, lineage, HOT_WINDOW
+from shared import ElementStats, ChampStats, lineage, HOT_WINDOW, SPIRIT_ONLY
 from cards import BANLIST, REMOVED_FROM_PRXY
 from datalayer import get_card_img, carddata, get_card_price
 
@@ -108,6 +108,10 @@ class Archetype:
             if lineage not in self.champ_subtypes.keys():
                 self.champ_subtypes[lineage] = Champtype(lineage, self)
             self.champ_subtypes[lineage].matched_decks.append(deck)
+        if not deck.lineages:
+            if SPIRIT_ONLY not in self.champ_subtypes.keys():
+                self.champ_subtypes[SPIRIT_ONLY] = Champtype(SPIRIT_ONLY, self)
+            self.champ_subtypes[SPIRIT_ONLY].matched_decks.append(deck)
 
         for deck_el in deck.els:
             if deck_el not in self.el_subtypes.keys():
@@ -422,7 +426,7 @@ wind_allies.add_subtype(
     shortname="Balance",
 )
 
-add_archetype(
+fire_aggro = add_archetype(
     "Fire Aggro",
     [
         "Arthur, Young Heir",
@@ -440,12 +444,31 @@ add_archetype(
     require_element="Fire",
     shortname="Aggro",
     exclude_cards=[
-        "Vanitas, Obliviate Schemer",
+        # "Vanitas, Obliviate Schemer",
         "Relentless Outburst",
         "Ghosts of Pendragon",
         "Dungeon Guide",
         "Ashen Riffle", # Suited is its own category for now
+        "Straight Flare",
+        "Firebloom Flourish", # Separate out Firebloom aggro
+        "Fabled Ruby Fatestone", # Try separating out Suzaku decks
+        "Aetheric Calibration", # Separate out Aetherwing decks
+        "Cinderbloom Tender", # Separate out Cinderbloom combo decks
     ]
+)
+
+add_archetype(
+    "Cinderbloom Combo",
+    [
+        "Cinderbloom Tender",
+    ],
+    require_combos=[
+        [
+            "Cinderbloom Tender",
+            "Searing Rebuke",
+        ]
+    ],
+    shortname="Cinderbloom"
 )
 
 add_archetype(
@@ -473,9 +496,13 @@ add_archetype(
         "Umbral Tithe",
         "False Step",
         "Gloamspire Wraith",
+        "Demon's Aim",
+        "Nightmare Coil",
     ],
     exclude_cards=[
-        "Ciel, Mirage's Grave"
+        "Ciel, Mirage's Grave",
+        "Alice, Phantom Monarch",
+        "Tristan, Shadowdancer",
     ],
     shortname="Umbra"
 )
@@ -530,8 +557,16 @@ add_archetype(
     [
         "Ravishing Finale",
     ],
-    exclude_cards=[
-        "Guo Jia, Blessed Scion",
+    require_combos=[
+        # Must be able to activate the Nico Bonus to qualify as mill
+        [
+            "Ravishing Finale",
+            "Nico, Whiplash Allure",
+        ],
+        [
+            "Ravishing Finale",
+            "Nico, Rapture's Embrace",
+        ]
     ],
     shortname="Mill"
 )
@@ -590,16 +625,17 @@ add_archetype(
 )
 
 crux = add_archetype(
-    "Crux",
+    "Crux Warrior",
     [
         "The Majestic Spirit",
         "Ghosts of Pendragon",
         "Spirit Blade: Ascension",
-        "Spirit Blade: Terminus", # TODO: probably split Assassin Merlin off
     ],
     exclude_cards=[
-        "Rai, Mana Weaver"
-    ]
+        "Rai, Mana Weaver",
+        "Merlin, Brilliant Vestige",
+    ],
+    shortname="Crux"
 )
 crux.add_subtype(
     "Prismatic Fire Crux",
@@ -649,10 +685,20 @@ crux.add_subtype(
     ["Merlin, Kingslayer"],
     shortname=""
 )
-crux.add_subtype(
-    "Brilliant Vestige",
-    ["Merlin, Brilliant Vestige"],
-    shortname="Sheen"
+
+add_archetype(
+    "Crux Assassin",
+    [
+        "Spirit Blade: Terminus",
+        "Luminous Quartz",
+        "Soultrace Tesselation",
+    ],
+    exclude_cards=[
+        "Lorraine, Crux Knight",
+        "Lorraine, Spirit Ruler",
+        "Merlin, Kingslayer",
+    ],
+    shortname="Crux Sheen"
 )
 
 shadowstrike = add_archetype(
@@ -866,15 +912,27 @@ suzaku.add_subtype(
     shortname="Midrange"
 )
 
-add_archetype(
+teradiao = add_archetype(
     "Tera Cleric",
     [
-        "Diao Chan, Idyll Corsage",
+        "Scepter of Awakening",
+        "Blossoming Denial",
         "Season's End",
         "Bloom: Winter's Chill",
         "Maiden of Primal Virtue",
     ],
     shortname="Tera",
+)
+
+add_archetype(
+    "Firebloom Burn",
+    [
+        "Firebloom Flourish",
+    ],
+    exclude_cards=teradiao.require+[
+        "Dungeon Guide"
+    ],
+    shortname="Burn"
 )
 
 add_archetype(
@@ -894,25 +952,7 @@ add_archetype(
     ]
 )
 
-umbra_guardian = add_archetype(
-    "Umbra Guardian",
-    [
-        "Beguiling Coup",
-        "Carter, Synthetic Reaper",
-        "Extorting Blackjack",
-        "Soutirer Vortex",
-        "Ombreux Chevalier",
-        "Baleful Oblation",
-    ],
-    exclude_cards=[
-        "Diana, Duskstalker",
-        "Diana, Cursebreaker",
-        "Alice, Phantom Monarch",
-    ],
-    shortname="Umbra",
-)
-
-umbra_guardian.add_subtype(
+add_archetype(
     "Oblation",
     [
         "Baleful Oblation",
@@ -924,13 +964,33 @@ umbra_guardian.add_subtype(
         ]
     ]
 )
+
+umbra_guardian = add_archetype(
+    "Umbra Guardian",
+    [
+        "Beguiling Coup",
+        "Carter, Synthetic Reaper",
+        "Extorting Blackjack",
+        "Soutirer Vortex",
+        "Ombreux Chevalier",
+        "Baleful Oblation",
+        "Spirelle, Schwartz Queen",
+        "Grim Pastiche",
+    ],
+    exclude_cards=[
+        "Diana, Duskstalker",
+        "Diana, Cursebreaker",
+        "Alice, Phantom Monarch",
+        "Tristan, Shadowdancer",
+        "Advent of the Stormcaller", # Separate out Oblation decks
+    ],
+    shortname="Umbra",
+)
+
 umbra_guardian.add_subtype(
     "Coup",
     [
         "Beguiling Coup",
-    ],
-    exclude_cards=[
-        "Baleful Oblation",
     ]
 )
 umbra_guardian.add_subtype(
@@ -945,13 +1005,12 @@ umbra_guardian.add_subtype(
         ]
     ],
     exclude_cards=[
-        "Baleful Oblation",
         "Beguiling Coup",
     ]
 )
 
 
-add_archetype(
+astra_ranger = add_archetype(
     "Astra Ranger",
     [
         "Constellation's Blessing",
@@ -963,27 +1022,48 @@ add_archetype(
     shortname="Astra",
 )
 
-aetherwing = add_archetype(
-    "Aetherwing",
+water_aetherwing = add_archetype(
+    "Water Aetherwing",
     [
-        "Aetheric Calibration",
-        "Drown in Aether",
-        "Prudent Nock",
-        "Undercurrent Vantage",
-        # "Charge the Soul", # Exclude because Wakeup decks also use it sometimes
-        "Manabolt Convergence",
-        "Blazing Cindercharge",
+        "Aquamirage Whisper"
     ],
+    exclude_cards=astra_ranger.require,
     require_types={
         "ACTION": 30,
-    }
+    },
+    shortname="Aetherwing"
 )
-aetherwing.add_subtype(
+water_aetherwing.add_subtype(
     "Carpsong",
     [
+        "Carpsong Coda",
+    ],
+    shortname=""
+)
+water_aetherwing.add_subtype(
+    "Non-Carpsong",
+    [
+        "Aquamirage Whisper",
+    ],
+    exclude_cards=[
         "Carpsong Coda"
     ],
     shortname=""
+)
+
+add_archetype(
+    "Fire Aetherwing",
+    [
+        "Trivariate Dream",
+        "Seeker's Aetherwing",
+        "Salamander's Breath",
+        "Ignition Draw",
+    ],
+    require_element="Fire",
+    require_types={
+        "ACTION": 30,
+    },
+    shortname="Aetherwing"
 )
 
 add_archetype(
@@ -1069,17 +1149,5 @@ umbra_alice = add_archetype(
         "Ciel, Mirage's Grave",
         "Diana, Cursebreaker",
         "Diana, Duskstalker",
-    ]
-)
-umbra_alice.add_subtype(
-    "Oblation",
-    [
-        "Baleful Oblation",
-    ],
-    require_combos=[
-        [
-            "Baleful Oblation",
-            "Advent of the Stormcaller",
-        ]
     ]
 )

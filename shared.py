@@ -7,6 +7,7 @@ from cards import ELEMENTS, SPECIAL_ELEMENTS
 
 OVERALL = "__overall__"
 HOT_WINDOW = 60*60*24*61 # last ~60 days in seconds
+SPIRIT_ONLY = "Spirit Only"
 
 def slugify(s):
     unacceptable_chars = re.compile(r"[^A-Za-z0-9 -]+")

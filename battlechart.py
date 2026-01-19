@@ -1,4 +1,4 @@
-from shared import keydefaultdict
+from shared import keydefaultdict, SPIRIT_ONLY
 from cards import ELEMENTS
 from config import SUBTYPE_MATCH_MIN
 
@@ -78,9 +78,16 @@ class BCRow:
         if as_deck:
             [LINEAGES.add(l) for l in as_deck.lineages]
             subtypes = as_deck.subtypes + as_deck.lineages + as_deck.els
+            if len(as_deck.lineages) == 0:
+                LINEAGES.add(SPIRIT_ONLY)
+                subtypes = as_deck.subtypes + [SPIRIT_ONLY] + as_deck.els
             for as_t in subtypes:
                 self.subrows[as_t].win_vs(vs_deck)
-                if self.name in vs_deck.archetypes and (as_t in vs_deck.els or as_t in vs_deck.lineages):
+                if self.name in vs_deck.archetypes and (
+                    as_t in vs_deck.els or 
+                    as_t in vs_deck.lineages or 
+                    (as_t == SPIRIT_ONLY and len(vs_deck.lineages) == 0)
+                ):
                     self.subrows[as_t].mirrors += 1/2
         
     
@@ -94,9 +101,16 @@ class BCRow:
         if as_deck:
             [LINEAGES.add(l) for l in as_deck.lineages]
             subtypes = as_deck.subtypes + as_deck.lineages + as_deck.els
+            if len(as_deck.lineages) == 0:
+                LINEAGES.add(SPIRIT_ONLY)
+                subtypes = as_deck.subtypes + [SPIRIT_ONLY] + as_deck.els
             for as_t in subtypes:
                 self.subrows[as_t].loss_vs(vs_deck)
-                if self.name in vs_deck.archetypes and (as_t in vs_deck.els or as_t in vs_deck.lineages):
+                if self.name in vs_deck.archetypes and (
+                    as_t in vs_deck.els or 
+                    as_t in vs_deck.lineages or 
+                    (as_t == SPIRIT_ONLY and len(vs_deck.lineages) == 0)
+                ):
                     self.subrows[as_t].mirrors += 1/2
     
     def draw_vs(self, vs_deck, as_deck=None):
@@ -111,9 +125,16 @@ class BCRow:
         if as_deck:
             [LINEAGES.add(l) for l in as_deck.lineages]
             subtypes = as_deck.subtypes + as_deck.lineages + as_deck.els
+            if len(as_deck.lineages) == 0:
+                LINEAGES.add(SPIRIT_ONLY)
+                subtypes = as_deck.subtypes + [SPIRIT_ONLY] + as_deck.els
             for as_t in subtypes:
                 self.subrows[as_t].draw_vs(vs_deck)
-                if self.name in vs_deck.archetypes and (as_t in vs_deck.els or as_t in vs_deck.lineages):
+                if self.name in vs_deck.archetypes and (
+                    as_t in vs_deck.els or 
+                    as_t in vs_deck.lineages or 
+                    (as_t == SPIRIT_ONLY and len(vs_deck.lineages) == 0)
+                ):
                     self.subrows[as_t].mirrors += 1/2
     
     def merge(self, row):
