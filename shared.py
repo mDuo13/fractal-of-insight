@@ -294,6 +294,7 @@ REGIONS = {
     "MX": {"name": "Mexico","flag": "🇲🇽"},
     "MY": {"name": "Malaysia","flag": "🇲🇾"},
     "NL": {"name": "Netherlands","flag": "🇳🇱"},
+    "NO": {"name": "Norway","flag": "🇳🇴"},
     "NZ": {"name": "New Zealand","flag": "🇳🇿"},
     "PH": {"name": "Philippines","flag": "🇵🇭"},
     "PL": {"name": "Poland","flag": "🇵🇱"},

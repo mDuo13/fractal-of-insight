@@ -178,9 +178,9 @@ class PageBuilder:
 
     def write_achievements_index(self):
         self.render("achievements.html.jinja2", "achievement/index.html", GAS=GAS)
-    
+
     def write_refracted_form(self):
-        self.render("refracted-submissions.html.jinja2", 
+        self.render("refracted-submissions.html.jinja2",
             "achievement/refracted-submissions.html",
             REFRACTED_ACHIEVEMENTS=REFRACTED_ACHIEVEMENTS
         )
@@ -275,9 +275,9 @@ class PageBuilder:
         """
         Write all known event pages as well as homepage, season landings, and player profiles.
         """
-        
+
         self.read_events(force_evts=force_evts)
-        self.consolidate_judges()        
+        self.consolidate_judges()
 
         seasons_sorted = {k:self.seasons[v] for k,v in SEASONS.items() if v in self.seasons.keys()}
         for szn in self.seasons.values():
