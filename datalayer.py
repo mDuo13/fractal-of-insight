@@ -7,6 +7,8 @@ from os import makedirs, scandir, path
 
 from shared import slugify, fix_case
 from cards import ERRATA, PRIZE_EQUIVALENTS, REMOVED_FROM_PRXY
+from carddb import CardDB
+from decksim import DeckSim
 from tcgplayer import TCG_ABBR, TCGP_CARDNAMES
 
 API_DELAY = 0.5
@@ -110,100 +112,7 @@ def sideload_deck(p_id, evt_id, fname=None):
     #print("Sideloaded deck:", json.dumps(deck, indent=2))
     return deck
 
-
-try:
-    carddata = {}
-    for entry in scandir(CARDS_FOLDER):
-        if entry.is_file() and entry.name[-5:] == ".json" and entry.name[:1] != "_":
-            with open(entry) as f:
-                setlist = json.load(f)
-            for card in setlist:
-                cardname = fix_case(card["name"])
-
-                o_orients = card["editions"][0].get("other_orientations")
-                if o_orients:
-                    card["back"] = o_orients[0]
-
-                if cardname not in carddata.keys():
-                    carddata[cardname] = card
-                else:
-                    carddata[cardname]["result_editions"] += card["result_editions"]
-    # with open(f"data/cards.json") as f:
-    #     carddata = json.load(f)
-except FileNotFoundError:
-    print("Didn't find cached card data")
-    carddata = {}
-
-# Compare editions and result_editions
-# Powercell A/B order is nondeterministic
-# result_editions has all Nameless Champions
-# for cardname,card in carddata.items():
-#     eds = sorted(card["editions"], key=lambda x:x["set"]["prefix"].ljust(10)+x["collector_number"])
-#     reds = sorted(card["result_editions"], key=lambda x:x["set"]["prefix"].ljust(10)+x["collector_number"])
-#     if eds != reds:
-#         print(f"Editions / Result Editions mismatch: {cardname}")
-#         if len(eds) != len(reds):
-#             print("Different length:")
-#             print([ed["set"]["prefix"] for ed in eds])
-#             print([ed["set"]["prefix"] for ed in reds])
-#         else:
-#             for i in range(len(eds)):
-#                 if eds[i] != reds[i]:
-#                     print(f"Mismatch in edition {eds[i]['set']['prefix']}")
-#                     for k,v in eds[i].items():
-#                         if reds[i][k] != v:
-#                             print(f"Field {k}: {v} vs {reds[i][k]}")
-#         #print("Eds:", eds)
-#         #print("R-Eds:", reds)
-
-## Identify which edition a card first appeared in and add it as
-## a 'set_introduced' field for the card data
-def add_set_introduced(card):
-    in_sets = [ed["set"]["prefix"] for ed in card["editions"]]
-    found_sg = False
-    for prefix in in_sets:
-        for sg in set_groups.values():
-            for sgs in sg["sets"]:
-                if sgs["prefix"] in in_sets:
-                    card["set_introduced"] = sg["name"]
-                    found_sg = True
-                    break
-            if found_sg:
-                break
-        if found_sg:
-            break
-    if not found_sg:
-        #print("Couldn't find set group for card:", card["name"])
-        card["set_introduced"] = "Other"
-
-try:
-    with open("data/index/_set-groups.json") as f:
-        set_groups_list = json.load(f)
-    set_groups_list.reverse() # Put them with, generally, oldest group first
-    set_groups = {s["name"]:s for s in set_groups_list}
-    set_groups["Other"] = {"name": "Other", "sets": []}
-
-    for card in carddata.values():
-        add_set_introduced(card)
-except FileNotFoundError:
-    print("No data on set groups. Can't determine oldest edition of cards accurately")
-    # Fallback method relies on set release_date field which is not a reliable
-    # indicator of when a card actually released (mostly because of promos)
-    for card in carddata.values():
-        eds = sorted(card["editions"], key=lambda x:x["set"]["release_date"])
-        oldest_ed = eds[0]
-        card["set_introduced"] = oldest_ed["set"]["prefix"]
-
-# Add legacy card data for cards that have been removed from Proxia's Vault
-for cardname,fname in REMOVED_FROM_PRXY.items():
-    with open(f"data/index/{fname}") as f:
-        old_data = json.load(f)
-        for oldcard in old_data:
-            if oldcard["name"] == cardname:
-                add_set_introduced(oldcard)
-                oldcard["removed"] = True
-                carddata[cardname] = oldcard
-                break
+carddata = CardDB()
 
 try:
     with open("data/card_spoilers.json") as f:
@@ -211,30 +120,6 @@ try:
 except FileNotFoundError:
     print("No spoiler data to load")
     spoilerdata = {}
-
-for cardname, card in carddata.items():
-    # possibly change card image for a lower rarity one?
-    lowest_rarity = 99
-    for ced in carddata[cardname]["result_editions"]:
-        if ced["set"]["name"][:14] == "Supporter Pack":
-            # Skip supporter pack editions since they're always reprints
-            continue
-        if ced["rarity"] < lowest_rarity:
-            lowest_rarity = ced["rarity"]
-            lowest_ced = ced
-    if lowest_rarity == 99:
-        exit(f"Error finding lowest rarity for {cardname}.")
-    # ed_slug = lowest_ced["slug"]
-    #card["img"] = f"https://ga-index-public.s3.us-west-2.amazonaws.com/cards/{ed_slug}.jpg"
-    # card["img"] = f"https://api.gatcg.com/cards/images/{ed_slug}.jpg"
-    ed_img = lowest_ced["image"]
-    card["img"] = f"https://api.gatcg.com{ed_img}"
-    if card.get("back"):
-        back_img = card["back"]["edition"]["image"]
-        card["back"]["img"] = f"https://api.gatcg.com{back_img}"
-        card["fullname"] = f"{card['name']} // {card['back']['name']}"
-    else:
-        card["fullname"] = card["name"]
 
 def get_card_img(cardname, at=0, from_set_group=None):
     """
@@ -256,7 +141,7 @@ def get_card_img(cardname, at=0, from_set_group=None):
 
     card_info = carddata.get(cardname)
     if card_info and from_set_group and from_set_group != "Other":
-        set_group = set_groups[from_set_group]
+        set_group = carddata.get_set_groups()[from_set_group]
         set_prefixes = [s["prefix"] for s in set_group["sets"]]
         for ed in card_info["editions"]:
             if ed["set"]["prefix"] in set_prefixes:
@@ -482,43 +367,10 @@ def low_price_for_product(item):
         return None
     return min(all_prices)
 
-try:
-    with open(DECK_SIMILARITY_FILE, encoding="utf-8") as f:
-        DECK_SIMILARITY_CACHE = json.load(f)
-except FileNotFoundError:
-    DECK_SIMILARITY_CACHE = {}
-
+decksim = DeckSim()
 def get_cached_similarity(hash1, hash2):
-    """
-    Instead of re-calculating deck similarity every run, save it using deck hashes.
-    Since similarity is mutual, instead of storing it twice, store it once and look
-    it up using whichever hash is numerically lower.
-    Returns similarity as a float in the range 0-100 representing a %,
-    or None if the similarity of the two decks isn't cached.
-    """
-    if hash1 < hash2:
-        lowhash = hash1
-        highhash = hash2
-    else:
-        lowhash = hash2
-        highhash = hash1
-    if lowhash in DECK_SIMILARITY_CACHE.keys():
-        if highhash in DECK_SIMILARITY_CACHE[lowhash].keys():
-            return DECK_SIMILARITY_CACHE[lowhash][highhash]
-    return None
-
+    return decksim.get(hash1, hash2)
 def store_similarity(hash1, hash2, sim):
-    if hash1 < hash2:
-        lowhash = hash1
-        highhash = hash2
-    else:
-        lowhash = hash2
-        highhash = hash1
-    if lowhash in DECK_SIMILARITY_CACHE.keys():
-        DECK_SIMILARITY_CACHE[lowhash][highhash] = sim
-    else:
-        DECK_SIMILARITY_CACHE[lowhash] = {highhash: sim}
-
+    return decksim.store(hash1, hash2, sim)
 def write_similarity_cache():
-    with open(DECK_SIMILARITY_FILE, "w", encoding="utf-8") as f:
-        json.dump(DECK_SIMILARITY_CACHE, f)
+    decksim.write()

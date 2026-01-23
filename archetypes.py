@@ -6,7 +6,7 @@ from time import time
 from config import SharedConfig
 from shared import ElementStats, ChampStats, lineage, HOT_WINDOW, SPIRIT_ONLY
 from cards import BANLIST, REMOVED_FROM_PRXY
-from datalayer import get_card_img, carddata, get_card_price
+from datalayer import get_card_img, get_card_price
 
 SIMILAR_DECKS_CUTOFF = 85
 MAT_DIFF_CARD_LIMIT = 12
@@ -1059,6 +1059,7 @@ add_archetype(
         "Salamander's Breath",
         "Ignition Draw",
     ],
+    exclude_cards=astra_ranger.require,
     require_element="Fire",
     require_types={
         "ACTION": 30,

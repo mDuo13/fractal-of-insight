@@ -102,13 +102,13 @@ def get_decks_from_event(evt):
 
 def is_interesting(evt):
     if evt.get("status") == "rsvp":
-        if (evt["startAt"]/1000) - time() < 0:
+        if time() - (evt["startAt"]/1000) > config.STALE_GRACE_PERIOD:
             print("Event is scheduled in the past; marking stale.")
             evt["status"] = "stale"
             return 0
     if evt.get("status") in ("started", "completable"):
         if time() - (evt["startAt"]/1000) > config.EVT_MAX_LENGTH:
-            print("Event has been ongoing > 2 days; marking stale.")
+            print("Event has been ongoing too long; marking stale.")
             evt["status"] = "stale"
             return 0
     if evt.get("status") in ("stale", "deleted", "canceled"):

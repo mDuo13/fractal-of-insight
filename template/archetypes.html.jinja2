@@ -15,36 +15,79 @@
 <section id="arche-list">
 <h1>Deck Archetypes</h1>
 
-<table class="archetypes">
-    <thead><tr>
-        <th>Name</th>
-        <th>Appearances</th>
-        <th>Overall win rate</th>
-        <th>Current season win rate</th>
-        <th>Events won (all-time)</th>
-    </tr></thead>
-    <tbody>
-    {% for arche in archetypes %}
-    {% if arche.matched_decks|length %}
-    <tr class="p-row">
-        <td>
-            <a href="/deck/{{slugify(arche.name)}}.html">{{arche.name}}</a>
-            <div class="deck-bgs">
-                <img class="deck-bg" src="/static/bg/{{slugify(arche.name)}}.jpg" alt="" />
-            </div>
-        </td>
-        <td>{{arche.matched_decks|length}}</td>
-        <td>{{arche.winrate}}%</td>
-        {% if arche.name in cswr.keys() %}
-            <td>{{cswr[arche.name]}}%</td>
-        {% else %}
-            <td>(No data)</td>
+    <div class="tabs">
+        <button class="tab" data-tabfor="all-time" onclick="opentab(this)">(All Time)</button>
+        {% for szn in seasons.values() %}
+        {% if szn.code != "OFF" %}
+        <button class="tab{% if loop.index0 == 0 %} activetab{% endif %}" data-tabfor="{{szn.code}}" onclick="opentab(this)">{{szn.code}} Season</button>
         {% endif %}
-        <td>{{aew[arche.name]|length}}</td>
-    </tr>
-    {% endif %}
-    {% endfor %}
-    </tbody>
-</table>
+        {% endfor %}
+    </div>
+    <div class="tabwrapper">
+        <div class="tabcontent collapse" data-tabof="all-time">
+            <table class="archetypes">
+                <thead><tr>
+                    <th>Name</th>
+                    <th>Appearances</th>
+                    <th>Win rate</th>
+                    <th>Events won</th>
+                </tr></thead>
+                <tbody>
+                {% for arche in archetypes %}
+                {% if arche.matched_decks|length %}
+                <tr class="p-row">
+                    <td>
+                        <a href="/deck/{{slugify(arche.name)}}.html">{{arche.name}}</a>
+                        <div class="deck-bgs">
+                            <img class="deck-bg" src="/static/bg/{{slugify(arche.name)}}.jpg" alt="" />
+                        </div>
+                    </td>
+                    <td>{{arche.matched_decks|length}}</td>
+                    <td>{{arche.winrate}}%</td>
+                    {#{% if arche.name in cswr.keys() %}
+                        <td>{{cswr[arche.name]}}%</td>
+                    {% else %}
+                        <td>(No data)</td>
+                    {% endif %}#}
+                    <td>{{aew[arche.name]|length}}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% for season, szn in seasons.items() %}
+        {% if szn.code != "OFF" %}
+        <div class="tabcontent{% if loop.index0 != 0 %} collapse{% endif %}" data-tabof="{{szn.code}}">
+            <table class="archetypes">
+                <thead><tr>
+                    <th>Name</th>
+                    <th>Appearances</th>
+                    <th>Meta Share</th>
+                    <th>Win rate</th>
+                    <th>Events won</th>
+                </tr></thead>
+                <tbody>
+                    {% for archename, pct, quant, elstats in szn.archedata %}
+                    <tr class="p-row">
+                        <td>
+                            <a href="/deck/{{slugify(archename)}}.html">{{archename}}</a>
+                            <div class="deck-bgs">
+                                <img class="deck-bg" src="/static/bg/{{slugify(archename)}}.jpg" alt="" />
+                            </div>
+                        </td>
+                        <td>{{quant}}</td>
+                        <td>{{pct}}%</td>
+                        <td>{{szn.battlechart[archename].overall_pct}}%</td>
+                        <td>{{szn.arche_wins[archename]|length}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    <p class="explanation">(Meta shares don't add up to 100% because a deck can be multiple or zero archetypes.)</p>
 </section>
 {% endblock %}

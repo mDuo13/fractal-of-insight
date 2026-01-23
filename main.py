@@ -9,7 +9,7 @@ from math import ceil
 from collections import defaultdict
 
 import config
-from datalayer import carddata, get_event, set_groups, get_card_img, get_card_price, format_price, write_similarity_cache
+from datalayer import carddata, get_event, get_card_img, get_card_price, format_price, write_similarity_cache
 from shared import slugify, OVERALL, REGIONS, ms_to_date
 from omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
 from season import Season, SEASONS, Format, FORMATS
@@ -47,6 +47,7 @@ class PageBuilder:
         self.known_players = {}
         self.all_events = {}
         self.known_judges = defaultdict(list)
+        self.hipster_floor = 99999 # minimum Hipster rating of any deck
 
     def render(self, template, write_to, **kwargs):
         """
@@ -131,11 +132,11 @@ class PageBuilder:
                             arche=archetype, players=players, events=events, seasons=seasons, wins=wins,
                             page_number=page_number, max_page=max_page, page_start=(i*SIGHTINGS_PER_PAGE), page_end=((i+1)*SIGHTINGS_PER_PAGE))
 
-    def write_archetype_index(self, archetypes, aew, cswr):
-        self.render("archetypes.html.jinja2", "deck/index.html", archetypes=archetypes, aew=aew, cswr=cswr)
+    def write_archetype_index(self, archetypes, aew, cswr, seasons={}):
+        self.render("archetypes.html.jinja2", "deck/index.html", archetypes=archetypes, aew=aew, cswr=cswr, seasons=seasons)
 
     def write_card_index(self, card_stats_by_set, card_prices):
-        self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata, set_groups=set_groups, get_card_img=get_card_img, card_stats_by_set=card_stats_by_set, card_prices=card_prices, PAD_UNTIL=PAD_UNTIL)
+        self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata, set_groups=carddata.get_set_groups(), get_card_img=get_card_img, card_stats_by_set=card_stats_by_set, card_prices=card_prices, PAD_UNTIL=PAD_UNTIL)
 
     def write_card_page(self, cardname, cardstat, price="", events=[]):
         max_page = ceil(len(cardstat.appearances) / CARD_SIGHTINGS_PER_PAGE)
@@ -188,6 +189,10 @@ class PageBuilder:
         self.render("spoilers.html.jinja2", "spoilers/index.html", spoilers=spoilers)
 
     def read_event(self, id_s):
+        """
+        Instantiate a single event from an ID (int string) and add it to the
+        relevant lists of events overall, by season, by format, and by player.
+        """
         try:
             e = OmniEvent(id_s)
             self.all_events[e.id] = e
@@ -216,11 +221,10 @@ class PageBuilder:
         for judge in e.judges:
             self.known_judges[judge.id].append(judge)
 
-    def write_all(self, force_evts=[]):
+    def read_events(self, force_evts=[]):
         """
-        Write all known event pages as well as homepage, season landings, and player profiles.
+        Read all events from disk and instantiate OmniEvents for each
         """
-        
         evts_read = 0
         for entry in os.scandir("./data"):
             if config.SharedConfig.go_fast and evts_read >= FAST_CUTOFF:
@@ -240,7 +244,10 @@ class PageBuilder:
                     continue
                 evts_read += 1
 
-        # Add judges to player profiles where they exist
+    def consolidate_judges(self):
+        """
+        Add judges to player profiles where they exist
+        """
         for jid, events_judged in self.known_judges.items():
             if jid in self.known_players.keys():
                 events_judged.sort(key=lambda x:x.event.date)
@@ -249,8 +256,30 @@ class PageBuilder:
                 self.known_players[jid] = Player(events_judged[0])
                 self.known_players[jid].events_judged = events_judged
 
-        seasons_sorted = {k:self.seasons[v] for k,v in SEASONS.items() if v in self.seasons.keys()}
+    def analyze_hipsters(self):
+        """
+        Calculate hipster rating for each decklist and the hipster floor
+        """
+        for e in self.all_events.values():
+            for p in e.players:
+                if p.deck:
+                    p.deck.rate_hipster(ALL_CARD_STATS)
+                    if p.deck.hipster < self.hipster_floor:
+                        self.hipster_floor = p.deck.hipster
+                if p.topcut_deck:
+                    p.topcut_deck.rate_hipster(ALL_CARD_STATS)
+                    if p.topcut_deck.hipster < self.hipster_floor:
+                        self.hipster_floor = p.topcut_deck.hipster
 
+    def write_all(self, force_evts=[]):
+        """
+        Write all known event pages as well as homepage, season landings, and player profiles.
+        """
+        
+        self.read_events(force_evts=force_evts)
+        self.consolidate_judges()        
+
+        seasons_sorted = {k:self.seasons[v] for k,v in SEASONS.items() if v in self.seasons.keys()}
         for szn in self.seasons.values():
             self.write_season(szn)
 
@@ -262,17 +291,7 @@ class PageBuilder:
         ALL_CARD_STATS.sort()
         card_stats_by_set = ALL_CARD_STATS.split_by_set()
 
-        HIPSTER_FLOOR = 99999
-        for e in self.all_events.values():
-            for p in e.players:
-                if p.deck:
-                    p.deck.rate_hipster(ALL_CARD_STATS)
-                    if p.deck.hipster < HIPSTER_FLOOR:
-                        HIPSTER_FLOOR = p.deck.hipster
-                if p.topcut_deck:
-                    p.topcut_deck.rate_hipster(ALL_CARD_STATS)
-                    if p.topcut_deck.hipster < HIPSTER_FLOOR:
-                        HIPSTER_FLOOR = p.topcut_deck.hipster
+        self.analyze_hipsters()
 
         card_prices = {}
         for cardname, cardstat in ALL_CARD_STATS:
@@ -280,11 +299,11 @@ class PageBuilder:
             card_prices[cardname] = price
             self.write_card_page(cardname, cardstat, price, events=self.all_events)
 
-        known_pids_sorted = [pid for pid, pl in self.known_players.items()]
+        known_pids_sorted = [pid for pid in self.known_players.keys()]
         known_pids_sorted.sort(key=lambda x: self.known_players[x].sortkey())
 
         for pid in known_pids_sorted:
-            self.known_players[pid].analyze_hipster(HIPSTER_FLOOR)
+            self.known_players[pid].analyze_hipster(self.hipster_floor)
             self.write_player(self.known_players[pid], self.all_events, self.known_players)
         self.write_player_index(players=[self.known_players[pid] for pid in known_pids_sorted], events=self.all_events)
 
@@ -297,8 +316,6 @@ class PageBuilder:
                     aew[arche] = [w for w in wins]
 
         for a in ARCHETYPES.values():
-            # if a.shortname == "": # Quasi-sub archetypes like Fatestone
-            #     continue
             if not a.matched_decks:
                 continue
             if a.name not in aew.keys():
@@ -329,7 +346,7 @@ class PageBuilder:
         for a in csa_wins.keys():
             csa_matches = csa_wins[a]+csa_losses[a]+csa_ties[a]
             cswr[a] = round( 100*(csa_wins[a] + (csa_ties[a] / 2)) / csa_matches, 1)
-        self.write_archetype_index(arches_sorted+[NO_ARCHETYPE], aew, cswr=cswr)
+        self.write_archetype_index(arches_sorted+[NO_ARCHETYPE], aew, cswr=cswr, seasons=seasons_sorted)
 
         for e in self.all_events.values():
             self.write_event(e)

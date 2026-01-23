@@ -121,7 +121,6 @@ class Deck:
         if not self.archetypes:
             NO_ARCHETYPE.add_match(self)
 
-
     def find_elements(self):
         """
         Set the list of basic elements provided by the deck's spirit(s).
@@ -138,6 +137,25 @@ class Deck:
             els.append("Norm")
         self.els = els
 
+    def fix_card_o(self, card_o):
+        """
+        Add appropriate metadata to a card object from a decklist,
+        modifying the object in-place.
+        """
+        card_o["card"] = card_o["card"].strip()
+        card_o["card"] = fix_case(card_o["card"])
+        if card_o["card"] in BANLIST:
+            card_o["banned"] = True
+        if card_o["card"] in REMOVED_FROM_PRXY.keys():
+            card_o["removed"] = True
+        card_back = carddata[card_o["card"]].get("back")
+        if card_back:
+            card_o["back"] = card_back
+        cardtypes = carddata[card_o["card"]].get("types", [])
+        if "TOKEN" in cardtypes or "MASTERY" in cardtypes:
+            # Some people list tokens/masteries in their deck lists by accident.
+            card_o["as_token"] = True
+
     def fix_dl(self):
         """
         Clean up the decklist and add some extra metadata such as
@@ -145,43 +163,6 @@ class Deck:
         """
         if not self.dl.get("main"):
             raise ValueError(f"Decklist has no maindeck? {self.dl}")
-        for card_o in self.dl["main"]:
-            card_o["card"] = card_o["card"].strip()
-            card_o["card"] = fix_case(card_o["card"])
-            if card_o["card"] in BANLIST:
-                card_o["banned"] = True
-            if card_o["card"] in REMOVED_FROM_PRXY.keys():
-                card_o["removed"] = True
-            card_back = carddata[card_o["card"]].get("back")
-            if card_back:
-                card_o["back"] = card_back
-            if "TOKEN" in carddata[card_o["card"]].get("types"):
-                # Some people list tokens in their deck lists by accident.
-                card_o["as_token"] = True
-        for card_o in self.dl["material"]:
-            card_o["card"] = card_o["card"].strip()
-            card_o["card"] = fix_case(card_o["card"])
-            if card_o["card"] in BANLIST:
-                card_o["banned"] = True
-            if card_o["card"] in REMOVED_FROM_PRXY.keys():
-                card_o["removed"] = True
-            card_back = carddata[card_o["card"]].get("back")
-            if card_back:
-                card_o["back"] = card_back
-            if "TOKEN" in carddata[card_o["card"]].get("types"):
-                card_o["as_token"] = True
-        for card_o in self.dl["sideboard"]:
-            card_o["card"] = card_o["card"].strip()
-            card_o["card"] = fix_case(card_o["card"])
-            if card_o["card"] in BANLIST:
-                card_o["banned"] = True
-            if card_o["card"] in REMOVED_FROM_PRXY.keys():
-                card_o["removed"] = True
-            card_back = carddata[card_o["card"]].get("back")
-            if card_back:
-                card_o["back"] = card_back
-            if "TOKEN" in carddata[card_o["card"]].get("types"):
-                card_o["as_token"] = True
 
         # Special case for Yeti local 9/5/2024 which used Gate of Alterity as a placeholder for Polaris, Twinkling Cauldron
         if self.entrant.evt_time == 1725580800000:
@@ -189,10 +170,10 @@ class Deck:
                 if card_o["card"] == "Gate of Alterity":
                     card_o["card"] = "Polaris, Twinkling Cauldron"
 
-
-        self.dl["main"].sort(key=rank_card)
-        self.dl["sideboard"].sort(key=rank_card)
-        self.dl["material"].sort(key=rank_card)
+        for section in ("main", "material", "sideboard"):
+            for card_o in self.dl[section]:
+                self.fix_card_o(card_o)
+            self.dl[section].sort(key=rank_card)
 
         if len(self.dl["material"]) > 12:
             self.invalid_decklist = True
