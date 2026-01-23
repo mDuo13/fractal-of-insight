@@ -713,7 +713,7 @@ function ready(callback) {
 
 ready(async () => {
     try {
-        ALLSLUGS = await (await fetch("./slugs-v2.json")).json()
+        ALLSLUGS = await (await fetch("./slugs-v3.json")).json()
         ALLDIALOG = await (await fetch("./dialog.json")).json()
     } catch {
         alert("Error loading data files. Try refreshing without cache")
