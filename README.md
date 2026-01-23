@@ -19,10 +19,10 @@ This site shows information and analysis of Grand Archive tournament results. It
 - show multiple regions for player profiles where players' home region has changed
 - improve presentation of price data
 - maybe make some tables sortable.
-- add new cards or per-season variants for archetype card lists
 - report even more stats in a rolling window or seasonal basis
     - e.g. individual card stats (on card page)
 - backfill old store champs
-- improve archetypes index page to have tabs per season or something
 - add landing page(s) for champions
 - on card pages, show other arts for card
+- refracted events/achievements details
+- double-check numbers on rising cards
