@@ -8,7 +8,7 @@ from os import makedirs, scandir, path
 from shared import slugify, fix_case
 from cards import ERRATA, PRIZE_EQUIVALENTS, REMOVED_FROM_PRXY
 from carddb import CardDB
-from decksim import DeckSim
+from decksimdb import DeckSimDB
 from tcgplayer import TCG_ABBR, TCGP_CARDNAMES
 
 API_DELAY = 0.5
@@ -367,10 +367,10 @@ def low_price_for_product(item):
         return None
     return min(all_prices)
 
-decksim = DeckSim()
+decksim = DeckSimDB()
 def get_cached_similarity(hash1, hash2):
     return decksim.get(hash1, hash2)
 def store_similarity(hash1, hash2, sim):
     return decksim.store(hash1, hash2, sim)
 def write_similarity_cache():
-    decksim.write()
+    pass
