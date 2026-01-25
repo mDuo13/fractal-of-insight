@@ -621,7 +621,10 @@ add_archetype(
         "Shadowstrike",
         "Corhazi Trapper",
         "Lightweaver's Assault",
-    ]
+    ],
+    require_types={
+        "ACTION": 29
+    }
 )
 
 crux = add_archetype(

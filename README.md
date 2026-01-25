@@ -16,7 +16,6 @@ This site shows information and analysis of Grand Archive tournament results. It
 - sideboard / tech cards prevalence rate (season/format)
 - path of silver data
 - more achievements in general
-- show multiple regions for player profiles where players' home region has changed
 - improve presentation of price data
 - maybe make some tables sortable.
 - report even more stats in a rolling window or seasonal basis
