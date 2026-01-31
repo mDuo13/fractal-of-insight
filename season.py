@@ -232,11 +232,20 @@ add_format("DTR + Thurible",
 )
 add_format("DTR Post-Taipei",
     start="2025-09-15",
-    desc="Rile the Abyss banned; Purifying Thurible removed from Proxia's Vault.",
-    end="2025-12-05"
+    end="2025-12-05",
+    desc="Rile the Abyss banned; Purifying Thurible removed from Proxia's Vault."
 )
 add_format("PTM Release",
     start="2025-12-05",
+    end="2026-01-26",
     desc="Phantom Monarchs released alongside Merlin Brilliant Vestige Re:Collection deck."
 )
-    
+add_format("PTM + Sablemere",
+    start="2026-01-26",
+    end="2026-01-31",
+    desc="Sablemere, Warden's Grip added to Proxia's Vault."
+)
+add_format("PTM + AMB Alter",
+    start="2026-01-31",
+    desc="Mortal Ambition Alter Edition released."
+)
