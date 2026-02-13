@@ -272,6 +272,7 @@ REGIONS = {
     "BN": {"name": "Brunei","flag": "🇧🇳"},
     "CA": {"name": "Canada","flag": "🇨🇦"},
     "CH": {"name": "Switzerland","flag": "🇨🇭"},
+    "CL": {"name": "Chile", "flag": "🇨🇱"},
     "CN": {"name": "China", "flag": "🇨🇳"},
     "CR": {"name": "Costa Rica", "flag": "🇨🇷"},
     "CZ": {"name": "Czech Republic","flag":"🇨🇿"},

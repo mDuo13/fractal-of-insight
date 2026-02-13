@@ -193,7 +193,7 @@ add_achievement("Runback", "🏃‍♀", "Play the exact same decklist again.")
 add_achievement("I Made This", "🛠️", "Have someone play a list similar to yours.")
 
 # Completionist
-add_achievement("Classy", "🤵",  "Play all 7 classes.")
+add_achievement("Classy", "🤵",  "Play 7+ different classes.")
 add_achievement("Elementalist", "🌦",  "Play 3+ basic elements.")
 add_achievement("Four Seasons", "📆",  "Play in 4+ competitive seasons.")
 add_achievement("Globetrotter", "🌏",  "Played in 3+ countries.")
@@ -253,11 +253,26 @@ add_refracted("Bloodmonger", "Draw 3 cards with Zhang Liao, Bloodmonger's effect
     artist="Miiu", artisturl=MIIU_URL,
     )
 add_refracted("Muda muda muda", "Attack 3+ times with the same unit in one turn.", notes="It's OK if the attacks never finished—for example, due to Song of Frost.")
-add_refracted("In Resonance", "Get the Harmonize effect of a card.")
-add_refracted("Trace...on!", "Control 2+ token Weapons.")
-add_refracted("A Bouquet, for You", "Make your opponent summon 3+ Flower tokens.", notes="Typically achieved by resolving Bloom: Summer's Glow, Bloom: Winter's Chill, or Bloom: Autumn's Fall while an opponent has 3 or more Flowerbud tokens.")
-add_refracted("Leap Through Time", "Cause time to be distorted.", notes="Achieved by resolving Chronowarp.")
-add_refracted("The Infinite Stars", "Play Scry the Stars during The Elysian Astrolabe's effect.", notes="After resolving The Elysian Astrolabe's activated ability, Scry the Stars lets you play your whole deck by starcalling indefinitely. Generally still counts if opponent concedes as the player is about to activate Scry the Stars.")
+add_refracted("In Resonance", "Get the Harmonize effect of a card.",
+    image="in-resonance.png",
+    artist="Miiu", artisturl=MIIU_URL,
+    )
+add_refracted("Trace...on!", "Control 2+ token Weapons.",
+    image="trace-on.png",
+    artist="Miiu", artisturl=MIIU_URL,
+    )
+add_refracted("A Bouquet, for You", "Make your opponent summon 3+ Flower tokens.", notes="Typically achieved by resolving Bloom: Summer's Glow, Bloom: Winter's Chill, or Bloom: Autumn's Fall while an opponent has 3 or more Flowerbud tokens.",
+    image="a-bouquet-for-you.png",
+    artist="Miiu", artisturl=MIIU_URL,
+    )
+add_refracted("Leap Through Time", "Cause time to be distorted.",
+    image="leap-through-time.png",
+    artist="Miiu", artisturl=MIIU_URL,
+    notes="Achieved by resolving Chronowarp.")
+add_refracted("The Infinite Stars", "Play Scry the Stars during The Elysian Astrolabe's effect.",
+    image="the-infinite-stars.png",
+    artist="Miiu", artisturl=MIIU_URL,
+    notes="After resolving The Elysian Astrolabe's activated ability, Scry the Stars lets you play your whole deck by starcalling indefinitely. Generally still counts if opponent concedes as the player is about to activate Scry the Stars.")
 add_refracted("El Scry Congroo", "Glimpse 10+.", 
     image="el-scry-congroo.png",
     artist="Miiu", artisturl=MIIU_URL,

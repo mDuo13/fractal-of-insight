@@ -70,6 +70,11 @@ async function omnilookup(event_id) {
     return e
 }
 
+STAGE_TYPE_STRINGS = {
+    'swiss': 'Swiss',
+    'single-elimination': 'Single Elimination'
+}
+
 async function fetchevt(evt) {
     // Reminder: for anything that gets mutated here, reset it in reset_evt()
     if (evt) { evt.preventDefault() }
@@ -94,11 +99,21 @@ async function fetchevt(evt) {
     document.querySelector("#evt-date").innerText = d.toLocaleDateString()
     const poptions = document.querySelector("#a-a-player")
     poptions.innerHTML = DEFAULT_PLAYER_OPTION
+    currentEvent.players.sort((a,b) => { return a.username.localeCompare(b.username) })
     for (const p of currentEvent.players) {
         const popt = document.createElement("option")
         popt.value = p.id
         popt.innerText = `${p.username} #${p.id}`
         poptions.appendChild(popt)
+    }
+    const stagelist = document.querySelector("#a-a-stageselect")
+    stagelist.innerHTML = ""
+    for (stagespec of currentEvent.stages) {
+        const stgopt = document.createElement("option")
+        stgopt.value = stagespec.id
+        const stgtype = STAGE_TYPE_STRINGS[stagespec.type]
+        stgopt.innerText = `${stagespec.id} - ${stgtype}`
+        stagelist.append(stgopt)
     }
     const rndnumbox = document.querySelector("#a-a-roundnum")
     rndnumbox.attributes["max"] = currentEvent.swissRounds
@@ -122,6 +137,7 @@ async function show_add(atag) {
         preview_img.alt = img.alt
         preview_img.classList.remove("collapse")
         preview.querySelector(".achievement-emoji").classList.add("collapse")
+        preview.querySelector(".achievement-img").classList.remove("collapse")
     }
     const desc = atag.querySelector(".achievement-desc")
     if (desc) {
@@ -187,7 +203,7 @@ function write_evt() {
 function copy_evt_to_clipboard() {
     const id = get_evt_id()
     const evt_str = fmt_evt(id)
-    const paste_str = `Here is a Refracted event to add:\n\n\`\`\`\n${evt_str}\n\`\`\`\n`
+    const paste_str = `Here is a Refracted event to add (\`${id}.json\`):\n\n\`\`\`\n${evt_str}\n\`\`\`\n`
     if (window.isSecureContext) {
         navigator.clipboard.writeText(paste_str)
     } else {
@@ -199,6 +215,7 @@ function copy_evt_to_clipboard() {
 function save_achievement() {
     const aname = document.querySelector("#a-a-name").innerText
     const rndnum = parseInt(document.querySelector("#a-a-roundnum").value)
+    const stgnum = parseInt(document.querySelector("#a-a-stageselect").value)
     let p_id = parseInt(document.querySelector("#a-a-player").value)
     if (p_id === 0 || p_id === "0") {
         console.log("TODO: implement manual pid selection")
@@ -213,6 +230,7 @@ function save_achievement() {
     }
     const a = {
         "player": p_id,
+        "stage": stgnum,
         "round": rndnum,
         "achievement": aname
     }
@@ -227,10 +245,11 @@ function show_achievement_record(a) {
     const arecord = document.createElement("div")
     arecord.innerHTML = `
         <button class="remove-achievement" onclick="del_achievement(this)">❌</button> ${pname} achieved 
-            ${a.achievement} in round ${a.round}.
+            ${a.achievement} in round ${a.round} of stage ${a.stage}.
     `
     arecord.dataset["player"] = a.player
     arecord.dataset["round"] = a.round
+    arecord.dataset["stage"] = a.stage
     arecord.dataset["aname"] = a.achievement
     arecord.classList.add("achievement-record")
     document.querySelector("#achievements-awarded").append(arecord)

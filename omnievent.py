@@ -178,6 +178,7 @@ class OmniEvent:
             if not pid or pid not in self.pdict.keys():
                 print(f"Refracted: bad player ID #{pid} for this event?")
                 continue
+            # TODO: validate round/stage data for achievement
 
     def analyze(self):
         self.elements = ElementStats()

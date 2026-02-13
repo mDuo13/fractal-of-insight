@@ -238,11 +238,17 @@ def get_event_refracted_achievements(evt_id):
         print(f"Refracted event ID mismatch: {evt_id} vs {evt_refracteds['evt_id']}")
         return []
     for ra in evt_refracteds["achievements"]:
+        # required keys
         for key,kt in (("player",int), ("round",int), ("achievement",str)):
             if key not in ra.keys() or type(ra[key]) != kt:
                 print(f"Evt#{evt_id}: Invalid refracted achievement data:",ra)
                 return []
-    return evt_refracteds.get("achievements", [])
+        # optional keys
+        for key, kt in (("stage",int),):
+            if key in ra.keys() and type(ra[key]) != kt:
+                print(f"Evt#{evt_id}: Invalid refracted achievement data:",ra)
+                return []
+    return evt_refracteds["achievements"]
 
 def save_event_json(evt):
     makedirs(f"data/event_{evt['id']}/", exist_ok=True)

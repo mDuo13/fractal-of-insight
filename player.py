@@ -558,7 +558,21 @@ class Player:
                         if raname not in REFRACTED_ACHIEVEMENTS.keys():
                             print(f"Refracted: Mis-named or incorrect achievement for {self} in {e}: '{raname}'")
                             continue
-                        self.achievements.add(raname, e, details=f"Round {ra['round']}")
+                        stg = ra.get("stage",1)
+                        if stg > 1:
+                            rnd = ra['round']
+                            if stg == 2 and e.event.evt.get("cutSize") == "8" and rnd <= 3:
+                                if rnd == 1:
+                                    rndname = "Quarterfinals"
+                                elif rnd == 2:
+                                    rndname = "Semifinals"
+                                elif rnd == 3:
+                                    rndname = "Grand Finals"
+                            else:
+                                rndname = f"Stage {stg} Round {rnd}"
+                            self.achievements.add(raname, e, details=rndname)
+                        else:
+                            self.achievements.add(raname, e, details=f"Round {ra['round']}")
 
     def sortkey(self):
         # Sort players by # of tracked events entered descending
