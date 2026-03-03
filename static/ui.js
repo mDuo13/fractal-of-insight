@@ -311,6 +311,121 @@ async function populate_avatar(el) {
     `
 }
 
+let CARDDATA
+async function load_carddata() {
+    try {
+        CARDDATA = await (await fetch("/card/carddata.json")).json()
+    } catch (err) {
+        console.error("Error loading data files. Price/frequency information may not load correctly.", err)
+    }
+}
+
+function str_thirds(num) {
+    // Assuming a float that's in increments of ⅓ (possibly imprecise)
+    // return a string in fraction form
+    if (parseInt(num) == num) {
+        return num.toString()
+    }
+    let intstr = ''
+    if (parseInt(num) != 0) {
+        intstr = parseInt(num).toString()
+    }
+    if (num % 1 < 0.5) {
+        return intstr+'⅓'
+    }
+    return intstr+'⅔'
+}
+
+async function calc_trailblazer() {
+    if (!CARDDATA) { await load_carddata() }
+
+    const textbox = document.querySelector("#trailblazer-dl")
+    const deetbox = document.querySelector("#trailblazer-detail")
+    deetbox.innerHTML = ""
+    const COMMENT_REGEX = /# (?<comment>.*)$/
+    const CARD_REGEX = /(?<quantity>[0-9]+) (?<card>.*)$/
+    let dl_txt = textbox.value
+    let tb_total = 0
+    let is_sideboard = false
+    let no_points = []
+    for (line of dl_txt.split("\n")) {
+        const cm = line.match(COMMENT_REGEX)
+        if (cm && cm.groups.comment) {
+            const comment = cm.groups.comment.trim().toLowerCase()
+            if (comment == "sideboard" || comment == "side") {
+                is_sideboard = true
+            } else if (comment in ['main','main deck','maindeck','material','material deck']) {
+                is_sideboard = false
+            } else {
+                // random comment, no-op
+            }
+        } else if (line.trim()) {
+            const m = line.match(CARD_REGEX)
+            if (m && m.groups.card) {
+                const cardname = m.groups.card.trim()
+                if (cardname in CARDDATA) {
+                    const appearances = CARDDATA[cardname].a
+                    // material deck cards score triple points
+                    const mat_mult = CARDDATA[cardname].mat ? 3 : 1
+                    const quant = parseInt(m.groups.quantity)
+                    const sb_mult = is_sideboard ? (1.0/3) : 1
+                    if (appearances <= 10) {
+                        const pts = quant * mat_mult * 2 * sb_mult
+                        tb_total += pts
+                        if (is_sideboard) { deetbox.innerText += '(Sideboard) ' }
+                        deetbox.innerText += `${quant} ${cardname}: ${str_thirds(pts)} points (${appearances} appearances)\n`
+                    } else if (appearances <= 100) {
+                        const pts = quant * mat_mult * sb_mult
+                        tb_total += pts
+                        if (is_sideboard) { deetbox.innerText += '(Sideboard) ' }
+                        deetbox.innerText += `${quant} ${cardname}: ${str_thirds(pts)} points (${appearances} appearances)\n`
+                    } else {
+                        no_points.push(cardname)
+                    }
+                } else {
+                    console.error("Couldn't find card data for:", m.groups.card)
+                }
+            } else {
+                console.error("Unknown line in decklist:", line)
+            }
+        } // else blank line
+    }
+
+    const resultfield = document.querySelector("#trailblazer-result")
+    resultfield.innerText = str_thirds(tb_total)
+    deetbox.innerText += '\nNot worth trailblazer points: ' + no_points.join('; ')
+}
+
+function make_tables_sortable() {
+    // Adapted from - https://stackoverflow.com/a/49041392
+    // Posted by Nick Grealy, modified by community.
+    // Retrieved 2026-03-02, License - CC BY-SA 4.0
+    const sortable_ths = document.querySelectorAll('.sortable th')
+    const getCellValue = (tr, idx) => {
+        const text = tr.children[idx].innerText || tr.children[idx].textContent
+        if (text && text.slice(0,1) == "$") {
+            return text.slice(1)
+        }
+        if (text && text.slice(-1) == "%") {
+            return text.slice(0,-1)
+        }
+        if (text && text.trim() == "N/A (Proxia's Vault)") return "0"
+        return text
+    }
+    const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
+        v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+        )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+    
+    for (const th of sortable_ths) {
+        th.addEventListener('click', (() => {
+            const table = th.closest('table')
+            Array.from(table.querySelectorAll('tbody tr'))
+                .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+                .forEach(tr => table.tBodies[0].appendChild(tr) );
+        }))
+    }
+}
+
 ready(() => {
     // Open hash on page-load
     if (window.location.hash) {
@@ -362,4 +477,5 @@ ready(() => {
     }
 
     document.querySelectorAll(".player-omni-avatar").forEach(populate_avatar)
+    make_tables_sortable()
 })

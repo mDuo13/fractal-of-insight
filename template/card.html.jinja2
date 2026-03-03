@@ -62,7 +62,7 @@
     {% if card.removed %}
         <li><b>Removed from Proxia's Vault</b>.</li>
     {% endif %}
-        <li><b>Low price on TCGPlayer</b>: {{card_price}}</li>
+        <li><b>Low price on TCGPlayer</b>: <a href="https://www.tcgplayer.com/search/grand-archive/product?Language=English&productLineName=grand-archive&q={{slugify(card.name).replace('-','+')}}&view=grid">{{card_price}}</a></li>
     </ul>
 </section>
 

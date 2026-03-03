@@ -138,6 +138,23 @@ class PageBuilder:
     def write_card_index(self, card_stats_by_set, card_prices):
         self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata, set_groups=carddata.get_set_groups(), get_card_img=get_card_img, card_stats_by_set=card_stats_by_set, card_prices=card_prices, PAD_UNTIL=PAD_UNTIL)
 
+    def write_card_data(self):
+        """
+        Write a JSON file with card data for non-static parts of the site
+        """
+        mcardstats = { # 'Minified' card stats file
+            c: {
+                "a": cstat.num_appearances,
+                "wr": cstat.winrate,
+                "a60": cstat.hot_appearances,
+                "wr60": (cstat.hot_rating if cstat.hot_appearances else -1),
+                "price": format_price(get_card_price(c)),
+                "mat": (1 if "REGALIA" in carddata[c]["types"] or "CHAMPION" in carddata[c]["types"] else 0)
+            } 
+            for c, cstat in ALL_CARD_STATS
+        }
+        self.render_json(mcardstats, "card/carddata.json")
+
     def write_card_page(self, cardname, cardstat, price="", events=[]):
         max_page = ceil(len(cardstat.appearances) / CARD_SIGHTINGS_PER_PAGE)
 
@@ -154,6 +171,13 @@ class PageBuilder:
             write_to = f"tts/event_{deck.entrant.evt_id}/{deck.entrant.id}_topcut.json"
         else:
             write_to = f"tts/event_{deck.entrant.evt_id}/{deck.entrant.id}.json"
+        self.render_json(deck.tts_json(), write_to)
+    
+    def render_json(self, json_obj, write_to):
+        """
+        Write a JSON file to the output folder. Like render() but for JSON.
+        Check if the file has same contents and don't overwrite if identical.
+        """
         out_dir, out_file = os.path.split(write_to)
         whole_out_dir = os.path.join(config.OUTDIR, out_dir)
         makedirs(whole_out_dir, exist_ok=True)
@@ -161,7 +185,7 @@ class PageBuilder:
 
         # skip overwriting matching files
         try:
-            json_string = json.dumps(deck.tts_json())
+            json_string = json.dumps(json_obj)
             with open(whole_out_file, "r") as f:
                 if json_string == f.read():
                     #print("Skipping unchanged file", whole_out_file)
@@ -170,7 +194,8 @@ class PageBuilder:
             pass
         print("Writing to", whole_out_file)
         with open(whole_out_file, "w") as f:
-            json.dump(deck.tts_json(), f)
+            json.dump(json_obj, f)
+
 
     def write_achievement(self, achievement):
         write_to = f"achievement/{slugify(achievement.name)}.html"
@@ -182,6 +207,12 @@ class PageBuilder:
     def write_refracted_form(self):
         self.render("refracted-submissions.html.jinja2",
             "achievement/refracted-submissions.html",
+            REFRACTED_ACHIEVEMENTS=REFRACTED_ACHIEVEMENTS
+        )
+    
+    def write_refracted_about(self):
+        self.render("refracted-about.html.jinja2",
+            "achievement/refracted-about.html",
             REFRACTED_ACHIEVEMENTS=REFRACTED_ACHIEVEMENTS
         )
 
@@ -352,12 +383,14 @@ class PageBuilder:
             self.write_event(e)
 
         self.write_card_index(card_stats_by_set, card_prices)
+        self.write_card_data()
 
         GAS.total_players = len(self.known_players)
         for achievement in ACHIEVEMENTS.values():
             self.write_achievement(achievement)
         self.write_achievements_index()
         self.write_refracted_form()
+        self.write_refracted_about()
 
         spoilers = {}
         for entry in os.scandir("./data/spoilers"):

@@ -27,3 +27,4 @@ This site shows information and analysis of Grand Archive tournament results. It
 - double-check numbers on rising cards
 - add a wielder points section to player profiles
 - make top cut games count for wielder points
+- improve display of About Refracted Events page.

@@ -1610,3 +1610,23 @@ a.achievement {
 #copy-evt {
     display: block;
 }
+
+#trailblazer-dl {
+    display: block;
+    width: 90%;
+    height: 300px;
+}
+
+.sortable th {
+    cursor: pointer;
+}
+
+/* FAQ styles */
+.q {
+    font-size: 20px;
+    font-weight: bolder;
+    font-style: italic;
+}
+.a {
+    padding-left: 20px;
+}

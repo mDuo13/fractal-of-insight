@@ -1,0 +1,94 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}About Refracted Events{% endblock %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/player/">→ Players</a>
+    <a class="nav-item" href="/deck/">→ Decks</a>
+    <a class="nav-item" href="/formats/">→ Format Stats</a>
+    <a class="nav-item" href="/card/">→ Cards</a>
+    <a class="nav-item" href="/achievement/">⮤ Achievements</a>
+    <b class="nav-item"> ↓ About Refracted Events</b>
+</nav>
+
+<h1>About Refracted Events</h1>
+
+<section id="description">
+    <h2>Description</h2>
+    <button onclick="toggle('#description > .togglable')">Glimpse description</button>
+    <div class="collapse togglable scooped-corners">
+        <p><strong>Refracted</strong> events are special tournaments, organized in collaboration with Fractal of Insight, that are designed to encourage unconventional deckbuilding, reward players for exploring cards and strategies that don't typically get an opportunity to shine in competitive Grand Archive, and provide an opportunity for players to bolster their Fractal of Insight stats in a casual-competitive in-person format.</p>
+        <p>At Refracted events, decklists are required and an designated observer is on hand to award players <em>Refracted</em> achievements for in-game actions. To earn a Refracted achievement, call over the observer and demonstrate that the game state meets the achievement's requirements. The observer will note the achievement, and it will be added to your Fractal of Insight profile after the event (typically during the next scheduled update). You only earn the achievement <strong>the first time</strong> you accomplish it; there is no reward for accomplishing the same feat again.</p>
+        <p>See <a href="/achievement/">Achievements</a> for the full list of Refracted achievements.</p>
+        <p>Refracted events may also offer extra prizing for <em>Trailblazer points</em>, at the organizer's discretion. See below for details on calculating trailblazer points.</p>
+    </div>
+</section>
+
+<section id="trailblazer">
+    <h2>Trailblazer Point Calculation</h2>
+    <button onclick="toggle('#trailblazer > .togglable')">Glimpse details &amp; tool</button>
+    <p class="collapse togglable"><strong>Trailblazer points</strong> are calculated as follows: For each card in your maindeck that has <strong>100 or fewer recorded appearances</strong> on Fractal of Insight, you earn 1 point per copy of that card in your decklist. Material deck cards earn triple points. Sideboard cards earn one-third points. If the card has <strong>10 or fewer appearances</strong>, the card earns double points. The number of appearances on Fractal will be checked on the day of the event.</p>
+    <p class="collapse togglable">For example, Bombard Flarecannon is a regalia with 75 recorded appearances on Fractal of Insight, so including a copy of it in your material deck is worth 3 points. Including a copy of it in your sideboard would be worth 1 point instead.</p>
+    <p class="collapse togglable">Use the following tool to calculate the total Trailblazer points for a deck list:</p>
+    <div class="collapse togglable" id="trailblazer-wrap">
+        <textarea id="trailblazer-dl" placeholder="# Paste decklist here"></textarea>
+        <button onclick="calc_trailblazer()">Calculate</button>
+        <div>Trailblazer total: <span id="trailblazer-result">0</span> points</div>
+        <div id="trailblazer-detail"></div>
+    </div>
+</section>
+
+<section id="faq">
+    <h2>FAQ</h2>
+    <button onclick="toggle('#faq > .togglable')">Glimpse FAQ</button>
+    <div class="collapse togglable">
+        <p class="q">When and where are these Refracted events?</p>
+        <p class="a">Refracted tournaments are currently in soft launch in selected locations. If you are a tournament organizer with an active scene and you would like to host Refracted events in your area, reach out to <strong>@mDuo13</strong> on Discord and we can work something out.</p>
+
+        <p class="q">What if my opponent concedes? Can they deny me the achievement?</p>
+        <p class="a">You still earn an achievement if your opponent concedes while you are about to score it. Individual cases are subject to the observer's discretion, but should generally be awarded if you would have gotten the achievement in the same turn. (For example, if your opponent concedes the instant you start activating a Shadowstrike that would do 25+ damage, you will get the One Punch achievement.)</p>
+
+        <p class="q">If I bring a bad deck, will I lose Elo?</p>
+        <p class="a">Refracted events are generally treated as standard locals on Omnidex, so Elo points can be gained and lost as usual and Elo Protection applies if the gap between players' Elo scores is high enough. But as a reminder, locals have an 0.2× Elo multiplier so you'll stand to gain or lose a lot less than if you brought the same deck to a store champs or a regionals (1.0× Elo multiplier).</p>
+
+        <p class="q">Are there other ways to earn Refracted achievements?</p>
+        <p class="a">Refracted achievements can also be awarded for streamed games at the <strong>Ascent level or higher</strong>. Since most regionals don't have streams and the quality of streams varies significantly for events below Ascent level, this is to keep things fair (and manageable). If you have done the thing on-stream at an Ascent, Nationals, or World Championships event and want to be awarded the achievement, send a Discord message to @mDuo13 with a link to the specific timestamp in the stream when the event occurs.</p>
+
+        <p class="q">What if I already have an achievement from a stream game or a past event? Can I earn it again?</p>
+        <p class="a">No, each player can only earn each achievement once.</p>
+
+        <p class="q">Are special prize cards like <strong>Minthe, Spirit of Water</strong> or <strong>Apotheosis Rite</strong> eligible for Trailblazer points?</p>
+        <p class="a">Yes, as long as their total appearances meet the normal requirements. "Isn't that unfair?" you might say. And I say, "It's a small price to pay for showing off such beautiful cards as they were meant to be played."</p>
+
+        <p class="q">I have a question about a specific achievement.</p>
+        <div class="a">Go on.
+
+            <p class="q">"Look, Two Hands": I'm in the middle of resolving Creative Shock and I have exactly 14 cards, but I'll be back down to 13 when I discard. Does that count?</p>
+            <p class="a">No, it only counts if you have this much influence when state-based effects are checked, such as after resolving a card or effect.</p>
+            
+            <p class="q">"One Punch!": If I play Slice & Dice prepared and do a total of 25 damage across the two attacks, does that count?</p>
+            <p class="a">No, that is two attacks. The achievement is for doing the damage in one attack.</p>
+
+            <p class="q">"Bloodmonger": If I take the damage, but don't actually draw the cards due to an effect like Resolute Stand's alternate cost, Tithe Proclamation, or Mandate of Honor, does that count?</p>
+            <p class="a">No, you have to actually be able to draw the cards to get the achievement.</p>
+
+            <p class="q">"Muda muda muda": I attacked with Mad Hatter three times this turn, but my opponent used Song of Frost on the last attack. Does that count?</p>
+            <p class="a">Yes, the attacks only need to be declared, not finished successfully.</p>
+
+            <p class="q">"Restart from Zero": What do you mean, end in a draw before time is up?</p>
+            <p class="a">The most common scenario is when you declare a Cleave attack and your opponent retaliates so that both champions take lethal damage at the same time. Another way it could happen is if both players have an empty deck and one of them banishes Bauble of Abundance. Note, when this happens both players earn the achievement.</p>
+
+            <p class="q">"Crit!": If my opponent discards the cards to the Critical effect, do I get the achievement? What about if they prevent some/all of the damage?</p>
+            <p class="a">If your opponent chooses to discard to the Critical effect, you don't get the achievement. Also, if they prevent <em>all</em> the damage, you don't get it either. But you do get it as long as the attack does any amount of damage that gets/got doubled.</p>
+
+            <p class="q">"Trojan Horse": How do I get a token Majestic Spirit?</p>
+            <p class="a">Some cards that can make a copy of The Majestic Spirit include Duality's Convergence, Duplicitous Replication, and Echoic Guard.</p>
+
+            <p class="q">"Elite Four": If I make my ally lose Pride, does that count?</p>
+            <p class="a">To earn the achievement, the ally has to have Pride when you declare the attack.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

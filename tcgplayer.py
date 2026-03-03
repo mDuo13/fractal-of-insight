@@ -36,4 +36,6 @@ TCGP_CARDNAMES = {
     "Lavaplume Fatestone // Firebird Trailblazer": "Lavaplume Fatestone",
     "Wrathful Slime": "WrathfulSlime",
     "Fabled Azurite Fatestone // Seiryuu, Azure Dragon": "Fabled Azurite Fatestone", #tcgp has both, but the one with the // is the sapphire promo only
+    "Overlapping Visages": "Overlapping Visages (025B)", # arbitrarily picking one
+    "Gemini Starbearer": "Gemini StarBearer",
 }
