@@ -23,10 +23,10 @@
                 <span class="p-name">{{p}}</span>
                 <span class="p-avatar">
                 {% if p.most_played_element() %}
-                    <img src="/static/icon/icon-{{p.most_played_element()|slugify}}.png" alt="{{p.most_played_element()}}" />
+                    <img src="/static/icon/icon-{{p.most_played_element()|slugify}}.png" alt="{{p.most_played_element()}}" loading="lazy" />
                 {% endif %}
                 {% if p.most_played_champ() %}
-                    <img src="/static/icon/icon-{{p.most_played_champ()|slugify}}.png" alt="{{p.most_played_champ()}}" />
+                    <img src="/static/icon/icon-{{p.most_played_champ()|slugify}}.png" alt="{{p.most_played_champ()}}" loading="lazy" />
                 {% endif %}
                     <span class="p-region">{{macros.flag(p.region)}}</span>
                 </span>

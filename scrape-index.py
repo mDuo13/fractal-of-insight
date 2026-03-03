@@ -2,7 +2,6 @@
 import json
 import os, os.path
 
-import yaml
 import requests
 
 CARDS_FOLDER = "./data/index/"
