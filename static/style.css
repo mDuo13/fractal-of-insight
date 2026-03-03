@@ -1585,6 +1585,28 @@ a.achievement {
     justify-content: center;
 }
 
+#achievement-selector {
+    font-size: 0;
+}
+
+#achievement-selector .achievement-wrapper {
+    height: 155px;
+}
+
+@media screen and (max-width: 575.98px) {
+    #achievement-selector .achievement-wrapper {
+        height: unset;
+        width: unset;
+        margin: 0;
+    }
+    #achievement-selector h4 {
+        font-size: 13px;
+    }
+    #achievement-selector .achievement-desc {
+        font-size: 11px;
+    }
+}
+
 #copy-evt {
     display: block;
 }

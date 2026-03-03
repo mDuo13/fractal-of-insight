@@ -252,19 +252,20 @@ add_refracted("Bloodmonger", "Draw 3 cards with Zhang Liao, Bloodmonger's effect
     image="bloodmonger.png",
     artist="Miiu", artisturl=MIIU_URL,
     )
-add_refracted("Muda muda muda", "Attack 3+ times with the same unit in one turn.", notes="It's OK if the attacks never finished—for example, due to Song of Frost.")
+add_refracted("Muda muda muda", "Attack 3+ times with the same unit in one turn.", 
+    image="mudamudamuda.png",
+    artist="Miiu", artisturl=MIIU_URL,
+    notes="It's OK if the attacks never finished—for example, due to Song of Frost, as long as the attacks were declared.")
 add_refracted("In Resonance", "Get the Harmonize effect of a card.",
     image="in-resonance.png",
-    artist="Miiu", artisturl=MIIU_URL,
-    )
+    artist="Miiu", artisturl=MIIU_URL)
 add_refracted("Trace...on!", "Control 2+ token Weapons.",
     image="trace-on.png",
-    artist="Miiu", artisturl=MIIU_URL,
-    )
-add_refracted("A Bouquet, for You", "Make your opponent summon 3+ Flower tokens.", notes="Typically achieved by resolving Bloom: Summer's Glow, Bloom: Winter's Chill, or Bloom: Autumn's Fall while an opponent has 3 or more Flowerbud tokens.",
+    artist="Miiu", artisturl=MIIU_URL)
+add_refracted("A Bouquet, for You", "Make your opponent summon 3+ Flower tokens.",
     image="a-bouquet-for-you.png",
     artist="Miiu", artisturl=MIIU_URL,
-    )
+    notes="Typically achieved by resolving Bloom: Summer's Glow, Bloom: Winter's Chill, or Bloom: Autumn's Fall while an opponent has 3 or more Flowerbud tokens.")
 add_refracted("Leap Through Time", "Cause time to be distorted.",
     image="leap-through-time.png",
     artist="Miiu", artisturl=MIIU_URL,
@@ -275,12 +276,23 @@ add_refracted("The Infinite Stars", "Play Scry the Stars during The Elysian Astr
     notes="After resolving The Elysian Astrolabe's activated ability, Scry the Stars lets you play your whole deck by starcalling indefinitely. Generally still counts if opponent concedes as the player is about to activate Scry the Stars.")
 add_refracted("El Scry Congroo", "Glimpse 10+.", 
     image="el-scry-congroo.png",
+    artist="Miiu", artisturl=MIIU_URL)
+add_refracted("Restart from Zero", "Play a game that ends in a draw before time is up.",
+    image="restart-from-zero.png",
     artist="Miiu", artisturl=MIIU_URL,
-    )
-add_refracted("Restart from Zero", "Play a game that ends in a draw before time is up.", notes="For example, both champions died at the same time due to retaliation in combat.")
-add_refracted("Pretty Derby", "Get the Equestrian effect of a card.", notes="For static effects like Horse Archer or War Marshal, only counts if it affects the game state.")
-add_refracted("Atelier", "Brew a card.", notes="Aside from potions, Hide in Bush and Prima Materia also count.")
-add_refracted("Crit!", "Do double damage with a Critical attack.", notes="Coup de Grace, Bushwack Bandit, and Corhazi Lightblade are cards that can have the Critical keyword. Not awarded if the opponent chooses to discard to the Critical effect.")
+    notes="For example, both champions died at the same time due to retaliation in combat.")
+add_refracted("Pretty Derby", "Get the Equestrian effect of a card.",
+    image="pretty-derby.png",
+    artist="Miiu", artisturl=MIIU_URL,
+    notes="For static effects like Horse Archer or War Marshal, only counts if it affects the game state.")
+add_refracted("Atelier", "Brew a card.",
+    image="atelier.png",
+    artist="Miiu", artisturl=MIIU_URL,
+    notes="Aside from potions, Hide in Bush and Prima Materia also count.")
+add_refracted("Crit!", "Do double damage with a Critical attack.", 
+    image="crit.png",
+    artist="Miiu", artisturl=MIIU_URL,
+    notes="Coup de Grace, Bushwack Bandit, and Corhazi Lightblade are cards that can have the Critical keyword. Not awarded if the opponent chooses to discard to the Critical effect.")
 add_refracted("Trojan Horse", "Control a token Majestic Spirit.", 
     image="trojan-horse.png",
     artist="Miiu", artisturl=MIIU_URL,

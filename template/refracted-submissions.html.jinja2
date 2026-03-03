@@ -24,12 +24,12 @@
     </ul>
 </form>
 
-<section id="achievements-list">
+<section id="achievement-selector">
     <h2>Award achievement</h2>
     <p class="explanation">Click an achievement to award it to a player.</p>
     {% for a in REFRACTED_ACHIEVEMENTS.values() %}
     <div class="achievement-wrapper">
-        <a class="achievement refracted unachieved" href="#" onclick="show_add(this)" data-aname="{{a.name}}">
+        <a class="achievement refracted" href="#" onclick="show_add(this)" data-aname="{{a.name}}">
             <h4>{{a.name}}</h4>
             {% if a.emoji %}
                 <div class="achievement-emoji">{{a.emoji}}</div>
