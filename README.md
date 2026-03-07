@@ -23,8 +23,9 @@ This site shows information and analysis of Grand Archive tournament results. It
 - backfill old store champs
 - add landing page(s) for champions
 - on card pages, show other arts for card
-- refracted events/achievements details
 - double-check numbers on rising cards
 - add a wielder points section to player profiles
 - make top cut games count for wielder points
 - improve display of About Refracted Events page.
+- add an icon & other styles to highlight Refracted events
+- add spoilers for RDO season

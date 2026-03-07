@@ -613,6 +613,7 @@ function addprize() {
 }
 
 function updateprizing() {
+    // TODO: update for RDO spoilers
     const pa = document.querySelector("#prize-area")
     const nextbut = document.querySelector("#next-button")
     if (victories >= 1 && !document.querySelector("#spoiler-btn-1")) {

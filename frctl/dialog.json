@@ -1,132 +1,125 @@
 {
     "startup": [
         {
-            "speaker": "Tweedledee",
-            "lines": ["Oho! Whom do I spy, but a fool passer-by?",
-                      "Do you chance upon us, like a cool butter-fly?",
-                      "Or arrive with a porpoise, slick of fin and eye?"
+            "speaker": "Edelstein",
+            "lines": ["Salutations, passer-by.",
+                      "Perhaps you expected someone else?",
+                      "Refreshingly, this area is under new management.",
+                      "That is to say, mine."
                     ]
         },
         {
-            "speaker": "Tweedledum",
-            "lines": ["Fool they are, looking in-this-site!",
-                      "Where all are blind, from outset to out-sight.",
-                      "Methinks we send them out, forthright!"
+            "speaker": "Edelstein",
+            "lines": ["Perhaps you'd like to play a game?",
+                      "Well, your answer is irrelevant.",
+                      "Now that you're here, the hand's been dealt."
                     ]
         },
         {
-            "speaker": "Tweedledee",
-            "lines": ["Fourth-right and all-for-one,",
-                      "Exile's badly overdone,",
-                      "Instead I say we spoil their fun!"
+            "speaker": "Edelstein",
+            "lines": ["Hold your hoarfrost; I'm benevolent.",
+                     "Each right answer earns you a prize;",
+                     "And each wrong answer, another try."
                     ]
         },
         {
-            "speaker": "Tweedledum",
-            "lines": ["Well then, since games are fun and fun is won,",
-                      "Let's play a game, and when it's done,",
-                      "A prize we'll show, a spoiled bit of fun."
+            "speaker": "Edelstein",
+            "lines": ["I'll have a card in mind;",
+                      "Your task is to name it.",
+                      "Place your best guess for me to evaluate."
                     ]
         },
         {
-            "speaker": "Tweedledum",
-            "lines": ["We'll think of a card, and then we'll wait.",
-                      "You name a card that we'll equate",
-                      "in similarity from trait to trait."
+            "speaker": "Edelstein",
+            "lines": ["Each part that's alike I'll grant a ✅.",
+                      "Where unalike, I'll answer ❌.",
+                      "A little of both returns a 🔶.",
+                      "And ⬆️ or ⬇️ tells you which way to go."
                     ]
         },
         {
-            "speaker": "Tweedledee",
-            "lines": ["If yours and ours have traits the same,",
-                      "A ✅ will mark the correct claim.",
-                      "Spot 🔶 for partway. Miss? ❌, a shame.",
-                      "And ⬆️ or ⬇️ to shift your aim."
-                    ]
-        },
-        {
-            "speaker": "Tweedledee",
-            "lines": ["That's the script for this show.",
-                      "We won't limit your guessing ammo,",
-                      "So go to the get and get to the go!"
+            "speaker": "Edelstein",
+            "lines": ["So go ahead and prove your worth,",
+                      "Starting from nothing,",
+                      "Like a diamond in the rough."
                     ]
         }
     ],
     "hint": [
         {
-            "speaker": "Tweedledum",
-            "lines": ["Did Merlin get to you, or are you just not smart?",
-                      "Well, I can help you, from the goodness of my heart.",
-                      "For at least one of __EDCOUNT__ edition(s), __ILLUST__ did the art."
+            "speaker": "Edelstein",
+            "lines": ["Your artfulness leaves something to be desired.",
+                      "Unlike __ILLUST__, who drew one of this card's __EDCOUNT__ edition(s)."
                      ],
             "needs": ["__EDCOUNT__","__ILLUST__"]
         },
         {
-            "speaker": "Tweedledee",
-            "lines": ["Since you're feeling vexed,",
-                      "I'll share a piece of the card's text:",
+            "speaker": "Edelstein",
+            "lines": ["Cool down, no need to overheat.",
+                      "This card's effect is pretty neat:",
                       "「__TEXT__」"],
             "needs": ["__TEXT__"]
         },
         {
-            "speaker": "Tweedledee",
-            "lines": ["Coming to me is a sure bet!",
-                      "In one of __EDCOUNT__ edition(s), __SET__ is the set,",
-                      "and __RARITY__ is the rarity to get."],
-            "needs": ["__EDCOUNT__", "__SET__", "__RARITY__"]
+            "speaker": "Edelstein",
+            "lines": ["Your impatience is not a rarity.",
+                      "But what is a rarity is __RARITY__,",
+                      "Which is where this card appears in __SET__"],
+            "needs": ["__SET__", "__RARITY__"]
         },
         {
-            "speaker": "Tweedledum",
-            "lines": ["I suppose I can do you a favor.",
-                      "Maybe you can identify this card by its flavor:",
+            "speaker": "Edelstein",
+            "lines": ["Still frozen? Let me share a little lore.",
+                      "In one of __EDCOUNT__ edition(s), you'll see this flavor:",
                       "「__FLAVOR__」"],
-            "needs": ["__FLAVOR__"]
+            "needs": ["__EDCOUNT__","__FLAVOR__"]
         }
     ],
     "nohints": [
         {
-            "speaker": "Tweedledum",
-            "lines": ["You're having a tough time, no doubt.",
-                      "Unfortunately, for hints, we're plum out."
+            "speaker": "Edelstein",
+            "lines": ["Don't test my patience.",
+                      "I've no more hints to give for this one."
                     ]
         }
     ],
     "spoiler1": [
         {
-            "speaker": "Tweedledee",
-            "lines": ["A victory earned, was that so hard?",
-                      "As promised, we will spoil a card.",
-                      "The first of three: the vanguard."
+            "speaker": "Edelstein",
+            "lines": ["Your efforts must be commended.",
+                      "Allow me to introduce myself in full."
                     ],
-            "nextspoiler": "2d2f04b2.png"
+            "nextspoiler": "0c313c35.png"
         },
         {
-            "spoiler": "2d2f04b2.png"
+            "spoiler": "0c313c35.png"
         }
     ],
     "spoiler2": [
         {
-            "speaker": "Tweedledee",
-            "lines": ["A second win? You're doing swell.",
-                      "The deal is dealt, a card I'll tell.",
-                      "From me myself to you: a poetic belle."
-                    ],
-            "nextspoiler": "9987f81a.png"
+            "speaker": "Edelstein",
+            "lines": ["You want another prize?",
+                      "Well, it's not here.",
+                      "You'll have to go digging,",
+                      "Like a creature burrowing in the snow."
+                    ]
         },
         {
-            "spoiler": "9987f81a.png"
+            "speaker": "Edelstein",
+            "lines": ["It's hidden in the greater site,",
+                      "Where you would see cards",
+                      "That no one sees."
+                    ]
         }
     ],
     "spoiler3": [
         {
-            "speaker": "Tweedledum",
-            "lines": ["That's it! Your the third and final answer,",
-                      "I'll share the truth about myself, a dancer,",
-                      "but also a formiddable lancer."
-                    ],
-            "nextspoiler": "527b66b5.png"
-        },
-        {
-            "spoiler": "527b66b5.png"
+            "speaker": "Edelstein",
+            "lines": ["I suppose I can grant one last hint.",
+                      "But you must still find the prize yourself.",
+                      "You'll spot it among other Sightings,",
+                      "In a place it's most Suited to be."
+                    ]
         }
     ]
 }
