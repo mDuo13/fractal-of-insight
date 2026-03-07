@@ -60,11 +60,15 @@ def fix_case(cardname):
     for k,v in repls.items():
         cardname = cardname.replace(k,v)
 
+    # Exceptions to the typical title casing for prepositions
     if cardname == "Claimed from Beyond":
-        # "From" is caps here unlike other cases =_=
         return "Claimed From Beyond"
     if cardname == "Protect Her at All Costs":
         return "Protect Her At All Costs"
+    if cardname == "Seep into the Mind":
+        return "Seep Into the Mind"
+    if cardname == "Pole-Armed Steed":
+        return "Pole-armed Steed"
     return cardname
 
 def element_sortkey(el, inverse=False):
