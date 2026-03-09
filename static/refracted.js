@@ -163,6 +163,12 @@ function fmt_evt(id) {
         "event_id": id,
         "achievements": achievements
     }
+    // Ascent+ can reward these achievements on stream but isn't a Refracted event
+    if (currentEvent && currentEvent.category === "regular") {
+        evt_json.is_refracted = true
+    } else {
+        evt_json.is_refracted = false
+    }
     return JSON.stringify(evt_json, null, 0)
 }
 
@@ -224,7 +230,7 @@ function save_achievement() {
     for (const pa of achievements) {
         if (pa.achievement === aname && pa.player === p_id) {
             console.error("Player has already gotten this achievement.")
-            // TODO: display to user properly
+            alert("Player already has this achievement")//TODO: better notification
             return
         }
     }

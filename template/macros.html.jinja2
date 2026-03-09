@@ -216,7 +216,7 @@
 {%- endmacro %}
 
 {% macro eventbox(evt) %}
-<a class="evt {{slugify(evt.category['name'])}}{% if evt.decklist_status == 'none' or (evt.players|length < 20 and evt.category.name != 'worlds') %} collapse{% endif %}" href="/{{evt.season}}/{{evt.id}}.html" data-decklists="{{evt.num_decklists}}" data-category="{{slugify(evt.category['name'])}}" data-playercount="{{evt.players|length}}">
+<a class="evt {{slugify(evt.category['name'])}}{% if evt.decklist_status == 'none' or (evt.players|length < 20 and evt.category.name != 'worlds') %} collapse{% endif %}{% if evt.is_refracted %} refracted{% endif %}" href="/{{evt.season}}/{{evt.id}}.html" data-decklists="{{evt.num_decklists}}" data-category="{{slugify(evt.category['name'])}}" data-playercount="{{evt.players|length}}">
     <div class="evt-mainbox">
         <h3>{{evt.name}}</h3>
         {% if evt.winner and evt.winner.topcut_deck %}
@@ -235,7 +235,7 @@
         <div class="decklistcount">{% if evt.decklist_status == "full" %}All decklists{% elif evt.decklist_status == "partial" %}{{evt.num_decklists}} decklists{% endif %}</div>
         <div class="winner">Winner: {% if evt.winner %}{{evt.winner.username}}{% elif evt.winning_team %}{{evt.winning_team.name}}{% else %}(Ongoing){% endif %}</div>
     </div>
-    <div class="event-category">{{evt.category["name"]}}</div>
+    <div class="event-category">{{evt.category["name"]}}{% if evt.is_refracted %}<span class="refracted-icon" title="Refracted event"><img src="/static/refracted.png" height="20" width="19" /></span>{% endif %}</div>
 </a>
 {% endmacro %}
 

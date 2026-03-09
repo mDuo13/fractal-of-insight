@@ -74,7 +74,7 @@ class OmniEvent:
         self.winner = None
         self.load_players() # populates self.players, self.num_decklists, self.decklist_status
         self.load_videos()
-        self.load_refracted_achievements()
+        self.load_refracted_achievements() # populates self.is_refracted
         self.analyze() #populates self.elements, archedata, champdata, draw_pct, nat_draw_pct
         self.battlechart = self.calc_headtohead(track_elo=self.track_elo)
         self.bc_top = self.calc_headtohead(TOP_CUTOFF)
@@ -91,6 +91,7 @@ class OmniEvent:
             "GA",
             "Storechamp",
             "Store",
+            "店家冠軍賽",
             "Championships",
             "Championship",
             "Champion",
@@ -100,6 +101,7 @@ class OmniEvent:
             "Locals",
             "Regionals",
             "Regional",
+            "Tournament",
             "Event",
             "Mercurial", "Heart",
             "Mortal", "Ambition",
@@ -172,7 +174,7 @@ class OmniEvent:
                             d.videos.append(viddata)
 
     def load_refracted_achievements(self):
-        self.refracted_achievements = get_event_refracted_achievements(self.id)
+        self.refracted_achievements, self.is_refracted = get_event_refracted_achievements(self.id)
         for ra in self.refracted_achievements:
             pid = ra.get("player")
             if not pid or pid not in self.pdict.keys():

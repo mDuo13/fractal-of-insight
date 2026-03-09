@@ -20,7 +20,13 @@
     {% if achievement.artist %}<li>(Art by <a href="{{achievement.artisturl}}">{{achievement.artist}}</a>)</li>{% endif %}
     <li><strong>Achieved:</strong> {{astats.count}} times</li>
     <li><strong>Rate:</strong> {{astats.rate}}% of players</li>
-    {% if astats.first and not achievement.skip_date %}<li><strong>First achieved by:</strong> {{astats.first}}</li>{% endif %}
+    {% if astats.first and not achievement.skip_date %}<li><strong>First achieved by:</strong>{% if astats.first|length == 1 %}<a href="/player/{{astats.first[0].id}}.html">{{astats.first[0]}}{% else %}{{astats.first|length}} players
+        {% if astats.first|length > 5 %}<button onclick="toggle('.first-players')">Glimpse players</button> <div class="first-players collapse togglable">{% else %}<div class="first-players">{% endif %}(
+            {% for u in astats.first %}
+                <a href="/player/{{u.id}}.html">{{u}}</a>{% if not loop.last %},{% endif %}
+            {% endfor %}
+        {% endif %}
+    </li>{% endif %}
 </ul>
 
 <section id="achieving-players">

@@ -232,7 +232,8 @@ def get_event_refracted_achievements(evt_id):
     except (FileNotFoundError, json.JSONDecodeError):
         evt_refracteds = {
             "event_id": int(evt_id),
-            "achievements":[]
+            "achievements":[],
+            "is_refracted": False
         }
     if str(evt_refracteds["event_id"]) != str(evt_id):
         print(f"Refracted event ID mismatch: {evt_id} vs {evt_refracteds['evt_id']}")
@@ -248,7 +249,7 @@ def get_event_refracted_achievements(evt_id):
             if key in ra.keys() and type(ra[key]) != kt:
                 print(f"Evt#{evt_id}: Invalid refracted achievement data:",ra)
                 return []
-    return evt_refracteds["achievements"]
+    return evt_refracteds["achievements"], evt_refracteds.get("is_refracted", False)
 
 def save_event_json(evt):
     makedirs(f"data/event_{evt['id']}/", exist_ok=True)

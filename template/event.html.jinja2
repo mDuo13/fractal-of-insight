@@ -33,7 +33,11 @@
 
 <section id="evt-info">
     <h1>
+    {% if evt.is_refracted %}
+    <a href="/achievement/refracted-about.html"><img src="/static/refracted.svg" width="34" height="35" alt="Refracted event" title="Refracted event (Omnidex category: Regular)" /></a>
+    {% else %}
     <img src="/static/{{evt.category['shortname']}}.svg" alt="({{evt.category['name']}})" title="Event category: ({{evt.category['name']}})" width="30" height="35" />
+    {% endif %}
     {{evt.name}}{% if not evt.winner %} (Ongoing){% endif %}</h1>
     <ul class="scooped-corners">
         <li><b>Date:</b> {{evt.date}}</li>

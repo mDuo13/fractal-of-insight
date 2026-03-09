@@ -43,10 +43,13 @@ class GlobalAchievementStats:
         aname = achieved.name
         self.count_achieved[aname] += 1
         if aname in self.first_achieved.keys():
-            if achieved.date and achieved.date < self.first_achieved[aname].date:
-                self.first_achieved[aname] = achieved
+            if achieved.date and achieved.date < self.first_achieved[aname][0].date:
+                self.first_achieved[aname] = [achieved]
+            elif achieved.date and achieved.date == self.first_achieved[aname][0].date:
+                self.first_achieved[aname].append(achieved)
+            # else it's not tied for first
         else:
-            self.first_achieved[aname] = achieved
+            self.first_achieved[aname] = [achieved]
         self.achieved_by[aname].append((entrant, achieved))
 
     def __getitem__(self, aname):
@@ -57,7 +60,7 @@ class GlobalAchievementStats:
             print("Unachieved achievement:", aname)
             first = None
         else:
-            first = self.first_achieved[aname].entrant
+            first = [ e.entrant for e in self.first_achieved[aname] ]
         return {
             "count": self.count_achieved[aname],
             "first": first,
