@@ -32,8 +32,10 @@ def save_crawldata():
     with open(config.CRAWLER_FILE, "w") as f:
         json.dump(crawldata, f)
 
-def due_for_update(evt_data):
+def due_for_update(evt_data, refresh_all_stale=False):
     if not evt_data:
+        return True
+    if refresh_all_stale and evt_data.get("status") == "stale":
         return True
     if evt_data.get("status") in ("complete", "stale", "canceled", "deleted", "canceled-suspended"):
         return False
@@ -51,11 +53,11 @@ def due_for_update(evt_data):
             return False
     return True
 
-def crawl_event(i, force_redownload=False):
+def crawl_event(i, force_redownload=False, refresh_all_stale=False):
     evt_data = crawldata["events"].get(str(i))
     updated = False
 
-    if force_redownload or due_for_update(evt_data):
+    if force_redownload or due_for_update(evt_data, refresh_all_stale):
         try:
             evt_full = get_event(i, force_redownload=True, save=False)
             if i > crawldata["max_crawled"]:
@@ -156,7 +158,7 @@ def main(args):
     consecutive404s = 0
     try:
         for i in range(start, 99999999):
-            evt_data, updated = crawl_event(i, force_redownload=args.update)
+            evt_data, updated = crawl_event(i, force_redownload=args.update, refresh_all_stale=args.stale)
             if evt_data.get("interesting") and updated:
                 interesting_events[i] = evt_data
             unsaved_data += 1
@@ -179,6 +181,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Iterate over Omnidex events to look for interesting ones")
     parser.add_argument("event_id", type=int, help="Omnidex event ID to start at", nargs="?", default=1)
     parser.add_argument("-u", "--update", action="store_true", help="Redownload events regardless of cached status")
+    parser.add_argument("-s", "--stale",  action="store_true", help="Redownload all stale events (in case they were updated)")
     #parser.add_argument("--reverse", "-r", help="Count down instead of up")
     args = parser.parse_args()
     main(args)
