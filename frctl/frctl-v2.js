@@ -2,6 +2,7 @@ let mysterycard
 let hints_given = []
 let past_cards = []
 let victories = 0
+let rdovictories = 0
 let daily
 let ALLSLUGS
 let ALLDIALOG
@@ -424,7 +425,7 @@ function advancedialog(event) {
         //console.debug(`Page ${pagenum} is past the end of ${dname}`)
         enddialog()
         if (dname == "startup") {
-            window.localStorage.setItem("introseen", true)
+            window.localStorage.setItem("introseen-rdo", true)
         }
         return
     }
@@ -607,26 +608,27 @@ function givehint(event) {
 
 function addprize() {
     victories += 1
+    rdovictories += 1
     past_cards.push(mysterycard.slug)
     window.localStorage.setItem("victories", victories)
+    window.localStorage.setItem("rdovictories", rdovictories)
     updateprizing()
 }
 
 function updateprizing() {
-    // TODO: update for RDO spoilers
     const pa = document.querySelector("#prize-area")
     const nextbut = document.querySelector("#next-button")
-    if (victories >= 1 && !document.querySelector("#spoiler-btn-1")) {
+    if (rdovictories >= 1 && !document.querySelector("#spoiler-btn-1")) {
         const spl1 = document.createElement("button")
         spl1.innerText = "Spoiler 1/3"
         spl1.id = "spoiler-btn-1"
-        const spoilerseen = window.localStorage.getItem("seenspoiler1")
+        const spoilerseen = window.localStorage.getItem("seenrdospoiler1")
         if (!spoilerseen) {
             spl1.classList.add("tab-notif")
         }
         spl1.addEventListener("click", (evt) => {
             spl1.classList.remove("tab-notif")
-            window.localStorage.setItem("seenspoiler1", true)
+            window.localStorage.setItem("seenrdospoiler1", true)
             nextbut.dataset.dname = "spoiler1"
             nextbut.dataset.nextpage = 0
             advancedialog()
@@ -635,17 +637,17 @@ function updateprizing() {
         pa.appendChild(spl1)
         spl1.classList.add("fadeInRel")
     }
-    if (victories >= 2 && !document.querySelector("#spoiler-btn-2")) {
+    if (rdovictories >= 2 && !document.querySelector("#spoiler-btn-2")) {
         const spl2 = document.createElement("button")
         spl2.innerText = "Spoiler 2/3"
         spl2.id = "spoiler-btn-2"
-        const spoilerseen = window.localStorage.getItem("seenspoiler2")
+        const spoilerseen = window.localStorage.getItem("seenrdospoiler2")
         if (!spoilerseen) {
             spl2.classList.add("tab-notif")
         }
         spl2.addEventListener("click", (evt) => {
             spl2.classList.remove("tab-notif")
-            window.localStorage.setItem("seenspoiler2", true)
+            window.localStorage.setItem("seenrdospoiler2", true)
             nextbut.dataset.dname = "spoiler2"
             nextbut.dataset.nextpage = 0
             advancedialog()
@@ -654,17 +656,17 @@ function updateprizing() {
         pa.appendChild(spl2)
         spl2.classList.add("fadeInRel")
     }
-    if (victories >= 3 && !document.querySelector("#spoiler-btn-3")) {
+    if (rdovictories >= 3 && !document.querySelector("#spoiler-btn-3")) {
         const spl3 = document.createElement("button")
         spl3.id = "spoiler-btn-3"
         spl3.innerText = "Spoiler 3/3"
-        const spoilerseen = window.localStorage.getItem("seenspoiler3")
+        const spoilerseen = window.localStorage.getItem("seenrdospoiler3")
         if (!spoilerseen) {
             spl3.classList.add("tab-notif")
         }
         spl3.addEventListener("click", (evt) => {
             spl3.classList.remove("tab-notif")
-            window.localStorage.setItem("seenspoiler3", true)
+            window.localStorage.setItem("seenrdospoiler3", true)
             nextbut.dataset.dname = "spoiler3"
             nextbut.dataset.nextpage = 0
             advancedialog()
@@ -715,7 +717,7 @@ function ready(callback) {
 ready(async () => {
     try {
         ALLSLUGS = await (await fetch("./slugs-v3.json")).json()
-        ALLDIALOG = await (await fetch("./dialog.json")).json()
+        ALLDIALOG = await (await fetch("./dialog-rdo.json")).json()
     } catch {
         alert("Error loading data files. Try refreshing without cache")
     }
@@ -737,9 +739,14 @@ ready(async () => {
     }
 
     const savedVictories = window.localStorage.getItem("victories")
-    if (savedVictories) {
-        victories = parseInt(savedVictories)
+    const rdoSavedVictories = window.localStorage.getItem("rdovictories")
+    if (rdoSavedVictories) {
+        rdovictories = parseInt(rdoSavedVictories)
         updateprizing()
+    }
+    if (savedVictories) {
+        // all-time victory count. Not lost, but not used for RDO spoilers
+        victories = parseInt(savedVictories)
     }
 
     const closebut = document.querySelector("#close-dialog-button")
@@ -756,7 +763,7 @@ ready(async () => {
         tab.addEventListener("click", selecttab)
     }
     
-    const introSeen = window.localStorage.getItem("introseen")
+    const introSeen = window.localStorage.getItem("introseen-rdo")
     if (!introSeen) {
         advancedialog()
     } else {

@@ -211,7 +211,27 @@
             <a class="cardimg" href="https://index.gatcg.com/card/{{card_o['slug']}}" title="GA Index lookup"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /></a>
         {% endif -%}
     {% endfor %}
+    {% if config.SHOW_RDO_SPOILERS %}
+    <a class="cardimg collapse" id="spoiler-rdo232-thumb" href="#spoiler-rdo232" onclick="show('#spoiler-rdo232')"><img src="/static/spoilers/RDO-6CA1E75A.png" alt="Hoarfrost Hold" loading="lazy" /></a>
+    {% endif %}
     </div>
 </section>
 
+{% if config.SHOW_RDO_SPOILERS %}
+<div class="decklist collapse" id="spoiler-rdo232">
+    <div class="decklist-inner">
+        <button class="closeX" onclick="hide('#spoiler-rdo232')">❌</button>
+
+        <div class="decklist-viewbox">
+            <img src="/static/spoilers/RDO-6CA1E75A.png" alt="Hoarfrost Hold spoiler card image" width="500" height="700" style="max-width:100%; height:auto;" />
+        </div>
+    </div>
+</div>
+<script>
+const spoilerunlocked = window.localStorage.getItem("seenrdospoiler2")
+if (spoilerunlocked) {
+    show("#spoiler-rdo232-thumb")
+}
+</script>
+{% endif %}
 {% endblock %}

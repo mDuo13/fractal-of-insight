@@ -1,0 +1,136 @@
+{
+    "startup": [
+        {
+            "speaker": "Edelstein",
+            "lines": ["I bid you salutations, passer-by.",
+                      "Perhaps your expectations went awry?",
+                      "The management herein has realigned.",
+                      "Which is to say, that now it's mine."
+                    ]
+        },
+        {
+            "speaker": "Edelstein",
+            "lines": ["Perhaps you'd like to play yourself a game?",
+                      "Regardless of your answer, it's the same.",
+                      "Now that you're here, the hand's been dealt.",
+                      "The river flows across the felt."
+                    ]
+        },
+        {
+            "speaker": "Edelstein",
+            "lines": ["Now hold your hoarfrost; I'm benevolent.",
+                      "I am prepared to pay you for your efforts spent.",
+                      "For each right answer I'll bestow a prize;",
+                      "And each wrong answer gets another try."
+                    ]
+        },
+        {
+            "speaker": "Edelstein",
+            "lines": ["In each round I'll have a card in mind;",
+                      "Your task has thusly been assigned:",
+                      "To match my answer is your predetermined fate;",
+                      "Start with a guess and I'll evaluate."
+                    ]
+        },
+        {
+            "speaker": "Edelstein",
+            "lines": ["The parts that are alike I'll mark with ✅'s.",
+                      "Where yours and mine diverge, I'll answer ❌.",
+                      "A little bit of both means 🔶 will show.",
+                      "And ⬆️ or ⬇️ tells you which way to go."
+                    ]
+        },
+        {
+            "speaker": "Edelstein",
+            "lines": ["So go ahead and prove you're made of tougher stuff.",
+                      "Starting from nothing,",
+                      "Like diamonds in the rough."
+                    ]
+        }
+    ],
+    "hint": [
+        {
+            "speaker": "Edelstein",
+            "lines": ["Your artfulness leaves something to be desired.",
+                      "Unlike __ILLUST__, who art in __EDCOUNT__ edition(s) is inspired."
+                     ],
+            "needs": ["__EDCOUNT__","__ILLUST__"]
+        },
+        {
+            "speaker": "Edelstein",
+            "lines": ["Cool down, no need to overheat.",
+                      "This card's effect is pretty neat:",
+                      "「__TEXT__」"],
+            "needs": ["__TEXT__"]
+        },
+        {
+            "speaker": "Edelstein",
+            "lines": ["Your impatience is not a rarity.",
+                      "But what is a rarity is __RARITY__,",
+                      "Which is where this card appears in __SET__"],
+            "needs": ["__SET__", "__RARITY__"]
+        },
+        {
+            "speaker": "Edelstein",
+            "lines": ["Still frozen? Let me share a little lore.",
+                      "In one of __EDCOUNT__ edition(s), you'll see this flavor:",
+                      "「__FLAVOR__」"],
+            "needs": ["__EDCOUNT__","__FLAVOR__"]
+        }
+    ],
+    "nohints": [
+        {
+            "speaker": "Edelstein",
+            "lines": ["Don't test my patience.",
+                      "I've no more hints to give for this one."
+                    ]
+        }
+    ],
+    "spoiler1": [
+        {
+            "speaker": "Edelstein",
+            "lines": ["Your efforts on this game must be commended;",
+                      "Your guesswork on that card was splendid.",
+                      "And since we've reached a kind of lull,",
+                      "Allow me now to introduce myself in full."
+                    ],
+            "nextspoiler": "0c313c35.png"
+        },
+        {
+            "spoiler": "0c313c35.png"
+        }
+    ],
+    "spoiler2": [
+        {
+            "speaker": "Edelstein",
+            "lines": ["You dare to think you've earned a new windfall?",
+                      "Then go and find your spoiler lost amidst the squall.",
+                      "I see, I seem icy indeed.",
+                      "A hint at least, I can concede."
+                    ]
+        },
+        {
+            "speaker": "Edelstein",
+            "lines": ["It's hidden in the greater site,",
+                      "Where you would see the cards that might",
+                      "Evade typical players' sight."
+                    ]
+        }
+    ],
+    "spoiler3": [
+        {
+            "speaker": "Edelstein",
+            "lines": ["Now, I suppose I can grant one last prize.",
+                      "But not directly, no surprise.",
+                      "Again as to its whereabouts I'll allude,",
+                      "And leave the rest up to your aptitude."
+                    ]
+        },
+        {
+            "speaker": "Edelstein",
+            "lines": ["The place where you'll be Sighting it's atop a list",
+                      "Of a type where this one's most Suited to exist."
+                    ]
+        }
+    ]
+}

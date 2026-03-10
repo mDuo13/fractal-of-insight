@@ -254,8 +254,8 @@
             <th>Date</th><th>Player</th><th>Event</th><th>Deck</th><th>Placement</th><th>Swiss Record</th>
         </tr></thead>
         <tbody>
-        {% if config.SHOW_RDO_SPOILERS %}
-        <tr class="p-row n-styles-2" data-decklists="1" data-category="regular" data-subtypes="[&quot;Water&quot;]">
+        {% if config.SHOW_RDO_SPOILERS and arche.name == "Suited" %}
+        <tr class="p-row n-styles-2 collapse" data-category="regular" data-decklists="1" data-subtypes='["Water"]' id="spoiler-rdo213-row">
             <td class="p_date">2026-04-03</td>
             <td class="playername" title=""><a href="#spoiler-rdo213" onclick="show('#spoiler-rdo213')">Edelstein #RDO216</a></td>
             <td class="p_event"><a href="#spoiler-rdo213" onclick="show('#spoiler-rdo213')">Wonderland - the cold part</a></td>
@@ -266,7 +266,7 @@
                 </div>
             </td>
             <td class="p_placement">213/481</td>
-            <td class="p_record">4-0-Slow</td>
+            <td class="p_record">4-0-0</td>
         </tr>
         {% endif %}
         {% for deck in arche.matched_decks[0:page_end] %}
@@ -326,9 +326,17 @@
         <button class="closeX" onclick="hide('#spoiler-rdo213')">❌</button>
 
         <div class="decklist-viewbox">
-            <img src="/static/spoilers/RDO-B9348849.png" alt="Diamond in the Rough spoiler card image" width="500" height="700" />
+            <img src="/static/spoilers/RDO-B9348849.png" alt="Diamond in the Rough spoiler card image" width="500" height="700" style="max-width:100%; height:auto;" />
         </div>
     </div>
 </div>
+<script>
+const spoilerunlocked = window.localStorage.getItem("seenrdospoiler3")
+if (spoilerunlocked) {
+    document.querySelector("#spoiler-rdo213-row").style["display"] = "table-row"    
+} else {
+    document.querySelector("#spoiler-rdo213-row").style["display"] = "none"
+}
+</script>
 {% endif %}
 {% endblock %}
