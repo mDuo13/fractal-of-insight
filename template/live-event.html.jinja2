@@ -1,0 +1,292 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}Live Event View - {% endblock %}
+
+{% block endhead %}
+<script src="/static/live.js"></script>
+{% endblock endhead %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+    <b class="nav-item">↓ Live Event</b>
+    <a class="nav-item" href="/player/">→ Players</a>
+    <a class="nav-item" href="/deck/">→ Decks</a>
+    <a class="nav-item" href="/formats/">→ Format Stats</a>
+    <a class="nav-item" href="/card/">→ Cards</a>
+    <a class="nav-item" href="/achievement/">→ Achievements</a>
+</nav>
+
+<section id="evt-info">
+    <h1>Live Event View</h1>
+    <form id="evt-select-form">
+        <ul id="evt-info" class="scooped-corners">
+            <li><label for="evt-omni-id">Event Omnidex ID: <input type="text" id="evt-omni-id" /></label> <input id="evt-fetch" type="submit" value="Fetch info" /><span id="evt-omni-id-loader" class="loader collapse">(loading)</span> <a id="evt-omni-link" class="collapse" href="">(View on Omnidex)</a></li>
+            <li><b>Date:</b> <span id="evt-date"></span></li>
+            <li><b>Name:</b> <span id="evt-name"></span></li>
+            <li><b>Entrants:</b> <span id="evt-num-entrants"></span></li>
+            <li><b>Hosted by:</b> <span id="evt-hosted-by"></span></li>
+            <li><b>Location:</b> <span id="evt-location"></span></li>
+            <li><b>Draw rate:</b> <span id="evt-draw-rate"></span></li>
+        </ul>
+    </form>
+</section>
+
+<section id="players">
+    <h2>Players</h2>
+    <button onclick="toggle('#players > .togglable')">Glimpse Player List</button>
+
+    <div class="collapse" id="topcut-area">
+        <h3 class="collapse togglable" id="topcut">Single Elimination Top Cut</h3>
+        <table class="collapse togglable">
+            <thead><tr>
+                <th>Rank</th><th>Player</th><th>Swiss Record</th><th>Deck</th><th class="elodiff">Elo</span></th><th class="showmatches">Matches</th>
+            </tr></thead>
+            <tbody id="topcut-tbody">
+            </tbody>
+        </table>
+    </div>
+
+    <div id="swiss-area">
+        <table class="collapse togglable">
+            <thead><tr>
+                <th>Rank</th><th>Player</th><th>Record</th><th>Deck</th><th>Elo</th><th class="showmatches">Matches</th>
+            </tr></thead>
+            <tbody id="swiss-tbody">
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section id="meta_composition">
+    <h2>Meta Composition</h2>
+    <button onclick="toggle('#meta_composition > .togglable')">Glimpse Meta Composition</button>
+    <h3 class="togglable collapse">Elements</h3>
+    {% if evt.day2stats or evt.topcutstats %}
+    <div class="tabs togglable collapse">
+        <button class="tab activetab" onclick="opentab(this, '#element-meta-overall')">Overall</button>
+        {% if evt.day2stats %}
+        <button class="tab" onclick="opentab(this, '#element-meta-day2')">Day 2</button>
+        {% endif %}
+        {% if evt.topcutstats %}
+        <button class="tab" onclick="opentab(this, '#element-meta-topcut')">Top Cut</button>
+        {% endif %}
+    </div>
+    {% endif %}
+    <div class="tabwrapper togglable collapse">
+        <div class="element-meta tabcontent" id="element-meta-overall">
+            {{macros.elementpie(evt.elements)}}
+        </div>
+    {% if evt.day2stats %}
+        <div class="element-meta tabcontent collapse togglable" id="element-meta-day2">
+            {{macros.elementpie(evt.day2stats.elements)}}
+        </div>
+    {% endif %}
+    {% if evt.topcutstats %}
+        <div class="element-meta tabcontent collapse togglable" id="element-meta-topcut">
+            {{macros.elementpie(evt.topcutstats.elements)}}
+        </div>
+    {% endif %}
+    </div>
+
+    <h3 class="togglable collapse">Archetypes</h3>
+    {% if evt.day2stats or evt.topcutstats %}
+    <div class="tabs togglable collapse">
+        <button class="tab activetab" onclick="opentab(this, '#archedata-overall')">Overall</button>
+        {% if evt.day2stats %}
+        <button class="tab" onclick="opentab(this, '#archedata-day2')">Day 2</button>
+        {% endif %}
+        {% if evt.topcutstats %}
+        <button class="tab" onclick="opentab(this, '#archedata-topcut')">Top Cut</button>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="tabwrapper togglable collapse">
+        <div class="tabcontent togglable" id="archedata-overall">
+            {{ macros.elementbars(evt.archedata, link=True, collapse=False) }}
+        </div>
+        {% if evt.day2stats %}
+        <div class="tabcontent togglable collapse" id="archedata-day2">
+            {{ macros.elementbars(evt.day2stats.archedata, link=True, collapse=False) }}
+        </div>
+        {% endif %}
+        {% if evt.topcutstats %}
+        <div class="tabcontent togglable collapse" id="archedata-topcut">
+            {{ macros.elementbars(evt.topcutstats.archedata, link=True, collapse=False) }}
+        </div>
+        {% endif %}
+    </div>
+    <p class="togglable collapse">Archetypes don't sum to 100% because decks can be multiple or zero archetypes.</p>
+
+    <h3 class="togglable collapse">Champions</h3>
+
+    {% if evt.day2stats or evt.topcutstats %}
+    <div class="tabs togglable collapse">
+        <button class="tab activetab" onclick="opentab(this, '#champdata-overall')">Overall</button>
+        {% if evt.day2stats %}
+        <button class="tab" onclick="opentab(this, '#champdata-day2')">Day 2</button>
+        {% endif %}
+        {% if evt.topcutstats %}
+        <button class="tab" onclick="opentab(this, '#champdata-topcut')">Top Cut</button>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="tabwrapper togglable collapse">
+        <div class="tabcontent togglable" id="champdata-overall">
+            {{ macros.elementbars(evt.champdata, link=False, collapse=False) }}
+        </div>
+        {% if evt.day2stats %}
+        <div class="tabcontent togglable collapse" id="champdata-day2">
+            {{ macros.elementbars(evt.day2stats.champdata, link=False, collapse=False) }}
+        </div>
+        {% endif %}
+        {% if evt.topcutstats %}
+        <div class="tabcontent togglable collapse" id="champdata-topcut">
+            {{ macros.elementbars(evt.topcutstats.champdata, link=False, collapse=False) }}
+        </div>
+        {% endif %}
+    </div>
+    <p class="togglable collapse">This breakdown only shows the basic elements from the deck's spirit(s), not elements added by Lv1+ champions.</p>
+
+    <h3 class="togglable collapse">Sideboards</h3>
+    <div class="top-cards togglable collapse">
+        <p>Top 10 most sideboarded cards:</p>
+    {% for card_o in evt.sideboard_stats %}
+        {% if loop.index0 < 10 %}
+        <div class="cardimg"><img src="{{card_o['img']}}" alt="{{card_o['card']}}" loading="lazy" /><span class="quant">{{card_o["pct"]}}%<span class="subquant">(+{{card_o["mb_pct"]}}%)</span></span></div>
+        {% endif %}
+    {% endfor %}
+        <p class="explanation">(+X%) indicates how many additional decks have the card in main/material deck already.</p>
+    </div>
+</section>
+
+{% if evt.conversion_rate %}
+<section id="conversion-rate">
+    <h2>Conversion Rate</h2>
+    <button onclick="toggle('#conversion-rate > .togglable')">Glimpse conversion rates</button>
+    <p class="togglable collapse explanation">(Percentage of decks making it to day 2 of the event.)</p>
+    <p class="togglable collapse"><strong>Baseline:</strong> {{evt.bcr}}%</p>
+
+    <div class="tabs togglable collapse">
+        <button class="tab activetab" onclick="opentab(this, '#conversion-rate-arche')">By Archetype</button>
+        <button class="tab" onclick="opentab(this, '#conversion-rate-champ')">By Champion</button>
+        <button class="tab" onclick="opentab(this, '#conversion-rate-el')">By Element</button>
+    </div>
+
+    <div class="tabwrapper togglable collapse">
+        <div class="tabcontent togglable" id="conversion-rate-arche">
+        {{macros.cr_table("Archetype", evt.conversion_rate["archedata"].items())}}
+        </div>
+        <div class="tabcontent togglable collapse" id="conversion-rate-champ">
+        {{macros.cr_table("Champion", evt.conversion_rate["champdata"].items())}}
+        </div>
+        <div class="tabcontent togglable collapse" id="conversion-rate-el">
+        {{macros.cr_table("Element", evt.conversion_rate["elements"].items())}}
+        </div>
+    </div>
+
+</section>
+{% endif %}
+
+<section id="head-to-head">
+    <h2>Head-to-Head</h2>
+    <button onclick="toggle('#head-to-head > .togglable')">Glimpse Head-to-Head Chart</button>
+    <p class="collapse togglable">Deck on the left's win rate vs deck on the top</p>
+
+    {{ macros.battlechart(evt.battlechart, link_matches=True) }}
+
+</section>
+{% endif %}{# end num_decklists conditional#}
+
+<section id="matches">
+    <h2>Matches</h2>
+    <button onclick="toggle('#matches > .togglable')">Glimpse Matches</button>
+    <div class="stages togglable collapse">
+    <button id="keymatches" class="togglable" onclick="show_key_matches()">Show Key Matches Only</button>
+    <p id="keymatch-expl" class="explanation togglable">(Key matches are ones between players who both finished with a high Swiss score, excluding intentional draws.)</p>
+    <p id="keymatch-showing" class="togglable collapse">Showing only matches between players who both scored over {{evt.fiftypct_points}} points in Swiss.</p>
+    {% if evt.videos %}<button id="showvids" class="togglable" onclick="show_vid_matches()">Show Matches with VODs only</button>{% endif %}
+    <button id="matchreset" class="collapse" onclick="reset_matches()">Reset match filter</button>
+    <p class="explanation togglable">(<span class="noem">😮</span> indicates an upset—the losing player had a {{config.UPSET_CUTOFF}}+ Elo advantage.)</p>
+    {% for stage in evt.evt["stages"] %}
+    <h3>Stage {{stage["id"]}} ({{stage["type"]|title}})</h3>
+    <div class="rounds">
+        {% for rnd in stage["rounds"] %}
+            <h4>Round {{rnd["id"]}}</h4>
+            {% for match in rnd["matches"] %}
+                {% set p1 = evt.pdict[match["pairing"][0]["id"]] %}
+                {% if evt.category.shortname == "worlds" and stage["type"] == "single-elimination" %}
+                    {% set use_topcut_deck = True %}
+                    {% if p1.topcut_deck %}
+                        {% set p1_archetypes = p1.topcut_deck.archetypes|map('slugify')|join(" ") %}
+                    {% else %}
+                        {% set p1_archetypes = "" %}
+                    {% endif %}
+                {% elif p1.deck %}
+                    {% set use_topcut_deck = False %}
+                    {% set p1_archetypes = p1.deck.archetypes|map('slugify')|join(" ") %}
+                {% else %}
+                    {% set use_topcut_deck = False %}
+                    {% set p1_archetypes = "" %}
+                {% endif %}
+                {% if match["pairing"]|length > 1 %}
+                    {% set p2 = evt.pdict[match["pairing"][1]["id"]] %}
+                    {% set iskeymatch="" %}
+                    {% if p1.score > evt.fiftypct_points and p2.score > evt.fiftypct_points and match["pairing"][0]["score"]+match["pairing"][1]["score"] > 0 %}
+                        {% set iskeymatch="keymatch" %}
+                    {% endif %}
+                    {% if evt.category.shortname == "worlds" and stage["type"] == "single-elimination" %}
+                        {% if p2.topcut_deck %}
+                            {% set p2_archetypes = p2.topcut_deck.archetypes|map('slugify')|join(" ") %}
+                        {% else %}
+                            {% set p2_archetypes = "" %}
+                        {% endif %}
+                    {% elif p2.deck %}
+                        {% set p2_archetypes = p2.deck.archetypes|map('slugify')|join(" ") %}
+                    {% else %}
+                        {% set p2_archetypes = "" %}
+                    {% endif %}
+                {% else %}
+                {% set p2 = None %}
+                {% endif %}
+                <div class="match p_{{p1.id}} {% if p2 %}p_{{p2.id}} {{iskeymatch}} {% endif %}{% if match.video %} hasvideo{% endif %}" data-p1-archetypes="{{p1_archetypes}}" data-p2-archetypes="{{p2_archetypes}}">
+                    <div class="player">
+                        {{macros.pname_w_dl(p1, use_topcut_deck)}}
+                        {% if p2 and p2.elo - config.UPSET_CUTOFF > p1.elo and match["pairing"][0]["score"] > match["pairing"][1]["score"] %}{{macros.upset()}}{% endif %}
+                        {% if match["pairing"]|length > 1 %}
+                        <span class="matchscore {{match['pairing'][0]['status']}}">{{match["pairing"][0]["score"]}}</span>
+                        {% endif %}
+                    </div>
+                    {% if match["pairing"]|length > 1 %}
+                    <div class="player">
+                        {{macros.pname_w_dl(p2, use_topcut_deck)}}
+                        {% if p1.elo - config.UPSET_CUTOFF > p2.elo and match["pairing"][1]["score"] > match["pairing"][0]["score"] %}{{macros.upset()}}{% endif %}
+                        <span class="matchscore {{match['pairing'][1]['status']}}">{{match["pairing"][1]["score"]}}</span>
+                    </div>
+                        {% if match.video %}
+                        <a class="matchvid" href="{{match.video}}" target="_blank" title="Match VOD available">📺</a>
+                        {% endif %}
+                    {% else %}
+                    <div class="player bye">Bye</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+    </div><!--/.stages-->
+</section>
+
+<!-- DECKLISTS -->
+{% for p in evt.players %}
+{% if p.deck %}
+{{ macros.decklist(p, "deck_"~p.id, evt) }}
+{% endif %}
+{% if p.topcut_deck %}
+{{ macros.decklist(p, "deck_"~p.id, evt, use_topcut_deck=True) }}
+{% endif %}
+{% endfor %}
+
+{% endblock %}
