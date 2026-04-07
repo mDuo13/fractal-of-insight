@@ -13,7 +13,7 @@
     <a class="nav-item" href="/achievement/">→ Achievements</a>
 </nav>
 <section id="szn-info">
-<h1>{% if szn.name != "Offseason" %}<img alt="{{szn.name}}" src="/static/{{szn.code}}_logo.png" /> <br />{% endif %}{{szn}}</h1>
+<h1>{% if szn.name != "Offseason" %}<img alt="{{szn.name}}" src="/static/season/{{szn.code}}.png" /> <br />{% endif %}{{szn}}</h1>
 <ul class="scooped-corners">
         <li><b>Season #:</b> {{szn.id}}</li>
         <li><b>Timeframe:</b> {{szn.start_time}} to {{szn.end_time}}</li>

@@ -1,15 +1,15 @@
 from collections import defaultdict
 import re
 
-from player import Entrant, JudgeEvt
-from battlechart import BattleChart
-from datalayer import get_event, get_event_videos, get_card_img, get_event_refracted_achievements
-from archetypes import ARCHETYPES
-from cards import ELEMENTS
-from competition import EVENT_TYPES, TEAM_STANDARD
-from season import SEASONS
-from shared import ElementStats, ArcheStats, ChampStats, RegionStats, ms_to_date
-from config import TOP_CUTOFF
+from .player import Entrant, JudgeEvt
+from .battlechart import BattleChart
+from .datalayer import get_event, get_event_videos, get_card_img, get_event_refracted_achievements
+from .archetypes import ARCHETYPES
+from .cards import ELEMENTS
+from .season import SEASONS
+from .shared import EVENT_TYPES, TEAM_STANDARD, ms_to_date
+from .stats import ElementStats, ArcheStats, ChampStats, RegionStats
+from .config import TOP_CUTOFF
 
 class IsTeamEvent(Exception):
     pass

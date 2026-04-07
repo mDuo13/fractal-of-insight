@@ -5,11 +5,11 @@ from requests.adapters import HTTPAdapter, Retry
 from time import sleep
 from os import makedirs, scandir, path
 
-from shared import slugify, fix_case
-from cards import ERRATA, PRIZE_EQUIVALENTS, REMOVED_FROM_PRXY
-from carddb import CardDB
-from decksim import DeckSim
-from tcgplayer import TCG_ABBR, TCGP_CARDNAMES
+from .shared import slugify, fix_case
+from .cards import ERRATA, PRIZE_EQUIVALENTS, REMOVED_FROM_PRXY
+from .carddb import CardDB
+from .decksim import DeckSim
+from .tcgplayer import TCG_ABBR, TCGP_CARDNAMES
 
 API_DELAY = 0.5
 COMMENT_REGEX = re.compile(r"# (?P<comment>.*)$")
@@ -47,7 +47,7 @@ def get_deck(p_id, evt_id, public_on_omni):
             with open(f"data/event_{evt_id}/deck_{p_id}.json") as f:
                 dl = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
-            if not public_on_omni:
+            if not public_on_omni or evt_id==384: #Special case for Ascent Ontario which was before Omni supported decklists
                 raise NoDeck()
             print(f"Downloading #{p_id}'s decklist...")
             dl_raw = fetch(f"https://omni.gatcg.com/api/events/decklist?id={evt_id}&player={p_id}")

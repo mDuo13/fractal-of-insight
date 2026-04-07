@@ -4,7 +4,8 @@ from os import makedirs
 import os.path
 from time import sleep
 import requests
-from datalayer import carddata
+
+from fractal.datalayer import carddata
 
 ## Saves every card image to this dir
 CARD_IMG_DIR = "data/cardimages/"

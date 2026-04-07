@@ -1,8 +1,8 @@
 import json
 from os import scandir
 
-from cards import REMOVED_FROM_PRXY
-from shared import fix_case
+from .cards import REMOVED_FROM_PRXY
+from .shared import fix_case
 
 CARDS_FOLDER = "./data/index/"
 

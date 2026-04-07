@@ -1,7 +1,8 @@
 from collections import defaultdict
 
-from shared import ElementStats, ArcheStats, ChampStats, OVERALL, date_to_ms, ms_to_date
-from battlechart import BattleChart
+from .shared import date_to_ms, ms_to_date
+from .stats import ElementStats, ArcheStats, ChampStats
+from .battlechart import BattleChart
 
 class Season:
     def __init__(self, season):
@@ -135,13 +136,14 @@ class Format(Season):
 
 
 SEASONS = {
+    "Radiant Origins": "RDO",
+    "Offseason": "OFF",
     "Phantom Monarchs": "PTM",
     "Distorted Reflections": "DTR",
     "Abyssal Heaven": "HVN",
     "Mortal Ambition": "AMB",
     "Mercurial Heart": "MRC",
     "Alchemical Revolution": "ALC",
-    "Offseason": "OFF",
 }
 
 FORMATS = {}
@@ -203,7 +205,7 @@ add_format("AMB Post-Feb Bans",
 add_format("HVN Release",
     start="2025-03-07",
     end="2025-04-28",
-    desc="Abyssal Heaven released; Scepter of Lumina received errata."
+    desc="Abyssal Heaven released alongside Diao Chan: Idyll Corsage and Guo Jia: Heaven's Favored Re:Collection decks; Scepter of Lumina received errata."
 )
 add_format("HVN + Clarent",
     start="2025-04-28",
@@ -247,5 +249,10 @@ add_format("PTM + Sablemere",
 )
 add_format("PTM + AMB Alter",
     start="2026-01-31",
+    end="2026-04-03",
     desc="Mortal Ambition Alter Edition released."
+)
+add_format("RDO Release",
+    start="2026-04-03",
+    desc="Radiant Origins released alongside Mordred Aurelian Regent Re:Collection deck; Unmake Duality banned."
 )

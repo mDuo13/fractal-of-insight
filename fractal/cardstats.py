@@ -1,19 +1,11 @@
 from collections import defaultdict
 from time import time
 
-from season import SEASONS
-from datalayer import carddata, get_card_img, is_valid_in_decklists
-from shared import keydefaultdict
-from shared import ElementStats, ChampStats, ArcheStats, HOT_WINDOW
-
-# Minimum number of appearances for a card to be eligible for "winningest" list
-#MIN_SIGHTINGS = 20
-MIN_SIGHTINGS = 1 # temp: trying disabled since the weighting should handle this
-PAD_UNTIL = 500
-M_PER_APP = 6 # Empirically, an average "appearance" consists of ~5.9 matches.
-MAX_TOP_USERS = 10 # How many players can be considered "top users" of a card.
-
-PAD_HOT_MATCHES = 500 # for hot cards, weight for this many *matches* (not appearances)
+from .config import HOT_WINDOW, PAD_UNTIL, M_PER_APP, MAX_TOP_USERS, PAD_HOT_MATCHES
+from .season import SEASONS
+from .datalayer import carddata, get_card_img, is_valid_in_decklists
+from .shared import keydefaultdict
+from .stats import ElementStats, ChampStats, ArcheStats
 
 class TopCutAppearance:
     # A shim for an "Entrant" but using only the different deck they played
@@ -260,7 +252,7 @@ class CardStatSet:
 
         #statdata.sort(key=lambda x:x[1].winrate, reverse=True)
         statdata.sort(key=lambda x:x[1].weighted_winrate, reverse=True)
-        self.winningest = {k:v for k,v in statdata if v.num_appearances >= MIN_SIGHTINGS}
+        self.winningest = {k:v for k,v in statdata}
 
         statdata.sort(key=lambda x:x[1].hot_rating, reverse=True)
         self.hottest = {k:v for k,v in statdata if v.hot_rating > 0}
@@ -280,7 +272,7 @@ class CardStatSet:
         self.winningest_by_season = {}
         for szn,statdata in szn_statdata.items():
             statdata.sort(key=lambda x:x[1].weighted_winrate, reverse=True)
-            self.winningest_by_season[szn] = {k:v for k,v in statdata if v.num_appearances >= MIN_SIGHTINGS}
+            self.winningest_by_season[szn] = {k:v for k,v in statdata}
 
 
     def split_by_set(self):

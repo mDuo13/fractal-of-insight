@@ -1,13 +1,13 @@
 from collections import defaultdict
 from time import time
 
-from deck import Deck
-from datalayer import get_deck, get_topcut_deck, NoDeck
-from cards import ELEMENTS
-from shared import keydefaultdict, ElementStats, ChampStats, ArcheStats, ms_to_date
-from competition import TEAM_STANDARD
-from achievements import AchievementSet, REFRACTED_ACHIEVEMENTS
-from config import UPSET_CUTOFF
+from .deck import Deck
+from .datalayer import get_deck, get_topcut_deck, NoDeck
+from .cards import ELEMENTS
+from .shared import keydefaultdict, ms_to_date, TEAM_STANDARD
+from .stats import ElementStats, ChampStats, ArcheStats
+from .achievements import AchievementSet, REFRACTED_ACHIEVEMENTS
+from .config import UPSET_CUTOFF
 
 RIVAL_THRESHOLD = 3 # min matches to count as a rival
 RIVAL_MAXCOUNT = 5 # trim rivals list if it's over this size

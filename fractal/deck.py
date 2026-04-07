@@ -2,11 +2,11 @@ from collections import defaultdict
 
 from xxhash import xxh64
 
-from shared import slugify, fix_case, lineage, element_sortkey, ms_to_date
-from datalayer import get_card_img, carddata, card_is_floating, get_card_references, get_card_price, get_cached_similarity, store_similarity
-from cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST, REMOVED_FROM_PRXY
-from archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
-from cardstats import ALL_CARD_STATS
+from .shared import slugify, fix_case, lineage, element_sortkey, ms_to_date
+from .datalayer import get_card_img, carddata, card_is_floating, get_card_references, get_card_price, get_cached_similarity, store_similarity
+from .cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST, REMOVED_FROM_PRXY
+from .archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
+from .cardstats import ALL_CARD_STATS
 
 def rank_card(card_o):
     return rank_cardname(card_o["card"])

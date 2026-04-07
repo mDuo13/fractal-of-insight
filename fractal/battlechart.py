@@ -1,6 +1,6 @@
-from shared import keydefaultdict, SPIRIT_ONLY
-from cards import ELEMENTS
-from config import SUBTYPE_MATCH_MIN
+from .shared import keydefaultdict, SPIRIT_ONLY
+from .cards import ELEMENTS
+from .config import SUBTYPE_MATCH_MIN
 
 LINEAGES = set()
 

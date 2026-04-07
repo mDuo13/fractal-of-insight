@@ -11,7 +11,7 @@
 
 {% for szn, evt in spoilers.items() %}
 <section id="spoilers-{{szn}}">
-    <h2><img src="/static/{{szn|upper}}_logo.png" alt="({{szn|upper}})" /></h2>
+    <h2><img src="/static/season/{{szn|upper}}.png" alt="({{szn|upper}})" /></h2>
     <button onclick="toggle('#spoilers-{{szn}} > .togglable')">Glimpse Spoilers</button>
 
     <table class="collapse togglable">

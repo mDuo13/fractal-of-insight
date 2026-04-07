@@ -1,9 +1,9 @@
 # Create a slugs json file for FRⱯCTL
 import json
 
-from datalayer import carddata
+from fractal.datalayer import carddata
+from fractal.cardstats import ALL_CARD_STATS
 from main import PageBuilder
-from cardstats import ALL_CARD_STATS
 
 b = PageBuilder()
 b.read_events()

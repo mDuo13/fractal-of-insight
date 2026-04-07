@@ -8,18 +8,17 @@ import os.path
 from math import ceil
 from collections import defaultdict
 
-import config
-from datalayer import carddata, get_event, get_card_img, get_card_price, format_price, write_similarity_cache
-from shared import slugify, OVERALL, REGIONS, ms_to_date
-from omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
-from season import Season, SEASONS, Format, FORMATS
-from competition import EVENT_TYPES, TEAM_STANDARD
-from player import Player
-from archetypes import ARCHETYPES, NO_ARCHETYPE, MAT_DIFF_CARD_LIMIT, MAIN_DIFF_CARD_LIMIT, SIDE_DIFF_CARD_LIMIT, RISING_CARD_LIMIT
-from spoiler import SpoilerEvent, SPOILER_SEASONS
-from cards import ERRATA, BANLIST
-from cardstats import ALL_CARD_STATS, PAD_UNTIL
-from achievements import ACHIEVEMENTS, GAS, REFRACTED_ACHIEVEMENTS, REFRACTED_ARTISTS
+import fractal.config as config
+from fractal.datalayer import carddata, get_event, get_card_img, get_card_price, format_price, write_similarity_cache
+from fractal.shared import slugify, OVERALL, REGIONS, ms_to_date, EVENT_TYPES, TEAM_STANDARD
+from fractal.omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
+from fractal.season import Season, SEASONS, Format, FORMATS
+from fractal.player import Player
+from fractal.archetypes import ARCHETYPES, NO_ARCHETYPE, MAT_DIFF_CARD_LIMIT, MAIN_DIFF_CARD_LIMIT, SIDE_DIFF_CARD_LIMIT, RISING_CARD_LIMIT
+# from fractal.spoiler import SpoilerEvent, SPOILER_SEASONS
+from fractal.cards import ERRATA, BANLIST
+from fractal.cardstats import ALL_CARD_STATS, PAD_UNTIL
+from fractal.achievements import ACHIEVEMENTS, GAS, REFRACTED_ACHIEVEMENTS, REFRACTED_ARTISTS
 
 SIGHTINGS_PER_PAGE = 200
 CARD_SIGHTINGS_PER_PAGE = 100
@@ -392,12 +391,12 @@ class PageBuilder:
         self.write_refracted_form()
         self.write_refracted_about()
 
-        spoilers = {}
-        for entry in os.scandir("./data/spoilers"):
-            if entry.is_dir() and len(entry.name) == 3:
-                szn = entry.name.lower()
-                spoilers[szn] = SpoilerEvent(szn)
-        self.write_spoilers(spoilers)
+        # spoilers = {}
+        # for entry in os.scandir("./data/spoilers"):
+        #     if entry.is_dir() and len(entry.name) == 3:
+        #         szn = entry.name.lower()
+        #         spoilers[szn] = SpoilerEvent(szn)
+        # self.write_spoilers(spoilers)
 
         self.render("index.html.jinja2", "index.html", seasons=seasons_sorted)
 

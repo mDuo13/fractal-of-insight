@@ -4,6 +4,13 @@ UPSET_CUTOFF = 50 # Elo difference to consider something an upset
 TEMPLATE_DIR = "./template/"
 SUBTYPE_MATCH_MIN = 10 # Number of "true" matches a sub-archetype needs to be considered notable enough to show up in a battlechart
 
+# Card & deck stats settings
+HOT_WINDOW = 60*60*24*61 # last ~60 days in seconds, for "Hot" card numbers
+PAD_UNTIL = 500 # Minimum number of appearances for a card to be eligible for "winningest" list
+M_PER_APP = 6 # Empirically, an average "appearance" consists of ~5.9 matches.
+MAX_TOP_USERS = 10 # How many players can be considered "top users" of a card.
+PAD_HOT_MATCHES = 500 # for hot cards, weight for this many *matches* (not appearances)
+
 # Crawler settings
 CRAWLER_FILE = "./data/crawler.json"
 INTERESTING_PLAYER_COUNT = 20 # Crawler skips events with less than this number

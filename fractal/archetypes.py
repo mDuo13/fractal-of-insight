@@ -3,10 +3,11 @@ from bisect import insort
 from logging import warning
 from time import time
 
-from config import SharedConfig
-from shared import ElementStats, ChampStats, lineage, HOT_WINDOW, SPIRIT_ONLY
-from cards import BANLIST, REMOVED_FROM_PRXY
-from datalayer import get_card_img, get_card_price
+from .config import SharedConfig, HOT_WINDOW
+from .shared import lineage, SPIRIT_ONLY
+from .stats import ElementStats, ChampStats
+from .cards import BANLIST, REMOVED_FROM_PRXY
+from .datalayer import get_card_img, get_card_price
 
 SIMILAR_DECKS_CUTOFF = 85
 MAT_DIFF_CARD_LIMIT = 12

@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from datalayer import get_card_img
+from .datalayer import get_card_img
 
 class Achievement:
     def __init__(self, name, emoji, description, skip_date=False, 

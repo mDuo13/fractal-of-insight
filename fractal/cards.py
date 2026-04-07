@@ -29,6 +29,7 @@ ERRATA = {
         "before": 1722841200000, # 2024-08-05
         "img": "https://api.gatcg.com/cards/images/stonescale-band-prxy-002.jpg"
     },
+    
     "Scepter of Lumina": {
         "before": 1741334400000, #2025-03-07
         "img": "https://api.gatcg.com/cards/images/scepter-of-lumina-prxy-001.jpg"
@@ -51,6 +52,7 @@ BANLIST = [
     "Dissonant Fractal",
     "Lost in Thought",
     "Rile the Abyss",
+    "Unmake Duality",
 ]
 
 REMOVED_FROM_PRXY = {

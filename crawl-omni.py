@@ -5,8 +5,8 @@ import json
 import requests
 from time import sleep, time
 
-import config
-from datalayer import get_event, get_deck, save_event_json, EventNotFound, NoDeck
+from fractal import config
+from fractal.datalayer import get_event, get_deck, save_event_json, EventNotFound, NoDeck
 
 try:
     with open(config.CRAWLER_FILE) as f:
@@ -37,7 +37,7 @@ def due_for_update(evt_data, refresh_all_stale=False):
         return True
     if refresh_all_stale and evt_data.get("status") == "stale":
         return True
-    if evt_data.get("status") in ("complete", "stale", "canceled", "deleted", "canceled-suspended"):
+    if evt_data.get("status") in ("complete", "stale", "canceled", "deleted", "canceled-suspended", "canceled-reset"):
         return False
     #return True
 
