@@ -30,7 +30,7 @@
 <!-- DECKLISTS -->
 {% for szn,evt in spoilers.items() %}
 {% for p in evt.players %}
-{{ macros.decklist(p, "deck_"~szn.lower()~"_"~p.id ) }}
+{{ macros.decklist(p, "deck_"~szn.lower()~"_"~p.id, is_first=loop.first, is_last=loop.last) }}
 {% endfor %}
 {% endfor %}
 

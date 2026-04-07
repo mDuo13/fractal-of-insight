@@ -209,6 +209,9 @@ class BCRow:
     def __getitem__(self, key):
         return self.cols[key]
 
+    def has(self, key):
+        return key in self.cols.keys()
+
 class BattleChart:
     def __init__(self):
         self.rows = keydefaultdict(BCRow)

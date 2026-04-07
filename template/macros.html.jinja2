@@ -421,7 +421,7 @@
 </div>
 {% endmacro %}
 
-{% macro decklist(p, id, event=None, external=False, use_topcut_deck=False) %}
+{% macro decklist(p, id, event=None, external=False, use_topcut_deck=False, is_first=False, is_last=False) %}
 {% set id_swiss = id %}
 {% set id_topcut = id~"_topcut" %}
 {% if use_topcut_deck %}
@@ -431,6 +431,7 @@
 {% set deck = p.deck %}
 {% endif %}
 <div class="decklist collapse" id="{{id}}">
+    <button class="prev-deck-btn" onclick="show_previous_deck(this)" title="Previous deck"{% if is_first %} disabled="disabled"{% endif %}>⏮</button>
     <div class="decklist-inner">
         <button class="closeX" onclick="closedecklist('#{{id}}')">❌</button>
         <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
@@ -586,6 +587,7 @@
         {% endif %}
 
     </div>
+    <button class="next-deck-btn" onclick="show_next_deck(this)"{% if is_last %} disabled="disabled"{% endif %} title="Next deck">⏭</button>
 </div>
 {% endmacro %}
 

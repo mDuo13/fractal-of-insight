@@ -182,10 +182,19 @@
 </section>
 
 <!-- DECKLISTS -->
-{% for p in evt.players %}
-{% if p.deck %}
-{{ macros.decklist(p, "deck_"~p.id, evt) }}
-{% endif %}
+{% for t in evt.top_cut %}
+    {% set is_first_team = loop.first %}
+    {% for p in t.members %}
+{{ macros.decklist(p, "deck_"~p.id, evt, is_first=(is_first_team and loop.first)) }}
+    {% endfor %}
+{% endfor %}
+{% for t in evt.teams.values() %}
+    {% set is_last_team = loop.last %}
+    {% if not evt.top_cut|length or loop.index > evt.top_cut|length %}
+        {% for p in t.members %}
+{{ macros.decklist(p, "deck_"~p.id, evt, is_last=(is_last_team and loop.last)) }}
+        {% endfor %}
+    {% endif %}
 {% endfor %}
 
 {% endblock %}

@@ -78,7 +78,7 @@
                         </td>
                         <td>{{quant}}</td>
                         <td>{{pct}}%</td>
-                        <td>{{szn.battlechart[archename].overall_pct}}%</td>
+                        <td>{% if szn.battlechart.has_data_for(archename) %}{{szn.battlechart[archename].overall_pct}}%{% else %}N/A{% endif %}</td>
                         <td>{{szn.arche_wins[archename]|length}}</td>
                     </tr>
                     {% endfor %}

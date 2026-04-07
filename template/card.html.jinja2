@@ -145,9 +145,9 @@
 <!-- DECKLISTS -->
 {% for e in cardstat.appearances[page_start:page_end] %}
 {% if e.deck and e.deck.is_topcut_deck %}
-{{ macros.decklist(e, "deck_"~e.evt_id~"_"~e.id, events[e.evt_id], True, use_topcut_deck=True) }}
+{{ macros.decklist(e, "deck_"~e.evt_id~"_"~e.id, events[e.evt_id], True, use_topcut_deck=True, is_first=loop.first, is_last=loop.last) }}
 {% else %}
-{{ macros.decklist(e, "deck_"~e.evt_id~"_"~e.id, events[e.evt_id], True) }}
+{{ macros.decklist(e, "deck_"~e.evt_id~"_"~e.id, events[e.evt_id], True, is_first=loop.first, is_last=loop.last) }}
 {% endif %}
 {% endfor %}
 

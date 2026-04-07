@@ -47,7 +47,7 @@ def get_deck(p_id, evt_id, public_on_omni):
             with open(f"data/event_{evt_id}/deck_{p_id}.json") as f:
                 dl = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
-            if not public_on_omni or evt_id==384: #Special case for Ascent Ontario which was before Omni supported decklists
+            if not public_on_omni or int(evt_id) == 384: #Special case for Ascent Ontario which was before Omni supported decklists
                 raise NoDeck()
             print(f"Downloading #{p_id}'s decklist...")
             dl_raw = fetch(f"https://omni.gatcg.com/api/events/decklist?id={evt_id}&player={p_id}")
@@ -279,6 +279,8 @@ def is_valid_in_decklists(cardname):
     if "TOKEN" in card["types"]:
         return False
     if "MASTERY" in card["types"]:
+        return False
+    if "STATUS" in card["types"]:
         return False
     return True
 

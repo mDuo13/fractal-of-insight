@@ -77,7 +77,7 @@
         {% endfor %}
     {% else %}
         <thead><tr>
-            <th>Rank</th><th>Player</th><th>Swiss Record</th><th>Deck</th><th class="elodiff">Elo</span></th><th class="showmatches">Matches</th>
+            <th>Rank</th><th>Player</th><th>Swiss Record</th><th>Deck</th><th class="elodiff">Elo</th><th class="showmatches">Matches</th>
         </tr></thead>
         <tbody>
         {% for p in evt.top_cut %}
@@ -357,12 +357,18 @@
 </section>
 
 <!-- DECKLISTS -->
-{% for p in evt.players %}
-{% if p.deck %}
-{{ macros.decklist(p, "deck_"~p.id, evt) }}
-{% endif %}
+{% for p in evt.top_cut %}
 {% if p.topcut_deck %}
-{{ macros.decklist(p, "deck_"~p.id, evt, use_topcut_deck=True) }}
+{{ macros.decklist(p, "deck_"~p.id, evt, use_topcut_deck=True, is_first=loop.first) }}
+{% elif p.deck %}
+{{ macros.decklist(p, "deck_"~p.id, evt, is_first=loop.first) }}
+{% endif %}
+{% endfor %}
+{% for p in evt.players %}
+{% if evt.category.shortname == "worlds" or not evt.top_cut|length or p not in evt.top_cut %}
+{% if p.deck %}
+{{ macros.decklist(p, "deck_"~p.id, evt, is_first=(loop.first and not evt.top_cut|length), is_last=loop.last) }}
+{% endif %}
 {% endif %}
 {% endfor %}
 

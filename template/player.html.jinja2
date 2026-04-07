@@ -106,10 +106,10 @@
 <!-- DECKLISTS -->
 {% for p in player.events %}
 {% if p.deck %}
-{{ macros.decklist(p, "deck_"~p.evt_id, events[p.evt_id], True) }}
+{{ macros.decklist(p, "deck_"~p.evt_id, events[p.evt_id], True, is_first=loop.first, is_last=loop.last) }}
 {% endif %}
 {% if p.topcut_deck %}
-{{ macros.decklist(p, "deck_"~p.evt_id, events[p.evt_id], True, use_topcut_deck=True) }}
+{{ macros.decklist(p, "deck_"~p.evt_id, events[p.evt_id], True, use_topcut_deck=True, is_first=loop.first, is_last=loop.last) }}
 {% endif %}
 {% endfor %}
 

@@ -426,6 +426,25 @@ function make_tables_sortable() {
     }
 }
 
+function show_previous_deck(btn) {
+    const thisdeck = btn.closest(".decklist")
+    const newdeck = thisdeck.previousElementSibling
+    if (!newdeck || !newdeck.classList.contains("decklist")) {
+        return false
+    }
+    unsettitle()
+    opendecklist(`#${newdeck.id}`)
+}
+function show_next_deck(btn) {
+    const thisdeck = btn.closest(".decklist")
+    const newdeck = thisdeck.nextElementSibling
+    if (!newdeck || !newdeck.classList.contains("decklist")) {
+        return false
+    }
+    unsettitle()
+    opendecklist(`#${newdeck.id}`)
+}
+
 ready(() => {
     // Open hash on page-load
     if (window.location.hash) {
@@ -479,3 +498,4 @@ ready(() => {
     document.querySelectorAll(".player-omni-avatar").forEach(populate_avatar)
     make_tables_sortable()
 })
+

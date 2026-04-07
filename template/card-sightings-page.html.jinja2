@@ -45,7 +45,7 @@
 
 <!-- DECKLISTS -->
 {% for e in cardstat.appearances[page_start:page_end] %}
-{{ macros.decklist(e, "deck_"~e.evt_id~"_"~e.id, events[e.evt_id], True) }}
+{{ macros.decklist(e, "deck_"~e.evt_id~"_"~e.id, events[e.evt_id], True, is_first=loop.first, is_last=loop.last) }}
 {% endfor %}
 
 {% endblock %}
