@@ -29,3 +29,4 @@ This site shows information and analysis of Grand Archive tournament results. It
 - improve display of About Refracted Events page.
 - add an icon & other styles to highlight Refracted events
 - add spoilers for RDO season
+- add keyboard shortcuts like Esc to close decklist

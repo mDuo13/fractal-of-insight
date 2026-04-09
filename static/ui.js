@@ -445,6 +445,12 @@ function show_next_deck(btn) {
     opendecklist(`#${newdeck.id}`)
 }
 
+function close_all(event) {
+    if (event.key === "Escape") {
+        closedecklist(".decklist")
+    }
+}
+
 ready(() => {
     // Open hash on page-load
     if (window.location.hash) {
@@ -497,5 +503,7 @@ ready(() => {
 
     document.querySelectorAll(".player-omni-avatar").forEach(populate_avatar)
     make_tables_sortable()
+
+    document.addEventListener('keydown', close_all)
 })
 
