@@ -1,7 +1,7 @@
 import json
 from os import scandir
 
-from .cards import REMOVED_FROM_PRXY
+from .cards import REMOVED_FROM_PRXY, INTRODUCED_IN_PRXY
 from .shared import fix_case
 
 CARDS_FOLDER = "./data/index/"
@@ -75,6 +75,10 @@ class CardDB:
                         break
     
     def add_set_introduced(self, card):
+        if card["name"] in INTRODUCED_IN_PRXY:
+            card["set_introduced"] = "Other"
+            return
+
         in_sets = [ed["set"]["prefix"] for ed in card["editions"]]
         found_sg = False
         for prefix in in_sets:

@@ -126,16 +126,15 @@ class Deck:
         Set the list of basic elements provided by the deck's spirit(s).
         Doesn't count main deck, Lv1+ champs, or sideboard.
         """
-        els = []
+        elset = set()
         for spirit in self.spirits:
-            for element in ELEMENTS:
-                if element in spirit:
-                    if element not in els:
-                        els.append(element)
-                    break
-        if not els:
-            els.append("Norm")
-        self.els = els
+            spiritcard = carddata[spirit]
+            spirit_els = [e.title() for e in spiritcard.get("elements",[])]
+            elset.update(spirit_els)
+        if not elset:
+            # probably a spiritless decklist error
+            elset = {"Norm"}
+        self.els = list(elset)
 
     def fix_card_o(self, card_o):
         """

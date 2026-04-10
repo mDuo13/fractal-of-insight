@@ -55,6 +55,16 @@ BANLIST = [
     "Unmake Duality",
 ]
 
+INTRODUCED_IN_PRXY = [
+    # Cards that were first introduced via Proxia's Vault and then later
+    # printed in a non-Proxia's Vault set
+    "Nullifying Mirror",
+    "Purifying Thurible",
+    "Zander, Deft Executor",
+    "Polaris, Twinkling Cauldron",
+    "Insignia of the Corhazi",
+]
+
 REMOVED_FROM_PRXY = {
     # "Purifying Thurible": "_PRXY_with_Thurible.json" # returned via PTM
 }
