@@ -136,8 +136,8 @@ class Format(Season):
 
 
 SEASONS = {
-    "Offseason": "OFF",
     "Radiant Origins": "RDO",
+    "Offseason": "OFF",
     "Phantom Monarchs": "PTM",
     "Distorted Reflections": "DTR",
     "Abyssal Heaven": "HVN",

@@ -689,6 +689,21 @@ crux.add_subtype(
     ["Merlin, Kingslayer"],
     shortname=""
 )
+crux.add_subtype(
+    "Hybrid",
+    ["Merlin, Kingslayer"],
+    require_combos=[
+        [
+            "Merlin, Kingslayer",
+            "Lorraine, Crux Knight",
+        ],
+        [
+            "Merlin, Kingslayer",
+            "Lorraine, Spirit Ruler",
+        ]
+    ],
+    shortname=""
+)
 
 add_archetype(
     "Crux Assassin",
@@ -740,7 +755,6 @@ add_archetype(
     ]
 )
 
-# Keep an eye on if Tera and non-Tera beasts should stay together.
 add_archetype(
     "Beast",
     [
@@ -788,7 +802,10 @@ add_archetype(
     [
         "Wayfinder's Map",
         "The Eternal Kingdom",
-    ]
+    ],
+    require_types={
+        "DOMAIN": 10
+    },
 )
 
 add_archetype(
@@ -925,6 +942,9 @@ teradiao = add_archetype(
         "Bloom: Winter's Chill",
         "Maiden of Primal Virtue",
     ],
+    exclude_cards=[
+        "Kongming, Fel Eidolon",
+    ],
     shortname="Tera",
 )
 
@@ -965,6 +985,10 @@ add_archetype(
         [
             "Baleful Oblation",
             "Advent of the Stormcaller",
+        ],
+        [
+            "Baleful Oblation",
+            "Golden Checkmate",
         ]
     ]
 )
@@ -1155,4 +1179,20 @@ umbra_alice = add_archetype(
         "Diana, Cursebreaker",
         "Diana, Duskstalker",
     ]
+)
+
+# add_archetype(
+#     "Whirlpool Mill",
+#     [
+#         "Dynastic Whirlpool",
+#     ],
+#     shortname="Mill",
+# )
+
+add_archetype(
+    "Luxem Mordred",
+    [
+        "Luminescent Slash"
+    ],
+    shortname="Luxem",
 )

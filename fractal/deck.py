@@ -123,8 +123,10 @@ class Deck:
 
     def find_elements(self):
         """
-        Set the list of basic elements provided by the deck's spirit(s).
-        Doesn't count main deck, Lv1+ champs, or sideboard.
+        Set the list of basic elements provided by the deck's spirit(s) in
+        self.els.
+        
+        Set the list of advanced elements in self.advanced_els
         """
         elset = set()
         for spirit in self.spirits:
@@ -135,6 +137,29 @@ class Deck:
             # probably a spiritless decklist error
             elset = {"Norm"}
         self.els = list(elset)
+
+        # # Find advanced elements in maindeck
+        # # Though, Looking Glass / Distortions makes this complicated
+        # adv_elset = set()
+        # for card_o in self.main:
+        #     card = carddata[card_o["card"]]
+        #     for el in card.get("elements",[]):
+        #         if el.title() not in ELEMENTS:
+        #             adv_elset.add(el.title())
+        
+        # # Find advanced elements enabled by champions
+        # adv_elchamps = set()
+        # for card_o in self.mat:
+        #     card = carddata[card_o["card"]]
+        #     if "CHAMPION" in card.get("types",[]):
+        #         for el in card.get("elements", []):
+        #             if el.title() not in ELEMENTS:
+        #                 adv_elchamps.add(el.title())
+        # # Add Exalted if the champ has any advanced element
+        # if len(adv_elchamps):
+        #     adv_elchamps.add("Exalted")
+
+        # self.advanced_els = list(adv_elset & adv_elchamps)
 
     def fix_card_o(self, card_o):
         """
