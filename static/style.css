@@ -1639,3 +1639,255 @@ a.achievement {
 .a {
     padding-left: 20px;
 }
+
+/* Holo-foil effects */
+.cardimg, .decklist .cardimg {
+    display: inline-grid;
+}
+.cardfront {
+    display: grid;
+    grid-area: 1/1;
+}
+
+.foil-glare {
+    overflow: hidden;
+    background-image: radial-gradient( farthest-corner circle at var(--glare-x) var(--glare-y), #fffc 10%, #ffffffa6 20%, #00000080 90% );
+    mix-blend-mode: overlay;
+    grid-area: 1/1;
+    will-change: background-image;
+}
+.foil-glow {
+    grid-area: 1/1;
+    background-image: repeating-linear-gradient(in hsl longer hue 22deg, red 0 50%);
+    mix-blend-mode: soft-light;
+    background-size: 300% 400%, auto;
+    background-position-x: calc(100% - var(--glow-x));
+    background-position-y: calc(100% - var(--glow-y));
+    will-change: background-position;
+    opacity: 35%;
+}
+
+@property --glare-x {
+    syntax: '<percentage>';
+    initial-value: 0;
+    inherits: false;
+}
+@property --glare-y {
+    syntax: '<percentage>';
+    initial-value: 0;
+    inherits: false;
+}
+
+@keyframes foilShine {
+    0% {--glare-x: 0%; --glare-y: 0%}
+    1% {--glare-x: 1%; --glare-y: 1%}
+    2% {--glare-x: 2%; --glare-y: 2%}
+    3% {--glare-x: 3%; --glare-y: 3%}
+    4% {--glare-x: 4%; --glare-y: 4%}
+    5% {--glare-x: 5%; --glare-y: 5%}
+    6% {--glare-x: 6%; --glare-y: 6%}
+    7% {--glare-x: 7%; --glare-y: 7%}
+    8% {--glare-x: 8%; --glare-y: 8%}
+    9% {--glare-x: 9%; --glare-y: 9%}
+    10% {--glare-x: 10%; --glare-y: 10%}
+    11% {--glare-x: 11%; --glare-y: 11%}
+    12% {--glare-x: 12%; --glare-y: 12%}
+    13% {--glare-x: 13%; --glare-y: 13%}
+    14% {--glare-x: 14%; --glare-y: 14%}
+    15% {--glare-x: 15%; --glare-y: 15%}
+    16% {--glare-x: 16%; --glare-y: 16%}
+    17% {--glare-x: 17%; --glare-y: 17%}
+    18% {--glare-x: 18%; --glare-y: 18%}
+    19% {--glare-x: 19%; --glare-y: 19%}
+    20% {--glare-x: 20%; --glare-y: 20%}
+    21% {--glare-x: 21%; --glare-y: 21%}
+    22% {--glare-x: 22%; --glare-y: 22%}
+    23% {--glare-x: 23%; --glare-y: 23%}
+    24% {--glare-x: 24%; --glare-y: 24%}
+    25% {--glare-x: 25%; --glare-y: 25%}
+    26% {--glare-x: 26%; --glare-y: 26%}
+    27% {--glare-x: 27%; --glare-y: 27%}
+    28% {--glare-x: 28%; --glare-y: 28%}
+    29% {--glare-x: 29%; --glare-y: 29%}
+    30% {--glare-x: 30%; --glare-y: 30%}
+    31% {--glare-x: 31%; --glare-y: 31%}
+    32% {--glare-x: 32%; --glare-y: 32%}
+    33% {--glare-x: 33%; --glare-y: 33%}
+    34% {--glare-x: 34%; --glare-y: 34%}
+    35% {--glare-x: 35%; --glare-y: 35%}
+    36% {--glare-x: 36%; --glare-y: 36%}
+    37% {--glare-x: 37%; --glare-y: 37%}
+    38% {--glare-x: 38%; --glare-y: 38%}
+    39% {--glare-x: 39%; --glare-y: 39%}
+    40% {--glare-x: 40%; --glare-y: 40%}
+    41% {--glare-x: 41%; --glare-y: 41%}
+    42% {--glare-x: 42%; --glare-y: 42%}
+    43% {--glare-x: 43%; --glare-y: 43%}
+    44% {--glare-x: 44%; --glare-y: 44%}
+    45% {--glare-x: 45%; --glare-y: 45%}
+    46% {--glare-x: 46%; --glare-y: 46%}
+    47% {--glare-x: 47%; --glare-y: 47%}
+    48% {--glare-x: 48%; --glare-y: 48%}
+    49% {--glare-x: 49%; --glare-y: 49%}
+    50% {--glare-x: 50%; --glare-y: 50%}
+    51% {--glare-x: 51%; --glare-y: 51%}
+    52% {--glare-x: 52%; --glare-y: 52%}
+    53% {--glare-x: 53%; --glare-y: 53%}
+    54% {--glare-x: 54%; --glare-y: 54%}
+    55% {--glare-x: 55%; --glare-y: 55%}
+    56% {--glare-x: 56%; --glare-y: 56%}
+    57% {--glare-x: 57%; --glare-y: 57%}
+    58% {--glare-x: 58%; --glare-y: 58%}
+    59% {--glare-x: 59%; --glare-y: 59%}
+    60% {--glare-x: 60%; --glare-y: 60%}
+    61% {--glare-x: 61%; --glare-y: 61%}
+    62% {--glare-x: 62%; --glare-y: 62%}
+    63% {--glare-x: 63%; --glare-y: 63%}
+    64% {--glare-x: 64%; --glare-y: 64%}
+    65% {--glare-x: 65%; --glare-y: 65%}
+    66% {--glare-x: 66%; --glare-y: 66%}
+    67% {--glare-x: 67%; --glare-y: 67%}
+    68% {--glare-x: 68%; --glare-y: 68%}
+    69% {--glare-x: 69%; --glare-y: 69%}
+    70% {--glare-x: 70%; --glare-y: 70%}
+    71% {--glare-x: 71%; --glare-y: 71%}
+    72% {--glare-x: 72%; --glare-y: 72%}
+    73% {--glare-x: 73%; --glare-y: 73%}
+    74% {--glare-x: 74%; --glare-y: 74%}
+    75% {--glare-x: 75%; --glare-y: 75%}
+    76% {--glare-x: 76%; --glare-y: 76%}
+    77% {--glare-x: 77%; --glare-y: 77%}
+    78% {--glare-x: 78%; --glare-y: 78%}
+    79% {--glare-x: 79%; --glare-y: 79%}
+    80% {--glare-x: 80%; --glare-y: 80%}
+    81% {--glare-x: 81%; --glare-y: 81%}
+    82% {--glare-x: 82%; --glare-y: 82%}
+    83% {--glare-x: 83%; --glare-y: 83%}
+    84% {--glare-x: 84%; --glare-y: 84%}
+    85% {--glare-x: 85%; --glare-y: 85%}
+    86% {--glare-x: 86%; --glare-y: 86%}
+    87% {--glare-x: 87%; --glare-y: 87%}
+    88% {--glare-x: 88%; --glare-y: 88%}
+    89% {--glare-x: 89%; --glare-y: 89%}
+    90% {--glare-x: 90%; --glare-y: 90%}
+    91% {--glare-x: 91%; --glare-y: 91%}
+    92% {--glare-x: 92%; --glare-y: 92%}
+    93% {--glare-x: 93%; --glare-y: 93%}
+    94% {--glare-x: 94%; --glare-y: 94%}
+    95% {--glare-x: 95%; --glare-y: 95%}
+    96% {--glare-x: 96%; --glare-y: 96%}
+    97% {--glare-x: 97%; --glare-y: 97%}
+    98% {--glare-x: 98%; --glare-y: 98%}
+    99% {--glare-x: 99%; --glare-y: 99%}
+    100% {--glare-x: 100%; --glare-y: 100%}
+}
+@keyframes foilRainbow {
+    0% {--glow-x: 0%; --glow-y: 0%}
+    1% {--glow-x: 1%; --glow-y: 1%}
+    2% {--glow-x: 2%; --glow-y: 2%}
+    3% {--glow-x: 3%; --glow-y: 3%}
+    4% {--glow-x: 4%; --glow-y: 4%}
+    5% {--glow-x: 5%; --glow-y: 5%}
+    6% {--glow-x: 6%; --glow-y: 6%}
+    7% {--glow-x: 7%; --glow-y: 7%}
+    8% {--glow-x: 8%; --glow-y: 8%}
+    9% {--glow-x: 9%; --glow-y: 9%}
+    10% {--glow-x: 10%; --glow-y: 10%}
+    11% {--glow-x: 11%; --glow-y: 11%}
+    12% {--glow-x: 12%; --glow-y: 12%}
+    13% {--glow-x: 13%; --glow-y: 13%}
+    14% {--glow-x: 14%; --glow-y: 14%}
+    15% {--glow-x: 15%; --glow-y: 15%}
+    16% {--glow-x: 16%; --glow-y: 16%}
+    17% {--glow-x: 17%; --glow-y: 17%}
+    18% {--glow-x: 18%; --glow-y: 18%}
+    19% {--glow-x: 19%; --glow-y: 19%}
+    20% {--glow-x: 20%; --glow-y: 20%}
+    21% {--glow-x: 21%; --glow-y: 21%}
+    22% {--glow-x: 22%; --glow-y: 22%}
+    23% {--glow-x: 23%; --glow-y: 23%}
+    24% {--glow-x: 24%; --glow-y: 24%}
+    25% {--glow-x: 25%; --glow-y: 25%}
+    26% {--glow-x: 26%; --glow-y: 26%}
+    27% {--glow-x: 27%; --glow-y: 27%}
+    28% {--glow-x: 28%; --glow-y: 28%}
+    29% {--glow-x: 29%; --glow-y: 29%}
+    30% {--glow-x: 30%; --glow-y: 30%}
+    31% {--glow-x: 31%; --glow-y: 31%}
+    32% {--glow-x: 32%; --glow-y: 32%}
+    33% {--glow-x: 33%; --glow-y: 33%}
+    34% {--glow-x: 34%; --glow-y: 34%}
+    35% {--glow-x: 35%; --glow-y: 35%}
+    36% {--glow-x: 36%; --glow-y: 36%}
+    37% {--glow-x: 37%; --glow-y: 37%}
+    38% {--glow-x: 38%; --glow-y: 38%}
+    39% {--glow-x: 39%; --glow-y: 39%}
+    40% {--glow-x: 40%; --glow-y: 40%}
+    41% {--glow-x: 41%; --glow-y: 41%}
+    42% {--glow-x: 42%; --glow-y: 42%}
+    43% {--glow-x: 43%; --glow-y: 43%}
+    44% {--glow-x: 44%; --glow-y: 44%}
+    45% {--glow-x: 45%; --glow-y: 45%}
+    46% {--glow-x: 46%; --glow-y: 46%}
+    47% {--glow-x: 47%; --glow-y: 47%}
+    48% {--glow-x: 48%; --glow-y: 48%}
+    49% {--glow-x: 49%; --glow-y: 49%}
+    50% {--glow-x: 50%; --glow-y: 50%}
+    51% {--glow-x: 51%; --glow-y: 51%}
+    52% {--glow-x: 52%; --glow-y: 52%}
+    53% {--glow-x: 53%; --glow-y: 53%}
+    54% {--glow-x: 54%; --glow-y: 54%}
+    55% {--glow-x: 55%; --glow-y: 55%}
+    56% {--glow-x: 56%; --glow-y: 56%}
+    57% {--glow-x: 57%; --glow-y: 57%}
+    58% {--glow-x: 58%; --glow-y: 58%}
+    59% {--glow-x: 59%; --glow-y: 59%}
+    60% {--glow-x: 60%; --glow-y: 60%}
+    61% {--glow-x: 61%; --glow-y: 61%}
+    62% {--glow-x: 62%; --glow-y: 62%}
+    63% {--glow-x: 63%; --glow-y: 63%}
+    64% {--glow-x: 64%; --glow-y: 64%}
+    65% {--glow-x: 65%; --glow-y: 65%}
+    66% {--glow-x: 66%; --glow-y: 66%}
+    67% {--glow-x: 67%; --glow-y: 67%}
+    68% {--glow-x: 68%; --glow-y: 68%}
+    69% {--glow-x: 69%; --glow-y: 69%}
+    70% {--glow-x: 70%; --glow-y: 70%}
+    71% {--glow-x: 71%; --glow-y: 71%}
+    72% {--glow-x: 72%; --glow-y: 72%}
+    73% {--glow-x: 73%; --glow-y: 73%}
+    74% {--glow-x: 74%; --glow-y: 74%}
+    75% {--glow-x: 75%; --glow-y: 75%}
+    76% {--glow-x: 76%; --glow-y: 76%}
+    77% {--glow-x: 77%; --glow-y: 77%}
+    78% {--glow-x: 78%; --glow-y: 78%}
+    79% {--glow-x: 79%; --glow-y: 79%}
+    80% {--glow-x: 80%; --glow-y: 80%}
+    81% {--glow-x: 81%; --glow-y: 81%}
+    82% {--glow-x: 82%; --glow-y: 82%}
+    83% {--glow-x: 83%; --glow-y: 83%}
+    84% {--glow-x: 84%; --glow-y: 84%}
+    85% {--glow-x: 85%; --glow-y: 85%}
+    86% {--glow-x: 86%; --glow-y: 86%}
+    87% {--glow-x: 87%; --glow-y: 87%}
+    88% {--glow-x: 88%; --glow-y: 88%}
+    89% {--glow-x: 89%; --glow-y: 89%}
+    90% {--glow-x: 90%; --glow-y: 90%}
+    91% {--glow-x: 91%; --glow-y: 91%}
+    92% {--glow-x: 92%; --glow-y: 92%}
+    93% {--glow-x: 93%; --glow-y: 93%}
+    94% {--glow-x: 94%; --glow-y: 94%}
+    95% {--glow-x: 95%; --glow-y: 95%}
+    96% {--glow-x: 96%; --glow-y: 96%}
+    97% {--glow-x: 97%; --glow-y: 97%}
+    98% {--glow-x: 98%; --glow-y: 98%}
+    99% {--glow-x: 99%; --glow-y: 99%}
+    100% {--glow-x: 100%; --glow-y: 100%}
+}
+
+html {
+    animation: 2s foilShine infinite alternate;
+}
+body {
+    animation: 3s foilRainbow infinite;
+}
