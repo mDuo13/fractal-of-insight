@@ -30,16 +30,54 @@ TCG_ABBR = {
 }
 
 TCGP_CARDNAMES = {
-    # For cases where the data on TCGPlayer is entered inconsistently.
-    # May need to be updated if/when TCGP fixes their data
-    "Fatestone of Unrelenting // Cheetah of Bound Fury": "Fatestone of Unrelenting",
-    "Craggy Fatestone // Obstinate Cragback": "Craggy Fatestone",
-    "Fatestone of Revelations // Young Wyrmling": "Fatestone of Revelations",
-    "Fatestone of Heaven // Heavenly Drake": "Fatestone of Heaven",
-    "Companion Fatestone // Fatebound Caracal": "Companion Fatestone",
-    "Lavaplume Fatestone // Firebird Trailblazer": "Lavaplume Fatestone",
+    # For cases where the data on TCGPlayer is entered inconsistently or has
+    # additional info like variant number added to the card name.
+    # May need to be updated if/when TCGP fixes their data.
+    # Many DFCs incorrectly have separate listings per face.
+    # Technically I could add curio foil and CSR entries here too for
+    # completeness, but something is very weird if those are cheaper than the
+    # regular versions.
+    "Fatestone of Unrelenting // Cheetah of Bound Fury": [
+        "Fatestone of Unrelenting",
+        "Cheetah of Bound Fury",
+    ],
+    "Craggy Fatestone // Obstinate Cragback": [
+        "Craggy Fatestone",
+        "Obstinate Cragback",
+    ],
+    "Fatestone of Revelations // Young Wyrmling": [
+        "Fatestone of Revelations",
+        "Young Wyrmling",
+    ],
+    "Fatestone of Heaven // Heavenly Drake": [
+        "Fatestone of Heaven",
+        "Heavenly Drake",
+    ],
+    "Companion Fatestone // Fatebound Caracal": [
+        "Companion Fatestone",
+        "Fatebound Caracal",
+    ],
+    "Lavaplume Fatestone // Firebird Trailblazer": [
+        "Lavaplume Fatestone",
+        "Firebird Trailblazer",
+    ],
     "Wrathful Slime": "WrathfulSlime",
-    "Fabled Azurite Fatestone // Seiryuu, Azure Dragon": "Fabled Azurite Fatestone", #tcgp has both, but the one with the // is the sapphire promo only
-    "Overlapping Visages": "Overlapping Visages (025B)", # arbitrarily picking one
+    "Fabled Azurite Fatestone // Seiryuu, Azure Dragon": [
+        #tcgp has both, but the one with the // is the sapphire promo only
+        "Fabled Azurite Fatestone",
+        "Fabled Azurite Fatestone // Seiryuu, Azure Dragon",
+    ],
+    "Overlapping Visages": [
+        "Overlapping Visages (025A)",
+        "Overlapping Visages (025B)",
+    ],
     "Gemini Starbearer": "Gemini StarBearer",
+    "Angelic Channeling": [
+        "Angelic Channeling (044A)",
+        "Angelic Channeling (044B)",
+    ],
+    "Seraphic Legion's Descent": [
+        "Seraphic Legion's Descent (139A)",
+        "Seraphic Legion's Descent (139B)",
+    ],
 }

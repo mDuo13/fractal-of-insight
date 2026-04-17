@@ -324,8 +324,7 @@ def get_card_price(cardname, sub_prizes=False):
         cardname = PRIZE_EQUIVALENTS[cardname]
     card = carddata[cardname]
     fullname = fix_case(card["fullname"]) # For double-faced cards for example
-    if fullname in TCGP_CARDNAMES.keys():
-        fullname = TCGP_CARDNAMES[fullname]
+    
     prices = []
     for ed in card["editions"]:
         prefix = ed["set"]["prefix"]
@@ -345,11 +344,24 @@ def get_card_price(cardname, sub_prizes=False):
     return None
 
 def low_price_by_edition(fullname, prefix):
+    """
+    Check card listings from TCGP, including multiple listings that have
+    different names due to art variants, editions, or other inconsistencies.
+    Return lowest price of any matched card.
+    """
+    if fullname in TCGP_CARDNAMES.keys():
+        if type(TCGP_CARDNAMES[fullname]) == list:
+            tcgp_names = TCGP_CARDNAMES[fullname]
+        else:
+            tcgp_names = [TCGP_CARDNAMES[fullname]]
+    else:
+        tcgp_names = [fullname]
+
     low_price = None
     if prefix in TCG_ABBR.keys():
         for abbr in TCG_ABBR[prefix]:
             for item in pricedata[abbr].values():
-                if item.get("name") == fullname:
+                if item.get("name") in tcgp_names:
                     new_price = low_price_for_product(item)
                     if not new_price: # could be None for no listings
                         continue
