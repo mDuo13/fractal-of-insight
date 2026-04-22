@@ -260,5 +260,10 @@ add_format("PTM + AMB Alter",
 )
 add_format("RDO Release",
     start="2026-04-03",
+    end="2026-04-20",
     desc="Radiant Origins released alongside Mordred Aurelian Regent Re:Collection deck; Unmake Duality banned."
+)
+add_format("RDO Post-April Bans",
+    start="2026-04-20",
+    desc="Baby Green Slime, Carpsong Coda, and Grim Pastiche banned; Baby Gray Slime unbanned; Mantle of the Abyss received errata."
 )
