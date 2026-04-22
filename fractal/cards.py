@@ -38,6 +38,11 @@ ERRATA = {
     "Polaris, Twinkling Cauldron": {
         "before": 1753419600000, #2025-07-25 in CST
         "img": "https://api.gatcg.com/cards/images/polaris-twinkling-cauldron-prxy-006.jpg"
+    },
+
+    "Mantle of the Abyss": {
+        "before": 1776661200000, #2026-04-20 in CDT
+        "img": "https://api.gatcg.com/cards/images/variants/Px9rTt07vl.jpg"
     }
 }
 
@@ -47,12 +52,15 @@ BANLIST = [
     "Crystal of Empowerment",
     "Corhazi Outlook",
     "Erupting Rhapsody",
-    "Baby Gray Slime",
+#    "Baby Gray Slime", # unbanned!
     "Icebound Slam",
     "Dissonant Fractal",
     "Lost in Thought",
     "Rile the Abyss",
     "Unmake Duality",
+    "Baby Green Slime",
+    "Carpsong Coda",
+    "Grim Pastiche",
 ]
 
 INTRODUCED_IN_PRXY = [

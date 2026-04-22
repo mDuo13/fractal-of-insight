@@ -298,6 +298,7 @@ function reset_search(el) {
     for (const tr of trs) {
         tr.classList.remove("collapse")
     }
+    searchbox.focus()
 }
 
 async function populate_avatar(el) {
