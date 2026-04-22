@@ -1264,15 +1264,15 @@ a.achievement {
 
 #champdisplay {
     display: grid;
-    grid-gap: 10px 18px;
-    grid-template-columns: repeat(auto-fit, 200px);
+    grid-gap: 10px 13px;
+    grid-template-columns: repeat(auto-fit, 197px);
 }
 
 .champslice {
     width: 200px;
     height: 500px;
     border: 2px solid #222;
-    box-shadow: 8px 3px 3px black;
+    box-shadow: var(--main-shadow);
     background-size: cover;
     text-decoration: none;
     color: white;
@@ -1309,10 +1309,22 @@ a.achievement {
 	height: calc(100% - 20px);
 	padding: 10px;
 	text-align: center;
+    border-radius: 0 20px / 35px;
+    background-size: cover;
+    backdrop-filter: blur(5px);
+    overflow: hidden;
 }
 
 .champdisplay-inner b {
     display: block;
+	color: black;
+	text-shadow: 0 1px 2px white, 0 1px 2px white, 0 -1px 2px white, 0 -1px 2px white;
+	font-weight: 800;
+	font-size: 18px;
+}
+
+.champslice:hover .champdisplay-inner {
+	backdrop-filter: blur(5px) brightness(150%) saturate(150%);
 }
 
 .champslice.el-fire {
@@ -1325,60 +1337,214 @@ a.achievement {
     background-color: rgba(123, 185, 91, 0.5);
 }
 
-.champslice.champ-lorraine {
-    background-image: url("champ/lorraine.png");
-}
-.champslice.champ-rai {
-    background-image: url("champ/rai.png");
-}
-.champslice.champ-silvie {
-    background-image: url("champ/silvie.png");
-}
-.champslice.champ-allen {
-    background-image: url("champ/allen.png");
-}
-.champslice.champ-merlin {
-    background-image: url("champ/merlin.png");
-}
-.champslice.champ-guo-jia {
-    background-image: url("champ/guo-jia.png");
-}
-.champslice.champ-diao-chan {
-    background-image: url("champ/diao-chan.png");
-}
-.champslice.champ-alice {
+.champslice.champ-alice .champdisplay-inner {
     background-image: url("champ/alice.png");
 }
-.champslice.champ-tristan {
-    background-image: url("champ/tristan.png");
+.champslice.champ-allen .champdisplay-inner {
+    background-image: url("champ/allen.png");
 }
-.champslice.champ-zander {
-    background-image: url("champ/zander.png");
-}
-.champslice.champ-jin {
-    background-image: url("champ/jin.png");
-}
-.champslice.champ-kongming {
-    background-image: url("champ/kongming.png");
-}
-.champslice.champ-arisanna {
+.champslice.champ-arisanna .champdisplay-inner {
     background-image: url("champ/arisanna.png");
 }
-.champslice.champ-ciel {
+.champslice.champ-ciel .champdisplay-inner {
     background-image: url("champ/ciel.png");
 }
-.champslice.champ-diana {
+.champslice.champ-diana .champdisplay-inner {
     background-image: url("champ/diana.png");
 }
-.champslice.champ-tonoris {
-    background-image: url("champ/tonoris.png");
+.champslice.champ-diana-dtr .champdisplay-inner {
+    background-image: url("champ/diana-dtr.png");
 }
-.champslice.champ-nico {
+.champslice.champ-diao-chan .champdisplay-inner {
+    background-image: url("champ/diao-chan.png");
+}
+.champslice.champ-guo-jia .champdisplay-inner {
+    background-image: url("champ/guo-jia.png");
+}
+.champslice.champ-jin .champdisplay-inner {
+    background-image: url("champ/jin.png");
+}
+.champslice.champ-kongming .champdisplay-inner {
+    background-image: url("champ/kongming.png");
+}
+.champslice.champ-lorraine .champdisplay-inner {
+    background-image: url("champ/lorraine.png");
+}
+.champslice.champ-merlin .champdisplay-inner {
+    background-image: url("champ/merlin.png");
+}
+.champslice.champ-merlin-ptm .champdisplay-inner {
+    background-image: url("champ/merlin-ptm.png");
+}
+.champslice.champ-mordred .champdisplay-inner {
+    background-image: url("champ/mordred.png");
+}
+.champslice.champ-nico .champdisplay-inner {
     background-image: url("champ/nico.png");
 }
-.champslice.champ-vanitas {
+.champslice.champ-polkhawk .champdisplay-inner {
+    background-image: url("champ/polkhawk.png");
+}
+.champslice.champ-rai .champdisplay-inner {
+    background-image: url("champ/rai.png");
+}
+.champslice.champ-silvie .champdisplay-inner {
+    background-image: url("champ/silvie.png");
+}
+.champslice.champ-tonoris .champdisplay-inner {
+    background-image: url("champ/tonoris.png");
+}
+.champslice.champ-tristan .champdisplay-inner {
+    background-image: url("champ/tristan.png");
+}
+.champslice.champ-vanitas .champdisplay-inner {
     background-image: url("champ/vanitas.png");
 }
+.champslice.champ-zander .champdisplay-inner {
+    background-image: url("champ/zander.png");
+}
+.arche-rile {
+    background-image: url("bg/rile.jpg");
+}
+.arche-water-allies {
+    background-image: url("bg/water-allies.jpg");
+}
+.arche-wind-allies {
+    background-image: url("bg/wind-allies.jpg");
+}
+.arche-fire-aggro {
+    background-image: url("bg/fire-aggro.jpg");
+}
+.arche-cinderbloom-combo {
+    background-image: url("bg/cinderbloom-combo.jpg");
+}
+.arche-astra-cleric {
+    background-image: url("bg/astra-cleric.jpg");
+}
+.arche-umbra-ranger {
+    background-image: url("bg/umbra-ranger.jpg");
+}
+.arche-luxem-assassin {
+    background-image: url("bg/luxem-assassin.jpg");
+}
+.arche-erupting {
+    background-image: url("bg/erupting.jpg");
+}
+.arche-ravishing-mill {
+    background-image: url("bg/ravishing-mill.jpg");
+}
+.arche-penguin-mill {
+    background-image: url("bg/penguin-mill.jpg");
+}
+.arche-arcane {
+    background-image: url("bg/arcane.jpg");
+}
+.arche-slimes {
+    background-image: url("bg/slimes.jpg");
+}
+.arche-slice-dice {
+    background-image: url("bg/slice-dice.jpg");
+}
+.arche-crux-warrior {
+    background-image: url("bg/crux-warrior.jpg");
+}
+.arche-crux-assassin {
+    background-image: url("bg/crux-assassin.jpg");
+}
+.arche-shadowstrike {
+    background-image: url("bg/shadowstrike.jpg");
+}
+.arche-neos {
+    background-image: url("bg/neos.jpg");
+}
+.arche-beast {
+    background-image: url("bg/beast.jpg");
+}
+.arche-tera-tamer {
+    background-image: url("bg/tera-tamer.jpg");
+}
+.arche-overlord {
+    background-image: url("bg/overlord.jpg");
+}
+.arche-domains {
+    background-image: url("bg/domains.jpg");
+}
+.arche-exia {
+    background-image: url("bg/exia.jpg");
+}
+.arche-tera-mage {
+    background-image: url("bg/tera-mage.jpg");
+}
+.arche-razorgale {
+    background-image: url("bg/razorgale.jpg");
+}
+.arche-cats {
+    background-image: url("bg/cats.jpg");
+}
+.arche-fractal {
+    background-image: url("bg/fractal.jpg");
+}
+.arche-luxem-tamer {
+    background-image: url("bg/luxem-tamer.jpg");
+}
+.arche-seiryuu {
+    background-image: url("bg/seiryuu.jpg");
+}
+.arche-genbu {
+    background-image: url("bg/genbu.jpg");
+}
+.arche-byakko {
+    background-image: url("bg/byakko.jpg");
+}
+.arche-suzaku {
+    background-image: url("bg/suzaku.jpg");
+}
+.arche-tera-cleric {
+    background-image: url("bg/tera-cleric.jpg");
+}
+.arche-firebloom-burn {
+    background-image: url("bg/firebloom-burn.jpg");
+}
+.arche-dawn-of-ashes {
+    background-image: url("bg/dawn-of-ashes.jpg");
+}
+.arche-suited {
+    background-image: url("bg/suited.jpg");
+}
+.arche-oblation {
+    background-image: url("bg/oblation.jpg");
+}
+.arche-umbra-guardian {
+    background-image: url("bg/umbra-guardian.jpg");
+}
+.arche-astra-ranger {
+    background-image: url("bg/astra-ranger.jpg");
+}
+.arche-water-aetherwing {
+    background-image: url("bg/water-aetherwing.jpg");
+}
+.arche-fire-aetherwing {
+    background-image: url("bg/fire-aetherwing.jpg");
+}
+.arche-wakeup-combo {
+    background-image: url("bg/wakeup-combo.jpg");
+}
+.arche-horse-and-taxes {
+    background-image: url("bg/horse-and-taxes.jpg");
+}
+.arche-triskit {
+    background-image: url("bg/triskit.jpg");
+}
+.arche-chess {
+    background-image: url("bg/chess.jpg");
+}
+.arche-umbra-alice {
+    background-image: url("bg/umbra-alice.jpg");
+}
+.arche-luxem-mordred {
+    background-image: url("bg/luxem-mordred.jpg");
+}
+
 
 .holo::after {
     content: "";
@@ -1561,6 +1727,39 @@ a.achievement {
     }
     #all-cards td:first-child {
         font-size: 16px;
+    }
+
+    #champdisplay {
+        grid-template-columns: repeat(auto-fit, 115px);
+    }
+    .champslice {
+        width: 113px;
+        height: 250px;
+        border-radius: 0 10px / 15px;
+    }
+    .champslice .champ-name {
+        font-size: 25px
+    }
+    .champslice b {
+        display: none;
+    }
+    .champslice .champ-detail {
+        backdrop-filter: blur(5px) grayscale(80%) brightness(1.2);
+        font-size: 14px;
+        padding-bottom: 7px;
+        text-shadow: none;
+        color: black;
+    }
+    .champdisplay-inner {
+        padding: 0;
+        height: 100%;
+        border-radius: 0 10px;
+    }
+    .champslice .champ-detail .top-wielder {
+        font-size: 12px;
+    }
+    .top-archetype::before {
+        content: "📊";
     }
 
     .deck-bg {

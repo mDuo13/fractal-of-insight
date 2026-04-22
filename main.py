@@ -140,10 +140,10 @@ class PageBuilder:
         self.render("champion.html.jinja2", write_to, champion=champstats.name,
             stats=champstats, champlineage=champstats.cards, wins=wins)
 
-    def write_champ_index(self):
+    def write_champ_index(self, champions={}, seasons={}):
         write_to = "champion/index.html"
-        self.render("champions.html.jinja2", write_to, champions=CHAMP_DATA,
-            cew=self.cew)
+        self.render("champions.html.jinja2", write_to, champions=champions,
+            seasons=seasons, cew=self.cew)
 
     def write_card_data(self):
         """
@@ -420,7 +420,10 @@ class PageBuilder:
             if champstats.matched_decks:
                 # skip champs with no appearances yet
                 self.write_champ(champstats)
-        self.write_champ_index()
+        champdata_sorted = [(k,v) for k,v in CHAMP_DATA.items()]
+        champdata_sorted.sort(key=lambda x:len(x[1].matched_decks), reverse=True)
+        champdata = {k:v for k,v in champdata_sorted}
+        self.write_champ_index(champdata, seasons_sorted)
 
         self.render("index.html.jinja2", "index.html", seasons=seasons_sorted)
 
