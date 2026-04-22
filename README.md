@@ -17,16 +17,20 @@ This site shows information and analysis of Grand Archive tournament results. It
 - path of silver data
 - more achievements in general
 - improve presentation of price data
+    - maybe show average or median price per archetype?
 - maybe make some tables sortable.
 - report even more stats in a rolling window or seasonal basis
     - e.g. individual card stats (on card page)
 - backfill old store champs
-- add landing page(s) for champions
+- improve champion pages:
+    - seasonal data
+    - link cards in lineage to their card pages
+    - link to champion pages from other pages
+- Improve performance / reduce lagginess of Formats page.
 - on card pages, show other arts for card
 - double-check numbers on rising cards
 - add a wielder points section to player profiles
 - make top cut games count for wielder points
 - improve display of About Refracted Events page.
 - add an icon & other styles to highlight Refracted events
-- add spoilers for RDO season
-- add keyboard shortcuts like Esc to close decklist
+- update FRCTL to show RDO spoilers directly now that they're not hidden in the main site anymore
