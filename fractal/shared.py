@@ -95,6 +95,24 @@ class keydefaultdict(defaultdict):
             ret = self[key] = self.default_factory(key)
             return ret
 
+
+def rank_card(card):
+    # card: object from carddata
+    # First sort: Champs by level, Regalia, Maindeck
+    if card["level"] is not None:
+        rank = str(card["level"])
+    elif "REGALIA" in card["types"]:
+        rank = "B"
+    else:
+        rank = "C"
+    # Second sort: Norm, Basic Element, Advanced Element
+    # with multi-element cards ranked based on primary element, then secondary
+    el_keys = [element_sortkey(e) for e in card["elements"]]
+    el_keys.sort()
+    el_rank = "/".join(el_keys)
+    # Third sort: alphabetical, case-insensitive
+    return rank + el_rank + "-" + card["name"].lower()
+
 TEAM_STANDARD = "team-standard-3v3"
 
 EVENT_TYPES = {

@@ -452,6 +452,23 @@ function close_all(event) {
     }
 }
 
+function h_scrollable(el) {
+    el.addEventListener("pointerdown", (evt) => {
+        evt.preventDefault()
+        el.setPointerCapture(evt.pointerId)
+    })
+    el.addEventListener("pointerup", (evt) => {
+        evt.preventDefault()
+        el.setPointerCapture(evt.pointerId)
+    })
+    el.addEventListener("pointermove", (evt) => {
+        if (el.hasPointerCapture(evt.pointerId) && evt.isPrimary) {
+            el.scrollLeft -= evt.movementX
+            evt.preventDefault()
+        }
+    })
+}
+
 ready(() => {
     // Open hash on page-load
     if (window.location.hash) {
@@ -504,6 +521,8 @@ ready(() => {
 
     document.querySelectorAll(".player-omni-avatar").forEach(populate_avatar)
     make_tables_sortable()
+
+    document.querySelectorAll(".gallery").forEach(h_scrollable)
 
     document.addEventListener('keydown', close_all)
 })

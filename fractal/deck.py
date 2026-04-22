@@ -2,30 +2,15 @@ from collections import defaultdict
 
 from xxhash import xxh64
 
-from .shared import slugify, fix_case, lineage, element_sortkey, ms_to_date
+from .shared import slugify, fix_case, lineage, element_sortkey, ms_to_date, rank_card
 from .datalayer import get_card_img, carddata, card_is_floating, get_card_references, get_card_price, get_cached_similarity, store_similarity
 from .cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST, REMOVED_FROM_PRXY
 from .archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
 from .cardstats import ALL_CARD_STATS
+from .champs import CHAMP_DATA
 
-def rank_card(card_o):
-    return rank_cardname(card_o["card"])
-def rank_cardname(cardname):
-    card = carddata[cardname]
-    # First sort: Champs by level, Regalia, Maindeck
-    if card["level"] is not None:
-        rank = str(card["level"])
-    elif "REGALIA" in card["types"]:
-        rank = "B"
-    else:
-        rank = "C"
-    # Second sort: Norm, Basic Element, Advanced Element
-    # with multi-element cards ranked based on primary element, then secondary
-    el_keys = [element_sortkey(e) for e in card["elements"]]
-    el_keys.sort()
-    el_rank = "/".join(el_keys)
-    # Third sort: alphabetical, case-insensitive
-    return rank + el_rank + "-" + cardname.lower()
+def rank_card_o(card_o):
+    return rank_card(carddata[card_o["card"]])
 
 def trim_similar(dlist, limit):
     """
@@ -99,7 +84,6 @@ class Deck:
 
         self.lineages = list(dict.fromkeys(lineages)) # Uniquified
 
-
     def find_archetypes(self):
         self.archetypes = []
         self.subtypes = []
@@ -120,6 +104,9 @@ class Deck:
 
         if not self.archetypes:
             NO_ARCHETYPE.add_match(self)
+        
+        for champ in self.lineages:
+            CHAMP_DATA[champ].add_match(self)
 
     def find_elements(self):
         """
@@ -197,7 +184,7 @@ class Deck:
         for section in ("main", "material", "sideboard"):
             for card_o in self.dl[section]:
                 self.fix_card_o(card_o)
-            self.dl[section].sort(key=rank_card)
+            self.dl[section].sort(key=rank_card_o)
 
         if len(self.dl["material"]) > 12:
             self.invalid_decklist = True
@@ -331,10 +318,10 @@ class Deck:
                 card_o = self.dl[sect][i]
                 them_o = other_deck.dl[sect][j]
                 # Use rank_card instead of comparing names so sure prize spirits don't screw up the ordering
-                if rank_card(card_o) < rank_card(them_o):
+                if rank_card_o(card_o) < rank_card_o(them_o):
                     i += 1
                     continue
-                elif rank_card(card_o) > rank_card(them_o):
+                elif rank_card_o(card_o) > rank_card_o(them_o):
                     j += 1
                     continue
                 # Else the names match, compare quantities

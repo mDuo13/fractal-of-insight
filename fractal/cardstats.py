@@ -5,7 +5,7 @@ from .config import HOT_WINDOW, PAD_UNTIL, M_PER_APP, MAX_TOP_USERS, PAD_HOT_MAT
 from .season import SEASONS
 from .datalayer import carddata, get_card_img, is_valid_in_decklists
 from .shared import keydefaultdict
-from .stats import ElementStats, ChampStats, ArcheStats
+from .stats import ElementStats, ChampStats, ArcheStats, Wielders
 
 class TopCutAppearance:
     # A shim for an "Entrant" but using only the different deck they played
@@ -56,45 +56,21 @@ class TopCutAppearance:
     def __str__(self):
         return f'{self.entrant.username} #{self.entrant.id}'
 
-class TopWielders:
-    def __init__(self, cardname):
-        self.name = cardname
-        self.users = defaultdict(int)
-        self.pdict = {} # Note: doesn't map to actual Player instances,
-                        # just an arbitrary Entrant instance for that player
-
+class CardWielders(Wielders):
     def add(self, entrant):
-        if entrant.score <= 0:
-            # You don't get to be a top wielder if you don't score any points
-            return
         if "REGALIA" in carddata[self.name]["types"] or "CHAMPION" in carddata[self.name]["types"]:
             type_multiplier = 3
         else:
             type_multiplier = 1
+        
         card_quant_mat_main = entrant.deck.quantity_of(self.name)
-        # card_quant_maindeck = entrant.deck.quantity_of(self.name, search_sections=("main",))
         card_quant_side = entrant.deck.quantity_of(self.name, search_sections=("sideboard",))
 
         usage_score = entrant.score * type_multiplier * (
             (card_quant_mat_main) +
             (1/3 * card_quant_side)
         )
-        self.users[entrant.id] += usage_score
-        self.pdict[entrant.id] = entrant
-
-    def sort(self):
-        sorted_users = [(uid,score) for uid,score in self.users.items()]
-        sorted_users.sort(key=lambda x: x[1], reverse=True)
-        self.users = {k:v for k,v in sorted_users}
-
-    def __iter__(self):
-        n = 0
-        for pid,score in self.users.items():
-            yield (self.pdict[pid],round(score, 1))
-            n += 1
-            if n >= MAX_TOP_USERS:
-                break
-
+        super().add(entrant, usage_score)
 
 class CardStats:
     def __init__(self, cardname):
@@ -107,7 +83,7 @@ class CardStats:
         self.winrate = 0
         self.hipster = 0 # %ile rating of how uncommonly played the card is.
                          # Populated by CardStatSet.sort()
-        self.top_users = TopWielders(cardname)
+        self.top_users = CardWielders(cardname)
 
     def add_entrant(self, e, is_topcut_deck=False):
         if is_topcut_deck:

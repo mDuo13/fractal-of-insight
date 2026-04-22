@@ -1,5 +1,8 @@
+from collections import defaultdict
+
 from .shared import OVERALL
 from .cards import ELEMENTS
+from .config import MAX_TOP_USERS
 
 class ElementStats:
     def __init__(self):
@@ -175,3 +178,37 @@ class RegionStats:
                 dec = 0
             pct = round(dec*100, 1)
             yield (reg, quant, pct)
+
+class Wielders:
+    def __init__(self, name):
+        self.name = name
+        self.users = defaultdict(int)
+        self.pdict = {} # Note: doesn't map to actual Player instances,
+                        # just an arbitrary Entrant instance for that player
+
+    def add(self, entrant, usage_score):
+        if entrant.score <= 0:
+            # You don't get to be a top wielder if you don't score any points
+            return
+        self.users[entrant.id] += usage_score
+        self.pdict[entrant.id] = entrant
+
+    def sort(self):
+        sorted_users = [(uid,score) for uid,score in self.users.items()]
+        sorted_users.sort(key=lambda x: x[1], reverse=True)
+        self.users = {k:v for k,v in sorted_users}
+
+    def top(self):
+        user_pids = list(self.users.keys())
+        if user_pids:
+            return self.pdict[user_pids[0]]
+        else:
+            return "None"
+
+    def __iter__(self):
+        n = 0
+        for pid,score in self.users.items():
+            yield (self.pdict[pid],round(score, 1))
+            n += 1
+            if n >= MAX_TOP_USERS:
+                break

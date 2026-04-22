@@ -3,20 +3,12 @@ from bisect import insort
 from logging import warning
 from time import time
 
-from .config import SharedConfig, HOT_WINDOW
+from .config import SharedConfig, HOT_WINDOW, SIMILAR_DECKS_CUTOFF, MONEY_CARD_COUNT, MONEY_CARD_PRICE_CUTOFF, RISING_CARDS_CUTOFF_PCT, MAT_DIFF_CARD_LIMIT, MAIN_DIFF_CARD_LIMIT, SIDE_DIFF_CARD_LIMIT, RISING_CARD_LIMIT
 from .shared import lineage, SPIRIT_ONLY
 from .stats import ElementStats, ChampStats
 from .cards import BANLIST, REMOVED_FROM_PRXY
 from .datalayer import get_card_img, get_card_price
 
-SIMILAR_DECKS_CUTOFF = 85
-MAT_DIFF_CARD_LIMIT = 12
-MAIN_DIFF_CARD_LIMIT = 15
-SIDE_DIFF_CARD_LIMIT = 8
-MONEY_CARD_COUNT = 20
-MONEY_CARD_PRICE_CUTOFF = 5.00 # Only include cards that cost at least $ this
-RISING_CARDS_CUTOFF_PCT = 0.0 # only include cards that gained by this much
-RISING_CARD_LIMIT = 10
 SUBTYPES = {}
 
 class Archetype:

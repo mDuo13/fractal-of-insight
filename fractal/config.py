@@ -11,6 +11,16 @@ M_PER_APP = 6 # Empirically, an average "appearance" consists of ~5.9 matches.
 MAX_TOP_USERS = 10 # How many players can be considered "top users" of a card.
 PAD_HOT_MATCHES = 500 # for hot cards, weight for this many *matches* (not appearances)
 
+# Archetype & champ stats settings
+SIMILAR_DECKS_CUTOFF = 85
+MONEY_CARD_COUNT = 20
+MONEY_CARD_PRICE_CUTOFF = 5.00 # Only include cards that cost at least $ this
+RISING_CARDS_CUTOFF_PCT = 0.0 # only include cards that gained by this much
+MAT_DIFF_CARD_LIMIT = 12
+MAIN_DIFF_CARD_LIMIT = 15
+SIDE_DIFF_CARD_LIMIT = 8
+RISING_CARD_LIMIT = 10
+
 # Crawler settings
 CRAWLER_FILE = "./data/crawler.json"
 INTERESTING_PLAYER_COUNT = 20 # Crawler skips events with less than this number

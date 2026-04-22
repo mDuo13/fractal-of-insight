@@ -1,0 +1,111 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}{{champion}} - {% endblock %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/player/">→ Players</a>
+    <a class="nav-item" href="/deck/">→ Decks</a>
+    <a class="nav-item" href="/champion/">⮤ Champions</a>
+    <b class="nav-item">↓ {{champion}}</b>
+    <a class="nav-item" href="/formats/">→ Format Stats</a>
+    <a class="nav-item" href="/card/">→ Cards</a>
+    <a class="nav-item" href="/achievement/">→ Achievements</a>
+</nav>
+
+<h1>Champion: {{champion}}</h1>
+
+<section id="champ-info">
+    <div class="scooped-corners">
+        <ul>
+            <li><b>Appearances recorded</b>: {{stats.matched_decks|length}}</li>
+            <li><b>Earliest appearance</b>: {{stats.earliest}}</li>
+            <li><b>All-time win rate</b>: {{stats.winrate}}%</li>
+            <li><b>Total events won</b>: {{wins|length}}</li>
+        </ul>
+        <div class="lineage-display gallery">
+            {% for card in champlineage %}
+            <div class="cardimg"><img src="{{card.img}}" alt="{{card.name}}" loading="eager" width="200" height="280" /></div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section id="champ-usage">
+    <h2>Typical Usage</h2>
+    <button onclick="toggle('#champ-usage > .togglable')">Glimpse Usage</button>
+    <h3 class="togglable collapse">Elements</h3>
+    <div class="element-meta collapse togglable">
+        {{macros.elementpie(stats.elements)}}
+    </div>
+
+    <h3 class="togglable collapse">Archetypes</h3>
+    {{ macros.elementbars(stats.archedata, True) }}
+</section>
+
+<section id="top-cards">
+    <h2>Top Cards</h2>
+    <button onclick="toggle('#top-cards > .togglable')">Glimpse top cards</button>
+    <p class="explanation togglable collapse">(Showing the percentage of decks containing at least 1 copy in main or material deck.)</p>
+    <div class="tabs togglable collapse">
+        <button class="tab activetab" onclick="opentab(this, '#top-cards-{{slugify(stats.name)}}')">Overall</button>
+        {% for st in stats.subtypes %}
+            <button class="tab" onclick="opentab(this, '#top-cards-{{slugify(st.name)}}')">{% if st.shortname %}{{st.shortname}}{% else %}{{st.name}}{% endif %}</button>
+        {% endfor %}
+        {% for et in stats.el_subtypes.values() %}
+            {% if et.matched_decks|length > 1 %}
+            <button class="tab" onclick="opentab(this, '#top-cards-{{slugify(et.name)}}')">{{et.name}}</button>
+            {% endif %}
+        {% endfor %}
+        {% for a,at in stats.arche_subtypes.items() %}
+            {% if at.matched_decks|length > 1 %}
+            <button class="tab" onclick="opentab(this, '#top-cards-{{slugify(a)}}')">{{a}}</button>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="tabwrapper togglable collapse">
+        {{macros.top_cards(stats, collapse=False)}}
+        {% for st in stats.subtypes %}
+            {{macros.top_cards(st)}}
+        {% endfor %}
+        {% for et in stats.el_subtypes.values() %}
+            {% if et.matched_decks|length > 1 %}
+            {{macros.top_cards(et)}}
+            {% endif %}
+        {% endfor %}
+
+        {% for a,at in stats.arche_subtypes.items() %}
+            {% if at.matched_decks|length > 1 %}
+            {{macros.top_cards(at, name=a)}}
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+
+<section id="top-wielders">
+    <h2>Top Wielders</h2>
+    <button onclick="toggle('#top-wielders > .togglable')">Glimpse top wielders</button>
+    <p class="explanation collapse togglable">(The players who have earned the most points using the champion. Wins are worth 9 points if the champion is in the mainboard, or 3 if the champion is only in the sideboard. Ties are worth one third as much. Any part of the champion's lineage scores the same.)</p>
+    <table class="togglable collapse">
+        <thead><tr>
+            <th>Rank</th><th>Player</th><th>Score</th>
+        </tr></thead>
+        <tbody>
+        {% for p,score in stats.wielders %}
+            <tr>
+                <td>{{loop.index}} {% if loop.index == 1 %}👑{% endif %}</td>
+                <td><a href="/player/{{p.id}}.html">{{p}}</a></td>
+                <td>{{score}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<!-- TODO: sightings -->
+
+
+
+{% endblock %}

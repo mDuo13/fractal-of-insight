@@ -1,0 +1,32 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}Champions - {% endblock %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/player/">→ Players</a>
+    <a class="nav-item" href="/deck/">→ Decks</a>
+    <b class="nav-item">↓ Champions</b>
+    <a class="nav-item" href="/formats/">→ Format Stats</a>
+    <a class="nav-item" href="/card/">→ Cards</a>
+    <a class="nav-item" href="/achievement/">→ Achievements</a>
+</nav>
+
+<h1>Champions</h1>
+
+<section id="champdisplay">
+    {% for champ,champdata in champions.items() %}
+    {% if champdata.matched_decks|length %}
+    <a class="champslice champ-{{slugify(champ)}} el-{{slugify(champdata.elements.top()|first)}}" href="/champion/{{slugify(champ)}}.html">
+        <div class="champdisplay-inner">
+            <div class="champ-name">{{champ}}</div>
+            <div class="top-archetype"><b>Top Archetype:</b> {{champdata.archedata.top()|first}}</div>
+            <div class="top-wielder"><b>Top Player:</b> 👑{{champdata.wielders.top()}}</div>
+        </div>
+    </a>
+    {% endif %}
+    {% endfor %}
+</section>
+
+{% endblock %}
