@@ -108,9 +108,10 @@ class OmniEvent:
             "Abyssal", "Heaven",
             "Distorted", "Reflections",
             "Phantom", "Monarch", "Monarchs",
+            "Radiant", "Origin", "Origins",
             "Standard",
             "Constructed",
-            "DOA", "FTC", "ALC", "MRC", "AMB", "HVN", "DTR", "PTM",
+            "DOA", "FTC", "ALC", "MRC", "AMB", "HVN", "DTR", "PTM", "RDO",
         ]]
         name_words = re.split(r"\W+", self.name.lower())
         testname = ""
@@ -342,13 +343,15 @@ class OmniEvent:
                     else:
                         place3_id = bronze_match["pairing"][0]["id"]
                         place4_id = bronze_match["pairing"][1]["id"]
-
+                    
                     if self.format == TEAM_STANDARD:
                         tier.append(self.teams[place4_id.lower()])
                         tier.append(self.teams[place3_id.lower()])
+                        self.teams[place3_id.lower()].topcut_wins += 1
                     else:
                         tier.append(self.pdict[place4_id])
                         tier.append(self.pdict[place3_id])
+                        self.pdict[place3_id].topcut_wins += 1
                     # Remove 3rd/4th from top cut list so we can re-add them in
                     # the correct order below
                     self.top_cut = self.top_cut[:-2]
@@ -362,25 +365,33 @@ class OmniEvent:
                 if self.format == TEAM_STANDARD:
                     tier.append(self.teams[place2_id.lower()])
                     tier.append(self.teams[place1_id.lower()])
+                    self.teams[place1_id.lower()].topcut_wins += 1
                 else:
                     tier.append(self.pdict[place2_id])
                     tier.append(self.pdict[place1_id])
+                    self.pdict[place1_id].topcut_wins += 1
 
             else:
                 tier = []
                 for match in rnd["matches"]:
                     if match["pairing"][0]["status"] == "loser":
                         loser_id = match["pairing"][0]["id"]
+                        winner_id = match["pairing"][1]["id"]
                         if self.format == TEAM_STANDARD:
                             tier.append(self.teams[loser_id.lower()])
+                            self.teams[winner_id.lower()].topcut_wins += 1
                         else:
                             tier.append(self.pdict[loser_id])
+                            self.pdict[winner_id].topcut_wins += 1
                     elif match["pairing"][1]["status"] == "loser":
                         loser_id = match["pairing"][1]["id"]
+                        winner_id = match["pairing"][0]["id"]
                         if self.format == TEAM_STANDARD:
                             tier.append(self.teams[loser_id.lower()])
+                            self.teams[winner_id.lower()].topcut_wins += 1
                         else:
                             tier.append(self.pdict[loser_id])
+                            self.pdict[winner_id].topcut_wins += 1
                     else:
                         print("No loser in single-elim match?", match)
                 tier.sort(key=lambda x:x.sortkey())
@@ -475,6 +486,7 @@ class Team:
         self.gwp = data["statsPercentGW"]
         self.ogw = data["statsPercentOGW"]
         self.record = f"{self.wins + self.byes}-{self.losses}-{self.ties}"
+        self.topcut_wins = 0
 
     def sortkey(self):
         return self.score + (self.omw/100) + (self.gwp / 100000) + (self.ogw / 10000000)

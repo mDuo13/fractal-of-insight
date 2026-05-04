@@ -274,6 +274,7 @@ class Archetype:
         self.subtypes.append(st)
         st.subtype_of = self
         SUBTYPES[st.name] = st
+        return st
 
 class Champtype(Archetype):
     def __init__(self, lineage, parent):
@@ -379,6 +380,7 @@ wind_allies = add_archetype(
     ],
     exclude_cards=[
         "Spirit Blade: Ascension",
+        "Dungeon Guide",
         "Shadowstrike",
         "Storm Slime",
         "Wildgrowth Feline",
@@ -433,6 +435,7 @@ fire_aggro = add_archetype(
         "Cinder Geyser",
         "Peppered Chef",
         "Vermilion Decree",
+        "Molten Echo",
     ],
     require_element="Fire",
     shortname="Aggro",
@@ -481,7 +484,7 @@ add_archetype(
     shortname="Astra",
 )
 
-add_archetype(
+umbra_ranger = add_archetype(
     "Umbra Ranger",
     [
         "Carter, Synthetic Reaper",
@@ -498,6 +501,18 @@ add_archetype(
         "Tristan, Shadowdancer",
     ],
     shortname="Umbra"
+)
+umbra_ranger.add_subtype("Cursebreaker",
+    [
+        "Diana, Cursebreaker",
+    ],
+    shortname=""
+)
+umbra_ranger.add_subtype("Duskstalker",
+    [
+        "Diana, Duskstalker",
+    ],
+    shortname=""
 )
 
 lwa = add_archetype(
@@ -573,6 +588,7 @@ add_archetype(
         "Ravishing Finale",
         "Guo Jia, Blessed Scion",
         "Burst Asunder",
+        "Dynastic Whirlpool", # Covered by its own archetype
     ],
     shortname="Mill"
 )
@@ -620,20 +636,48 @@ add_archetype(
     }
 )
 
-crux = add_archetype(
-    "Crux Warrior",
+crux_lorraine = add_archetype(
+    "Crux Lorraine",
     [
-        "The Majestic Spirit",
         "Ghosts of Pendragon",
         "Spirit Blade: Ascension",
+        "Spirit Blade: Dispersion",
     ],
     exclude_cards=[
-        "Rai, Mana Weaver",
+        "Merlin, Kingslayer",
         "Merlin, Brilliant Vestige",
     ],
     shortname="Crux"
 )
-crux.add_subtype(
+crux_lorraine.add_subtype(
+    "Ensoul",
+    ["Spirit Blade: Ensoul"]
+)
+crux_lorraine.add_subtype(
+    "Spirit Ruler",
+    ["Lorraine, Spirit Ruler"],
+    shortname=""
+)
+crux_lorraine.add_subtype(
+    "Crux Knight",
+    ["Lorraine, Crux Knight"],
+    shortname=""
+)
+
+crux_mage = add_archetype(
+    "Crux Mage",
+    [
+        "Merlin, Kingslayer",
+        "Incarnate Majesty",
+    ],
+    exclude_cards=[
+        "Lorraine, Crux Knight",
+        "Lorraine, Spirit Ruler",
+        "Merlin, Brilliant Vestige",
+    ],
+    shortname="Crux"
+)
+mage_prismatic = crux_mage.add_subtype(
     "Prismatic Fire Crux",
     [
         "Favorable Winds",
@@ -651,50 +695,33 @@ crux.add_subtype(
     require_element="Fire",
     shortname="Prismatic",
 )
+crux_lorraine.add_subtype(
+    "Prismatic Fire Crux",
+    mage_prismatic.require, # same set of cards for the lorraine version
+    require_element="Fire",
+    shortname="Prismatic",
+)
 
-crux.add_subtype(
-    "Wind Crux Humans",
+crux_hybrid = add_archetype(
+    "Crux Hybrid",
     [
-        "Phalanx Captain",
-        "Rally the Peasants",
+        "Merlin, Kingslayer",
+        "Lorraine, Spirit Ruler",
+        "Lorraine, Crux Knight",
     ],
-    require_element="Wind",
-    shortname="Humans",
-)
-
-crux.add_subtype(
-    "Ensoul",
-    ["Spirit Blade: Ensoul"]
-)
-crux.add_subtype(
-    "Spirit Ruler",
-    ["Lorraine, Spirit Ruler"],
-    shortname=""
-)
-crux.add_subtype(
-    "Crux Knight",
-    ["Lorraine, Crux Knight"],
-    shortname=""
-)
-crux.add_subtype(
-    "Kingslayer",
-    ["Merlin, Kingslayer"],
-    shortname=""
-)
-crux.add_subtype(
-    "Hybrid",
-    ["Merlin, Kingslayer"],
     require_combos=[
         [
-            "Merlin, Kingslayer",
-            "Lorraine, Crux Knight",
-        ],
-        [
-            "Merlin, Kingslayer",
-            "Lorraine, Spirit Ruler",
+            "Lorraine, Blademaster",
+            "Merlin, Memory Thief",
         ]
     ],
-    shortname=""
+    shortname="Crux"
+)
+crux_hybrid.add_subtype(
+    "Prismatic Fire Crux",
+    mage_prismatic.require, # same set of cards for hybrid too
+    require_element="Fire",
+    shortname="Prismatic",
 )
 
 add_archetype(
@@ -731,7 +758,7 @@ shadowstrike.add_subtype(
     ]
 )
 
-add_archetype(
+neos = add_archetype(
     "Neos",
     [
         "Atmos Armor Type-Ares",
@@ -745,6 +772,16 @@ add_archetype(
     exclude_cards=[
         "Beguiling Coup", # Aside: this doesn't even work the way you want it to
     ]
+)
+neos.add_subtype(
+    "Domains",
+    [
+        "Wayfinder's Map",
+        "The Eternal Kingdom",
+    ],
+    require_types={
+        "DOMAIN": 10
+    },
 )
 
 add_archetype(
@@ -787,17 +824,6 @@ add_archetype(
         "Awaken Ombre",
         "Spectral Haunting"
     ]
-)
-
-add_archetype(
-    "Domains",
-    [
-        "Wayfinder's Map",
-        "The Eternal Kingdom",
-    ],
-    require_types={
-        "DOMAIN": 10
-    },
 )
 
 add_archetype(
@@ -848,22 +874,17 @@ add_archetype(
     ]
 )
 
-# add_archetype(
-#     "Dahlia",
-#     [
-#         "Dahlia, Idyllic Dreamer"
-#     ]
-# )
-
 add_archetype(
     "Fractal",
     [
         "Burst Asunder",
     ],
+    # Maybe require a minimum phantasias, say, 15?
     exclude_cards=[
-        "Dungeon Guide",
+        # "Dungeon Guide",
         "Strategem of Myriad Ice",
         "Firebloom Flourish",
+        "Dynastic Whirlpool",
     ]
 )
 add_archetype(
@@ -1173,13 +1194,13 @@ umbra_alice = add_archetype(
     ]
 )
 
-# add_archetype(
-#     "Whirlpool Mill",
-#     [
-#         "Dynastic Whirlpool",
-#     ],
-#     shortname="Mill",
-# )
+add_archetype(
+    "Whirlpool Mill",
+    [
+        "Dynastic Whirlpool",
+    ],
+    shortname="Mill",
+)
 
 add_archetype(
     "Luxem Mordred",

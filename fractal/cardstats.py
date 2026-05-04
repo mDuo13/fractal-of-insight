@@ -66,7 +66,9 @@ class CardWielders(Wielders):
         card_quant_mat_main = entrant.deck.quantity_of(self.name)
         card_quant_side = entrant.deck.quantity_of(self.name, search_sections=("sideboard",))
 
-        usage_score = entrant.score * type_multiplier * (
+        game_score = entrant.score + (entrant.topcut_wins * 3)
+
+        usage_score = game_score * type_multiplier * (
             (card_quant_mat_main) +
             (1/3 * card_quant_side)
         )

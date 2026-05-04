@@ -47,6 +47,7 @@ def fix_case(cardname):
         " In ":" in ",
         " Into ":" into ",
         " Of ": " of ",
+        " Aux ": " aux ",
         "Mk Iii": "Mk III",
         "Mk Ii": "Mk II",
         " The ":" the ",
@@ -68,6 +69,8 @@ def fix_case(cardname):
         return "Seep Into the Mind"
     if cardname == "Pole-Armed Steed":
         return "Pole-armed Steed"
+    if cardname == "Off with Her Head":
+        return "Off With Her Head"
     return cardname
 
 def element_sortkey(el, inverse=False):

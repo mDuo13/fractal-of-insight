@@ -26,6 +26,7 @@ class Entrant:
         self.ties = data["statsTies"]
         self.byes = data["statsByes"]
         self.score = data["statsScore"]
+        self.topcut_wins = 0 # populated by OmniEvent's parse_top_cut()
         self.omw = data["statsPercentOMW"]
         self.gwp = data["statsPercentGW"]
         self.ogw = data["statsPercentOGW"]

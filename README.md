@@ -18,7 +18,8 @@ This site shows information and analysis of Grand Archive tournament results. It
 - more achievements in general
 - improve presentation of price data
     - maybe show average or median price per archetype?
-- maybe make some tables sortable.
+    - maybe optimize it to load a price sheet dynamically to reduce churn on page builds?
+- maybe make more tables sortable.
 - report even more stats in a rolling window or seasonal basis
     - e.g. individual card stats (on card page)
 - backfill old store champs
@@ -30,7 +31,6 @@ This site shows information and analysis of Grand Archive tournament results. It
 - on card pages, show other arts for card
 - double-check numbers on rising cards
 - add a wielder points section to player profiles
-- make top cut games count for wielder points
 - improve display of About Refracted Events page.
 - add an icon & other styles to highlight Refracted events
 - update FRCTL to show RDO spoilers directly now that they're not hidden in the main site anymore

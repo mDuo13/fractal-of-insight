@@ -12,23 +12,31 @@ class ChampWielders(Wielders):
     in your mainboard or 3 points if they're in your sideboard.
     Ties score 1/3 as much.
     """
-    def add(self, entrant):
-        # TODO: handle top-cut decks from Worlds
+    def add(self, entrant, is_topcut_deck):
+        if is_topcut_deck:
+            deck = entrant.topcut_deck
+            game_score = entrant.topcut_wins * 3
+        else:
+            deck = entrant.deck
+            game_score = entrant.score
+            if not entrant.topcut_deck:
+                # Same deck was used in top cut
+                game_score += entrant.topcut_wins * 3
         usage = 0
-        for card_o in entrant.deck.mat:
+        for card_o in deck.mat:
             if lineage(card_o["card"]) == self.name:
                 usage = 3
                 break
         else:
-            for card_o in entrant.deck.side:
+            for card_o in deck.side:
                 if lineage(card_o["card"]) == self.name:
                     usage = 1
                     break
             else:
                 print("ChampWielder without champ?", self.name, entrant)
                 return
-        
-        usage_score = entrant.score * usage
+
+        usage_score = game_score * usage
         super().add(entrant, usage_score)
 
 
@@ -51,7 +59,7 @@ class ChampArchetype(Archetype):
     def analyze(self):
         super().analyze()
         for d in self.matched_decks:
-            self.wielders.add(d.entrant)
+            self.wielders.add(d.entrant, d.is_topcut_deck)
             for archename in d.archetypes:
                 arche = ARCHETYPES[archename]
                 if self.name in arche.champ_subtypes.keys():
