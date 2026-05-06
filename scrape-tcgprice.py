@@ -1,21 +1,43 @@
 #!/usr/bin/env python
-#Get TCGPlayer.com pricing information from TCGCSV.com
+# Get TCGPlayer.com pricing information from TCGCSV.com
 import json
 import os
 import requests
+from requests.adapters import HTTPAdapter, Retry
 from datetime import date
+from time import sleep
 
 PRICES_FOLDER = "./data/prices/"
 os.makedirs(PRICES_FOLDER, exist_ok=True)
+META_FILE = os.path.join(PRICES_FOLDER, "price-meta.json")
+
+# Technically, we could use https://tcgcsv.com/last-updated.txt but instead
+# we just save when we last updated and only update once per day.
+try:
+    with open(META_FILE) as f:
+        old_meta = json.load(f)
+        last_up = old_meta["updated"]
+        if last_up == date.today().isoformat():
+            print("Last update was today; no need to update again")
+            exit(0)
+except Exception as e:
+    print("Error checking last update:",e)
+    
+
+sess = requests.Session()
+API_DELAY = 0.1 #100ms
+MAX_RETRIES = 3
+TIMEOUT_SECONDS = 10
+retries = Retry(total=MAX_RETRIES, backoff_factor=1, status_forcelist=[ 502, 503, 504 ])
+sess.mount('https://', HTTPAdapter(max_retries=retries))
+sess.headers.update({"User-Agent": "fractal-of-insight-crawler/0.2"})
+def get_json_politely(url):
+    sleep(API_DELAY)
+    r = sess.get(url, timeout=TIMEOUT_SECONDS)
+    return r.json()
 
 category = '74' # Grand Archive
-r = requests.get(f"https://tcgcsv.com/tcgplayer/{category}/groups")
-all_groups = r.json()['results']
-if not r.json()["success"]:
-    exit("Fetching tcgcsv groups failed")
-# fname = os.path.join(PRICES_FOLDER, "groups.json")
-# with open(fname, "w") as f:
-#     json.dump(all_groups, f)
+all_groups = get_json_politely(f"https://tcgcsv.com/tcgplayer/{category}/groups")["results"]
 
 prefixes = []
 for group in all_groups:
@@ -23,12 +45,11 @@ for group in all_groups:
     prefix = group['abbreviation']
     prefixes.append(prefix)
     print(f"Getting product listing for {group['name']}")
-    r = requests.get(f"https://tcgcsv.com/tcgplayer/{category}/{group_id}/products")
-    products = {p['productId']: p for p in r.json()['results']}
+    j = get_json_politely(f"https://tcgcsv.com/tcgplayer/{category}/{group_id}/products")
+    products = {p['productId']: p for p in j['results']}
 
     print(f"Getting prices for {group['name']}")
-    r = requests.get(f"https://tcgcsv.com/tcgplayer/{category}/{group_id}/prices")
-    prices = r.json()['results']
+    prices = get_json_politely(f"https://tcgcsv.com/tcgplayer/{category}/{group_id}/prices")["results"]
 
     for price in prices:
         if 'prices' in products[price['productId']].keys():
