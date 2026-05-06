@@ -985,7 +985,10 @@ add_archetype(
         "Ashen Riffle",
         "Noire, Ace of Spades",
         "Rouge, Ace of Hearts",
+        "Bleu, Ace of Diamonds",
         "Verita, Queen of Hearts",
+        "Edelstein, Queen of Diamonds",
+        "Senaris, Six of Diamonds",
     ]
 )
 
