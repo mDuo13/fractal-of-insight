@@ -397,6 +397,63 @@ async function calc_trailblazer() {
     deetbox.innerText += '\nNot worth trailblazer points: ' + no_points.join('; ')
 }
 
+async function calc_deck_price(dl) {
+    if (!CARDDATA) { await load_carddata() }
+    const lines = dl.split('\n')
+    let total_price = 0
+    const no_price_data = []
+    for (const line of lines) {
+        const m = line.trim().match(/^([0-9]+) (.*)$/)
+        if (m) {
+            const quant = parseInt(m[1])
+            const cardname = m[2]
+            const price = CARDDATA[cardname]?.price
+            if (price && price.slice(0,1) == "$") {
+                total_price += parseFloat( price.slice(1) ) * quant
+            } else {
+                if (cardname && price != "N/A (Proxia's Vault)") {
+                    no_price_data.push(cardname)
+                }
+            }
+        }
+    }
+    return {
+        "price": total_price.toFixed(2), 
+        "no_data": no_price_data
+    }
+}
+
+async function fill_price_and_hipster() {
+    // Dynamically populate these fields to reduce churn on individual pages
+    // during daily deploys.
+    // TODO: handle prize equivalents the same way as the backend does
+    if (!CARDDATA) { await load_carddata() }
+
+    const price_els = document.querySelectorAll(".card-price")
+    for (const ps of price_els) {
+        const cardname = decodeURI(ps.dataset.cardname)
+        ps.innerText = CARDDATA[cardname].price
+    }
+
+    const hipster_els = document.querySelectorAll(".card-hipster-rating")
+    for (const hs of hipster_els) {
+        const cardname = decodeURI(hs.dataset.cardname)
+        hs.innerText = CARDDATA[cardname].hipster
+    }
+
+    const deck_price_els = document.querySelectorAll(".deck-price")
+    for (const ds of deck_price_els) {
+        const id = ds.dataset.deckid
+        const dltxt = document.querySelector(`#${id} .omniexport`)
+        const { price, no_data } = await calc_deck_price(dltxt.innerText)
+        ds.innerText = '$' + price
+        if (no_data.length) {
+            ds.innerText += '* (*Price data could not be found for the following cards: '
+            ds.innerText += no_data.join(', ') + ')'
+        }
+    }
+}
+
 function make_tables_sortable() {
     // Adapted from - https://stackoverflow.com/a/49041392
     // Posted by Nick Grealy, modified by community.
@@ -518,6 +575,8 @@ ready(() => {
             typingTimer = setTimeout(() => {search_table(event.target)}, typeInterval)
         })
     }
+
+    fill_price_and_hipster()
 
     document.querySelectorAll(".player-omni-avatar").forEach(populate_avatar)
     make_tables_sortable()

@@ -18,7 +18,7 @@
 <section id="champdisplay">
     {% for champ,champdata in champions.items() %}
     {% if champdata.matched_decks|length %}
-    <a class="champslice champ-{{slugify(champ)}} el-{{slugify(champdata.elements.top()|first)}} arche-{{slugify(champdata.archedata.top()|first)}}" href="/champion/{{slugify(champ)}}.html">
+    <a class="champslice champ-{{slugify(champ)}} el-{{slugify(champdata.elements.top()|first)}} {% if champdata.archedata.top()|length %}arche-{{slugify(champdata.archedata.top()|first)}}{% endif %}" href="/champion/{{slugify(champ)}}.html">
         <div class="champdisplay-inner">
             <div class="champ-name">{{champ}}</div>
             <div class="champ-detail">

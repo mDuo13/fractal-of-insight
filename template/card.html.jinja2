@@ -54,7 +54,7 @@
         <li><b>Lifetime record</b>: {{cardstat.wins}}-{{cardstat.losses}}-{{cardstat.ties}}</li>
         <li><b>Hot rating</b>: {{cardstat.hot_rating}}%
             <p class="explanation">(Weighted win rate in last ~60 days.)</p></li>
-        <li><b>Hipster Rating</b>: {{cardstat.hipster}}
+        <li><b>Hipster Rating</b>: {#{{cardstat.hipster}}#}<span class="card-hipster-rating" data-cardname="{{card.name|urlencode}}">(Loading)</span>
             <p class="explanation">(The less popular a card is, the higher it scores, on a scale of 0–100.)</p></li>
         <li><a href="https://index.gatcg.com/card/{{card.slug}}">Index Lookup</a></li>
     {% if card.name in BANLIST %}
@@ -63,7 +63,7 @@
     {% if card.removed %}
         <li><b>Removed from Proxia's Vault</b>.</li>
     {% endif %}
-        <li><b>Low price on TCGPlayer</b>: <a href="https://www.tcgplayer.com/search/grand-archive/product?Language=English&productLineName=grand-archive&q={{slugify(card.name).replace('-','+')}}&view=grid">{{card_price}}</a></li>
+        <li><b>Low price on TCGPlayer</b>: <a href="https://www.tcgplayer.com/search/grand-archive/product?Language=English&productLineName=grand-archive&q={{slugify(card.name).replace('-','+')}}&view=grid">{#{{card_price}}#}<span class="card-price" data-cardname="{{card.name|urlencode}}">(Loading)</span></a></li>
     </ul>
 </section>
 

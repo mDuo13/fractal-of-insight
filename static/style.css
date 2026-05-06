@@ -1445,8 +1445,11 @@ a.achievement {
 .arche-slice-dice {
     background-image: url("bg/slice-dice.jpg");
 }
-.arche-crux-warrior {
-    background-image: url("bg/crux-warrior.jpg");
+.arche-crux-lorraine {
+    background-image: url("bg/crux-lorraine.jpg");
+}
+.arche-crux-mage {
+    background-image: url("bg/crux-mage.jpg");
 }
 .arche-crux-assassin {
     background-image: url("bg/crux-assassin.jpg");

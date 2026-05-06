@@ -209,21 +209,6 @@
             <th>Date</th><th>Player</th><th>Event</th><th>Deck</th><th>Placement</th><th>Swiss Record</th>
         </tr></thead>
         <tbody>
-        {% if config.SHOW_RDO_SPOILERS and arche.name == "Suited" %}
-        <tr class="p-row n-styles-2 collapse" data-category="regular" data-decklists="1" data-subtypes='["Water"]' id="spoiler-rdo213-row">
-            <td class="p_date">2026-04-03</td>
-            <td class="playername" title=""><a href="#spoiler-rdo213" onclick="show('#spoiler-rdo213')">Edelstein #RDO216</a></td>
-            <td class="p_event"><a href="#spoiler-rdo213" onclick="show('#spoiler-rdo213')">Wonderland - the cold part</a></td>
-            <td class="p_deck"><a href="#spoiler-rdo213" onclick="show('#spoiler-rdo213')">Diamond in the Rough</a>
-                <div class="deck-bgs">
-                    <img class="deck-bg" src="/static/bg/water.jpg" alt="">
-                    <img class="deck-bg" src="/static/spoilers/bg-diamonds.png" alt="">
-                </div>
-            </td>
-            <td class="p_placement">213/481</td>
-            <td class="p_record">4-0-0</td>
-        </tr>
-        {% endif %}
         {% for deck in arche.matched_decks[0:page_end] %}
             {{ macros.p_row_arche(deck, loop, events) }}
         {% endfor %}

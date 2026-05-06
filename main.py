@@ -156,7 +156,8 @@ class PageBuilder:
                 "a60": cstat.hot_appearances,
                 "wr60": (cstat.hot_rating if cstat.hot_appearances else -1),
                 "price": format_price(get_card_price(c)),
-                "mat": (1 if "REGALIA" in carddata[c]["types"] or "CHAMPION" in carddata[c]["types"] else 0)
+                "mat": (1 if "REGALIA" in carddata[c]["types"] or "CHAMPION" in carddata[c]["types"] else 0),
+                "hipster": cstat.hipster
             }
             for c, cstat in ALL_CARD_STATS
         }

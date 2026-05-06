@@ -527,9 +527,10 @@
 
                     <h4>Other Stats</h4>
                     <ul>
-                        <li><b>Hipster rating:</b> {{deck.hipster}}</li>
-                        <li><b>Price on TCGPlayer:</b> {{deck.price}}
-                            <span class="explanation">(Prices are approximate, using lowest price variant of each card. Prize cards are priced as their common equivalents.)</span>
+                        <li><b>Hipster rating:</b> {{deck.hipster|round|int}}</li>
+                        <li><b>Price on TCGPlayer:</b> {#{{deck.price}}#}
+                            <span class="deck-price" data-deckid="{{id}}">(Loading)</span>
+                            <span class="explanation">(Prices are approximate.)</span>
                         </li>
                     </ul>
                 </div>
