@@ -103,8 +103,10 @@ class JudgeEvt:
     def __init__(self, data, evt):
         self.id = data["id"]
         self.username = data["username"]
-        self.events_judged = data["judgeEvents"]
-        self.exp = data["judgeExperience"]
+        self.events_judged = data.get("judgeEvents", 0)
+        if not self.events_judged:
+            print("Warning: judge with no events judged?", data)
+        self.exp = data.get("judgeExperience", 0)
         self.event = evt
         self.evt_time = evt.evt["startAt"]
         self.region = data.get("addressCountryCode")

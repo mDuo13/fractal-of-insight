@@ -214,7 +214,7 @@ class Archetype:
                     pct_delta = f["pct"]
                 f["pct"] = pct_delta
             cf_merged += list(card_freq.items())
-        
+
         cf_merged.sort(key=lambda x:x[1]["pct"], reverse=True)
         self.card_freqs_hot = {k:v for k,v in cf_merged if v["pct"] > RISING_CARDS_CUTOFF_PCT}
         for v in self.card_freqs_hot.values():
@@ -900,6 +900,7 @@ add_archetype(
         "Zander, Blinding Steel",
         "Zander, Corhazi's Chosen",
         "Tonoris, Genesis Aegis",
+        "Seiryuu's Command",
     ],
     shortname="Luxem",
 )
