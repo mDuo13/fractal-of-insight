@@ -3,6 +3,25 @@ A Grand Archive TCG tournament analysis site
 
 This site shows information and analysis of Grand Archive tournament results. It uses the Omnidex API, which is beta and subject to change without notice, in a way that is officially unsupported but hopefully OK with Weebs of the Shore.
 
+## Setup & Usage
+
+Fractal is essentially a static site builder that uses locally-cached data from various public sources (Omnidex, Index, & TCGCSV). So after setup, the process is download → run → preview as static HTML site.
+
+After cloning the repo, edit `fractal/config.py` and change the `OUTDIR` to be a path where the ouput should go (e.g. `/srv/http`).
+
+```sh
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+./scrape-index.py
+./scrape-tcgprice.py
+./main 52777
+```
+
+Use `./crawl-omni.py` to iterate through Omnidex IDs looking for events, or pass omni IDs to `./main.py` directly as in the above example. When run with no args, `main.py` builds all previously crawled/saved events (stored in `data/`).
+
+You can start a local dev server to preview the site by going to your configured output directory and running `python -m http.server`. You can of course use something more powerful like Apache HTTPD, Nginx, etc.
+
 ## TODO / Planned Features
 
 - improve performance of large event pages (e.g. team standard 2025, Ascent KL)
@@ -27,10 +46,23 @@ This site shows information and analysis of Grand Archive tournament results. It
     - seasonal data
     - link cards in lineage to their card pages
     - link to champion pages from other pages
-- Improve performance / reduce lagginess of Formats page.
+- Show timeline of meta (within a season?) w/ major events and archetype share marked
+- adjust conversion rate stats to better handle players who qualified but dropped?
 - on card pages, show other arts for card
 - double-check numbers on rising cards
 - add a wielder points section to player profiles
 - improve display of About Refracted Events page.
 - add an icon & other styles to highlight Refracted events
 - update FRCTL to show RDO spoilers directly now that they're not hidden in the main site anymore
+- improve reliability / resilience to bad/unexpected/missing data
+- improve experience / instructions for building with a fresh clone of the repo
+- improve sorting of events on main page to sort by close time (not just date)
+- save event filtering settings to browser storage
+- performance improvements:
+    - Improve performance / reduce lagginess of Formats page.
+        - possibly roll into Seasons
+    - improve efficiency of Players page, search
+    - try reducing whitespace in output files
+    - adjust Hipster rating to be truly chronological or at least season-based so new events don't retroactively change hipster ratings in old events
+- add vods for ascent LA, LV, NA Nats, Icebound Slam Cup
+- fix glimpse not scrolling you back to matches if that's the current anchor already

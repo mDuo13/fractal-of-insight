@@ -37,10 +37,10 @@
 
     <h2>Past Seasons</h2>
     <section class="season" id="past-seasons">
-        {% for seasonname, season in seasons.items() %}
-        {% if seasonname not in ns.seasons_printed %}
+        {% for seasonname, season in seasons.items() -%}
+        {%- if seasonname not in ns.seasons_printed %}
             <h3><a href="{{season['code']}}/">{% if season.name == "Offseason" %}Offseasons{% else %}<img alt="{{season}}" src="/static/season/{{season['code']}}.png" />{% endif %}</a></h3>
-        {% endif %}
-        {% endfor %}
+        {% endif -%}
+        {%- endfor %}
     </section>
 {% endblock %}

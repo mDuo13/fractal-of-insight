@@ -1,0 +1,129 @@
+{"videos": [
+    {
+        "stage": 1,
+        "round": 1,
+        "p1": 24238,
+        "p2": 127,
+        "link": "https://www.youtube.com/watch?v=ljQZR8Yu1XM&t=2130s"
+    },
+    {
+        "stage": 1,
+        "round": 2,
+        "p1": 7185,
+        "p2": 922,
+        "link": "https://www.youtube.com/watch?v=ljQZR8Yu1XM&t=6915s"
+    },
+    {
+        "stage": 1,
+        "round": 3,
+        "p1": 276,
+        "p2": 1287,
+        "link": "https://www.youtube.com/watch?v=ljQZR8Yu1XM&t=11970s"
+    },
+    {
+        "stage": 1,
+        "round": 4,
+        "p1": 1,
+        "p2": 12286,
+        "link": "https://www.youtube.com/watch?v=ljQZR8Yu1XM&t=16397s"
+    },
+    {
+        "stage": 1,
+        "round": 4,
+        "p1": 4685,
+        "p2": 802,
+        "link": "https://www.youtube.com/live/ljQZR8Yu1XM?t=20792"
+    },
+    {
+        "stage": 1,
+        "round": 5,
+        "p1": 679,
+        "p2": 5241,
+        "link": "https://www.youtube.com/live/ljQZR8Yu1XM?t=23769"
+    },
+    {
+        "stage": 1,
+        "round": 5,
+        "p1": 605,
+        "p2": 12286,
+        "link": "https://www.youtube.com/live/ljQZR8Yu1XM?t=26733"
+    },
+    {
+        "stage": 1,
+        "round": 6,
+        "p1": 22218,
+        "p2": 194,
+        "link": "https://www.youtube.com/live/ljQZR8Yu1XM?t=28437"
+    },
+    {
+        "stage": 1,
+        "round": 7,
+        "p1": 2990,
+        "p2": 418,
+        "link": "https://www.youtube.com/watch?v=ljQZR8Yu1XM&t=33325s"
+    },
+    {
+        "stage": 1,
+        "round": 8,
+        "p1": 10816,
+        "p2": 1776,
+        "link": "https://www.youtube.com/watch?v=ljQZR8Yu1XM&t=38070s",
+        "//": "Round 9 is cut off by the YouTube VOD"
+    },
+    {
+        "stage": 1,
+        "round": 10,
+        "p1": 12286,
+        "p2": 9281,
+        "link": "https://www.youtube.com/watch?v=tFC-3k0uxcM&t=1723s"
+    },
+    {
+        "stage": 1,
+        "round": 11,
+        "p1": 548,
+        "p2": 7363,
+        "link": "https://www.youtube.com/watch?v=tFC-3k0uxcM&t=6735s"
+    },
+    {
+        "stage": 1,
+        "round": 12,
+        "p1": 12286,
+        "p2": 1797,
+        "link": "https://www.youtube.com/watch?v=tFC-3k0uxcM&t=11090s"
+    },
+    {
+        "stage": 1,
+        "round": 13,
+        "p1": 1982,
+        "p2": 11188,
+        "link": "https://www.youtube.com/watch?v=tFC-3k0uxcM&t=15335s"
+    },
+    {
+        "stage": 1,
+        "round": 13,
+        "p1": 15095,
+        "p2": 3295,
+        "link": "https://www.youtube.com/watch?v=tFC-3k0uxcM&t=20264s"
+    },
+    {
+        "stage": 2,
+        "round": 1,
+        "p1": 802,
+        "p2": 181,
+        "link": "https://www.youtube.com/watch?v=tFC-3k0uxcM&t=23680s"
+    },
+    {
+        "stage": 2,
+        "round": 2,
+        "p1": 802,
+        "p2": 679,
+        "link": "https://www.youtube.com/watch?v=tFC-3k0uxcM&t=30422s"
+    },
+    {
+        "stage": 2,
+        "round": 3,
+        "p1": 679,
+        "p2": 792,
+        "link": "https://www.youtube.com/watch?v=tFC-3k0uxcM&t=38020s"
+    }
+]}

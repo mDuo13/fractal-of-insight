@@ -204,6 +204,8 @@ class OmniEvent:
     def analyze_day2(self):
         # TODO: maybe turn this into a list of stages?
         keepN = self.evt.get("keepN")
+        # TODO: maybe use "prior drops" data to include players who
+        # qualified but dropped without playing in day 2?
         if keepN:
             day2_start = keepN[0]['round']
             stage1 = self.evt['stages'][0]

@@ -431,13 +431,13 @@ async function fill_price_and_hipster() {
 
     const price_els = document.querySelectorAll(".card-price")
     for (const ps of price_els) {
-        const cardname = decodeURI(ps.dataset.cardname)
+        const cardname = decodeURIComponent(ps.dataset.cardname)
         ps.innerText = CARDDATA[cardname].price
     }
 
     const hipster_els = document.querySelectorAll(".card-hipster-rating")
     for (const hs of hipster_els) {
-        const cardname = decodeURI(hs.dataset.cardname)
+        const cardname = decodeURIComponent(hs.dataset.cardname)
         hs.innerText = CARDDATA[cardname].hipster
     }
 

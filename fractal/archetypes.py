@@ -450,6 +450,8 @@ fire_aggro = add_archetype(
         "Fabled Ruby Fatestone", # Try separating out Suzaku decks
         "Aetheric Calibration", # Separate out Aetherwing decks
         "Cinderbloom Tender", # Separate out Cinderbloom combo decks
+        "Erupting Rhapsody", # Separate out Erupting
+        "Volcanic Crescendo", # ^^
     ]
 )
 
@@ -555,9 +557,22 @@ lwa.add_subtype(
     shortname="",
 )
 
-add_archetype(
+erupting = add_archetype(
     "Erupting",
-    ["Erupting Rhapsody"]
+    [
+        "Erupting Rhapsody",
+        "Volcanic Crescendo",
+    ]
+)
+erupting.add_subtype(
+    "Rhapsody",
+    ["Erupting Rhapsody"],
+    shortname=""
+)
+erupting.add_subtype(
+    "Crescendo",
+    ["Volcanic Crescendo"],
+    shortname=""
 )
 
 add_archetype(
@@ -879,7 +894,9 @@ add_archetype(
     [
         "Burst Asunder",
     ],
-    # Maybe require a minimum phantasias, say, 15?
+    require_types={
+        "PHANTASIA": 15
+    },
     exclude_cards=[
         # "Dungeon Guide",
         "Strategem of Myriad Ice",
@@ -1006,6 +1023,10 @@ add_archetype(
         [
             "Baleful Oblation",
             "Golden Checkmate",
+        ],
+        [
+            "Baleful Oblation",
+            "Ionized Asceticism",
         ]
     ]
 )
