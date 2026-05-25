@@ -10,6 +10,7 @@ class Season:
         self.events = []
         self.data = {}
         self.pdict = defaultdict(list) # list of events entered by player ID
+        self.subformats = []
 
     def add_event(self, e):
         if e in self.events:
@@ -107,11 +108,12 @@ class Season:
         return f"{self.code} Season"
 
 class Format(Season):
-    def __init__(self, name, start, end=None, desc=""):
+    def __init__(self, name, start, end=None, desc="", season="OFF"):
         self.name = name
         self.start_time = start
         self.end_time = end
         self.season_guide = None
+        self.parent_season = season
         self.desc = desc
         self.events = []
         self.data = None
@@ -152,118 +154,140 @@ SEASONS = {
     "Alchemical Revolution": "ALC",
 }
 
-FORMATS = {}
+FORMATS = []
 def add_format(*args,**kwargs):
     f = Format(*args, **kwargs)
-    FORMATS[f.name] = f
+    FORMATS.insert(0, f)
 
 add_format("ALC Release",
     start="2024-02-04",
     end="2024-02-16",
+    season="ALC",
     desc="Start of Omnidex and Alchemical Revolution season."
 )
 add_format("ALC Post-Ontario",
     start="2024-02-16",
     end="2024-05-17",
+    season="ALC",
     desc="Crystal of Empowerment banned."
 )
 # Technically the 2024 April Fools champions were legal for one day, but I don't care.
 add_format("MRC Release",
     start="2024-05-17",
     end="2024-08-05",
+    season="MRC",
     desc="Mercurial Heart released alongside Silvie, Slime Sovereign and Tristan, Shadowdancer Re:Collection decks."
 )
 add_format("MRC Post-Chicago",
     start="2024-08-05",
     end="2024-09-02",
+    season="MRC",
     desc="Stonescale Band received errata."
 )
 add_format("MRC Post-Outlook",
     start="2024-09-02",
     end="2024-10-11",
+    season="MRC",
     desc="Corhazi Outlook banned; Polaris, Twinkling Cauldron added to Proxia's Vault."
 )
 add_format("AMB Release",
     start="2024-10-11",
     end="2024-10-28",
+    season="AMB",
     desc="Mortal Ambition released; Erupting Rhapsody banned."
 )
 add_format("AMB Post-Toronto",
     start="2024-10-28",
     end="2025-01-10",
+    season="AMB",
     desc="Three Visits received errata; Nullifying Mirror added to Proxia's Vault."
 )
 add_format("AMB + ALC Alter",
     start="2025-01-10",
     end="2025-02-10",
+    season="AMB",
     desc="Alchemical Revolution Alter released."
 )
 add_format("AMB + Reciprocity",
     start="2025-02-10",
     end="2025-02-17",
+    season="AMB",
     desc="Reciprocity, Dorumegia's Call added to Proxia's Vault"
 )
 add_format("AMB Post-Feb Bans",
     start="2025-02-17",
     end="2025-03-07",
+    season="AMB",
     desc="Icebound Slam and Baby Gray Slime banned."
 )
 add_format("HVN Release",
     start="2025-03-07",
     end="2025-04-28",
+    season="HVN",
     desc="Abyssal Heaven released alongside Diao Chan: Idyll Corsage and Guo Jia: Heaven's Favored Re:Collection decks; Scepter of Lumina received errata."
 )
 add_format("HVN + Clarent",
     start="2025-04-28",
     end="2025-05-31",
+    season="HVN",
     desc="Clarent, Reimagined added to Proxia's Vault."
 )
 add_format("HVN + MRC Alter",
     start="2025-05-31",
     end="2025-06-02",
+    season="HVN",
     desc="Mercurial Heart Alter Edition released."
 )
 add_format("HVN Post-June Ban",
     start="2025-06-02",
     end="2025-07-25",
+    season="HVN",
     desc="Dissonant Fractal banned."
 )
 add_format("DTR Release",
     start="2025-07-25",
     end="2025-08-25",
+    season="DTR",
     desc="Distorted Reflections released; Lost in Thought banned; Polaris, Twinkling Cauldron received errata."
 )
 add_format("DTR + Thurible",
     start="2025-08-25",
     end="2025-09-15",
+    season="DTR",
     desc="Purifying Thurible added to Proxia's Vault"
 )
 add_format("DTR Post-Taipei",
     start="2025-09-15",
     end="2025-12-05",
+    season="DTR",
     desc="Rile the Abyss banned; Purifying Thurible removed from Proxia's Vault."
 )
 add_format("PTM Release",
     start="2025-12-05",
     end="2026-01-26",
+    season="PTM",
     desc="Phantom Monarchs released alongside Merlin Brilliant Vestige Re:Collection deck."
 )
 add_format("PTM + Sablemere",
     start="2026-01-26",
     end="2026-01-31",
+    season="PTM",
     desc="Sablemere, Warden's Grip added to Proxia's Vault."
 )
 add_format("PTM + AMB Alter",
     start="2026-01-31",
     end="2026-04-03",
+    season="PTM",
     desc="Mortal Ambition Alter Edition released."
 )
 add_format("RDO Release",
     start="2026-04-03",
     end="2026-04-20",
+    season="RDO",
     desc="Radiant Origins released alongside Mordred Aurelian Regent Re:Collection deck; Unmake Duality banned."
 )
 add_format("RDO Post-April Bans",
     start="2026-04-20",
+    season="RDO",
     desc="Baby Green Slime, Carpsong Coda, and Grim Pastiche banned; Baby Gray Slime unbanned; Mantle of the Abyss received errata."
 )

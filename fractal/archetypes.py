@@ -602,7 +602,8 @@ add_archetype(
     exclude_cards=[
         "Ravishing Finale",
         "Guo Jia, Blessed Scion",
-        "Burst Asunder",
+        "Zhang Jiao, Way of Peace", # Try to exclude Fractals decks but include
+                                    # Ari mill decks with a couple Burst Asunder
         "Dynastic Whirlpool", # Covered by its own archetype
     ],
     shortname="Mill"
@@ -874,11 +875,26 @@ add_archetype(
     shortname = "Tera",
 )
 
-add_archetype(
+razorgale = add_archetype(
     "Razorgale",
     [
         "Razorgale Calling",
     ],
+)
+razorgale.add_subtype(
+    "Rainbow Potions",
+    [
+        "Combustible Potion",
+        "Soothing Potion"
+    ],
+    require_element="Wind",
+    shortname="Rainbow"
+)
+razorgale.add_subtype(
+    "Raccoon",
+    [
+        "Bandit, Gaze Leader"
+    ]
 )
 
 add_archetype(

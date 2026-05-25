@@ -6,17 +6,18 @@
 {% block body %}
 <nav id="main-nav">
     <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/{{szn}}">⮤ {{szn}}</a>
+    <b class="nav-item">↓ Subformats</b>
     <a class="nav-item" href="/player/">→ Players</a>
     <a class="nav-item" href="/deck/">→ Decks</a>
     <a class="nav-item" href="/champion/">→ Champions</a>
-    <a class="nav-item" href="/formats/">→ Formats</a>
     <a class="nav-item" href="/card/">→ Cards</a>
     <a class="nav-item" href="/achievement/">→ Achievements</a>
 </nav>
 
-<h1>Standard Formats</h1>
+<h1>{{szn}} Subformats</h1>
 
-Compare data for standard formats split by card legality changes including cards being banned (Category 3) or added to Proxia's Vault, excluding April Fools changes.
+Compare data for {{szn}} season standard formats split by card legality changes including cards being banned (Category 3) or added to Proxia's Vault.
 
 <div id="elements">
     <h2>Elements</h2>

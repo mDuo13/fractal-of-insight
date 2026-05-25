@@ -9,7 +9,6 @@
     <a class="nav-item" href="/deck/">⇈ Decks</a>
     <a class="nav-item" href="/deck/{{slugify(arche.name)}}.html">⮤ {{arche.name}}</a>
     <a class="nav-item" href="/champion/">→ Champions</a>
-    <a class="nav-item" href="/formats/">→ Formats</a>
     <a class="nav-item" href="/card/">→ Cards</a>
     <a class="nav-item" href="/achievement/">→ Achievements</a>
 </nav>
@@ -30,7 +29,7 @@
         </tr></thead>
         <tbody>
         {% for deck in arche.matched_decks[page_start:page_end] %}
-            {{ macros.p_row_arche(deck, loop, events) }}
+        {{ macros.p_row_arche(deck, loop, events) }}
         {% endfor %}
         </tbody>
     </table>

@@ -77,7 +77,7 @@
 </td>
 {% endmacro %}
 
-{% macro p_row(p, loop, anchor=None, show_matches=True) %}
+{% macro p_row(p, loop, anchor=None, show_matches=True) -%}
     <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}{% if p.dq %} disqualified{% endif %}{% if p.banned_until %} banned{% endif %}">
         <td class="p_rank">{% if p.dq %}<abbr title="Disqualified">DQ</abbr>{% else %}{{loop.index}}{% endif %}</td>
         <td class="playername" {% if p.banned_until %}title="Banned until {{p.banned_until|ms_to_date}}"{% else %}title="Elo: {{p.elo}}"{% endif %}>{% if p.id > 0 %}<a href="/player/{{p.id}}.html">{{p}}</a>{% else %}{{p}}{% endif %}</td>
@@ -126,7 +126,7 @@
     </tr>
 {% endmacro %}
 
-{% macro p_row_profilepage(p, loop, event) %}
+{% macro p_row_profilepage(p, loop, event) -%}
     <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}" data-decklists="{% if p.deck %}1{% else %}0{% endif %}" data-category="{{slugify(event.category['name'])}}" data-playercount="{{event.players|length}}">
         <td class="p_date"{% if p.topcut_deck %} rowspan="2"{% endif%}>{{event.date}}</td>
         <td class="p_event"{% if p.topcut_deck %} rowspan="2"{% endif%}><a href="/{{event.season}}/{{event.id}}.html">{{event.name}}</a></td>
@@ -175,7 +175,7 @@
 
 {% macro winner() %}<span class="win_icon" title="This player won the event">👑</span>{% endmacro %}
 
-{% macro p_row_arche(deck, loop, events) %}
+{% macro p_row_arche(deck, loop, events) -%}
     {% set event = events[deck.entrant.evt_id] %}
     {% set anchor = '#deck_'~event.id~'_'~deck.entrant.id %}
     {% if deck.is_topcut_deck %}

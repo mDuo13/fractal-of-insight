@@ -9,7 +9,6 @@
     <a class="nav-item" href="/player/">→ Players</a>
     <a class="nav-item" href="/deck/">→ Decks</a>
     <a class="nav-item" href="/champion/">→ Champions</a>
-    <a class="nav-item" href="/formats/">→ Formats</a>
     <a class="nav-item" href="/card/">→ Cards</a>
     <a class="nav-item" href="/achievement/">→ Achievements</a>
 </nav>
@@ -28,7 +27,9 @@
         </li>
     </ul>
 
-    <p>Stats on this page are for the entire season combined. For stats before/after mid-season changes like bannings or Proxia's Vault releases, see <a href="/formats/">Format Stats</a>.</p>
+    {% if szn.subformats|length > 1 %}
+    <p>Stats on this page are for the entire season combined; this season has {{szn.subformats|length}} <a href="subformats.html">Subformats</a>, divided by changes to card legality.</p>
+    {% endif %}
 </section>
 
 <section id="events">

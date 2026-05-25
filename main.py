@@ -12,7 +12,7 @@ import fractal.config as config
 from fractal.datalayer import carddata, get_event, get_card_img, get_card_price, format_price, write_similarity_cache
 from fractal.shared import slugify, OVERALL, REGIONS, ms_to_date, EVENT_TYPES, TEAM_STANDARD
 from fractal.omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
-from fractal.season import Season, SEASONS, Format, FORMATS
+from fractal.season import Season, SEASONS, FORMATS
 from fractal.player import Player
 from fractal.archetypes import ARCHETYPES, NO_ARCHETYPE, MAT_DIFF_CARD_LIMIT, MAIN_DIFF_CARD_LIMIT, SIDE_DIFF_CARD_LIMIT, RISING_CARD_LIMIT
 # from fractal.spoiler import SpoilerEvent, SPOILER_SEASONS
@@ -42,6 +42,7 @@ class PageBuilder:
         self.env.filters["slugify"] = slugify
         self.env.filters["ms_to_date"] = ms_to_date
         self.env.trim_blocks = True
+        self.env.lstrip_blocks = True
         self.env.autoescape = True
 
         self.seasons = {}
@@ -91,18 +92,18 @@ class PageBuilder:
         """
         Write a season summary page.
         """
-        season.analyze()
         szn_path = f"{season.code}/index.html"
         self.render("season.html.jinja2", szn_path, szn=season)
 
-    def write_formats(self, formats):
+    def write_formats(self, formats, parent_szn):
         """
         Write a summary of different formats (by card legality)
         """
         for fmt in formats:
             fmt.analyze()
-        fmt_path = "formats/index.html"
-        self.render("formats.html.jinja2", fmt_path, formats=formats)
+        # fmt_path = "formats/index.html"
+        fmt_path = f"{parent_szn}/subformats.html"
+        self.render("formats.html.jinja2", fmt_path, formats=formats, szn=parent_szn)
 
     def write_player(self, player, events, known_players):
         player.analyze()
@@ -243,7 +244,7 @@ class PageBuilder:
             self.seasons[e.season] = Season(e.season)
         self.seasons[e.season].add_event(e)
 
-        for fmt in FORMATS.values():
+        for fmt in FORMATS:
             if fmt.should_include(e):
                 fmt.add_event(e)
                 break
@@ -344,11 +345,13 @@ class PageBuilder:
         self.consolidate_judges()
 
         seasons_sorted = {k:self.seasons[v] for k,v in SEASONS.items() if v in self.seasons.keys()}
-        for szn in self.seasons.values():
-            self.write_season(szn)
-
-        formats_desc = list(reversed(FORMATS.values()))
-        self.write_formats(formats_desc)
+        for season in self.seasons.values():
+            season.analyze()
+            subformats = [fmt for fmt in FORMATS if fmt.parent_season == season.code]
+            season.subformats = subformats
+            self.write_season(season)
+            self.write_formats(subformats, season.code)
+            
 
         # Card stats has to come before player stuff for "first play" to work.
         ALL_CARD_STATS.analyze()

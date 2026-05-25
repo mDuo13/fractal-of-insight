@@ -9,7 +9,6 @@
     <b class="nav-item">↓ {{player.username}}</b>
     <a class="nav-item" href="/deck/">→ Decks</a>
     <a class="nav-item" href="/champion/">→ Champions</a>
-    <a class="nav-item" href="/formats/">→ Formats</a>
     <a class="nav-item" href="/card/">→ Cards</a>
     <a class="nav-item" href="/achievement/">→ Achievements</a>
 </nav>
@@ -93,7 +92,7 @@
             <th>Date</th><th>Event</th>
         </tr></thead>
         <tbody>
-        {% for judge_evt in player.events_judged %}
+        {% for judge_evt in player.events_judged|reverse %}
             <tr>
                 <td>{{judge_evt.event.date}}</td>
                 <td><a href="/{{judge_evt.event.season}}/{{judge_evt.event.id}}.html">{{judge_evt.event.name}}</a></td>
