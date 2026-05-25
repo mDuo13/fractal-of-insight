@@ -20,6 +20,7 @@ from fractal.cards import ERRATA, BANLIST
 from fractal.cardstats import ALL_CARD_STATS, PAD_UNTIL
 from fractal.achievements import ACHIEVEMENTS, GAS, REFRACTED_ACHIEVEMENTS, REFRACTED_ARTISTS
 from fractal.champs import CHAMP_DATA
+from fractal.hipster import HipsterDB
 
 SIGHTINGS_PER_PAGE = 200
 CARD_SIGHTINGS_PER_PAGE = 100
@@ -297,18 +298,27 @@ class PageBuilder:
 
     def analyze_hipsters(self):
         """
-        Calculate hipster rating for each decklist and the hipster floor
+        Calculate hipster rating for each decklist and the hipster floor.
         """
-        for e in self.all_events.values():
+        hdb = HipsterDB()
+        lastdate = None
+        decks_pending_rating = []
+        evts_sorted = list(self.all_events.values())
+        evts_sorted.sort(key=lambda e:e.start_time)
+        for e in evts_sorted:
+            if e.date != lastdate:
+                cohort_floor = hdb.update_scores()
+                if cohort_floor < self.hipster_floor:
+                    self.hipster_floor = cohort_floor
+                lastdate = e.date
             for p in e.players:
                 if p.deck:
-                    p.deck.rate_hipster(ALL_CARD_STATS)
-                    if p.deck.hipster < self.hipster_floor:
-                        self.hipster_floor = p.deck.hipster
+                    hdb.add_deck(p.deck)
                 if p.topcut_deck:
-                    p.topcut_deck.rate_hipster(ALL_CARD_STATS)
-                    if p.topcut_deck.hipster < self.hipster_floor:
-                        self.hipster_floor = p.topcut_deck.hipster
+                    hdb.add_deck(p.topcut_deck)
+        cohort_floor = hdb.update_scores()
+        if cohort_floor < self.hipster_floor:
+            self.hipster_floor = cohort_floor
 
     def list_event_wins(self):
         self.aew = {} # archetype event wins

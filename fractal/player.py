@@ -301,6 +301,9 @@ class Player:
             if e.deck:
                 hipster_total += e.deck.hipster
                 rating_count += 1
+            if e.topcut_deck:
+                hipster_total += e.topcut_deck.hipster
+                rating_count += 1
         if rating_count:
             self.hipster = round((hipster_total / rating_count) - low)
         else:

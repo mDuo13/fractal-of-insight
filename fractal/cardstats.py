@@ -58,20 +58,9 @@ class TopCutAppearance:
 
 class CardWielders(Wielders):
     def add(self, entrant):
-        if "REGALIA" in carddata[self.name]["types"] or "CHAMPION" in carddata[self.name]["types"]:
-            type_multiplier = 3
-        else:
-            type_multiplier = 1
-        
-        card_quant_mat_main = entrant.deck.quantity_of(self.name)
-        card_quant_side = entrant.deck.quantity_of(self.name, search_sections=("sideboard",))
-
+        card_score = entrant.deck.card_score(self.name)
         game_score = entrant.score + (entrant.topcut_wins * 3)
-
-        usage_score = game_score * type_multiplier * (
-            (card_quant_mat_main) +
-            (1/3 * card_quant_side)
-        )
+        usage_score = game_score * card_score
         super().add(entrant, usage_score)
 
 class CardStats:

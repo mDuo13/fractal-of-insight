@@ -55,6 +55,11 @@ class OmniEvent:
         self.host = self.evt["store"]["name"]
         self.fix_generic_name()
         self.date = ms_to_date(self.evt["startAt"])
+        if self.evt.get("stages", []) and self.evt["stages"][0].get("startedAt"):
+            # Actual stage 1 start time
+            self.start_time = self.evt["stages"][0]["startedAt"]
+        else:
+            self.start_time = self.evt["startAt"] # Scheduled start time
         if "season" in self.evt:
             self.season = SEASONS.get(self.evt["season"]["name"], "OTHER")
             self.track_elo = True
@@ -210,6 +215,7 @@ class OmniEvent:
             day2_start = keepN[0]['round']
             stage1 = self.evt['stages'][0]
             if len(stage1['rounds']) <= day2_start:
+                # TODO: is event 52638 an exception? what's up with that?
                 print("Day 2 cutoff not ready yet")
                 return
             d2r1pairings = stage1['rounds'][day2_start]["pairings"]

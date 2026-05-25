@@ -3,11 +3,13 @@ from collections import defaultdict
 from xxhash import xxh64
 
 from .shared import slugify, fix_case, lineage, element_sortkey, ms_to_date, rank_card
-from .datalayer import get_card_img, carddata, card_is_floating, get_card_references, get_card_price, get_cached_similarity, store_similarity
+from .datalayer import get_card_img, carddata, card_is_floating, get_card_references, get_card_price, get_cached_similarity, store_similarity, is_valid_in_decklists
 from .cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST, REMOVED_FROM_PRXY
 from .archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
 from .cardstats import ALL_CARD_STATS
 from .champs import CHAMP_DATA
+
+SIDEBOARD_15PT_DATE = "2024-05-17" # Before MRC season, sideboard was any 8 cards
 
 def rank_card_o(card_o):
     return rank_card(carddata[card_o["card"]])
@@ -163,9 +165,9 @@ class Deck:
         if card_back:
             card_o["back"] = card_back
         cardtypes = carddata[card_o["card"]].get("types", [])
-        if "TOKEN" in cardtypes or "MASTERY" in cardtypes:
-            # Some people list tokens/masteries in their deck lists by accident.
-            card_o["as_token"] = True
+        # if "TOKEN" in cardtypes or "MASTERY" in cardtypes:
+        #     # Some people list tokens/masteries in their deck lists by accident.
+        #     card_o["as_token"] = True
 
     def fix_dl(self):
         """
@@ -184,6 +186,10 @@ class Deck:
         for section in ("main", "material", "sideboard"):
             for card_o in self.dl[section]:
                 self.fix_card_o(card_o)
+            # Some people list tokens/masteries in their deck list by accident.
+            # Remove those, after normalizing card names
+            self.dl[section] = [card_o for card_o in self.dl[section]
+                                if is_valid_in_decklists(card_o["card"])]
             self.dl[section].sort(key=rank_card_o)
 
         if len(self.dl["material"]) > 12:
@@ -250,6 +256,8 @@ class Deck:
                 self.guns += 1
         self.side_total = b
         self.side_points = p
+        if self.side_points > 15 and self.date >= SIDEBOARD_15PT_DATE:
+            self.invalid_decklist = True
 
     def quantity_of(self, cardname, search_sections=("material","main")):
         """
@@ -262,8 +270,29 @@ class Deck:
                     n += card_o["quantity"]
         return n
 
+    def card_score(self, cardname):
+        """
+        Return a score based on how many copies of a card are in which parts of
+        the deck. Cards score 1 point per copy, triple for material deck cards,
+        1/3 points for copies in the sideboard.
+        """
+        card = carddata[cardname]
+        if "REGALIA" in card["types"] or "CHAMPION" in card["types"]:
+            type_multiplier = 3
+        else:
+            type_multiplier = 1
+        card_quant_mat_main = self.quantity_of(cardname)
+        card_quant_side = self.quantity_of(cardname, search_sections=("sideboard",))
+        card_score = type_multiplier * (
+            card_quant_mat_main +
+            (1/3 * card_quant_side)
+        )
+        return card_score
 
     def cardlist_imgs(self):
+        """
+        Add card image links to the decklist data
+        """
         for cat in ("material", "main", "sideboard"):
             for card_o in self.dl[cat]:
                 card_o["img"] = get_card_img(card_o["card"], at=self.entrant.evt_time)
@@ -360,24 +389,29 @@ class Deck:
 
         return trim_similar(decks_before, limit), trim_similar(decks_sameday, limit), trim_similar(decks_after, limit)
 
-    def rate_hipster(self, ALL_CARD_STATS):
+    def rate_hipster(self, hdb):
+        """
+        Given a HipsterDB (for a given point in time), calculate this deck's
+        hipster rating, which is based on how popular the cards in it are,
+        normalized to a (12 card mat, 60 card main, 15 point side) deck size
+        """
         self.hipster = 0
+        mat_weight = 1 / (self.mat_total / 12)
         for card_o in self.mat:
-            if card_o["card"] not in ALL_CARD_STATS.items.keys():
-                # Skip things without stats, like tokens that shouldn't be in decklists
-                continue
-            self.hipster += (ALL_CARD_STATS[card_o["card"]].hipster)
+            self.hipster += hdb.score(card_o["card"]) * mat_weight * 3
+        main_weight = 1 / (self.main_total / 60)
         for card_o in self.main:
-            if card_o["card"] not in ALL_CARD_STATS.items.keys():
-                # Skip things without stats, like tokens that shouldn't be in decklists
-                continue
-            self.hipster += (ALL_CARD_STATS[card_o["card"]].hipster) * card_o["quantity"]
+            self.hipster += hdb.score(card_o["card"]) * card_o["quantity"] * main_weight
         for card_o in self.side:
-            if card_o["card"] not in ALL_CARD_STATS.items.keys():
-                # Skip things without stats, like tokens that shouldn't be in decklists
-                continue
-            self.hipster += (ALL_CARD_STATS[card_o["card"]].hipster) * card_o["quantity"]
-        self.hipster = round(self.hipster / 100, 1)
+            card = carddata[card_o["card"]]
+            if "REGALIA" in card["types"] or "CHAMPION" in card["types"]:
+                type_multiplier = 3
+            else:
+                type_multiplier = 1
+            self.hipster += hdb.score(card_o["card"]) * card_o["quantity"] * type_multiplier
+        # 111 is the total point score for a 12/60/15 size deck
+        self.hipster = round(self.hipster / 111, 1)
+        return self.hipster
 
     def calc_price(self):
         total_price = 0
@@ -487,6 +521,10 @@ class Deck:
 
     @property
     def representative_champion(self):
+        """
+        Return a single champion that best represents the deck; includes variant
+        champion names for some cases (e.g. Luxem vs Lv1 Zander)
+        """
         if len(self.lineages) == 0:
             return ""
         elif len(self.lineages) > 0:
@@ -501,6 +539,9 @@ class Deck:
             return self.lineages[-1] #TODO: handle hybrid lineages better
 
     def __iter__(self):
+        """
+        Iterate the material and main decks, returning card names
+        """
         for card_o in self.dl["material"]:
             yield card_o["card"]
         for card_o in self.dl["main"]:
@@ -508,24 +549,34 @@ class Deck:
 
     @property
     def mat(self):
+        """
+        Iterate the material deck, returning card objects
+        """
         for card_o in self.dl["material"]:
             yield card_o
 
     @property
     def main(self):
         """
-        Iterate main deck only
+        Iterate main deck only, returning card objects
         """
         for card_o in self.dl["main"]:
             yield card_o
 
     @property
     def side(self):
+        """
+        Iterate the sideboard, returning card objects
+        """
         for card_o in self.dl["sideboard"]:
             yield card_o
 
     @property
     def refs(self):
+        """
+        Iterator for tokens, masteries, etc.—cards referenced by the deck
+        but not included in the deck.
+        """
         unique_refs = {}
         for card_o in self.main:
             for section in ("main", "material", "sideboard"):
