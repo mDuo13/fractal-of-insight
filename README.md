@@ -24,7 +24,6 @@ You can start a local dev server to preview the site by going to your configured
 
 ## TODO / Planned Features
 
-- improve performance of large event pages (e.g. team standard 2025, Ascent KL)
 - refine archetype classification
     - use machine-learning clustering to identify archetypes?
     - archetype overlap chart?
@@ -59,10 +58,6 @@ You can start a local dev server to preview the site by going to your configured
 - improve sorting of events on main page to sort by close time (not just date)
 - save event filtering settings to browser storage
 - performance improvements:
-    - Improve performance / reduce lagginess of Formats page.
-        - possibly roll into Seasons
     - improve efficiency of Players page, search
-    - try reducing whitespace in output files
-    - adjust Hipster rating to be truly chronological or at least season-based so new events don't retroactively change hipster ratings in old events
-- add vods for ascent LA, LV, NA Nats, Icebound Slam Cup
+- add vods for ascent Icebound Slam Cup, EU Nats
 - fix glimpse not scrolling you back to matches if that's the current anchor already

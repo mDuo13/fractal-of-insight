@@ -1058,6 +1058,7 @@ umbra_guardian = add_archetype(
         "Baleful Oblation",
         "Spirelle, Schwartz Queen",
         "Grim Pastiche",
+        "Pouvoir Absolu",
     ],
     exclude_cards=[
         "Diana, Duskstalker",
