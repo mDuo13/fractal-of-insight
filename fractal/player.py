@@ -4,7 +4,7 @@ from time import time
 from .deck import Deck
 from .datalayer import get_deck, get_topcut_deck, NoDeck
 from .cards import ELEMENTS
-from .shared import keydefaultdict, ms_to_date, TEAM_STANDARD
+from .shared import keydefaultdict, ms_to_date, cjoin, TEAM_STANDARD
 from .stats import ElementStats, ChampStats, ArcheStats
 from .achievements import AchievementSet, REFRACTED_ACHIEVEMENTS
 from .config import UPSET_CUTOFF
@@ -349,7 +349,7 @@ class Player:
                 visited_countries.add(e.event.country)
 
                 if len(visited_countries) > 2:
-                    self.achievements.add("Globetrotter", e, details=", ".join(visited_countries))
+                    self.achievements.add("Globetrotter", e, details=cjoin(visited_countries))
                     break
 
         # Match results achievements
@@ -434,7 +434,8 @@ class Player:
                 for el in e.deck.els:
                     elements_used.add(el)
                     if len(elements_used) >= 3:
-                        self.achievements.add("Elementalist", e, details=", ".join(elements_used))
+                        self.achievements.add("Elementalist", e, details=cjoin(elements_used))
+                        break
                 for klass in e.deck.classes:
                     classes_used.add(klass)
                     if len(classes_used) >= 7:
@@ -476,7 +477,7 @@ class Player:
             if e.event.season != "OFF":
                 seasons_played.add(e.event.season)
                 if len(seasons_played) >= 4:
-                    self.achievements.add("Four Seasons", e, details=", ".join(seasons_played))
+                    self.achievements.add("Four Seasons", e, details=cjoin(seasons_played))
                     break
 
         # Achievements for decklist similarity

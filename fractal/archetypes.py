@@ -377,6 +377,8 @@ wind_allies = add_archetype(
         "Unrelenting Warden",
         "Chrysalis, Hazy Caterpillar",
         "Banner Knight",
+        "Windrider Vanguard",
+        "Axis Gale Scholar",
     ],
     exclude_cards=[
         "Spirit Blade: Ascension",
@@ -658,6 +660,7 @@ crux_lorraine = add_archetype(
         "Ghosts of Pendragon",
         "Spirit Blade: Ascension",
         "Spirit Blade: Dispersion",
+        "Spirit Blade: Ensoul",
     ],
     exclude_cards=[
         "Merlin, Kingslayer",
@@ -1023,6 +1026,7 @@ add_archetype(
         "Verita, Queen of Hearts",
         "Edelstein, Queen of Diamonds",
         "Senaris, Six of Diamonds",
+        "Raised Slash",
     ]
 )
 
@@ -1059,6 +1063,8 @@ umbra_guardian = add_archetype(
         "Spirelle, Schwartz Queen",
         "Grim Pastiche",
         "Pouvoir Absolu",
+        "Nocturne's Oblivion",
+        "Sinistre Stab",
     ],
     exclude_cards=[
         "Diana, Duskstalker",
@@ -1066,6 +1072,7 @@ umbra_guardian = add_archetype(
         "Alice, Phantom Monarch",
         "Tristan, Shadowdancer",
         "Advent of the Stormcaller", # Separate out Oblation decks
+        "Golden Checkmate", # Again, remove oblation
     ],
     shortname="Umbra",
 )

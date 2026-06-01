@@ -117,6 +117,7 @@ class OmniEvent:
             "Standard",
             "Constructed",
             "DOA", "FTC", "ALC", "MRC", "AMB", "HVN", "DTR", "PTM", "RDO",
+            "Season",
         ]]
         name_words = re.split(r"\W+", self.name.lower())
         testname = ""

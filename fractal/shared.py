@@ -116,6 +116,14 @@ def rank_card(card):
     # Third sort: alphabetical, case-insensitive
     return rank + el_rank + "-" + card["name"].lower()
 
+def cjoin(s):
+    """
+    Return a sorted, comma-separated list from an iterable.
+    (Sorting helps to prevent churn in deploys)
+    """
+    l = sorted(list(s))
+    return ", ".join(l)
+
 TEAM_STANDARD = "team-standard-3v3"
 
 EVENT_TYPES = {

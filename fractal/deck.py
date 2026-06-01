@@ -126,6 +126,7 @@ class Deck:
             # probably a spiritless decklist error
             elset = {"Norm"}
         self.els = list(elset)
+        self.els.sort() # Deterministic order avoids churn in old events
 
         # # Find advanced elements in maindeck
         # # Though, Looking Glass / Distortions makes this complicated
