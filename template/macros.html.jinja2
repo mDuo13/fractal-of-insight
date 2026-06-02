@@ -220,15 +220,9 @@
     <div class="evt-mainbox">
         <h3>{{evt.name}}</h3>
         {% if evt.winner and evt.winner.topcut_deck -%}
-        <img class="winnerbadge" src="/static/icon/icon-{{evt.winner.topcut_deck.els[0]|slugify}}.png" alt="Winner icon: {{evt.winner.topcut_deck.els[0]}}" />
-            {%- if evt.winner.topcut_deck.representative_champion -%}
-        <img class="winnerbadge" src="/static/icon/icon-{{evt.winner.topcut_deck.representative_champion|slugify}}.png" alt="{{evt.winner.topcut_deck.representative_champion}}" />
-            {%- endif -%}
+            {{ champbadge(evt.winner.topcut_deck.els[0], evt.winner.topcut_deck.representative_champion) }}
         {% elif evt.winner and evt.winner.deck %}
-        <img class="winnerbadge" src="/static/icon/icon-{{evt.winner.deck.els[0]|slugify}}.png" alt="Winner icon: {{evt.winner.deck.els[0]}}" />
-            {% if evt.winner.deck.representative_champion -%}
-        <img class="winnerbadge" src="/static/icon/icon-{{evt.winner.deck.representative_champion|slugify}}.png" alt="{{evt.winner.deck.representative_champion}}" />
-            {% endif -%}
+            {{ champbadge(evt.winner.deck.els[0], evt.winner.deck.representative_champion) }}
         {% endif -%}
         <div class="date_loc">{{evt.date}} {{flag(evt.country)}}</div>
         <div class="playercount">{{evt.players|length}} entrants</div>
@@ -237,6 +231,17 @@
     </div>
     <div class="event-category">{{evt.category["name"]}}{% if evt.is_refracted %}<span class="refracted-icon" title="Refracted event"><img src="/static/refracted.png" height="20" width="19" /></span>{% endif %}</div>
 </a>
+{% endmacro %}
+
+{% macro champbadge(el, champ) %}
+<div class="champbadge">
+    {%- if el -%}
+    <img src="/static/icon/icon-{{el|slugify}}.png" alt="{{el}}" />
+    {%- endif -%}
+    {%- if champ -%}
+    <img src="/static/icon/icon-{{champ|slugify}}.png" alt="{{champ}}" />
+    {%- endif -%}
+</div>
 {% endmacro %}
 
 {% macro event_filters(event_types, lesser=False, arche=None) %}

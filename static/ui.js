@@ -73,7 +73,9 @@ function reset_sightings() {
 function showmatches(pid) {
     // show all matches with a given player
     hide("#matches .match")
+    hide(".match-badges")
     show(`#matches .p_${pid}`)
+    show(`#matches .p_${pid} .match-badges`)
 
     show("#matches > .togglable")
     show("#matchreset")
@@ -81,6 +83,7 @@ function showmatches(pid) {
     hide("#keymatch-showing")
     hide("#keymatches")
     window.location.hash = "#matches"
+    document.querySelector("#matches").scrollIntoView()
 }
 function show_matchup_matches(arche1, arche2) {
     // show all matches between two archetypes
@@ -89,6 +92,7 @@ function show_matchup_matches(arche1, arche2) {
     // don't want a search for, for example, Water Allies vs Crux to
     // return for example a Water Crux Allies vs [some rando] match.)
     hide("#matches .match")
+    hide(".match-badges")
     show(`[data-p1-archetypes*="${arche1}"][data-p2-archetypes*="${arche2}"]`)
     show(`[data-p1-archetypes*="${arche2}"][data-p2-archetypes*="${arche1}"]`)
 
@@ -101,6 +105,7 @@ function show_matchup_matches(arche1, arche2) {
 function show_arche_matches(arche1) {
     // show all matches involving an archetype
     hide("#matches .match")
+    hide(".match-badges")
     show(`[data-p1-archetypes*="${arche1}"]`)
     show(`[data-p2-archetypes*="${arche1}"]`)
 
@@ -112,6 +117,7 @@ function show_arche_matches(arche1) {
 }
 function show_key_matches() {
     hide("#keymatches")
+    hide(".match-badges")
     show("#matchreset")
 
     // Switch the labels
@@ -124,6 +130,7 @@ function show_key_matches() {
 }
 function show_vid_matches() {
     hide("#showvids")
+    hide(".match-badges")
     show("#matchreset")
 
     hide("#matches .match")
@@ -132,6 +139,7 @@ function show_vid_matches() {
 }
 function reset_matches() {
     hide("#matchreset")
+    hide(".match-badges")
     show("#keymatches")
     show("#matches .match")
     show("#showvids")

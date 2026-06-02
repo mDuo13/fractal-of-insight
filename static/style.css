@@ -617,6 +617,7 @@ fieldset label {
     margin: 5px;
     border: 2px solid #555;
     border-radius: 3px;
+    position: relative;
 }
 
 .team-match {
@@ -687,6 +688,29 @@ fieldset label {
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.match-badges {
+    position: absolute;
+    top: 0;
+    right: -50px;
+    width: 50px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.match-badges .champbadge img {
+    height: 30px;
+    width: 30px;
+    position: absolute;
+    left: 3px;
+}
+
+.p1-badge, .p2-badge {
+    height: 32px;
+    width: 32px;
 }
 
 .vidcol {
@@ -850,17 +874,27 @@ fieldset label {
     font-size: 14px;
 }
 
-.winnerbadge {
-    display: none;
+.evt .champbadge {
+    float: right;
+    height: 50px;
+    width: 50px;
+}
+
+.champbadge img {
+    height: 50px;
+    width: 50px;
+    position: absolute;
+    right: 35px;
 }
 @media (min-width: 1300px) {
-    .winnerbadge {
+    .evt .champbadge img {
+        float: none;
         display: block;
         position: absolute;
-        right: 35px;
-        bottom: 3px;
         height: 100px;
         width: 100px;
+        bottom: 3px;
+        top: auto;
     }
 }
 
@@ -1027,7 +1061,7 @@ ul.scooped-corners {
     --border-color: black;
     --background: var(--ui-bg);
     display: inline-block;
-    /* filter: drop-shadow(var(--main-shadow)); // doesn't work with evt-info clip-path */
+    filter: drop-shadow(var(--main-shadow));
 }
 
 #main-nav {
@@ -1116,6 +1150,7 @@ footer {
 a.achievement {
     text-decoration: none;
     color: black;
+    box-shadow: var(--main-shadow);
 }
 .achievement.unachieved {
     opacity: 0.5;
@@ -1128,7 +1163,6 @@ a.achievement {
 .achievement.refracted.unachieved:hover {
     filter: unset;
     box-shadow: 0px 0px 20px 6px rgba(0,113,253,0.75);
-
 }
 .achievement.achieved {
     border-style: double;
@@ -1143,24 +1177,26 @@ a.achievement {
 }
 .achievement-emoji {
     font-family: "Noto Color Emoji", sans-serif;
-    font-size: 28px;
+    font-size: 48px;
     font-weight: 400;
     font-style: normal;
-    line-height: 38px;
+    line-height: 48px;
+    margin-top: -4px; /* Compensate for emojis' bottom-heaviness */
 }
 .achievement-img {
     display: inline-block;
-    width: 105px;
-    height: 65px;
+    width: 125px;
+    height: 75px;
     overflow: hidden;
+    border-radius: 4px;
 }
 .refracted .achievement-img {
     width: 100%;
     height: 100%;
 }
 .achievement-img img {
-    width: 125px;
-    height: 65px;
+    width: 150px;
+    height: 75px;
     object-fit: cover;
     object-position: 0 22%;
     margin-left: -10px;
@@ -1831,6 +1867,18 @@ a.achievement {
         width: 95px;
         height: 95px;
         padding: 5px;
+    }
+    .achievement-emoji {
+        font-size: 34px;
+        line-height: 34px;
+    }
+    .achievement-img {
+        width: 95px;
+        height: 57px;
+    }
+    .achievement-img img {
+        width: 114px;
+        height: 57px;
     }
     .achievement h4 {
         font-size: 15px;

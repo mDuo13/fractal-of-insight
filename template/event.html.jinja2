@@ -298,15 +298,23 @@
                     {% set use_topcut_deck = True %}
                     {% if p1.topcut_deck %}
                         {% set p1_archetypes = p1.topcut_deck.archetypes|map('slugify')|join(" ") %}
+                        {% set p1_el = p1.topcut_deck.els[0] %}
+                        {% set p1_champ = p1.topcut_deck.representative_champion %}
                     {% else %}
                         {% set p1_archetypes = "" %}
+                        {% set p1_el = "" %}
+                        {% set p1_champ = "" %}
                     {% endif %}
                 {% elif p1.deck %}
                     {% set use_topcut_deck = False %}
                     {% set p1_archetypes = p1.deck.archetypes|map('slugify')|join(" ") %}
+                    {% set p1_el = p1.deck.els[0] %}
+                    {% set p1_champ = p1.deck.representative_champion %}
                 {% else %}
                     {% set use_topcut_deck = False %}
                     {% set p1_archetypes = "" %}
+                    {% set p1_el = "" %}
+                    {% set p1_champ = "" %}
                 {% endif %}
                 {% if match["pairing"]|length > 1 %}
                     {% set p2 = evt.pdict[match["pairing"][1]["id"]] %}
@@ -317,13 +325,21 @@
                     {% if evt.category.shortname == "worlds" and stage["type"] == "single-elimination" %}
                         {% if p2.topcut_deck %}
                             {% set p2_archetypes = p2.topcut_deck.archetypes|map('slugify')|join(" ") %}
+                            {% set p2_el = p2.topcut_deck.els[0] %}
+                            {% set p2_champ = p2.topcut_deck.representative_champion %}
                         {% else %}
                             {% set p2_archetypes = "" %}
+                            {% set p2_el = "" %}
+                            {% set p2_champ = "" %}
                         {% endif %}
                     {% elif p2.deck %}
                         {% set p2_archetypes = p2.deck.archetypes|map('slugify')|join(" ") %}
+                        {% set p2_el = p2.deck.els[0] %}
+                        {% set p2_champ = p2.deck.representative_champion %}
                     {% else %}
                         {% set p2_archetypes = "" %}
+                        {% set p2_el = "" %}
+                        {% set p2_champ = "" %}
                     {% endif %}
                 {% else %}
                 {% set p2 = None %}
@@ -344,6 +360,12 @@
                     </div>
                         {% if match.video %}
                         <a class="matchvid" href="{{match.video}}" target="_blank" title="Match VOD available">📺</a>
+                        {% endif %}
+                        {% if p1_el or p2_el %}
+                        <div class="match-badges collapse">
+                            <div class="p1-badge">{{macros.champbadge(p1_el, p1_champ)}}</div>
+                            <div class="p2-badge">{{macros.champbadge(p2_el, p2_champ)}}</div>
+                        </div>
                         {% endif %}
                     {% else %}
                     <div class="player bye">Bye</div>

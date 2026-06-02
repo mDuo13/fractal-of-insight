@@ -537,6 +537,10 @@ class Deck:
                 return "Aether Diana"
             if "Merlin, Memorite Vassal" in self.champs:
                 return "Sheen Merlin"
+            if "Astra Cleric" in self.archetypes:
+                return "Astra Arisanna"
+            if "Alice, Distorted Queen" in self.champs:
+                return "Distortion Alice"
             return self.lineages[-1] #TODO: handle hybrid lineages better
 
     def __iter__(self):
