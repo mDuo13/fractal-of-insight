@@ -60,4 +60,3 @@ You can start a local dev server to preview the site by going to your configured
 - performance improvements:
     - improve efficiency of Players page, search
 - add vods for ascent Icebound Slam Cup
-- fix glimpse not scrolling you back to matches if that's the current anchor already

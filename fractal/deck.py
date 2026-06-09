@@ -232,6 +232,9 @@ class Deck:
                 # Count the combination of elements
                 el_combo="/".join(sorted(card["elements"]))
                 el_counts[el_combo] += card_o["quantity"]
+        self.main_total = n
+        if self.main_total < 60:
+            self.invalid_decklist = True
 
         self.main_deck_els = []
         for el,quant in el_counts.items():
@@ -239,7 +242,6 @@ class Deck:
             self.main_deck_els.append((el.title(), quant, pct))
         self.main_deck_els.sort(key=lambda x:element_sortkey(x[0]))
 
-        self.main_total = n
         card_types_sorted = [(k,v) for k,v in card_types.items()]
         card_types_sorted.sort(key=lambda x:x[0])
         self.card_types = {k:v for k,v in card_types_sorted}
@@ -529,6 +531,10 @@ class Deck:
         if len(self.lineages) == 0:
             return ""
         elif len(self.lineages) > 0:
+            if "Merlin, Kingslayer" in self.champs:
+                # Typically Kingslayer is more important to a deck's identity
+                # than their Lv1
+                return "Merlin"
             if "Luxem Assassin" in self.archetypes:
                 return "Luxem Zander"
             if "Shadowstrike" in self.archetypes:

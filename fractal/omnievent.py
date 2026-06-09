@@ -383,7 +383,14 @@ class OmniEvent:
             else:
                 tier = []
                 for match in rnd["matches"]:
-                    if match["pairing"][0]["status"] == "loser":
+                    if len(match["pairing"]) == 1:
+                        # Byes in single-elim are very rare, but can happen
+                        winner_id = match["pairing"][0]["id"]
+                        if self.format == TEAM_STANDARD:
+                            self.teams[winner_id.lower()].topcut_wins += 1
+                        else:
+                            self.pdict[winner_id].topcut_wins += 1
+                    elif match["pairing"][0]["status"] == "loser":
                         loser_id = match["pairing"][0]["id"]
                         winner_id = match["pairing"][1]["id"]
                         if self.format == TEAM_STANDARD:

@@ -89,11 +89,12 @@
 
     {% if evt.category.shortname == "worlds" %}
     <h3 class="collapse togglable">Swiss Stage</h3>
-    {% else %}
+    {% elif evt.players|length > evt.top_cut|length %}
     <h3 class="collapse togglable">Below Top Cut</h3>
     {% endif %}
     {% endif %}
 
+    {% if evt.players|length > evt.top_cut|length or evt.category.shortname == "worlds" %}{# Skip "below top cut" table if everyone made top cut #}
     <table class="collapse togglable">
         <thead><tr>
             <th>Rank</th><th>Player</th><th>Record</th><th>Deck</th><th>Elo</th><th class="showmatches">Matches</th>
@@ -106,6 +107,7 @@
         {% endfor %}
         </tbody>
     </table>
+    {% endif %}
 
     <div class="player-regions">
         <h3>Home Region Breakdown</h3>
