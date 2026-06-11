@@ -61,7 +61,6 @@ TCGP_CARDNAMES = {
         "Lavaplume Fatestone",
         "Firebird Trailblazer",
     ],
-    "Wrathful Slime": "WrathfulSlime",
     "Fabled Azurite Fatestone // Seiryuu, Azure Dragon": [
         #tcgp has both, but the one with the // is the sapphire promo only
         "Fabled Azurite Fatestone",

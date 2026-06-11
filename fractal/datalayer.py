@@ -372,7 +372,7 @@ def low_price_by_edition(fullname, prefix):
     else: # Prefix should match
         for item in pricedata[prefix].values():
             trimmed_name = re.sub(r"\(\w+\)", "", item.get("name","")).strip()
-            if trimmed_name == fullname:
+            if trimmed_name in tcgp_names:
                 new_price = low_price_for_product(item)
                 if not new_price: # could be None for no listings
                     continue
