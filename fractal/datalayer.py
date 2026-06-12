@@ -5,7 +5,7 @@ from requests.adapters import HTTPAdapter, Retry
 from time import sleep
 from os import makedirs, scandir, path
 
-from .shared import slugify, fix_case
+from .shared import slugify, fix_case, lineage
 from .cards import ERRATA, PRIZE_EQUIVALENTS, REMOVED_FROM_PRXY
 from .carddb import CardDB
 from .decksim import DeckSim
@@ -173,6 +173,7 @@ def get_card_img(cardname, at=0, from_set_group=None):
 
 FM_EFFECT = '**Floating Memory**'
 CB_FM = '[Class Bonus] **Floating Memory**'
+OTHER_FM = ' Bonus] **Floating Memory**'
 def card_is_floating(card, champs=[]):
     """
     Given a card data object and a list of champion card names, return True if the card
@@ -187,6 +188,13 @@ def card_is_floating(card, champs=[]):
                 for champclass in champcard["classes"]:
                     if champclass in card["classes"]:
                         return True
+            return False
+        elif OTHER_FM in card_effect:
+            for champ in champs:
+                champname = lineage(champ)
+                champbonus_text = f'[{champname} Bonus] **Floating Memory**'
+                if champbonus_text in card_effect:
+                    return True
             return False
         else:
             return True
