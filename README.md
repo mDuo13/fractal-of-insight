@@ -37,6 +37,7 @@ You can start a local dev server to preview the site by going to your configured
 - improve presentation of price data
     - maybe show average or median price per archetype?
     - maybe optimize it to load a price sheet dynamically to reduce churn on page builds?
+    - add historical price data (timed by major events?)
 - maybe make more tables sortable.
 - report even more stats in a rolling window or seasonal basis
     - e.g. individual card stats (on card page)
@@ -60,3 +61,5 @@ You can start a local dev server to preview the site by going to your configured
 - performance improvements:
     - improve efficiency of Players page, search
 - add vods for ascent Icebound Slam Cup
+- make condensed view of battlechart with top 10-ish archetypes only
+- archetype head-to-head analysis: cards more/less prevalent in winning lists?

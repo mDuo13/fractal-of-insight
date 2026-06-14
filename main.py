@@ -9,13 +9,12 @@ from math import ceil
 from collections import defaultdict
 
 import fractal.config as config
-from fractal.datalayer import carddata, get_event, get_card_img, get_card_price, format_price, write_similarity_cache
+from fractal.datalayer import carddata, get_event, get_card_img, pricedb, write_similarity_cache
 from fractal.shared import slugify, OVERALL, REGIONS, ms_to_date, EVENT_TYPES, TEAM_STANDARD
 from fractal.omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
 from fractal.season import Season, SEASONS, FORMATS
 from fractal.player import Player
 from fractal.archetypes import ARCHETYPES, NO_ARCHETYPE, MAT_DIFF_CARD_LIMIT, MAIN_DIFF_CARD_LIMIT, SIDE_DIFF_CARD_LIMIT, RISING_CARD_LIMIT
-# from fractal.spoiler import SpoilerEvent, SPOILER_SEASONS
 from fractal.cards import ERRATA, BANLIST
 from fractal.cardstats import ALL_CARD_STATS, PAD_UNTIL
 from fractal.achievements import ACHIEVEMENTS, GAS, REFRACTED_ACHIEVEMENTS, REFRACTED_ARTISTS
@@ -46,8 +45,8 @@ class PageBuilder:
         self.env.autoescape = True
 
         self.seasons = {}
-        self.known_players = {}
-        self.all_events = {}
+        self.players = {}
+        self.events = {}
         self.known_judges = defaultdict(list)
         self.hipster_floor = 99999 # minimum Hipster rating of any deck
 
@@ -99,42 +98,52 @@ class PageBuilder:
         """
         Write a summary of different formats (by card legality)
         """
-        for fmt in formats:
-            fmt.analyze()
-        # fmt_path = "formats/index.html"
         fmt_path = f"{parent_szn}/subformats.html"
         self.render("formats.html.jinja2", fmt_path, formats=formats, szn=parent_szn)
 
-    def write_player(self, player, events, known_players):
-        player.analyze()
+    def write_player(self, player):
         plr_path = f"player/{player.id}.html"
-        self.render("player.html.jinja2", plr_path, player=player, events=events, players=known_players)
+        self.render("player.html.jinja2", plr_path, player=player, events=self.events, players=self.players)
 
     def write_player_index(self, players=[], events={}):
-        self.render("players.html.jinja2", "player/index.html", players=players, events=events)
+        players_sorted = [p for p in self.players.values()]
+        players_sorted.sort(key=lambda x: x.sortkey())
 
-    def write_archetype(self, archetype, players=[], events=[], seasons={}, wins=0):
+        self.render("players.html.jinja2", "player/index.html", players=players_sorted, events=self.events)
+
+    def write_archetype(self, archetype):
         slug = slugify(archetype.name)
         arche_path = f"deck/{slug}.html"
         # The "Sightings" table is too much, so paginate it.
         max_page = ceil(len(archetype.matched_decks) / SIGHTINGS_PER_PAGE)
         self.render("archetype.html.jinja2", arche_path, arche=archetype,
-                    players=players, events=events, seasons=seasons, wins=wins,
+                    players=self.players, events=self.events,
+                    seasons=self.seasons, wins=self.aew[archetype.name],
                     page_number=1, page_start=0, page_end=SIGHTINGS_PER_PAGE,
                     max_page=max_page
         )
         if max_page > 1:
             for i in range(1, max_page):
                 page_number = i+1
-                self.render("archetype-sightings-page.html.jinja2", f"deck/{slug}-{page_number}.html",
-                            arche=archetype, players=players, events=events, seasons=seasons, wins=wins,
-                            page_number=page_number, max_page=max_page, page_start=(i*SIGHTINGS_PER_PAGE), page_end=((i+1)*SIGHTINGS_PER_PAGE))
+                self.render("archetype-sightings-page.html.jinja2", 
+                        f"deck/{slug}-{page_number}.html",
+                        arche=archetype, players=self.players,
+                        events=self.events, seasons=self.seasons,
+                        wins=self.aew[archetype.name],
+                        page_number=page_number, max_page=max_page,
+                        page_start=(i*SIGHTINGS_PER_PAGE),
+                        page_end=((i+1)*SIGHTINGS_PER_PAGE)
+                )
 
-    def write_archetype_index(self, archetypes, aew, cswr, seasons={}):
-        self.render("archetypes.html.jinja2", "deck/index.html", archetypes=archetypes, aew=aew, cswr=cswr, seasons=seasons)
+    def write_archetype_index(self):
+        archetypes = [a for a in ARCHETYPES.values()]
+        archetypes.sort(key=lambda x: len(x.matched_decks), reverse=True)
+        archetypes.append(NO_ARCHETYPE)
+        self.render("archetypes.html.jinja2", "deck/index.html", archetypes=archetypes, aew=self.aew, seasons=self.seasons)
 
-    def write_card_index(self, card_stats_by_set, card_prices):
-        self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata, set_groups=carddata.get_set_groups(), get_card_img=get_card_img, card_stats_by_set=card_stats_by_set, card_prices=card_prices, PAD_UNTIL=PAD_UNTIL)
+    def write_card_index(self):
+        card_stats_by_set = ALL_CARD_STATS.split_by_set()
+        self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata, set_groups=carddata.get_set_groups(), get_card_img=get_card_img, card_stats_by_set=card_stats_by_set, card_prices=pricedb, PAD_UNTIL=PAD_UNTIL)
 
     def write_champ(self, champstats):
         write_to = f"champion/{slugify(champstats.name)}.html"
@@ -142,10 +151,13 @@ class PageBuilder:
         self.render("champion.html.jinja2", write_to, champion=champstats.name,
             stats=champstats, champlineage=champstats.cards, wins=wins)
 
-    def write_champ_index(self, champions={}, seasons={}):
+    def write_champ_index(self):
+        champs_sorted = [(k,v) for k,v in CHAMP_DATA.items()]
+        champs_sorted.sort(key=lambda x:len(x[1].matched_decks), reverse=True)
+        champions = {k:v for k,v in champs_sorted}
         write_to = "champion/index.html"
         self.render("champions.html.jinja2", write_to, champions=champions,
-            seasons=seasons, cew=self.cew)
+            seasons=self.seasons, cew=self.cew)
 
     def write_card_data(self):
         """
@@ -157,7 +169,7 @@ class PageBuilder:
                 "wr": cstat.winrate,
                 "a60": cstat.hot_appearances,
                 "wr60": (cstat.hot_rating if cstat.hot_appearances else -1),
-                "price": format_price(get_card_price(c)),
+                "price": pricedb.get_formatted_price(c),
                 "mat": (1 if "REGALIA" in carddata[c]["types"] or "CHAMPION" in carddata[c]["types"] else 0),
                 "hipster": cstat.hipster
             }
@@ -166,6 +178,7 @@ class PageBuilder:
         self.render_json(mcardstats, "card/carddata.json")
 
     def write_card_page(self, cardname, cardstat, price="", events=[]):
+        price = pricedb.get_formatted_price(cardname)
         max_page = ceil(len(cardstat.appearances) / CARD_SIGHTINGS_PER_PAGE)
 
         self.render("card.html.jinja2", f"card/{slugify(cardname)}.html", card=carddata[cardname], cardstat=cardstat, events=events, ERRATA=ERRATA, BANLIST=BANLIST, card_price=price, page_number=1, page_start=0, page_end=CARD_SIGHTINGS_PER_PAGE, max_page=max_page)
@@ -182,7 +195,7 @@ class PageBuilder:
         else:
             write_to = f"tts/event_{deck.entrant.evt_id}/{deck.entrant.id}.json"
         self.render_json(deck.tts_json(), write_to)
-    
+
     def render_json(self, json_obj, write_to):
         """
         Write a JSON file to the output folder. Like render() but for JSON.
@@ -219,15 +232,15 @@ class PageBuilder:
             "achievement/refracted-submissions.html",
             REFRACTED_ACHIEVEMENTS=REFRACTED_ACHIEVEMENTS
         )
-    
+
     def write_refracted_about(self):
         self.render("refracted-about.html.jinja2",
             "achievement/refracted-about.html",
             REFRACTED_ACHIEVEMENTS=REFRACTED_ACHIEVEMENTS
         )
-
-    def write_spoilers(self, spoilers):
-        self.render("spoilers.html.jinja2", "spoilers/index.html", spoilers=spoilers)
+    
+    def write_index(self):
+        self.render("index.html.jinja2", "index.html", seasons=self.seasons)
 
     def read_event(self, id_s):
         """
@@ -236,10 +249,10 @@ class PageBuilder:
         """
         try:
             e = OmniEvent(id_s)
-            self.all_events[e.id] = e
+            self.events[e.id] = e
         except IsTeamEvent:
             e = Team3v3Event(id_s)
-            self.all_events[e.id] = e
+            self.events[e.id] = e
         if not self.seasons.get(e.season):
             self.seasons[e.season] = Season(e.season)
         self.seasons[e.season].add_event(e)
@@ -250,11 +263,10 @@ class PageBuilder:
                 break
 
         for entrant in e.players:
-            if entrant.id in self.known_players.keys():
-                self.known_players[entrant.id].add_entry(entrant)
+            if entrant.id in self.players.keys():
+                self.players[entrant.id].add_entry(entrant)
             else:
-                self.known_players[entrant.id] = Player(entrant)
-
+                self.players[entrant.id] = Player(entrant)
             if entrant.deck:
                 self.write_decklist_tts(entrant.deck)
             if entrant.topcut_deck:
@@ -273,7 +285,7 @@ class PageBuilder:
                 if force_evts:
                     print("...but first, adding forced events")
                     for id_s in force_evts:
-                        if id_s not in self.all_events.keys():
+                        if id_s not in self.events.keys():
                             self.read_event(id_s)
                 break
             if entry.is_dir() and entry.name[:6] == "event_":
@@ -290,12 +302,12 @@ class PageBuilder:
         Add judges to player profiles where they exist
         """
         for jid, events_judged in self.known_judges.items():
-            if jid in self.known_players.keys():
+            if jid in self.players.keys():
                 events_judged.sort(key=lambda x:x.event.date)
-                self.known_players[jid].events_judged = events_judged
+                self.players[jid].events_judged = events_judged
             else:
-                self.known_players[jid] = Player(events_judged[0])
-                self.known_players[jid].events_judged = events_judged
+                self.players[jid] = Player(events_judged[0])
+                self.players[jid].events_judged = events_judged
 
     def analyze_hipsters(self):
         """
@@ -304,7 +316,7 @@ class PageBuilder:
         hdb = HipsterDB()
         lastdate = None
         decks_pending_rating = []
-        evts_sorted = list(self.all_events.values())
+        evts_sorted = list(self.events.values())
         evts_sorted.sort(key=lambda e:e.start_time)
         for e in evts_sorted:
             if e.date != lastdate:
@@ -321,125 +333,110 @@ class PageBuilder:
         if cohort_floor < self.hipster_floor:
             self.hipster_floor = cohort_floor
 
-    def list_event_wins(self):
-        self.aew = {} # archetype event wins
+    def organize_seasons(self):
+        """
+        Put seasons in the correct order and analyze them.
+        """
+        seasons_sorted = {k:self.seasons[v] for k,v in SEASONS.items() if v in self.seasons.keys()}
+        unknown_seasons = {k:v for k,v in self.seasons.items() if k not in seasons_sorted.keys()}
+        if unknown_seasons:
+            print("Warning: unknown seasons", unknown_seasons)
+
+        self.aew = {a:[] for a in ARCHETYPES.keys()} # archetype event wins
+        self.aew[NO_ARCHETYPE.name] = []
         self.cew = {} # champ event wins
-        for szn in self.seasons.values():
-            for arche,wins in szn.arche_wins.items():
-                if arche in self.aew.keys():
-                    self.aew[arche] += wins
-                else:
-                    self.aew[arche] = [w for w in wins]
-            for champ,wins in szn.champ_wins.items():
+        self.seasons = seasons_sorted
+
+        for season in self.seasons.values():
+            season.analyze()
+            subformats = [fmt for fmt in FORMATS if fmt.parent_season == season.code]
+            for fmt in subformats:
+                fmt.analyze()
+            season.subformats = subformats
+
+            # Analyze archetype & champ wins for this season
+            for arche,wins in season.arche_wins.items():
+                self.aew[arche] += wins
+            for champ,wins in season.champ_wins.items():
                 if champ in self.cew.keys():
                     self.cew[champ] += wins
                 else:
                     self.cew[champ] = [w for w in wins]
 
-    def write_all(self, force_evts=[]):
-        """
-        Write all known event pages as well as homepage, season landings, and player profiles.
-        """
-
-        self.read_events(force_evts=force_evts)
-        self.consolidate_judges()
-
-        seasons_sorted = {k:self.seasons[v] for k,v in SEASONS.items() if v in self.seasons.keys()}
-        for season in self.seasons.values():
-            season.analyze()
-            subformats = [fmt for fmt in FORMATS if fmt.parent_season == season.code]
-            season.subformats = subformats
-            self.write_season(season)
-            self.write_formats(subformats, season.code)
-            
-
-        # Card stats has to come before player stuff for "first play" to work.
-        ALL_CARD_STATS.analyze()
-        ALL_CARD_STATS.sort()
-        card_stats_by_set = ALL_CARD_STATS.split_by_set()
-
-        self.analyze_hipsters()
-
-        card_prices = {}
-        for cardname, cardstat in ALL_CARD_STATS:
-            price = format_price(get_card_price(cardname))
-            card_prices[cardname] = price
-            self.write_card_page(cardname, cardstat, price, events=self.all_events)
-
-        known_pids_sorted = [pid for pid in self.known_players.keys()]
-        known_pids_sorted.sort(key=lambda x: self.known_players[x].sortkey())
-
-        for pid in known_pids_sorted:
-            self.known_players[pid].analyze_hipster(self.hipster_floor)
-            self.write_player(self.known_players[pid], self.all_events, self.known_players)
-        self.write_player_index(players=[self.known_players[pid] for pid in known_pids_sorted], events=self.all_events)
-
-        self.list_event_wins()
-
+    def analyze_players(self):
+        for p in self.players.values():
+            p.analyze_hipster(self.hipster_floor)
+            p.analyze()
+        GAS.total_players = len(self.players)
+    
+    def analyze_archetypes(self):
         for a in ARCHETYPES.values():
             if not a.matched_decks:
                 continue
-            if a.name not in self.aew.keys():
-                self.aew[a.name] = []
             a.analyze()
             a.load_videos()
-            self.write_archetype(a, self.known_players, self.all_events, seasons_sorted, self.aew[a.name])
         NO_ARCHETYPE.analyze()
-        self.write_archetype(NO_ARCHETYPE, self.known_players, self.all_events, seasons_sorted, [])
 
-        arches_sorted = [a for a in ARCHETYPES.values()]
-        arches_sorted.sort(key=lambda x: len(x.matched_decks), reverse=True)
-        current_season = list(seasons_sorted.values())[0]
-        # Calculate "naive" win rate for current season, to match overall win rate.
-        # This doesn't match Battlechart win rate because BC omits matches where one
-        # deck is unknown, intentional draws, byes, etc.
-        csa_wins = defaultdict(int) # current season archetype wins
-        csa_losses = defaultdict(int)
-        csa_ties = defaultdict(int)
-        for s_e in current_season.events:
-            for s_p in s_e.players:
-                if s_p.deck:
-                    for a in s_p.deck.archetypes:
-                        csa_wins[a] += s_p.wins
-                        csa_losses[a] += s_p.losses
-                        csa_ties[a] += s_p.ties
-        cswr = {}
-        for a in csa_wins.keys():
-            csa_matches = csa_wins[a]+csa_losses[a]+csa_ties[a]
-            cswr[a] = round( 100*(csa_wins[a] + (csa_ties[a] / 2)) / csa_matches, 1)
-        self.write_archetype_index(arches_sorted+[NO_ARCHETYPE], self.aew, cswr=cswr, seasons=seasons_sorted)
+    def analyze_champs(self):
+        for champname, champstats in CHAMP_DATA.items():
+            champstats.analyze()
 
-        for e in self.all_events.values():
+    def load_all(self, force_evts=[]):
+        """
+        Read all input data and analyze it, making necessary connections between
+        sub-systems.
+        """
+        self.read_events(force_evts=force_evts)
+        self.consolidate_judges()
+        self.organize_seasons()
+        # Card stats has to come before player stuff for "first play" to work.
+        ALL_CARD_STATS.analyze()
+        self.analyze_hipsters()
+        self.analyze_players()
+        self.analyze_archetypes()
+        self.analyze_champs()
+
+    def write_all(self):
+        """
+        Write all parts of the site, including known event pages, homepage, season landings, player profiles, and the rest.
+        """
+
+        for season in self.seasons.values():
+            self.write_season(season)
+
+        for p in self.players.values():
+            self.write_player(p)
+        self.write_player_index()
+
+        for cardname, cardstat in ALL_CARD_STATS:
+            self.write_card_page(cardname, cardstat, events=self.events)
+        
+        for a in ARCHETYPES.values():
+            if not a.matched_decks:
+                continue
+            self.write_archetype(a)
+        self.write_archetype(NO_ARCHETYPE)
+        self.write_archetype_index()
+
+        for e in self.events.values():
             self.write_event(e)
 
-        self.write_card_index(card_stats_by_set, card_prices)
+        self.write_card_index()
         self.write_card_data()
 
-        GAS.total_players = len(self.known_players)
         for achievement in ACHIEVEMENTS.values():
             self.write_achievement(achievement)
         self.write_achievements_index()
         self.write_refracted_form()
         self.write_refracted_about()
 
-        # spoilers = {}
-        # for entry in os.scandir("./data/spoilers"):
-        #     if entry.is_dir() and len(entry.name) == 3:
-        #         szn = entry.name.lower()
-        #         spoilers[szn] = SpoilerEvent(szn)
-        # self.write_spoilers(spoilers)
-
         for champname, champstats in CHAMP_DATA.items():
-            champstats.analyze()
             if champstats.matched_decks:
                 # skip champs with no appearances yet
                 self.write_champ(champstats)
-        champdata_sorted = [(k,v) for k,v in CHAMP_DATA.items()]
-        champdata_sorted.sort(key=lambda x:len(x[1].matched_decks), reverse=True)
-        champdata = {k:v for k,v in champdata_sorted}
-        self.write_champ_index(champdata, seasons_sorted)
+        self.write_champ_index()
 
-        self.render("index.html.jinja2", "index.html", seasons=seasons_sorted)
+        self.write_index()
 
 def main(args):
     if args.fast:
@@ -450,7 +447,8 @@ def main(args):
         i_s = str(i)
         force_evts.append(i_s)
         get_event(i, force_redownload=args.update, save=True, dl_decklists=True)
-    builder.write_all(force_evts=force_evts)
+    builder.load_all(force_evts=force_evts)
+    builder.write_all()
     if config.SharedConfig.go_fast != True:
         write_similarity_cache()
 

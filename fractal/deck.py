@@ -3,7 +3,7 @@ from collections import defaultdict
 from xxhash import xxh64
 
 from .shared import slugify, fix_case, lineage, element_sortkey, ms_to_date, rank_card
-from .datalayer import get_card_img, carddata, card_is_floating, get_card_references, get_card_price, get_cached_similarity, store_similarity, is_valid_in_decklists
+from .datalayer import get_card_img, carddata, card_is_floating, get_card_references, pricedb, get_cached_similarity, store_similarity, is_valid_in_decklists
 from .cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST, REMOVED_FROM_PRXY
 from .archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
 from .cardstats import ALL_CARD_STATS
@@ -421,7 +421,7 @@ class Deck:
         prices_unavailable = []
         for sect in ("material", "main", "sideboard"):
             for card_o in self.dl[sect]:
-                price = get_card_price(card_o["card"], sub_prizes=True)
+                price = pricedb.get_card_price(card_o["card"], sub_prizes=True)
                 if price:
                     total_price += price * card_o["quantity"]
                 else:

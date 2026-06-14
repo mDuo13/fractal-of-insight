@@ -7,7 +7,7 @@ from .config import SharedConfig, HOT_WINDOW, SIMILAR_DECKS_CUTOFF, MONEY_CARD_C
 from .shared import lineage, SPIRIT_ONLY
 from .stats import ElementStats, ChampStats
 from .cards import BANLIST, REMOVED_FROM_PRXY
-from .datalayer import get_card_img, get_card_price
+from .datalayer import get_card_img, pricedb
 
 SUBTYPES = {}
 
@@ -245,7 +245,7 @@ class Archetype:
                             ("main", MAIN_DIFF_CARD_LIMIT),
                             ("side", SIDE_DIFF_CARD_LIMIT) ):
             for cardname in list(self.card_freqs[sect].keys())[:limit]:
-                price = get_card_price(cardname)
+                price = pricedb.get_card_price(cardname)
                 if price:
                     money_cards.append( (cardname, price) )
         money_cards.sort(key=lambda x:x[1], reverse=True)

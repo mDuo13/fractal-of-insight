@@ -6,10 +6,10 @@ from time import sleep
 from os import makedirs, scandir, path
 
 from .shared import slugify, fix_case, lineage
-from .cards import ERRATA, PRIZE_EQUIVALENTS, REMOVED_FROM_PRXY
+from .cards import ERRATA, REMOVED_FROM_PRXY
 from .carddb import CardDB
 from .decksim import DeckSim
-from .tcgplayer import TCG_ABBR, TCGP_CARDNAMES
+from .prices import PriceDB
 
 API_DELAY = 0.5
 COMMENT_REGEX = re.compile(r"# (?P<comment>.*)$")
@@ -69,15 +69,6 @@ def get_topcut_deck(p_id, evt_id):
     except (FileNotFoundError):
         raise NoDeck()
 
-def get_spoiler(szn):
-    try:
-        with open(f"data/spoilers/{szn}/event.json") as f:
-            evt = json.load(f)
-    except (FileNotFoundError):
-        print("Couldn't get event.json for spoiler season", szn)
-        evt = {}
-    return evt
-
 def sideload_deck(p_id, evt_id, fname=None):
     if not fname:
         fname = f"data/event_{evt_id}/sideload/deck_{p_id}.txt"
@@ -113,13 +104,6 @@ def sideload_deck(p_id, evt_id, fname=None):
     return deck
 
 carddata = CardDB()
-
-try:
-    with open("data/card_spoilers.json") as f:
-        spoilerdata = json.load(f)
-except FileNotFoundError:
-    print("No spoiler data to load")
-    spoilerdata = {}
 
 def get_card_img(cardname, at=0, from_set_group=None):
     """
@@ -292,109 +276,7 @@ def is_valid_in_decklists(cardname):
         return False
     return True
 
-# Load tcgcsv price data
-try:
-    pricedata = {}
-    for entry in scandir(PRICES_FOLDER):
-        if entry.is_file() and entry.name[-5:] == ".json" and entry.name != "price-meta.json":
-            with open(entry) as f:
-                pricelist = json.load(f)
-            pricedata[entry.name[:-5]] = pricelist
-
-except FileNotFoundError:
-    print("Didn't find cached price data")
-    pricedata = {}
-
-try:
-    with open(path.join(PRICES_FOLDER, "price-meta.json")) as f:
-        PRICE_META = json.load(f)
-except FileNotFoundError:
-    print("Didn't find price metadata")
-    PRICE_META = {"Updated": "Never", "prefixes": []}
-
-def format_price(price):
-    """
-    Convert a price to a string in the format of "$NN.NN",
-    or "Unavailable" if it's None
-    """
-    if price == 0.001:
-        return f"N/A (Proxia's Vault)"
-    elif price:
-        return f"${price:.2f}"
-    return "Unavailable"
-
-def get_card_price(cardname, sub_prizes=False):
-    """
-    Return the price for the cheapest version of the given cardname,
-    """
-    if sub_prizes and cardname in PRIZE_EQUIVALENTS.keys():
-        # Get the price of regular Spirit of Wind, for example, instead of Kaze
-        cardname = PRIZE_EQUIVALENTS[cardname]
-    card = carddata[cardname]
-    fullname = fix_case(card["fullname"]) # For double-faced cards for example
-    
-    prices = []
-    for ed in card["editions"]:
-        prefix = ed["set"]["prefix"]
-        if prefix == "PRXY":
-            # Proxia's Vault cards are, by definition, free to proxy.
-            # But let's return a nonzero price so it doesn't get
-            # treated the same as None.
-            return 0.001
-        ed_price = low_price_by_edition(fullname, prefix)
-        if ed_price:
-            prices.append(ed_price)
-    if prices:
-        price = min(prices)
-        return price
-
-    #print(f"Couldn't get a price for {fullname}.")
-    return None
-
-def low_price_by_edition(fullname, prefix):
-    """
-    Check card listings from TCGP, including multiple listings that have
-    different names due to art variants, editions, or other inconsistencies.
-    Return lowest price of any matched card.
-    """
-    if fullname in TCGP_CARDNAMES.keys():
-        if type(TCGP_CARDNAMES[fullname]) == list:
-            tcgp_names = TCGP_CARDNAMES[fullname]
-        else:
-            tcgp_names = [TCGP_CARDNAMES[fullname]]
-    else:
-        tcgp_names = [fullname]
-
-    low_price = None
-    if prefix in TCG_ABBR.keys():
-        for abbr in TCG_ABBR[prefix]:
-            for item in pricedata[abbr].values():
-                if item.get("name") in tcgp_names:
-                    new_price = low_price_for_product(item)
-                    if not new_price: # could be None for no listings
-                        continue
-                    if not low_price or new_price < low_price:
-                        low_price = new_price
-    elif prefix not in pricedata.keys():
-        print(f"No tcgp data for set '{prefix}'")
-    else: # Prefix should match
-        for item in pricedata[prefix].values():
-            trimmed_name = re.sub(r"\(\w+\)", "", item.get("name","")).strip()
-            if trimmed_name in tcgp_names:
-                new_price = low_price_for_product(item)
-                if not new_price: # could be None for no listings
-                    continue
-                if not low_price or new_price < low_price:
-                    low_price = new_price
-    return low_price
-
-def low_price_for_product(item):
-    # May have multiple price listings, like foil vs nonfoil
-    all_prices = [p["lowPrice"] for p in item["prices"] if p.get("lowPrice")]
-    if not all_prices:
-        # No price data, maybe no listings
-        return None
-    return min(all_prices)
+pricedb = PriceDB(PRICES_FOLDER, carddata)
 
 decksim = DeckSim()
 def get_cached_similarity(hash1, hash2):

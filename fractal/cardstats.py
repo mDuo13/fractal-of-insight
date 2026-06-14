@@ -206,9 +206,13 @@ class CardStatSet:
         for szn_stats in self.seasons.values():
             for cardstat in szn_stats.values():
                 cardstat.analyze(grant_achievements=False)
+        self._sort()
 
-    def sort(self):
-        # Must be called after self.analyze() has populated the sort criteria
+    def _sort(self):
+        """
+        Called automatically by analyze(), which must be done first to populate
+        the sort data.
+        """
         mostappearances = keydefaultdict(CardStats)
         statdata = [(k,v) for k,v in self.items.items()]
         statdata.sort(key=lambda x:x[1].num_appearances, reverse=True)
@@ -251,7 +255,7 @@ class CardStatSet:
                 setstats[prefix] = CardStatSet()
             setstats[prefix].items[k] = v
         for ss in setstats.values():
-            ss.sort()
+            ss._sort()
         return setstats
 
     def __getitem__(self, item):
