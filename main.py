@@ -332,6 +332,7 @@ class PageBuilder:
         cohort_floor = hdb.update_scores()
         if cohort_floor < self.hipster_floor:
             self.hipster_floor = cohort_floor
+        ALL_CARD_STATS.update_hipster(hdb)
 
     def organize_seasons(self):
         """

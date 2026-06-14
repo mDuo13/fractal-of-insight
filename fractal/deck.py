@@ -106,7 +106,7 @@ class Deck:
 
         if not self.archetypes:
             NO_ARCHETYPE.add_match(self)
-        
+
         for champ in self.lineages:
             CHAMP_DATA[champ].add_match(self)
 
@@ -114,7 +114,7 @@ class Deck:
         """
         Set the list of basic elements provided by the deck's spirit(s) in
         self.els.
-        
+
         Set the list of advanced elements in self.advanced_els
         """
         elset = set()
@@ -136,7 +136,7 @@ class Deck:
         #     for el in card.get("elements",[]):
         #         if el.title() not in ELEMENTS:
         #             adv_elset.add(el.title())
-        
+
         # # Find advanced elements enabled by champions
         # adv_elchamps = set()
         # for card_o in self.mat:
@@ -291,6 +291,20 @@ class Deck:
             (1/3 * card_quant_side)
         )
         return card_score
+
+    def card_score_rate(self, cardname):
+        """
+        Return a rating, from 0 to 1.0, based on how many copies of the card are
+        in which parts of the deck, where 1.0 is the maximum number of copies
+        allowed.
+        """
+        card = carddata[cardname]
+        if "REGALIA" in card["types"] or "CHAMPION" in card["types"]:
+            max_card_score = 3
+        else:
+            max_card_score = 4
+        return self.card_score(cardname) / max_card_score
+
 
     def cardlist_imgs(self):
         """

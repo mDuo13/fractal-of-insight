@@ -589,3 +589,23 @@ class Player:
 
     def __str__(self):
         return f'{self.username} #{self.id}'
+
+    def json_summary(self):
+        if self.events:
+            e = self.events[0].event
+            last_event = {
+                "id": e.id,
+                "path": f"/{e.season}/{e.id}.html",
+                "name": e.name
+            }
+        else:
+            last_event = None
+        return {
+            "id": self.id,
+            "username": self.username,
+            "top_element": self.most_played_element(),
+            "top_champ": self.most_played_champ(),
+            "region": self.region,
+            "last_event": last_event,
+            "event_count": len(self.events)
+        }

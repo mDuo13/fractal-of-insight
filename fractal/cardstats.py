@@ -73,7 +73,7 @@ class CardStats:
         self.ties = 0
         self.winrate = 0
         self.hipster = 0 # %ile rating of how uncommonly played the card is.
-                         # Populated by CardStatSet.sort()
+                         # Populated by CardStatSet.update_hipster()
         self.top_users = CardWielders(cardname)
 
     def add_entrant(self, e, is_topcut_deck=False):
@@ -208,6 +208,13 @@ class CardStatSet:
                 cardstat.analyze(grant_achievements=False)
         self._sort()
 
+    def update_hipster(self, hdb):
+        """
+        Add hipster ratings from the given hipster db
+        """
+        for cardname,cardstat in self.items.items():
+            cardstat.hipster = hdb.score(cardname)
+
     def _sort(self):
         """
         Called automatically by analyze(), which must be done first to populate
@@ -217,7 +224,6 @@ class CardStatSet:
         statdata = [(k,v) for k,v in self.items.items()]
         statdata.sort(key=lambda x:x[1].num_appearances, reverse=True)
         for i, (k,v) in enumerate(statdata):
-            v.hipster = round(100 * i / len(statdata), 1)
             mostappearances[k] = v
         self.items = mostappearances
 
