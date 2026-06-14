@@ -298,10 +298,10 @@ class Player:
         hipster_total = 0
         rating_count = 0
         for e in self.events:
-            if e.deck:
+            if e.deck and e.deck.hipster != None:
                 hipster_total += e.deck.hipster
                 rating_count += 1
-            if e.topcut_deck:
+            if e.topcut_deck and e.topcut_deck.hipster != None:
                 hipster_total += e.topcut_deck.hipster
                 rating_count += 1
         if rating_count:

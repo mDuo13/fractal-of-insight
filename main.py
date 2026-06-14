@@ -315,7 +315,6 @@ class PageBuilder:
         """
         hdb = HipsterDB()
         lastdate = None
-        decks_pending_rating = []
         evts_sorted = list(self.events.values())
         evts_sorted.sort(key=lambda e:e.start_time)
         for e in evts_sorted:

@@ -11,6 +11,7 @@ class HipsterDB:
     def add_deck(self, d):
         if d.invalid_decklist:
             # Don't count these
+            d.hipster = None
             return
         for card_o in d.mat:
             card_points = d.card_score_rate(card_o["card"])

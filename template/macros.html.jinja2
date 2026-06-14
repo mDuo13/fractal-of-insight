@@ -532,7 +532,7 @@
 
                     <h4>Other Stats</h4>
                     <ul>
-                        <li><b>Hipster rating:</b> {{deck.hipster|round|int}}</li>
+                        <li><b>Hipster rating:</b> {% if deck.hipster == None %}(Unrated){% else %}{{deck.hipster|round|int}}{% endif %}</li>
                         <li><b>Price on TCGPlayer:</b> {#{{deck.price}}#}
                             <span class="deck-price" data-deckid="{{id}}">(Loading)</span>
                             <span class="explanation">(Prices are approximate.)</span>
