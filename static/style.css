@@ -7,7 +7,7 @@
     src: url(./AGaramondPro-Semibold.otf);
 }
 body {
-    background: #c7c6c1;
+    background: url("tile2.png") #c7c6c1;
     color: black;
     font-family: "Fracturized-Biolinum";
     font-size: 1.2rem;
@@ -46,6 +46,10 @@ section {
 }
 section > button {
     margin-bottom: 25px;
+}
+section > button + h3,
+section > button + p {
+    margin-top: 0;
 }
 
 form > fieldset {
@@ -191,6 +195,10 @@ th {
     font-weight: normal;
 }
 
+table {
+    background: var(--ui-bg-2);
+}
+
 #players > table, #players > table th, #players > table td, table.archetypes, .archetypes th, .archetypes td {
     border: none;
 }
@@ -304,7 +312,6 @@ th {
     animation: 4s infinite alternate bgimgmover;
     animation-play-state: paused;
 }
-
 .p-row:hover .deck-bg,
 .cr-row:hover .deck-bg {
     animation-play-state: running;
@@ -376,6 +383,7 @@ th {
 .deck_gfx {
     font-size: 0;
     line-height: 0;
+    margin-bottom: 5px;
 }
 .deck_gfx * {
     font-size: 16px;
@@ -412,11 +420,20 @@ th {
     width: 125px;
     height: 175px;
     border-radius: 3%;
+    box-shadow: var(--lesser-shadow);
+}
+
+.top-cards {
+    padding: 5px;
+    background: var(--ui-bg-2);
 }
 
 .top-cards h4 {
     margin-top: 10px;
     margin-bottom: 0;
+}
+.top-cards > p {
+    margin: 2px 0 4px 0;
 }
 
 .cardimg.banned::after {
@@ -773,6 +790,19 @@ fieldset label {
     padding-top: 5px;
 }
 
+.tabcontent {
+    background: var(--ui-bg-2);
+    padding: 10px;
+    border: 1px dotted #a0a0a0;
+    border-radius: 5px;
+    border-top-left-radius: 0;
+}
+
+.tabcontent > p {
+    margin: 0;
+    padding: 2px 0 4px 0;
+}
+
 .pie-chart {
     width: 200px;
     height: 200px;
@@ -828,26 +858,6 @@ fieldset label {
     filter: blur(5px);
     transform: scale(1.05);
     animation: rotateglow 2s ease infinite;
-}
-
-.decklist .newspoiler > img {
-    position: relative;
-    z-index: 2;
-}
-
-.newspoiler::after {
-    content:"";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    width: 100%;
-    z-index: 1;
-    background: linear-gradient(0deg, #d3ae08, #ff3131);
-    background-size: 200% 200%;
-    filter: blur(5px);
-    transform: scale(1.05);
 }
 
 .evt h3 {
@@ -1599,8 +1609,10 @@ a.achievement {
 :root {
     --ui-bg: linear-gradient(0deg, #e1e0db, #f2efe5);
     --ui-bg-sub: linear-gradient(0deg, #cbcac6, #e1e0db);
+    --ui-bg-2: linear-gradient(180deg, #c7c6c1 0%, #c7c6c1 95%, #aba6a5 100%);
     --ui-bg-vis: #cccbc6;
     --main-shadow: 3px 3px 5px #55504d;
+    --lesser-shadow: 2px 2px 4px #65606d;
 
     /* vars for holo overlay. https://poke-holo.simey.me/ */
     --clip: inset( 9.85% 8% 52.85% 8% );
@@ -1897,33 +1909,6 @@ a.achievement {
     }
 }
 
-.ptm-spoilers {
-    text-shadow: #e4baef 1px 1px 2px;
-    position: relative;
-    background-image: url(rabbithole.png);
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    display: inline-block;
-    width: 100px;
-    height: 23px;
-    vertical-align: bottom;
-    background-position-x: 15px;
-    margin-bottom: -5px;
-}
-.fadeout-text {
-    mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 70px, rgba(0, 0, 0, 0) 95px);
-    transition: padding 0.5s ease;
-    text-indent: 0;
-    line-height: 23px;
-    overflow: hidden;
-    display: inline-block;
-    white-space: pre;
-    text-decoration: underline;
-}
-.ptm-spoilers:hover .fadeout-text {
-    padding-left: 100%;
-}
-
 .player-omni-avatar {
     position: relative;
     height: 88px;
@@ -1959,7 +1944,7 @@ a.achievement {
     width: 75vw;
     height: 75vh;
     padding: 2.5vh 2.5vw 2.5vh 2.5vw;
-    background-color: #c7c6c1;
+    background-color: var(--ui-bg-2);
 }
 #add-achievement-popup > * {
     display: block;
