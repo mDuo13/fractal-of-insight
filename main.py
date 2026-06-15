@@ -47,6 +47,7 @@ class PageBuilder:
         self.seasons = {}
         self.players = {}
         self.events = {}
+        self.cards = ALL_CARD_STATS
         self.known_judges = defaultdict(list)
         self.hipster_floor = 99999 # minimum Hipster rating of any deck
 
@@ -109,7 +110,10 @@ class PageBuilder:
         players_sorted = [p for p in self.players.values()]
         players_sorted.sort(key=lambda x: x.sortkey())
 
-        self.render("players.html.jinja2", "player/index.html", players=players_sorted, events=self.events)
+        pj =[p.json_summary() for p in players_sorted]
+        pjs = json.dumps(pj)
+
+        self.render("players.html.jinja2", "player/index.html", players=players_sorted, events=self.events, players_json=pjs)
 
     def write_archetype(self, archetype):
         slug = slugify(archetype.name)
@@ -176,7 +180,7 @@ class PageBuilder:
             for c, cstat in ALL_CARD_STATS
         }
         self.render_json(mcardstats, "card/carddata.json")
-
+    
     def write_card_page(self, cardname, cardstat, price="", events=[]):
         price = pricedb.get_formatted_price(cardname)
         max_page = ceil(len(cardstat.appearances) / CARD_SIGHTINGS_PER_PAGE)
@@ -332,15 +336,17 @@ class PageBuilder:
         if cohort_floor < self.hipster_floor:
             self.hipster_floor = cohort_floor
         ALL_CARD_STATS.update_hipster(hdb)
+        self.hdb = hdb
 
     def organize_seasons(self):
         """
         Put seasons in the correct order and analyze them.
         """
         seasons_sorted = {k:self.seasons[v] for k,v in SEASONS.items() if v in self.seasons.keys()}
-        unknown_seasons = {k:v for k,v in self.seasons.items() if k not in seasons_sorted.keys()}
-        if unknown_seasons:
-            print("Warning: unknown seasons", unknown_seasons)
+        # TODO: fix the warning (SEASONS being code in value is a problem)
+        # unknown_seasons = {k:v for k,v in self.seasons.items() if k not in seasons_sorted.keys()}
+        # if unknown_seasons:
+        #     print("Warning: unknown seasons", unknown_seasons)
 
         self.aew = {a:[] for a in ARCHETYPES.keys()} # archetype event wins
         self.aew[NO_ARCHETYPE.name] = []

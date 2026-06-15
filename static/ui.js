@@ -462,6 +462,123 @@ async function fill_price_and_hipster() {
     }
 }
 
+function pbox(p) {
+    // Return a player box element to be inserted into the DOM
+    const el = document.createElement("div")
+    el.dataset.name = p.username
+    el.dataset.eventcount = p.event_count
+    el.classList = ["pprofile"]
+    el.innerHTML = `
+<a href="/player/${p.id}.html">
+    <span class="p-name">${p.username} #${p.id}</span>
+    <span class="p-avatar">
+        <span class="p-region"><span class="flag" title="${p.region.name}">${p.region.flag}</span></span>
+    </span>
+</a>
+<p class="events-recorded">Events recorded:
+    <span class="event-count">${p.event_count}</span>
+</p>`
+    if (p.last_event) {
+        el.innerHTML += `<p class="last-seen">Last seen:
+    <a href="${p.last_event.path}">${p.last_event.name}</a>
+</p>`
+    }
+    const pavatar = el.querySelector('.p-avatar')
+    if (p.top_champ != "_") {
+        pavatar.innerHTML = `<img src="/static/icon/icon-${p.top_champ}.png" alt="${p.top_champ || ""}" loading="lazy" />` + pavatar.innerHTML
+    }
+    if (p.top_element != "_") {
+        pavatar.innerHTML = `<img src="/static/icon/icon-${p.top_element}.png" alt="${p.top_element || ""}" loading="lazy" />` + pavatar.innerHTML
+    }
+    return el
+}
+
+// Pagination tools for smart search of player page
+const PAGE_SIZE = 40
+function update_prevnext(i) {
+    const j = i+PAGE_SIZE
+    const prevbut = document.querySelector("#prev-player-btn")
+    const nextbut = document.querySelector("#next-player-btn")
+    prevbut.disabled = (i <= 0)
+    nextbut.disabled = (j >= playerdata.length)
+}
+function next_player_page() {
+    if (!playerdata) {
+        console.error("Couldn't get player data (should be inlined in page source)")
+        return
+    }
+    const pgrid = document.querySelector(".player-grid")
+    pgrid.innerHTML = ""
+    let i = parseInt(pgrid.dataset.start) || 0
+    i += PAGE_SIZE
+    j = i + PAGE_SIZE
+    for (const p of playerdata.slice(i,j)) {
+        pgrid.appendChild(pbox(p))
+    }
+    pgrid.dataset.start = i
+    update_prevnext(i)
+}
+function prev_player_page() {
+    if (!playerdata) {
+        console.error("Couldn't get player data (should be inlined in page source)")
+        return
+    }
+    const pgrid = document.querySelector(".player-grid")
+    pgrid.innerHTML = ""
+    let i = parseInt(pgrid.dataset.start) || 0
+    i -= PAGE_SIZE
+    if (i < 0) { i = 0 }
+    j = i + PAGE_SIZE
+    for (const p of playerdata.slice(i,j)) {
+        pgrid.appendChild(pbox(p))
+    }
+    pgrid.dataset.start = i
+    update_prevnext(i)
+    
+}
+
+function player_search() {
+    if (!playerdata) {
+        console.error("Couldn't get player data (should be inlined in page source)")
+        return
+    }
+    const pgrid = document.querySelector(".player-grid")
+    pgrid.innerHTML = ""
+    const q = document.querySelector("#player-search").value.toLowerCase()
+
+    if (q) {
+        let i = 0
+        for (const p of playerdata) {
+            const fulluid = `${p.username} #${p.id}`.toLowerCase()
+            if (fulluid.includes(q)) {
+                pgrid.appendChild(pbox(p))
+                i++
+            }
+            if (i >= PAGE_SIZE) {
+                break
+            }
+        }
+        const prevbut = document.querySelector("#prev-player-btn")
+        const nextbut = document.querySelector("#next-player-btn")
+        nextbut.disabled = true
+        prevbut.disabled = true
+    } else {
+        reset_player_search()
+    }
+}
+
+function reset_player_search() {
+    document.querySelector("#player-search").value = ""
+    const pgrid = document.querySelector(".player-grid")
+    pgrid.innerHTML = ""
+    let i = parseInt(pgrid.dataset.start) || 0
+    j = i + PAGE_SIZE
+    for (const p of playerdata.slice(i,j)) {
+        pgrid.appendChild(pbox(p))
+    }
+    update_prevnext(i)
+}
+
 function make_tables_sortable() {
     // Adapted from - https://stackoverflow.com/a/49041392
     // Posted by Nick Grealy, modified by community.
@@ -581,6 +698,14 @@ ready(() => {
         searchbox.addEventListener('keyup', (event) => {
             clearTimeout(typingTimer)
             typingTimer = setTimeout(() => {search_table(event.target)}, typeInterval)
+        })
+    }
+    
+    const playersearch = document.querySelector("#player-search")
+    if (playersearch) {
+        playersearch.addEventListener('keyup', (event) => {
+            clearTimeout(typingTimer)
+            typingTimer = setTimeout(() => {player_search()}, typeInterval)
         })
     }
 

@@ -1248,7 +1248,7 @@ a.achievement {
     line-height: 30px;
 }
 
-.searchbox {
+.searchbox, .smartsearch {
 	margin-bottom: 5px;
 	width: 350px;
 }
@@ -1737,7 +1737,7 @@ a.achievement {
         grid-template-columns: 1fr;
     }
 
-    .searchbox {
+    .searchbox, .smartsearch {
         margin-bottom: 5px;
         width: calc(100% - 50px);
     }

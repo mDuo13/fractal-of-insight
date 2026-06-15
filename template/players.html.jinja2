@@ -14,10 +14,13 @@
 
 <section id="player-list">
     <h1>Grand Archive Players</h1>
-    <input class="searchbox" data-target="#player-list .pprofile" placeholder="Search" />
-    <button class="reset-button" data-target="#player-list .pprofile" title="Reset search" onclick="reset_search(this)">❌</button>
-    <div class="player-grid">
+    <input class="smartsearch" id="player-search" placeholder="Search" />
+    <button class="reset-button" data-target="#player-list .pprofile" title="Reset search" onclick="reset_player_search()">❌</button>
+    <button id="prev-player-btn" class="player prevnext" disabled="disabled" onclick="prev_player_page()">« Prev</button>
+    <button id="next-player-btn" class="player prevnext" onclick="next_player_page()">Next »</button>
+    <div class="player-grid" data-start="0">
     {% for p in players %}
+        {%- if loop.index0 < 40 -%}
         <div class="pprofile" data-name="{{p.username}}" data-eventcount="{{p.events|length}}" data-omniid="{{p.id}}">
             <a href="/player/{{p.id}}.html">
                 <span class="p-name">{{p}}</span>
@@ -41,7 +44,13 @@
             </p>
             {% endif %}
         </div>
+    {%- endif -%}
     {% endfor %}
     </div>
 </section>
+
+<!-- Full player data JSON -->
+<script>
+const playerdata = {{players_json|safe}}
+</script>
 {% endblock %}

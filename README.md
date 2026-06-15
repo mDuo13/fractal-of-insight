@@ -58,8 +58,10 @@ You can start a local dev server to preview the site by going to your configured
 - improve experience / instructions for building with a fresh clone of the repo
 - improve sorting of events on main page to sort by close time (not just date)
 - save event filtering settings to browser storage
-- performance improvements:
-    - improve efficiency of Players page, search
 - add vods for ascent Icebound Slam Cup
 - make condensed view of battlechart with top 10-ish archetypes only
 - archetype head-to-head analysis: cards more/less prevalent in winning lists?
+- improve pagination & filtering on players page
+    - filter by region
+    - paginate over search results?
+    - jump to start/end/middle?

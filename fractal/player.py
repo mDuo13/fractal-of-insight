@@ -4,7 +4,7 @@ from time import time
 from .deck import Deck
 from .datalayer import get_deck, get_topcut_deck, NoDeck
 from .cards import ELEMENTS
-from .shared import keydefaultdict, ms_to_date, cjoin, TEAM_STANDARD
+from .shared import keydefaultdict, ms_to_date, cjoin, slugify, TEAM_STANDARD, REGIONS
 from .stats import ElementStats, ChampStats, ArcheStats
 from .achievements import AchievementSet, REFRACTED_ACHIEVEMENTS
 from .config import UPSET_CUTOFF
@@ -603,9 +603,9 @@ class Player:
         return {
             "id": self.id,
             "username": self.username,
-            "top_element": self.most_played_element(),
-            "top_champ": self.most_played_champ(),
-            "region": self.region,
+            "top_element": slugify(self.most_played_element()),
+            "top_champ": slugify(self.most_played_champ()),
+            "region": REGIONS.get(self.region, {"name": self.region, "flag":""}),
             "last_event": last_event,
             "event_count": len(self.events)
         }
