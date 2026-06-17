@@ -511,7 +511,7 @@ fieldset label {
 }
 
 .cardimg.minus {
-	filter: grayscale(0.8) brightness(0.4);
+	filter: grayscale(0.6) brightness(0.6);
 }
 
 .decklist-delta {
@@ -544,6 +544,21 @@ fieldset label {
 }
 .d2 {
     grid-column: 2;
+}
+.delta-button {
+	text-decoration: none;
+	border: 1px solid black;
+	border-radius: 2px;
+	padding: 2px 4px;
+	color: black;
+	background-color: #dedede;
+	font-size: 14px;
+	line-height: 10px;
+    margin-left: 5px;
+}
+.delta-button:hover {
+	background-color: #c0c0c0;
+    box-shadow: var(--lesser-shadow);
 }
 
 .subquant {

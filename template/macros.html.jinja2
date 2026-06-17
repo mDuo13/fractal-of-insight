@@ -215,6 +215,10 @@
 <span class="flag" title="{{region.name}}">{{region.flag}}</span>{% if full %} {{region.name}}{% endif -%}
 {%- endmacro %}
 
+{% macro delta(e1,p1,e2,p2) -%}
+<a class="delta-button" href="/delta.html?e1={{e1}}&p1={{p1}}&e2={{e2}}&p2={{p2}}">δ</a>
+{%- endmacro %}
+
 {% macro eventbox(evt) %}
 <a class="evt {{slugify(evt.category['name'])}}{% if evt.decklist_status == 'none' or (evt.players|length < 20 and evt.category.name != 'worlds') %} collapse{% endif %}{% if evt.is_refracted %} refracted{% endif %}" href="/{{evt.season}}/{{evt.id}}.html" data-decklists="{{evt.num_decklists}}" data-category="{{slugify(evt.category['name'])}}" data-playercount="{{evt.players|length}}">
     <div class="evt-mainbox">
@@ -555,7 +559,7 @@
                     <h5>Before this</h5>
                     <ul>
                     {% for otherdeck, sim in before %}
-                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{sim}}%)</a></li>
+                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{sim}}%)</a> {{delta(otherdeck.entrant.evt_id, otherdeck.entrant.id, event.id, p.id)}}</li>
                     {% endfor %}
                     </ul>
                     {% endif %}
@@ -564,9 +568,9 @@
                     <ul>
                     {% for otherdeck, sim in sameday %}
                         {% if not external and event.id == otherdeck.entrant.evt_id %}
-                        <li><a href="#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}" onclick="opendecklist('#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}')">{{otherdeck.entrant.username}} in this event ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
+                        <li><a href="#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}" onclick="opendecklist('#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}')">{{otherdeck.entrant.username}} in this event ({{otherdeck.entrant.event.date}} - {{sim}}%)</a> {{delta(event.id, p.id, otherdeck.entrant.evt_id, otherdeck.entrant.id)}}</li>
                         {% else %}
-                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
+                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a> {{delta(event.id, p.id, otherdeck.entrant.evt_id, otherdeck.entrant.id)}}</li>
                         {% endif %}
                     {% endfor%}
                     </ul>
@@ -575,7 +579,7 @@
                     <h5>After this</h5>
                     <ul>
                     {% for otherdeck, sim in after %}
-                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a></li>
+                        <li><a href="/{{otherdeck.entrant.event.season}}/{{otherdeck.entrant.evt_id}}.html#deck_{{otherdeck.entrant.id}}{% if otherdeck.is_topcut_deck%}_topcut{% endif %}">{{otherdeck.entrant.username}} in {{otherdeck.entrant.event.name}} ({{otherdeck.entrant.event.date}} - {{sim}}%)</a> {{delta(event.id, p.id, otherdeck.entrant.evt_id, otherdeck.entrant.id)}}</li>
                     {% endfor %}
                     </ul>
                     {% endif %}

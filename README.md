@@ -65,3 +65,10 @@ You can start a local dev server to preview the site by going to your configured
     - filter by region
     - paginate over search results?
     - jump to start/end/middle?
+- improve decklist delta:
+    - link back to decklists
+    - try to handle topcut decks & other things not in omni (using tts format maybe?)
+    - permalink button for current comparison
+    - update query params when you run a comparison?
+    - collapse controls?
+    - better graphics for ⇒?
