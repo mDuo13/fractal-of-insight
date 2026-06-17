@@ -174,7 +174,8 @@ class CardStats:
 class CardStatSet:
     def __init__(self):
         self.items = keydefaultdict(CardStats)
-        self.seasons = {szn: keydefaultdict(CardStats) for szn in SEASONS.values() if szn != "OFF"}
+        # self.seasons = {szn: keydefaultdict(CardStats) for szn in SEASONS.values() if szn != "OFF"}
+        self.seasons = {}
 
     def add_deck(self, d):
         if d.invalid_decklist:
@@ -189,7 +190,7 @@ class CardStatSet:
                 # Some decklists mistakenly include tokens and masteries. Skip those.
                 continue
             self.items[cardname].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
-            if szn != "OFF":
+            if szn in self.seasons.keys():
                 self.seasons[szn][cardname].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
         for card_o in d.side:
             cardname = card_o["card"]
@@ -197,7 +198,7 @@ class CardStatSet:
                 continue
             if cardname not in d: # Don't double-add a deck if a card is in main+side
                 self.items[cardname].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
-                if szn != "OFF":
+                if szn in self.seasons.keys():
                     self.seasons[szn][cardname].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
 
     def analyze(self):

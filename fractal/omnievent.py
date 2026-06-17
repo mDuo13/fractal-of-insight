@@ -1,4 +1,5 @@
 from collections import defaultdict
+from logging import warning
 import re
 
 from .player import Entrant, JudgeEvt
@@ -61,8 +62,12 @@ class OmniEvent:
         else:
             self.start_time = self.evt["startAt"] # Scheduled start time
         if "season" in self.evt:
-            self.season = SEASONS.get(self.evt["season"]["name"], "OTHER")
             self.track_elo = True
+            if self.evt["season"]["name"] in SEASONS.keys():
+                self.season = SEASONS[self.evt["season"]["name"]]
+            else:
+                warning(f"Unknown season: {self.evt['season']['name']}")
+                self.season = 'OTHER'
         else:
             self.season = "OFF"
             self.track_elo = False
@@ -323,7 +328,7 @@ class OmniEvent:
                 matches = rnd["matches"]
                 if len(matches) > 1:
                     if len(matches) > 2:
-                        print("WARNING: 3+ matches in final stage of single-elim?")
+                        warning("3+ matches in final stage of single-elim?")
 
                     if self.format == TEAM_STANDARD:
                         bronze_contenders = [t.name.lower() for t in self.top_cut[-2:]]

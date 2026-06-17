@@ -408,14 +408,17 @@ table {
     overflow: auto;
 }
 
-.decklist .cardimg, .top-cards .cardimg {
+.decklist .cardimg,
+.top-cards .cardimg,
+#delta-view .cardimg {
     display: inline-block;
     position: relative;
     width: 125px;
     height: 175px;
 }
 .decklist .cardimg > img,
-.top-cards .cardimg > img {
+.top-cards .cardimg > img,
+#delta-view .cardimg > img {
     display: inline-block;
     width: 125px;
     height: 175px;
@@ -489,7 +492,8 @@ fieldset label {
 }
 
 .decklist .cardimg .quant,
-.top-cards .cardimg .quant {
+.top-cards .cardimg .quant,
+#delta-view .cardimg .quant {
     position: absolute;
     left: 0;
     bottom: 5px;
@@ -504,6 +508,42 @@ fieldset label {
     border: 2px solid white;
     text-align: center;
     z-index: 3;
+}
+
+.cardimg.minus {
+	filter: grayscale(0.8) brightness(0.4);
+}
+
+.decklist-delta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.decklist-delta label {
+    display: block;
+}
+#delta-view {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+#delta-go {
+    grid-column: 1 / 3;
+    width: 50%;
+    margin: auto;
+}
+.error {
+    background-color: #f08080;
+    font-weight: bold;
+    font-style: italic;
+    border: 1px solid red;
+    border-radius: 5px;
+    padding: 4px;
+    margin: 2px;
+}
+.d1 {
+    grid-column: 1;
+}
+.d2 {
+    grid-column: 2;
 }
 
 .subquant {

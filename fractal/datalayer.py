@@ -1,6 +1,7 @@
 import json
 import re
 import requests
+from logging import warning
 from requests.adapters import HTTPAdapter, Retry
 from time import sleep
 from os import makedirs, scandir, path
@@ -88,7 +89,7 @@ def sideload_deck(p_id, evt_id, fname=None):
             elif comment in ("sideboard", "side"):
                 active_deck = deck["sideboard"]
             else:
-                print("Warning: comment other than mat/main/side indicator")
+                warning("Decklist comment other than mat/main/side indicator")
         elif line.strip():
             m = CARD_REGEX.match(line)
             if not m:

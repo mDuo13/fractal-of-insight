@@ -3,6 +3,7 @@
 import argparse
 import json
 import jinja2
+from logging import warning
 from os import makedirs
 import os.path
 from math import ceil
@@ -10,7 +11,7 @@ from collections import defaultdict
 
 import fractal.config as config
 from fractal.datalayer import carddata, get_event, get_card_img, pricedb, write_similarity_cache
-from fractal.shared import slugify, OVERALL, REGIONS, ms_to_date, EVENT_TYPES, TEAM_STANDARD
+from fractal.shared import slugify, rank_card, OVERALL, REGIONS, ms_to_date, EVENT_TYPES, TEAM_STANDARD
 from fractal.omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
 from fractal.season import Season, SEASONS, FORMATS
 from fractal.player import Player
@@ -243,6 +244,14 @@ class PageBuilder:
             REFRACTED_ACHIEVEMENTS=REFRACTED_ACHIEVEMENTS
         )
     
+    def write_delta(self):
+        carddb = json.dumps({cardname.lower(): {
+            "rank": rank_card(card),
+            "img": card["img"] }
+            for cardname, card in carddata.items()
+        })
+        self.render("delta.html.jinja2", "delta.html", carddb=carddb)
+    
     def write_index(self):
         self.render("index.html.jinja2", "index.html", seasons=self.seasons)
 
@@ -344,9 +353,9 @@ class PageBuilder:
         """
         seasons_sorted = {k:self.seasons[v] for k,v in SEASONS.items() if v in self.seasons.keys()}
         # TODO: fix the warning (SEASONS being code in value is a problem)
-        # unknown_seasons = {k:v for k,v in self.seasons.items() if k not in seasons_sorted.keys()}
-        # if unknown_seasons:
-        #     print("Warning: unknown seasons", unknown_seasons)
+        unknown_seasons = [s.code for s in self.seasons.values() if s.code not in SEASONS.values()]
+        if unknown_seasons:
+            warning(f"Warning: unknown seasons: {unknown_seasons}")
 
         self.aew = {a:[] for a in ARCHETYPES.keys()} # archetype event wins
         self.aew[NO_ARCHETYPE.name] = []
@@ -435,6 +444,8 @@ class PageBuilder:
         self.write_achievements_index()
         self.write_refracted_form()
         self.write_refracted_about()
+
+        self.write_delta()
 
         for champname, champstats in CHAMP_DATA.items():
             if champstats.matched_decks:
