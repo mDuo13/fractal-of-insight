@@ -38,6 +38,7 @@ def fix_case(cardname):
     repls = {
         "'S":"'s",
         "’S":"'s",
+        "\u2019S": "'s",
         " And ": " and ",
         " At ":" at ",
         " By ": " by ",
@@ -54,7 +55,6 @@ def fix_case(cardname):
         " To ":" to ",
         " With ":" with ",
         ", with ": ", With ", # "Silvie, With the Pack" vs "Smack with Flute"
-        "\u2019S": "'s",
     }
     cardname = cardname.title()
     for k,v in repls.items():

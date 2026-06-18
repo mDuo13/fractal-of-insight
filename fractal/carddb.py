@@ -26,6 +26,7 @@ class CardDB:
                     setlist = json.load(f)
                 for card in setlist:
                     cardname = fix_case(card["name"])
+                    card["name"] = cardname
 
                     o_orients = card["editions"][0].get("other_orientations")
                     if o_orients:
