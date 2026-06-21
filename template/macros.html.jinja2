@@ -57,12 +57,12 @@
 
 
 {% macro pname_w_dl(p, use_topcut_deck=False) %}
-<a class="playername" {% if use_topcut_deck %}{% if p.topcut_deck %}href="#deck_{{p.id}}_topcut" onclick="opendecklist('#deck_{{p.id}}_topcut')"{% endif %}{% elif p.deck %}href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')"{% endif %} title="Elo: {{p.elo}}">{{p.username}}</a>
+<a class="playername" {% if use_topcut_deck %}{% if p.topcut_deck %}href="#deck_{{p.id}}_topcut" onclick="opendecklist('#deck_{{p.id}}_topcut')"{% endif %}{% elif p.deck %}href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')"{% endif %} title="Elo: {% if p.elo < 1200 %}&lt;1200{% else %}{{p.elo}}{% endif %}">{{p.username}}</a>
 {% endmacro %}
 
 {% macro team_member_cell(p) %}
 <td class="team-member n-styles-{{p.deck.els|length+p.deck.lineages|length}}">
-    <a href="/player/{{p.id}}.html" title="Elo: {{p.elo}}">{{p}}</a>
+    <a href="/player/{{p.id}}.html" title="Elo: {% if p.elo < 1200 %}&lt;1200{% else %}{{p.elo}}{% endif %}">{{p}}</a>
     <div class="p_deck">
         {% if p.deck %}<a href="#deck_{{p.id}}" onclick="opendecklist('#deck_{{p.id}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
             <div class="deck-bgs">
@@ -80,7 +80,7 @@
 {% macro p_row(p, loop, anchor=None, show_matches=True) -%}
     <tr class="p-row n-styles-{{p.deck.els|length+p.deck.archetypes|length+p.deck.lineages|length}}{% if p.dq %} disqualified{% endif %}{% if p.banned_until %} banned{% endif %}">
         <td class="p_rank">{% if p.dq %}<abbr title="Disqualified">DQ</abbr>{% else %}{{loop.index}}{% endif %}</td>
-        <td class="playername" {% if p.banned_until %}title="Banned until {{p.banned_until|ms_to_date}}"{% else %}title="Elo: {{p.elo}}"{% endif %}>{% if p.id > 0 %}<a href="/player/{{p.id}}.html">{{p}}</a>{% else %}{{p}}{% endif %}</td>
+        <td class="playername" {% if p.banned_until %}title="Banned until {{p.banned_until|ms_to_date}}"{% else %}title="{% if p.elo < 1200 %}&lt;1200{% else %}{{p.elo}}{% endif %}"{% endif %}>{% if p.id > 0 %}<a href="/player/{{p.id}}.html">{{p}}</a>{% else %}{{p}}{% endif %}</td>
         <td class="p_record">{{p.record}}{% if show_matches %}<button class="mobile-only" onclick="showmatches({{p.id}})">Glimpse</button>{% endif %}</td>
         <td class="p_deck">{% if p.deck %}<a href="{{anchor|default('#deck_'~p.id, true)}}" onclick="opendecklist('{{anchor|default('#deck_'~p.id, true)}}')">{{p.deck}}</a>{% else %}No decklist{% endif %}
             <div class="deck-bgs">
@@ -108,7 +108,7 @@
 {% macro p_row_worlds_topcut(p, loop) %}
     <tr class="p-row n-styles-{{p.topcut_deck.els|length+p.topcut_deck.archetypes|length+p.topcut_deck.lineages|length}}">
         <td class="p_rank">{{loop.index}}</td>
-        <td class="playername" title="Elo: {{p.elo}}">{% if p.id > 0 %}<a href="/player/{{p.id}}.html">{{p}}</a>{% else %}{{p}}{% endif %}</td>
+        <td class="playername" title="Elo: {% if p.elo < 1200 %}&lt;1200{% else %}{{p.elo}}{% endif %}">{% if p.id > 0 %}<a href="/player/{{p.id}}.html">{{p}}</a>{% else %}{{p}}{% endif %}</td>
         <td class="p_deck">{% if p.topcut_deck %}<a href="{{'#deck_'~p.id~'_topcut'}}" onclick="opendecklist('{{'#deck_'~p.id~'_topcut'}}')">{{p.topcut_deck}}</a>{% else %}No decklist{% endif %}
             <div class="deck-bgs">
             {% for el in p.topcut_deck.els %}
@@ -183,7 +183,7 @@
     {% endif %}
     <tr class="p-row n-styles-{{deck.els|length+deck.archetypes|length+deck.lineages|length}}{% if event.winner.deck == deck %} winner{% endif %}" data-decklists="{{event.num_decklists}}" data-category="{{slugify(event.category['name'])}}" data-subtypes='{{deck.subtype_list|tojson}}'>
         <td class="p_date">{{deck.date}}</td>
-        <td class="playername" title="Elo: {{deck.entrant.elo}}"><a href="/player/{{deck.entrant.id}}.html">{{deck.entrant}}</a></td>
+        <td class="playername" title="Elo: {% if deck.entrant.elo < 1200 %}&lt;1200{% else %}{{deck.entrant.elo}}{% endif %}"><a href="/player/{{deck.entrant.id}}.html">{{deck.entrant}}</a></td>
 
         <td class="p_event"><a href="/{{event.season}}/{{event.id}}.html">{{event.name}}</a></td>
         <td class="p_deck"><a href="{{anchor}}" onclick="opendecklist('{{anchor}}')">{{deck}}</a>

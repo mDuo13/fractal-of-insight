@@ -349,7 +349,6 @@ class PageBuilder:
         Put seasons in the correct order and analyze them.
         """
         seasons_sorted = {k:self.seasons[v] for k,v in SEASONS.items() if v in self.seasons.keys()}
-        # TODO: fix the warning (SEASONS being code in value is a problem)
         unknown_seasons = [s.code for s in self.seasons.values() if s.code not in SEASONS.values()]
         if unknown_seasons:
             warning(f"Warning: unknown seasons: {unknown_seasons}")

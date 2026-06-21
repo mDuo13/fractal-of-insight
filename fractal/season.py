@@ -144,7 +144,7 @@ class Format(Season):
 
 
 SEASONS = {
-    ".asphodel/paradise": "PRD",
+    # ".asphodel/paradise": "PRD",
     "Radiant Origins": "RDO",
     "Phantom Monarchs": "PTM",
     "Distorted Reflections": "DTR",

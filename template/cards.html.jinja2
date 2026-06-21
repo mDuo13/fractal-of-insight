@@ -26,7 +26,9 @@
     <div class="tabs collapse togglable">
         <button class="tab activetab" data-tabfor="all-time" onclick="opentab(this)">(All Time)</button>
         {% for szn in cardstats.most_played_by_season.keys() %}
+        {% if szn != "OFF" %}
         <button class="tab" data-tabfor="{{szn}}" onclick="opentab(this)">{{szn}} Season</button>
+        {% endif %}
         {% endfor %}
     </div>
     <div class="tabwrapper collapse togglable">
@@ -43,6 +45,7 @@
         {% endfor %}
         </div>
         {% for szn, most_played in cardstats.most_played_by_season.items() %}
+        {% if szn != "OFF" %}
         <div class="top-cards tabcontent collapse" data-tabof="{{szn}}">
             {% for cardname, cardstat in most_played.items() %}
                 {% if loop.index0 < 20 %}
@@ -55,6 +58,7 @@
                 {% endif %}
             {% endfor %}
         </div>
+        {% endif %}
         {% endfor %}
     </div>
 
@@ -74,7 +78,7 @@
             {% if setstats|length %}
             <div class="tabcontent {% if loop.index0 != 0 %} collapse{% endif %}" data-tabof="{{slugify(setname)}}">
                 {% if setname == "Other" %}
-                <p class="explanation">(All cards introduced in special sets like Proxia's Vault or promos, including cards pre-released via Proxia's Vault.)</p>
+                <p class="explanation">(All cards introduced outside of the set families, including the Mordred: Aurelian Regent Re:Collection, promos, and cards from or pre-released in Proxia's Vault.)</p>
                 {% else %}
                 <p class="explanation">(All cards introduced in the {{setname}} family of sets: {% for set_ in set_group.sets %}{% if loop.last %}and {% endif %}{{set_.name}}{% if not loop.last %}, {% endif %}{% endfor %}.)</p>
                 {# <p class="explanation">(All cards introduced in the following sets: {{", ".join(set_group.sets|selectattr("name"))}})</p> #}
@@ -106,7 +110,9 @@
         <button class="tab activetab" data-tabfor="all-time" onclick="opentab(this)">(All Time)</button>
         <button class="tab" data-tabfor="recent" onclick="opentab(this)">(Past 60 days)</button>
         {% for szn in cardstats.winningest_by_season.keys() %}
+            {% if szn != "OFF" %}
             <button class="tab" data-tabfor="{{szn}}" onclick="opentab(this)">{{szn}} Season</button>
+            {% endif %}
         {% endfor %}
     </div>
 
@@ -137,6 +143,7 @@
             <p class="explanation">(Win rates for past 60 days are weighted towards 500 <em>matches</em> instead of 500 <em>decklists</em>.)</p>
         </div>
         {% for szn, winningest in cardstats.winningest_by_season.items() %}
+        {% if szn != "OFF" %}
         <div class="top-cards tabcontent collapse" data-tabof="{{szn}}">
             {% for cardname, cardstat in winningest.items() %}
                 {% if loop.index0 < 20 %}
@@ -149,27 +156,10 @@
                 {% endif %}
             {% endfor %}
         </div>
+        {% endif %}
         {% endfor %}
     </div>
 </section>
-
-{#<section id="hot-cards">
-    <h2>Hot Cards</h2>
-    <button onclick="toggle('#hot-cards > .togglable')">Glimpse hot cards</button>
-    <p class="explanation collapse togglable">(Based on weighted win rate in the last 60 days.)</p>
-    <div class="top-cards collapse togglable">
-    {% for cardname, cardstat in cardstats.hottest.items() %}
-        {% if loop.index0 < 20 %}
-            {% set card_o = {
-                'card': cardname,
-                'img': carddata[cardname]['img'],
-                'pct': cardstat.hot_rating
-            } %}
-            {{ macros.cardimg(card_o, link=True) }}
-        {% endif %}
-    {% endfor %}
-    </div>
-</section>#}
 
 <section id="all-cards">
     <h2>Full Card List</h2>
