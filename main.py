@@ -10,7 +10,7 @@ from math import ceil
 from collections import defaultdict
 
 import fractal.config as config
-from fractal.datalayer import carddata, get_event, get_card_img, pricedb, write_similarity_cache
+from fractal.datalayer import carddata, get_event, get_card_img, pricedb, write_similarity_cache, is_material
 from fractal.shared import slugify, rank_card, OVERALL, REGIONS, ms_to_date, EVENT_TYPES, TEAM_STANDARD
 from fractal.omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
 from fractal.season import Season, SEASONS, FORMATS
@@ -175,7 +175,9 @@ class PageBuilder:
                 "a60": cstat.hot_appearances,
                 "wr60": (cstat.hot_rating if cstat.hot_appearances else -1),
                 "price": pricedb.get_formatted_price(c),
-                "mat": (1 if "REGALIA" in carddata[c]["types"] or "CHAMPION" in carddata[c]["types"] else 0),
+                "mat": (1 if is_material(c) else 0),
+                "rank": rank_card(carddata[c]),
+                "img": carddata[c]["img"],
                 "hipster": cstat.hipster
             }
             for c, cstat in ALL_CARD_STATS
@@ -245,12 +247,7 @@ class PageBuilder:
         )
     
     def write_delta(self):
-        carddb = json.dumps({cardname.lower(): {
-            "rank": rank_card(card),
-            "img": card["img"] }
-            for cardname, card in carddata.items()
-        })
-        self.render("delta.html.jinja2", "delta.html", carddb=carddb)
+        self.render("delta.html.jinja2", "delta.html")
     
     def write_index(self):
         self.render("index.html.jinja2", "index.html", seasons=self.seasons)

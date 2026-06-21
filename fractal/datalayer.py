@@ -265,8 +265,8 @@ def get_card_references(cardname):
 
 def is_valid_in_decklists(cardname):
     """
-    Returns true if the card should appear in decklists.
-    Returns false if the card should not, such as tokens or masteries.
+    Returns True if the card should appear in decklists.
+    Returns False if the card should not, such as tokens or masteries.
     """
     card = carddata[cardname]
     if "TOKEN" in card["types"]:
@@ -276,6 +276,16 @@ def is_valid_in_decklists(cardname):
     if "STATUS" in card["types"]:
         return False
     return True
+
+def is_material(cardname):
+    """
+    Returns True if the card is a material deck card.
+    Returns False otherwise.
+    """
+    card = carddata[cardname]
+    if "CHAMPION" in card["types"] or "REGALIA" in card["types"]:
+        return True
+    return False
 
 pricedb = PriceDB(PRICES_FOLDER, carddata)
 

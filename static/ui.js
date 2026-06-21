@@ -351,7 +351,7 @@ async function calc_trailblazer() {
     const textbox = document.querySelector("#trailblazer-dl")
     const deetbox = document.querySelector("#trailblazer-detail")
     deetbox.innerHTML = ""
-    const COMMENT_REGEX = /# (?<comment>.*)$/
+    const COMMENT_REGEX = /# (?<comment>.*)$|^(?<comment>[0-9]+ cards)$|^(?<comment>Material deck)$|^(?<comment>Main deck)$|^(?<comment>Sideboard)$/
     const CARD_REGEX = /(?<quantity>[0-9]+) (?<card>.*)$/
     let dl_txt = textbox.value
     let tb_total = 0

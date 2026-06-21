@@ -5,25 +5,66 @@ function show_delta_error(msg) {
 }
 
 function cmp_card_o(a,b) {
-    // requires carddb to be loaded separately
-    if (carddb[a["card"]].rank == carddb[b["card"]].rank) {
+    // requires carddata to be preloaded
+    if (CARDDATA[a["card"]].rank == CARDDATA[b["card"]].rank) {
         return 0
-    } else if (carddb[a["card"]].rank > carddb[b["card"]].rank) {
+    } else if (CARDDATA[a["card"]].rank > CARDDATA[b["card"]].rank) {
         return 1
     }
     return -1
 }
 
+function titleCase(str) {
+    // based on https://www.xjavascript.com/blog/convert-string-to-title-case-with-javascript/
+    return str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+}
+
+function fix_case(cardname) {
+    const repls = {
+        "'S":"'s",
+        "’S":"'s",
+        "\u2019S": "'s",
+        "\u2019s": "'s",
+        " And ": " and ",
+        " At ":" at ",
+        " By ": " by ",
+        " De ": " de ",
+        " For ": " for ",
+        " From ":" from ",
+        " In ":" in ",
+        " Into ":" into ",
+        " Of ": " of ",
+        " Aux ": " aux ",
+        "Mk Iii": "Mk III",
+        "Mk Ii": "Mk II",
+        " The ":" the ",
+        " To ":" to ",
+        " With ":" with ",
+        ", with ": ", With ", // "Silvie, With the Pack" vs "Smack with Flute"
+    }
+    cardname = titleCase(cardname)
+    for (const k in repls) {
+        cardname = cardname.replace(k, repls[k])
+    }
+    // Exceptions to the typical title casing for prepositions
+    if (cardname == "Claimed from Beyond") return "Claimed From Beyond"
+    if (cardname == "Protect Her at All Costs") return "Protect Her At All Costs"
+    if (cardname == "Seep into the Mind") return "Seep Into the Mind"
+    if (cardname == "Pole-Armed Steed") return "Pole-armed Steed"
+    if (cardname == "Off with Her Head") return "Off With Her Head"
+    return cardname
+}
+
 function normalize_dl(dlw) {
     if (!dlw || !dlw.decklist) { return }
     for (const card_o of dlw.decklist.material) {
-        card_o["card"] = card_o["card"].toLowerCase()
+        card_o["card"] = fix_case(card_o["card"])
     }
     for (const card_o of dlw.decklist.main) {
-        card_o["card"] = card_o["card"].toLowerCase()
+        card_o["card"] = fix_case(card_o["card"])
     }
     for (const card_o of dlw.decklist.sideboard) {
-        card_o["card"] = card_o["card"].toLowerCase()
+        card_o["card"] = fix_case(card_o["card"])
     }
     dlw.decklist.material.sort(cmp_card_o)
     dlw.decklist.main.sort(cmp_card_o)
@@ -32,6 +73,8 @@ function normalize_dl(dlw) {
 }
 
 async function get_dls() {
+    if (!CARDDATA) { await load_carddata() }
+
     const evt1_id = parseInt(document.querySelector("#delta-evt-1").value)
     const evt2_id = parseInt(document.querySelector("#delta-evt-2").value)
     const p1_id = parseInt(document.querySelector("#delta-p-1").value)
@@ -113,11 +156,11 @@ function hide_loader() {
 }
 
 function cardimg(card_o) {
-    // requires carddb
+    // requires carddata to be preloaded
     const el = document.createElement("div")
     el.classList.add("cardimg")
     el.innerHTML = `
-    <img src="${carddb[card_o.card].img}" alt="${card_o.card}" />
+    <img src="${CARDDATA[card_o.card].img}" alt="${card_o.card}" />
     <span class="quant">${card_o.quantity}</span>
     `
     if (card_o.quantity.slice(0,1) == "-") {
@@ -133,6 +176,7 @@ function cardimg(card_o) {
 }
 
 function calc_delta(lista, listb) {
+    // requires CARDDATA to be preloaded
     const deltaa = []
     const deltab = []
     let i = 0
@@ -142,13 +186,13 @@ function calc_delta(lista, listb) {
     while (i < imax && j < jmax) {
         const a = lista[i]
         const b = listb[j]
-        if (carddb[a.card].rank < carddb[b.card].rank) {
+        if (CARDDATA[a.card].rank < CARDDATA[b.card].rank) {
             deltaa.push({
                 "card": a.card,
                 "quantity": `-${a.quantity}`
             })
             i++
-        } else if (carddb[a.card].rank > carddb[b.card].rank) {
+        } else if (CARDDATA[a.card].rank > CARDDATA[b.card].rank) {
             deltab.push({
                 "card": b.card,
                 "quantity": `+${b.quantity}`
@@ -194,6 +238,7 @@ function calc_delta(lista, listb) {
 }
 
 async function glimpse_delta() {
+    if (!CARDDATA) { await load_carddata() }
     reset_results()
     show_loader()
     const dls = await get_dls()

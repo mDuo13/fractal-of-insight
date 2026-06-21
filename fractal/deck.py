@@ -3,7 +3,7 @@ from collections import defaultdict
 from xxhash import xxh64
 
 from .shared import slugify, fix_case, lineage, element_sortkey, ms_to_date, rank_card
-from .datalayer import get_card_img, carddata, card_is_floating, get_card_references, pricedb, get_cached_similarity, store_similarity, is_valid_in_decklists
+from .datalayer import get_card_img, carddata, card_is_floating, get_card_references, pricedb, get_cached_similarity, store_similarity, is_valid_in_decklists, is_material
 from .cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST, REMOVED_FROM_PRXY
 from .archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
 from .cardstats import ALL_CARD_STATS
@@ -251,7 +251,7 @@ class Deck:
         for card_o in self.side:
             card = carddata[card_o["card"]]
             b += card_o["quantity"]
-            if "CHAMPION" in card["types"] or "REGALIA" in card["types"]:
+            if is_material(card_o["card"]):
                 p += 3 * card_o["quantity"]
             else:
                 p += 1 * card_o["quantity"]
@@ -279,8 +279,7 @@ class Deck:
         the deck. Cards score 1 point per copy, triple for material deck cards,
         1/3 points for copies in the sideboard.
         """
-        card = carddata[cardname]
-        if "REGALIA" in card["types"] or "CHAMPION" in card["types"]:
+        if is_material(cardname):
             type_multiplier = 3
         else:
             type_multiplier = 1
@@ -298,8 +297,7 @@ class Deck:
         in which parts of the deck, where 1.0 is the maximum number of copies
         allowed.
         """
-        card = carddata[cardname]
-        if "REGALIA" in card["types"] or "CHAMPION" in card["types"]:
+        if is_material(cardname):
             max_card_score = 3
         else:
             max_card_score = 4
@@ -375,8 +373,7 @@ class Deck:
                 q_me = card_o["quantity"]
                 q_them = them_o["quantity"]
                 if sect == "sideboard":
-                    card = carddata[card_o["card"]]
-                    if "CHAMPION" in card["types"] or "REGALIA" in card["types"]:
+                    if is_material(card_o["card"]):
                         use_mult = 2 # ⅔ * 3
                     else:
                         use_mult = 2/3
@@ -420,8 +417,7 @@ class Deck:
         for card_o in self.main:
             self.hipster += hdb.score(card_o["card"]) * card_o["quantity"] * main_weight
         for card_o in self.side:
-            card = carddata[card_o["card"]]
-            if "REGALIA" in card["types"] or "CHAMPION" in card["types"]:
+            if is_material(card_o["card"]):
                 type_multiplier = 3
             else:
                 type_multiplier = 1
