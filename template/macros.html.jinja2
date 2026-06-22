@@ -248,7 +248,7 @@
 </div>
 {% endmacro %}
 
-{% macro event_filters(event_types, lesser=False, arche=None) %}
+{% macro event_filters(event_types, lesser=False) %}
 <form class="event-filtering">
     <fieldset>
         <legend>Filter events</legend>
@@ -274,16 +274,29 @@
         {% if not lesser %}
         </fieldset>
         {% endif %}
-        {% if arche %}
+    </fieldset>
+</form>
+{% endmacro %}
+
+{% macro arche_sightings_filters(event_types, arche) %}
+<form class="event-filtering">
+    <fieldset>
+        <legend>Filter events</legend>
+        {% for cat in event_types.values() %}
+        <label for="cb_cat_{{cat.shortname}}">
+            <input type="checkbox" name="category" id="cb_cat_{{cat.shortname}}" value="{{cat.shortname}}" checked="checked" onclick="update_sighting_filtering()" />
+            {{cat.name}}
+        </label>
+        {% endfor %}
         <fieldset class="subtypes-radios">
             <legend>Deck subtypes</legend>
                 <label for="rd_all_st">
-                    <input type="radio" name="subtype" id="rd_all_st" value="(All)" onclick="update_evt_filtering()" checked />
+                    <input type="radio" name="subtype" id="rd_all_st" value="(All)" onclick="update_sighting_filtering()" checked />
                     (All)
                 </label>
             {% for st in arche.subtypes %}
                 <label for="rd_st_{{slugify(st.name)}}">
-                    <input type="radio" name="subtype" id="rd_st_{{slugify(st.name)}}" value="{{st.name}}" onclick="update_evt_filtering()" />
+                    <input type="radio" name="subtype" id="rd_st_{{slugify(st.name)}}" value="{{st.name}}" onclick="update_sighting_filtering()" />
                     {{st.name}}
                 </label>
             {% endfor %}
@@ -291,7 +304,7 @@
                 {% for et in arche.el_subtypes.values() %}
                     {% if et.matched_decks|length > 1 %}
                 <label for="rd_et_{{slugify(et.name)}}">
-                    <input type="radio" name="subtype" id="rd_et_{{slugify(et.name)}}" value="{{et.name}}" onclick="update_evt_filtering()" />
+                    <input type="radio" name="subtype" id="rd_et_{{slugify(et.name)}}" value="{{et.name}}" onclick="update_sighting_filtering()" />
                     {{et.name}}
                 </label>
                     {% endif %}
@@ -300,13 +313,28 @@
             {% for c,ct in arche.champ_subtypes.items() %}
                 {% if ct.matched_decks|length > 1 %}
                 <label for="rd_ct_{{slugify(ct.name)}}">
-                    <input type="radio" name="subtype" id="rd_ct_{{slugify(ct.name)}}" value="{{ct.name}}" onclick="update_evt_filtering()" />
+                    <input type="radio" name="subtype" id="rd_ct_{{slugify(ct.name)}}" value="{{ct.name}}" onclick="update_sighting_filtering()" />
                     {{ct.name}}
                 </label>
                 {% endif %}
             {% endfor %}
         </fieldset>
-        {% endif %}
+        <fieldset>
+            <legend>Outcomes</legend>
+            <label for="any-outcome">
+                <input type="radio" name="outcome" id="any-outcome" value="any" onclick="update_sighting_filtering()" checked="checked" />
+                (Any result)
+            </label>
+            <label for="wins-filter">
+                <input type="radio" name="outcome" id="wins-filter" value="wins" onclick="update_sighting_filtering()" />
+                Event winners only
+            </label>
+            <label for="high-scoring" title="A good result means the player earned more than half the maximum possible points from the Swiss stage">
+                <input type="radio" name="outcome" id="high-scoring"
+                value="high" onclick="update_sighting_filtering()" />
+                Good results only
+            </label>
+        </fieldset>
     </fieldset>
 </form>
 {% endmacro %}

@@ -27,7 +27,7 @@ CARD_SIGHTINGS_PER_PAGE = 100
 FAST_CUTOFF = 5 # process a minimal number of events for "fast" mode (testing purposes)
 
 class PageBuilder:
-    def __init__(self):
+    def __init__(self, force_evts=[]):
         self.env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(config.TEMPLATE_DIR)
         )
@@ -51,6 +51,8 @@ class PageBuilder:
         self.cards = ALL_CARD_STATS
         self.known_judges = defaultdict(list)
         self.hipster_floor = 99999 # minimum Hipster rating of any deck
+
+        self.load_all(force_evts=force_evts)
 
     def render(self, template, write_to, **kwargs):
         """
@@ -119,26 +121,78 @@ class PageBuilder:
     def write_archetype(self, archetype):
         slug = slugify(archetype.name)
         arche_path = f"deck/{slug}.html"
-        # The "Sightings" table is too much, so paginate it.
-        max_page = ceil(len(archetype.matched_decks) / SIGHTINGS_PER_PAGE)
+        asj = [] # Archetype Sightings JSON
+        for deck in archetype.matched_decks:
+            event = self.events[deck.entrant.evt_id]
+            if deck.entrant.dq:
+                placement = "DQ"
+            elif event.format == TEAM_STANDARD:
+                t = event.teams[deck.entrant.team.lower()]
+                placement = f"{t.placement}/{len(event.teams)} teams"
+            else:
+                placement = f"{deck.entrant.placement}/{len(event.players)}"
+            de = {
+                "date": deck.date,
+                "p_id": deck.entrant.id,
+                "p_name": deck.entrant.username,
+                "evt_id": int(deck.entrant.evt_id),
+                "evt_name": event.name,
+                "evt_cat": event.category['shortname'],
+                "szn": event.season,
+                "d_name": str(deck),
+                "place": placement,
+                "record": deck.entrant.record,
+                "els": deck.els,
+                "arches": deck.archetypes,
+                "lineages": deck.lineages,
+                "subtypes": deck.subtypes,
+                "stats": {
+                    "fm": deck.floating,
+                    "c_types": {
+                        ct.title():cc for ct,cc in deck.card_types.items()
+                    },
+                    "hip": ("(Unrated)" if deck.hipster == None else 
+                            int(deck.hipster)),
+                    "c_els": deck.main_deck_els
+                }
+            }
+            if event.format != "standard":
+                de["evt_fmt"] = event.format
+            if event.winner and event.winner.deck == deck:
+                de["winner"] = 1
+            if deck.is_topcut_deck:
+                de["topcut"] = 1
+            if deck.entrant.score > event.fiftypct_points:
+                de["high"] = 1
+            de["sim"] = deck.split_similar_decks(as_json=True)
+            asj.append(de)
+
+        # New JS-powered sightings section
         self.render("archetype.html.jinja2", arche_path, arche=archetype,
-                    players=self.players, events=self.events,
-                    seasons=self.seasons, wins=self.aew[archetype.name],
-                    page_number=1, page_start=0, page_end=SIGHTINGS_PER_PAGE,
-                    max_page=max_page
+                    players=self.players, seasons=self.seasons, 
+                    wins=self.aew[archetype.name], asj=json.dumps(asj)
         )
-        if max_page > 1:
-            for i in range(1, max_page):
-                page_number = i+1
-                self.render("archetype-sightings-page.html.jinja2", 
-                        f"deck/{slug}-{page_number}.html",
-                        arche=archetype, players=self.players,
-                        events=self.events, seasons=self.seasons,
-                        wins=self.aew[archetype.name],
-                        page_number=page_number, max_page=max_page,
-                        page_start=(i*SIGHTINGS_PER_PAGE),
-                        page_end=((i+1)*SIGHTINGS_PER_PAGE)
-                )
+        ## Old pre-generated, paginated sightings section
+        # # The "Sightings" table is too much, so paginate it.
+        # max_page = ceil(len(archetype.matched_decks) / SIGHTINGS_PER_PAGE)
+        # self.render("archetype.html.jinja2", arche_path, arche=archetype,
+        #             players=self.players, events=self.events,
+        #             seasons=self.seasons, wins=self.aew[archetype.name],
+        #             page_number=1, page_start=0, page_end=SIGHTINGS_PER_PAGE,
+        #             max_page=max_page
+        # )
+        # if max_page > 1:
+        #     for i in range(1, max_page):
+        #         page_number = i+1
+        #         self.render("archetype-sightings-page.html.jinja2", 
+        #                 f"deck/{slug}-{page_number}.html",
+        #                 arche=archetype, players=self.players,
+        #                 events=self.events, seasons=self.seasons,
+        #                 wins=self.aew[archetype.name],
+        #                 page_number=page_number, max_page=max_page,
+        #                 page_start=(i*SIGHTINGS_PER_PAGE),
+        #                 page_end=((i+1)*SIGHTINGS_PER_PAGE)
+        #         )
 
     def write_archetype_index(self):
         archetypes = [a for a in ARCHETYPES.values()]
@@ -225,7 +279,6 @@ class PageBuilder:
         print("Writing to", whole_out_file)
         with open(whole_out_file, "w") as f:
             json.dump(json_obj, f)
-
 
     def write_achievement(self, achievement):
         write_to = f"achievement/{slugify(achievement.name)}.html"
@@ -454,13 +507,12 @@ class PageBuilder:
 def main(args):
     if args.fast:
         config.SharedConfig.go_fast = True
-    builder = PageBuilder()
     force_evts = []
     for i in args.event_id:
         i_s = str(i)
         force_evts.append(i_s)
         get_event(i, force_redownload=args.update, save=True, dl_decklists=True)
-    builder.load_all(force_evts=force_evts)
+    builder = PageBuilder(force_evts=force_evts)
     builder.write_all()
     if config.SharedConfig.go_fast != True:
         write_similarity_cache()

@@ -185,21 +185,11 @@ function opentabs(tabbutton) {
     matchingtabcontent.forEach(el => {el.classList.remove("collapse")})
 }
 
-function update_evt_filtering() {
-    const decklist_cb = document.getElementById("cb_decklists")
-    let decklists_only = false
-    if (decklist_cb) {
-        decklists_only = decklist_cb.checked
-    }
-    const small_evts_cb = document.getElementById("cb_small_events")
-    let small_events = false
-    if (small_evts_cb) {
-        small_events = small_evts_cb.checked
-    }
+function get_checked_subtype() {
     const st_radios = document.getElementsByName("subtype")
     let checked_subtype = ""
     if (st_radios.length) {
-        for (el of st_radios) {
+        for (const el of st_radios) {
             if (el.checked) {
                 if (el.value === "(All)") {
                     // Leave checked_subtype as empty
@@ -210,13 +200,52 @@ function update_evt_filtering() {
             }
         }
     }
+    return checked_subtype
+}
 
+function get_cat_filters() {
     const show_cats = []
     document.querySelectorAll('input[name="category"]').forEach( el => {
         if (el.checked) {
             show_cats.push(el.value)
         }
     })
+    return show_cats
+}
+
+function get_outcome_filter() {
+    const outcome_radios = document.getElementsByName("outcome")
+    let checked_outcome = ""
+    for (const el of outcome_radios) {
+        if (el.checked) {
+            if (el.value === "(All)") {
+                // Leave as empty
+                break
+            }
+            checked_outcome = el.value
+        }
+    }
+    return checked_outcome
+    
+}
+
+function update_evt_filtering() {
+    /* Filtering for fully-static event / sightings listing only.
+     * Dynamically-loaded sightings use populate_sightings()
+     */
+    const decklist_cb = document.getElementById("cb_decklists")
+    let decklists_only = false
+    if (decklist_cb) {
+        decklists_only = decklist_cb.checked
+    }
+    const small_evts_cb = document.getElementById("cb_small_events")
+    let small_events = false
+    if (small_evts_cb) {
+        small_events = small_evts_cb.checked
+    }
+    
+    const checked_subtype = get_checked_subtype()
+    const show_cats = get_cat_filters()
 
     // Filter events (e.g. on homepage, season page)
     document.querySelectorAll('.evt').forEach( el => {
@@ -258,21 +287,26 @@ function update_evt_filtering() {
 }
 
 function copypermalink() {
-    if (window.isSecureContext) {
-        navigator.clipboard.writeText(window.location)
-    }
+    toclipboard(window.location)
 }
 
 function omnidexexport(q) {
+    const textarea = document.querySelector(q)
+    toclipboard(textarea.textContent)
+}
+
+function toclipboard(text) {
     if (window.isSecureContext) {
-        const textarea = document.querySelector(q)
-        navigator.clipboard.writeText(textarea.textContent)
+        navigator.clipboard.writeText(text)
+    } else {
+        console.warn("Can't to clipboard (not a secure context)")
+        console.log(text)
     }
 }
 
 function carddetail(c) {
     c.classList.toggle("dblclicked")
-    c.querySelector(".carddeets").classList.toggle("collapse")
+    c.querySelector(".carddeets")?.classList.toggle("collapse")
 }
 function flipcard(event, c) {
     event.stopPropagation()
@@ -431,28 +465,29 @@ async function calc_deck_price(dl) {
     }
 }
 
-async function fill_price_and_hipster() {
+async function fill_price_and_hipster(container) {
     // Dynamically populate these fields to reduce churn on individual pages
     // during daily deploys.
-    // TODO: handle prize equivalents the same way as the backend does
+    // FF: handle prize equivalents the same way as the backend does
     if (!CARDDATA) { await load_carddata() }
+    if (!container) {container = document }
 
-    const price_els = document.querySelectorAll(".card-price")
+    const price_els = container.querySelectorAll(".card-price")
     for (const ps of price_els) {
         const cardname = decodeURIComponent(ps.dataset.cardname)
         ps.innerText = CARDDATA[cardname].price
     }
 
-    const hipster_els = document.querySelectorAll(".card-hipster-rating")
+    const hipster_els = container.querySelectorAll(".card-hipster-rating")
     for (const hs of hipster_els) {
         const cardname = decodeURIComponent(hs.dataset.cardname)
         hs.innerText = CARDDATA[cardname].hipster
     }
 
-    const deck_price_els = document.querySelectorAll(".deck-price")
+    const deck_price_els = container.querySelectorAll(".deck-price")
     for (const ds of deck_price_els) {
         const id = ds.dataset.deckid
-        const dltxt = document.querySelector(`#${id} .omniexport`)
+        const dltxt = container.querySelector(`#${id} .omniexport`)
         const { price, no_data } = await calc_deck_price(dltxt.innerText)
         ds.innerText = '$' + price
         if (no_data.length) {
@@ -493,8 +528,312 @@ function pbox(p) {
     return el
 }
 
+function slugify(s) {
+    const unacceptable_chars = /[^A-Za-z0-9 -]+/g
+    const whitespace_regex = /\s+/g
+    s = s.replaceAll(unacceptable_chars, "")
+    s = s.replaceAll(whitespace_regex, "-")
+    if (!s) {
+        s = "_"
+    }
+    return s.toLowerCase()
+}
+
+// const EVT_CATEGORY = {
+//     "worlds": "Worlds",
+//     "nationals": "Nationals",
+//     "ascent": "Ascent",
+//     "regionals": "Regionals",
+//     "store-champs": "Store Champs",
+//     "regular": "Regular"
+// }
+
+function p_row_arche(deck) {
+    const anchor = `#deck_${deck.evt_id}_${deck.p_id}`
+    const tr = document.createElement("tr")
+    tr.classList.add("p-row")
+    const nstyles = deck.els.length + deck.arches.length + deck.lineages.length
+    tr.classList.add(`n-styles-${nstyles}`)
+    let winicon = ""
+    if (deck.winner) {
+        tr.classList.add("winner")
+        winicon = `<span class="win_icon" title="This player won the event">👑</span> `
+    }
+    tr.dataset.category = deck.evt_cat
+    tr.dataset.subtypes = JSON.stringify(deck.els.concat(deck.lineages).concat(deck.subtypes))
+    tr.innerHTML = `
+    <td class="p_date">${deck.date}</td>
+    <td class="playername"><a href="/player/${deck.p_id}.html">${deck.p_name} #${deck.p_id}</a></td>
+    <td class="p_event"><a href="/${deck.szn}/${deck.evt_id}.html">${deck.evt_name}</a></td>
+    <td class="p_deck"><a href="${anchor}">${deck.d_name}</a>
+        <div class="deck-bgs"></div>
+    </td>
+    <td class="p_placement">${winicon}${deck.place}</td>
+    <td class="p_record">${deck.record}</td>
+    `
+    const dbg = tr.querySelector(".deck-bgs")
+    for (const bg of deck.els) {
+        dbg.innerHTML += `<img class="deck-bg" src="/static/bg/${slugify(bg)}.jpg" alt="" />`
+    }
+    for (const bg of deck.arches) {
+        dbg.innerHTML += `<img class="deck-bg" src="/static/bg/${slugify(bg)}.jpg" alt="" />`
+    }
+    for (const bg of deck.lineages) {
+        dbg.innerHTML += `<img class="deck-bg" src="/static/bg/${slugify(bg)}.jpg" alt="" />`
+    }
+    tr.querySelector(".p_deck a").onclick = () => loaddecklist(deck)
+    return tr
+}
+
+function cardimg(card, hide_overlay, as_token) {
+    const el = document.createElement("div")
+    el.classList.add("cardimg")
+    if (card.banned) {
+        el.classList.add("banned")
+    }
+    if (card.removed) {
+        el.classList.add("removed")
+    }
+    el.onclick = () => carddetail(el)
+    let back_img = ""
+    if (card.orientations) {
+        const back = card.orientations[0]
+        back_img = `<img src="${back.image}" alt="${back.name}" class="cardback flipped"  /><span class="flipper" onclick="flipcard(event, this.parentElement)">↩️</span>`
+    }
+    let quant = ""
+    if (!hide_overlay) {
+        quant = `<span class="quant">${card.quantity}</span>`
+    }
+    let deets = ""
+    if (!as_token) {
+        deets = `<div class="carddeets collapse"><a href="/card/${slugify(card.name)}.html">Card stats</a></div>`
+    }
+    el.innerHTML = `
+        <img class="cardfront" src="${card.image}" loading="lazy" alt="${card.name}" />
+        ${back_img}
+        ${quant}
+        ${deets}
+    `
+    return el
+}
+
+const EL_COLORS = {"Norm": "#ba9", "Fire": "#b30", "Wind": "#6c3", "Water": "#06b", "Arcane": "#23a", "Astra": "#336", "Crux": "#a9d", "Exia": "#310", "Luxem": "#ec4", "Neos": "#a63", "Tera": "#164", "Umbra": "#214", "Exalted/Norm": "#ca7", "Exalted/Fire": "#ca7", "Exalted/Water": "#ca7", "Exalted/Wind": "#ca7", "Unknown": "#000"}
+
+function el_indicator(el) {
+    return `<span class="el-indicator" style="background-color: ${EL_COLORS[el]};">&nbsp;</span>`
+}
+
+function deck_elementpie(elements) {
+    const div = document.createElement("div")
+    div.classList.add("element-meta")
+    div.innerHTML = `
+    <div class="pie-chart">&nbsp;</div>
+    <table class="element-table">
+        <thead><tr>
+            <th>Element</th>
+            <th># of cards</th>
+            <th>%</th>
+        </tr></thead>
+        <tbody>
+        </tbody>
+    </table>
+    `
+    let gradient = "conic-gradient("
+    let cumu = 0
+    for (const [el, quant, pct] of elements) {
+        gradient += `${EL_COLORS[el]} ${cumu}%, ${EL_COLORS[el]} ${cumu+pct}%, `
+        cumu += pct
+    }
+    gradient = gradient.slice(0, -2) + ")"
+    div.querySelector(".pie-chart").style["background"] = gradient
+
+    for (const [el, quant, pct] of elements) {
+        div.querySelector("tbody").innerHTML += `
+        <tr>
+            <th>${el_indicator(el)} ${el}</th>
+            <td>${quant}</td>
+            <td>${pct}%</td>
+        </tr>
+        `
+    }
+    return div
+}
+
+function omniformat(dl) {
+    s = "\n# Material Deck\n"
+    for (const card_o of dl.cards.material) {
+        s += `${card_o.quantity} ${card_o.name}\n`
+    }
+    s += "\n# Main Deck\n"
+    for (const card_o of dl.cards.main) {
+        s += `${card_o.quantity} ${card_o.name}\n`
+    }
+    s += "\n# Sideboard\n"
+    for (const card_o of dl.cards.sideboard) {
+        s += `${card_o.quantity} ${card_o.name}\n`
+    }
+    return s
+}
+
+// FF: pre-cache some decklists?
+async function loaddecklist(deck) {
+    if (!CARDDATA) { await load_carddata() }
+    // FF: can we load carddata in a non-blocking way & still guarantee it's
+    // ready by the time it's needed later?
+    const d_id = `deck_${deck.evt_id}_${deck.p_id}${deck.topcut ? '_topcut' : ''}`
+    if (document.getElementById(d_id)) {
+        // Don't re-add decklist item if it's already loaded
+        opendecklist(`#${d_id}`)
+        return
+    }
+    // Else fetch the decklist and add it to the document
+    const path = `/tts/event_${deck.evt_id}/${deck.p_id}${deck.topcut ? '_topcut' : ''}.json`
+    const dl = await (await fetch(path)).json()
+    const dlel = document.createElement("div")
+    dlel.classList.add("decklist")
+    dlel.id = d_id
+    let maindeck_total = 0
+    for (const card_o of dl.cards.main) {
+        maindeck_total += card_o.quantity
+    }
+    let sb_count = 0
+    let sb_points = 0
+    for (const card_o of dl.cards.sideboard) {
+        sb_count += card_o.quantity
+        sb_points += CARDDATA[card_o.name].mat ? 3 : card_o.quantity
+    }
+
+    dlel.innerHTML = `
+        <button class="prev-deck-btn" onclick="show_previous_deck_dyn(this)" title="Previous deck">⏮</button>
+        <div class="decklist-inner">
+            <button class="closeX" onclick="closedecklist('#${d_id}')">❌</button>
+            <button class="toggle_gfx_btn" onclick="togglegfx()">📝</button>
+            <button class="omniexport_btn" onclick="omnidexexport('#${d_id} .omniexport')"><img alt="Export" title="Omnidex Export (copy to clipboard)" src="/static/export.svg" width="24" height="24" /></button>
+            <a class="permalink" href="#${d_id}" onclick="copypermalink()">🔗</a>
+            <h3>${deck.p_name} #${deck.p_id}'s ${deck.d_name} (${deck.evt_name})${deck.topcut ? ' (Top cut list)' : ''}</h3>
+            <div class="decklist-viewbox">
+                <h4>Materials <span class="cardcount">(${dl.cards.material.length} cards)</span></h4>
+                <ul class="deck_txt material collapse"></ul>
+                <div class="deck_gfx material"></div>
+                <h4>Maindeck <span class="cardcount">(${maindeck_total} cards)</span></h4>
+                <ul class="deck_txt maindeck collapse"></ul>
+                <div class="deck_gfx maindeck"></div>
+                <h4>Sideboard <span class="cardcount">(${sb_count} cards, ${sb_points} points)</span></h4>
+                <ul class="deck_txt sideboard collapse"></ul>
+                <div class="deck_gfx sideboard"></div>
+                <div class="refs-area"></div>
+                <textarea class="omniexport">${omniformat(dl)}</textarea>
+                <div class="deck-card-counts">
+                    <div class="counts-by-type">
+                        <h4>Card Counts</h4>
+                        <p class="explanation">(Main deck cards only. Cards with multiple types count for each type. Floating memory counts if the deck has any champion that can use it.)</p>
+                        <ul class="deck-stats">
+                            <li><b>Floating Memory:</b> ${deck.stats.fm}</li>
+                        </ul>
+                        <h4>Other Stats</h4>
+                        <ul>
+                            <li><b>Hipster rating:</b> ${deck.stats.hip}</li>
+                            <li><b>Price on TCGPlayer:</b>
+                                <span class="deck-price" data-deckid="${d_id}">(Loading)</span>
+                                <span class="explanation">(Prices are approximate.)</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="counts-by-element">
+                        <h4>Elements</h4>
+                        <p class="explanation">(Maindeck cards only.)</p>
+                    </div>
+                </div>
+                <div class="similar-decks">
+                    <h4>Similar Decks</h4>
+                    <p class="explanation">(Similar decks are calculated on a point system where maindeck cards are worth 1 point, material deck cards are 3 points, and sideboards are discounted by ⅓. Only decks with at least 85% overlap are listed, max 10 each before/during/after this event.)</p>
+                </div>
+            </div>
+        </div>
+        <button class="next-deck-btn" onclick="show_next_deck_dyn(this)" title="Next deck">⏭</button>
+    `
+    dlel.querySelector(".counts-by-element").appendChild(
+        deck_elementpie(deck.stats.c_els)
+    )
+    for (const card_o of dl.cards.material) {
+        dlel.querySelector(".deck_gfx.material").appendChild(
+            cardimg(card_o, (card_o.quantity==1))
+        )
+        dlel.querySelector(".deck_txt.material").innerHTML += `
+            <li>${card_o.name}</li>
+        `
+    }
+    for (const card_o of dl.cards.main) {
+        dlel.querySelector(".deck_gfx.maindeck").appendChild(
+            cardimg(card_o)
+        )
+        dlel.querySelector(".deck_txt.maindeck").innerHTML += `
+            <li>${card_o.quantity}× ${card_o.name}</li>
+        `
+    }
+    for (const card_o of dl.cards.sideboard) {
+        dlel.querySelector(".deck_gfx.sideboard").appendChild(
+            cardimg(card_o)
+        )
+        dlel.querySelector(".deck_txt.sideboard").innerHTML += `
+            <li>${card_o.quantity}× ${card_o.name}</li>
+        `
+    }
+    for (const ct in deck.stats.c_types) {
+        dlel.querySelector(".deck-stats").innerHTML += `
+        <li><b>${ct}</b>: ${deck.stats.c_types[ct]}</li>`
+    }
+    if (dl.cards.references) {
+        dlel.querySelector(".refs-area").innerHTML = `
+        <button onclick="toggle('#${d_id} .references')">Glimpse tokens</button>
+        <div class="references togglable collapse"></div>
+        `
+        for (const card_o of dl.cards.references) {
+            dlel.querySelector(".references").appendChild(
+                cardimg(card_o, true, true)
+            )
+        }
+    }
+    if (deck.sim.before?.length) {
+        dlel.querySelector(".similar-decks").innerHTML += `<h5>Before this</h5>`
+        const ul = document.createElement("ul")
+        for (const sim of deck.sim.before) {
+            // FF: have delta handle topcut
+            let oid = `deck_${sim.p_id}${sim.topcut ? '_topcut' : ''}`
+            ul.innerHTML += `<li><a href="/${sim.szn}/${sim.evt_id}.html#${oid}">${sim.p_name} in ${sim.evt_name} (${sim.pct}%) <a class="delta-button" href="/delta.html?e1=${sim.evt_id}&p1=${sim.p_id}&e2=${deck.evt_id}&p2=${deck.p_id}">δ</a></li>`
+        }
+        dlel.querySelector(".similar-decks").appendChild(ul)
+    }
+    if (deck.sim.sameday?.length) {
+        dlel.querySelector(".similar-decks").innerHTML += `<h5>Same day</h5>`
+        const ul = document.createElement("ul")
+        for (const sim of deck.sim.sameday) {
+            let oid = `deck_${sim.p_id}${sim.topcut ? '_topcut' : ''}`
+            ul.innerHTML += `<li><a href="/${sim.szn}/${sim.evt_id}.html#${oid}">${sim.p_name} in ${sim.evt_name} (${sim.pct}%) <a class="delta-button" href="/delta.html?e1=${deck.evt_id}&p1=${deck.p_id}&e2=${sim.evt_id}&p2=${sim.p_id}">δ</a></li>`
+        }
+        dlel.querySelector(".similar-decks").appendChild(ul)
+    }
+    if (deck.sim.after?.length) {
+        dlel.querySelector(".similar-decks").innerHTML += `<h5>After this</h5>`
+        const ul = document.createElement("ul")
+        for (const sim of deck.sim.after) {
+            let oid = `deck_${sim.p_id}${sim.topcut ? '_topcut' : ''}`
+            ul.innerHTML += `<li><a href="/${sim.szn}/${sim.evt_id}.html#${oid}">${sim.p_name} in ${sim.evt_name} (${sim.pct}%) <a class="delta-button" href="/delta.html?e1=${deck.evt_id}&p1=${deck.p_id}&e2=${sim.evt_id}&p2=${sim.p_id}">δ</a></li>`
+        }
+        dlel.querySelector(".similar-decks").appendChild(ul)
+    }
+    if (!deck.sim.before?.length && !deck.sim.sameday?.length && !deck.sim.after?.length) {
+        dlel.querySelector(".similar-decks").innerHTML += `<p>(None)</p>`
+    }
+    attach_decklist_closer(dlel)
+    document.querySelector("#dynamic-decklists").appendChild(dlel)
+    fill_price_and_hipster(dlel)
+    opendecklist(`#${d_id}`)
+}
+
 // Pagination tools for smart search of player page
 const PAGE_SIZE = 40
+let selected_players_list = []
 function update_prevnext(i) {
     const j = i+PAGE_SIZE
     const prevbut = document.querySelector("#prev-player-btn")
@@ -502,81 +841,125 @@ function update_prevnext(i) {
     prevbut.disabled = (i <= 0)
     nextbut.disabled = (j >= playerdata.length)
 }
-function next_player_page() {
-    if (!playerdata) {
-        console.error("Couldn't get player data (should be inlined in page source)")
-        return
-    }
-    const pgrid = document.querySelector(".player-grid")
-    pgrid.innerHTML = ""
-    let i = parseInt(pgrid.dataset.start) || 0
-    i += PAGE_SIZE
+function populate_list(grid_sel, datalist, itemfunc, prev_sel, next_sel) {
+    const grid = document.querySelector(grid_sel)
+    grid.innerHTML = ""
+    let i = parseInt(grid.dataset.start) || 0
     j = i + PAGE_SIZE
-    for (const p of playerdata.slice(i,j)) {
-        pgrid.appendChild(pbox(p))
+    for (const item of datalist.slice(i,j)) {
+        grid.appendChild(itemfunc(item))
     }
-    pgrid.dataset.start = i
-    update_prevnext(i)
+    const prevbut = document.querySelector(prev_sel)
+    const nextbut = document.querySelector(next_sel)
+    prevbut.disabled = (i <= 0)
+    nextbut.disabled = (j >= datalist.length)
+}
+function shift_list(delta, grid_sel, datalist, itemfunc, prev_sel, next_sel) {
+    const grid = document.querySelector(grid_sel)
+    let i = parseInt(grid.dataset.start) || 0
+    i += delta
+    if (i < 0) { i = 0 }
+    grid.dataset.start = i
+    populate_list(grid_sel, datalist, itemfunc, prev_sel, next_sel)
+}
+function next_player_page() {
+    shift_list(PAGE_SIZE,
+            ".player-grid", 
+            selected_players_list,
+            pbox,
+            "#prev-player-btn",
+            "#next-player-btn"
+    )
 }
 function prev_player_page() {
-    if (!playerdata) {
-        console.error("Couldn't get player data (should be inlined in page source)")
-        return
-    }
-    const pgrid = document.querySelector(".player-grid")
-    pgrid.innerHTML = ""
-    let i = parseInt(pgrid.dataset.start) || 0
-    i -= PAGE_SIZE
-    if (i < 0) { i = 0 }
-    j = i + PAGE_SIZE
-    for (const p of playerdata.slice(i,j)) {
-        pgrid.appendChild(pbox(p))
-    }
-    pgrid.dataset.start = i
-    update_prevnext(i)
-    
+    shift_list(-PAGE_SIZE,
+            ".player-grid", 
+            selected_players_list,
+            pbox,
+            "#prev-player-btn",
+            "#next-player-btn"
+    )
 }
-
 function player_search() {
-    if (!playerdata) {
-        console.error("Couldn't get player data (should be inlined in page source)")
-        return
-    }
-    const pgrid = document.querySelector(".player-grid")
-    pgrid.innerHTML = ""
     const q = document.querySelector("#player-search").value.toLowerCase()
-
     if (q) {
-        let i = 0
-        for (const p of playerdata) {
+        selected_players_list = playerdata.filter( (p) => {
             const fulluid = `${p.username} #${p.id}`.toLowerCase()
-            if (fulluid.includes(q)) {
-                pgrid.appendChild(pbox(p))
-                i++
-            }
-            if (i >= PAGE_SIZE) {
-                break
-            }
-        }
-        const prevbut = document.querySelector("#prev-player-btn")
-        const nextbut = document.querySelector("#next-player-btn")
-        nextbut.disabled = true
-        prevbut.disabled = true
+            if (fulluid.includes(q)) { return true }
+            return false
+        })
+        document.querySelector(".player-grid").dataset.start = 0
+        populate_list(".player-grid",
+            selected_players_list,
+            pbox,
+            "#prev-player-btn",
+            "#next-player-btn"
+        )
     } else {
         reset_player_search()
     }
 }
-
 function reset_player_search() {
     document.querySelector("#player-search").value = ""
-    const pgrid = document.querySelector(".player-grid")
-    pgrid.innerHTML = ""
-    let i = parseInt(pgrid.dataset.start) || 0
-    j = i + PAGE_SIZE
-    for (const p of playerdata.slice(i,j)) {
-        pgrid.appendChild(pbox(p))
-    }
-    update_prevnext(i)
+    selected_players_list = playerdata
+    document.querySelector(".player-grid").dataset.start = 0
+    populate_list(".player-grid",
+        selected_players_list,
+        pbox,
+        "#prev-player-btn",
+        "#next-player-btn"
+    )
+}
+
+let filtered_sightings = []
+function populate_sightings() {
+    const checked_subtype = get_checked_subtype()
+    const show_cats = get_cat_filters()
+    const selected_outcome = get_outcome_filter()
+    filtered_sightings = all_sightings.filter( (item) => {
+        let item_combo_types = item.els.concat(item.arches).concat(item.subtypes).concat(item.lineages)
+        if (checked_subtype && !item_combo_types.includes(checked_subtype)) {
+            return false
+        }
+        if (!show_cats.includes(item.evt_cat)) {
+            return false
+        }
+        if (selected_outcome === "wins" && !item.winner) {
+            return false
+        }
+        if (selected_outcome === "high" && !item.high) {
+            return false
+        }
+        return true
+    })
+    populate_list("#sightings-body",
+        filtered_sightings,
+        p_row_arche,
+        "#prev-sightings-btn",
+        "#next-sightings-btn"
+    )
+}
+function update_sighting_filtering() {
+    document.querySelector("#sightings-body").dataset.start = 0
+    populate_sightings()
+}
+function next_sightings_page() {
+    shift_list(PAGE_SIZE,
+        "#sightings-body",
+        filtered_sightings,
+        p_row_arche,
+        "#prev-sightings-btn",
+        "#next-sightings-btn"
+    )
+}
+function prev_sightings_page() {
+    shift_list(-PAGE_SIZE,
+        "#sightings-body",
+        filtered_sightings,
+        p_row_arche,
+        "#prev-sightings-btn",
+        "#next-sightings-btn"
+    )   
 }
 
 function make_tables_sortable() {
@@ -627,6 +1010,45 @@ function show_next_deck(btn) {
     unsettitle()
     opendecklist(`#${newdeck.id}`)
 }
+function sighting_match_id(item, id) {
+    const [evt_id, p_id, topcut] = id.slice(5).split("_")
+    if (item.evt_id == parseInt(evt_id) && item.p_id == parseInt(p_id)) {
+        if (!topcut && !item.topcut) {
+            return true
+        } else if (topcut && item.topcut) {
+            return true
+        }
+    }
+    return false
+}
+function show_previous_deck_dyn(btn) {
+    const thisdeck = btn.closest(".decklist")
+    const deck_i = filtered_sightings.findIndex( (item) => sighting_match_id(item, thisdeck.id) )
+    unsettitle()
+    if (deck_i == -1) {
+        // Not found in the current list at all. I guess just close the list?
+        thisdeck.click()
+    } else if (deck_i > 0) {
+        loaddecklist(filtered_sightings[deck_i - 1])
+    } else {
+        // hit the end. Close the list?
+        thisdeck.click()
+    }
+}
+function show_next_deck_dyn(btn) {
+    const thisdeck = btn.closest(".decklist")
+    const deck_i = filtered_sightings.findIndex( (item) => sighting_match_id(item, thisdeck.id) )
+    unsettitle()
+    if (deck_i == -1) {
+        // Not found in the current list at all. I guess just close the list?
+        thisdeck.click()
+    } else if (deck_i + 1 < filtered_sightings.length) {
+        loaddecklist(filtered_sightings[deck_i + 1])
+    } else {
+        // hit the end. close the list, ig?
+        thisdeck.click()
+    }
+}
 
 function close_all(event) {
     if (event.key === "Escape") {
@@ -651,6 +1073,24 @@ function h_scrollable(el) {
     })
 }
 
+function attach_decklist_closer(el) {
+    el.addEventListener("click", (evt) => {
+        if (evt.target.href) {
+            // is a link, do the default after closing this
+            el.classList.add("collapse")
+        }
+        else if (!evt.target.classList.contains("decklist")) {
+            evt.preventDefault()
+        } else {
+            el.classList.add("collapse")
+            history.replaceState(null, "", window.location.pathname+window.location.search)
+            if (document.og_title) {
+                document.title = document.og_title
+            }
+        }
+    })
+}
+
 ready(() => {
     // Open hash on page-load
     if (window.location.hash) {
@@ -659,6 +1099,9 @@ ready(() => {
         if (defaultobj && defaultobj.classList.contains("collapse")) {
             defaultobj.classList.remove("collapse")
             settitle(window.location.hash)
+        } else if (window.location.hash.startsWith("#deck_") && document.querySelector("#dynamic-decklists")) {
+            const deck = all_sightings.find( (item) => sighting_match_id(item, window.location.hash.slice(1)) )
+            loaddecklist(deck)
         } else {
             q = `${window.location.hash} > .togglable.collapse`
             //collapsedChildren = document.querySelectorAll(q)
@@ -672,23 +1115,7 @@ ready(() => {
     }
 
     // Attach decklist closing events
-    document.querySelectorAll(".decklist").forEach(el => {
-        el.addEventListener("click", (evt) => {
-            if (evt.target.href) {
-                // is a link, do the default after closing this
-                el.classList.add("collapse")
-            }
-            else if (!evt.target.classList.contains("decklist")) {
-                evt.preventDefault()
-            } else {
-                el.classList.add("collapse")
-                history.replaceState(null, "", window.location.pathname+window.location.search)
-                if (document.og_title) {
-                    document.title = document.og_title
-                }
-            }
-        })
-    })
+    document.querySelectorAll(".decklist").forEach(attach_decklist_closer)
 
     // Set up find-as-you-type delay (if needed)
     let typingTimer
@@ -707,6 +1134,7 @@ ready(() => {
             clearTimeout(typingTimer)
             typingTimer = setTimeout(() => {player_search()}, typeInterval)
         })
+        selected_players_list = playerdata
     }
 
     fill_price_and_hipster()

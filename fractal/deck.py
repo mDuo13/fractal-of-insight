@@ -389,7 +389,23 @@ class Deck:
         store_similarity(self.hash, other_deck.hash, similarity)
         return similarity
 
-    def split_similar_decks(self, limit=10):
+    def similar_decks_json(self, list_of_decks):
+        l = []
+        for od,sim in list_of_decks:
+            j = {
+                "evt_id": od.entrant.evt_id,
+                "szn": od.entrant.event.season,
+                "p_id": od.entrant.id,
+                "p_name": od.entrant.username,
+                "evt_name": od.entrant.event.name,
+                "pct": sim,
+            }
+            if od.is_topcut_deck:
+                j["topcut"] = 1
+            l.append(j)
+        return l
+
+    def split_similar_decks(self, limit=10, as_json=False):
         decks_before = []
         decks_sameday = []
         decks_after = []
@@ -401,7 +417,19 @@ class Deck:
             else:
                 decks_after.append([d,sim])
 
-        return trim_similar(decks_before, limit), trim_similar(decks_sameday, limit), trim_similar(decks_after, limit)
+        trimmed = (
+            trim_similar(decks_before, limit), 
+            trim_similar(decks_sameday, limit), 
+            trim_similar(decks_after, limit)
+        )
+        
+        if as_json:
+            labels = ("before", "sameday", "after")
+            return {
+                labels[i]: self.similar_decks_json(trimmed[i])
+                for i in range(len(trimmed))
+            }
+        return trimmed
 
     def rate_hipster(self, hdb):
         """
@@ -463,6 +491,10 @@ class Deck:
                     "quantity": card_o["quantity"],
                     "types": carddata[card_o["card"]]["types"],
                 }
+                if card_o.get("banned"):
+                    j_card["banned"] = 1
+                if card_o.get("removed"):
+                    j_card["removed"] = 1
                 if card_o.get("back"):
                     j_card["orientation"] = "Front"
                     j_card["orientations"] = [{

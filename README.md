@@ -63,7 +63,6 @@ You can start a local dev server to preview the site by going to your configured
 - archetype head-to-head analysis: cards more/less prevalent in winning lists?
 - improve pagination & filtering on players page
     - filter by region
-    - paginate over search results?
     - jump to start/end/middle?
 - improve decklist delta:
     - link back to decklists
@@ -72,3 +71,5 @@ You can start a local dev server to preview the site by going to your configured
     - update query params when you run a comparison?
     - collapse controls?
     - better graphics for ⇒?
+- switch to dynamic sightings on more pages (cards, champs)
+    - look into saving data?
