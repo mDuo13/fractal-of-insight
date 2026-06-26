@@ -1649,6 +1649,12 @@ a.achievement {
     background-image: url("bg/luxem-mordred.jpg");
 }
 
+.notif-banner {
+    padding: 10px;
+    background: var(--ui-bg);
+    box-shadow: var(--main-shadow);
+    margin: 10px 0;
+}
 
 .holo::after {
     content: "";
