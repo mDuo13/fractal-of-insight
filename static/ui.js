@@ -226,7 +226,57 @@ function get_outcome_filter() {
         }
     }
     return checked_outcome
-    
+
+}
+
+function save_filtering(showcats, dl_only, small) {
+    /* Save current filters to browser storage for loading on other pages */
+    if (typeof dl_only != "undefined" && typeof small != "undefined") {
+        const evt_cbs = {
+            dl_only: (dl_only ? 1:0),
+            small: (small ? 1:0),
+        }
+        window.localStorage.setItem("evt-cbs", JSON.stringify(evt_cbs))
+    }
+
+    if (typeof showcats != "undefined") {
+        window.localStorage.setItem("evt-cat-filters", JSON.stringify(showcats))
+    }
+}
+
+function load_filters() {
+    const saved_cbs = window.localStorage.getItem("evt-cbs")
+    if (saved_cbs) {
+        try {
+            const { dl_only, small } = JSON.parse(saved_cbs)
+            const cb_dl = document.getElementById("cb_decklists")
+            if (cb_dl) {
+                cb_dl.checked = dl_only
+            }
+            const cb_small = document.getElementById("cb_small_events")
+            if (cb_small) {
+                cb_small.checked = small
+            }
+        } catch (err) {
+            console.error("Error loading check boxes:",err)
+        }
+    }
+    const saved_cats = window.localStorage.getItem("evt-cat-filters")
+    if (saved_cats) {
+        try {
+            const cats = JSON.parse(saved_cats)
+            const catboxes = document.getElementsByName("category")
+            for (const cat_cb of catboxes) {
+                if (cats.includes(cat_cb.value)) {
+                    cat_cb.checked = true
+                } else {
+                    cat_cb.checked = false
+                }
+            }
+        } catch (err) {
+            console.error("Error loading saved category filters:", err)
+        }
+    }
 }
 
 function update_evt_filtering() {
@@ -243,12 +293,17 @@ function update_evt_filtering() {
     if (small_evts_cb) {
         small_events = small_evts_cb.checked
     }
-    
+
     const checked_subtype = get_checked_subtype()
     const show_cats = get_cat_filters()
+    if (decklist_cb && small_evts_cb) {
+        save_filtering(show_cats, decklist_cb.checked, small_evts_cb.checked)
+    } else {
+        save_filtering(show_cats)
+    }
 
     // Filter events (e.g. on homepage, season page)
-    document.querySelectorAll('.evt').forEach( el => {
+    document.querySelectorAll('.season .evt').forEach( el => {
         if (decklists_only && el.dataset["decklists"] == "0") {
             el.classList.add("collapse")
         } else if (!small_events && parseInt(el.dataset["playercount"]) < 20
@@ -347,9 +402,9 @@ async function populate_avatar(el) {
     const pid = el.dataset["pid"]
     const avatardata = await (await fetch(`https://accounts.gatcg.com/user/avatar?userId=${pid}`)).json()
     el.innerHTML = `
-    <img src="https://accounts.gatcg.com${avatardata.image}" 
+    <img src="https://accounts.gatcg.com${avatardata.image}"
         alt="" class="avatar-image" />
-    <img src="https://accounts.gatcg.com${avatardata.frame}" 
+    <img src="https://accounts.gatcg.com${avatardata.frame}"
         alt="" class="avatar-frame" />
     `
 }
@@ -460,7 +515,7 @@ async function calc_deck_price(dl) {
         }
     }
     return {
-        "price": total_price.toFixed(2), 
+        "price": total_price.toFixed(2),
         "no_data": no_price_data
     }
 }
@@ -864,7 +919,7 @@ function shift_list(delta, grid_sel, datalist, itemfunc, prev_sel, next_sel) {
 }
 function next_player_page() {
     shift_list(PAGE_SIZE,
-            ".player-grid", 
+            ".player-grid",
             selected_players_list,
             pbox,
             "#prev-player-btn",
@@ -873,7 +928,7 @@ function next_player_page() {
 }
 function prev_player_page() {
     shift_list(-PAGE_SIZE,
-            ".player-grid", 
+            ".player-grid",
             selected_players_list,
             pbox,
             "#prev-player-btn",
@@ -959,7 +1014,7 @@ function prev_sightings_page() {
         p_row_arche,
         "#prev-sightings-btn",
         "#next-sightings-btn"
-    )   
+    )
 }
 
 function make_tables_sortable() {
@@ -978,10 +1033,10 @@ function make_tables_sortable() {
         if (text && text.trim() == "N/A (Proxia's Vault)") return "0"
         return text
     }
-    const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
+    const comparer = (idx, asc) => (a, b) => ((v1, v2) =>
         v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
         )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
-    
+
     for (const th of sortable_ths) {
         th.addEventListener('click', (() => {
             const table = th.closest('table')
@@ -1111,6 +1166,7 @@ ready(() => {
 
     // Re-apply event filters
     if (document.querySelector(".event-filtering")) {
+        load_filters()
         update_evt_filtering()
     }
 
@@ -1127,7 +1183,7 @@ ready(() => {
             typingTimer = setTimeout(() => {search_table(event.target)}, typeInterval)
         })
     }
-    
+
     const playersearch = document.querySelector("#player-search")
     if (playersearch) {
         playersearch.addEventListener('keyup', (event) => {

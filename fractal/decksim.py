@@ -8,12 +8,14 @@ class DeckSim:
         self.initialized = False
 
     def load(self):
+        print("Loading deck similarity cache…")
         try:
             with open(DECK_SIMILARITY_FILE, encoding="utf-8") as f:
                 self.cache = json.load(f)
         except FileNotFoundError:
             print("Couldn't load deck similarity cache file, starting fresh")
         self.initialized = True
+        print("... done loading deck similarity cache.")
 
     def get(self, hash1, hash2):
         """

@@ -40,7 +40,7 @@
     {% endif %}
     {{evt.name}}{% if not evt.winner %} (Ongoing){% endif %}</h1>
     <ul class="scooped-corners">
-        <li><b>Date:</b> {{evt.date}}</li>
+        <li><b>Date:</b> {{evt.date}} ({% if evt.season == "OFF" %}Offseason{% else %}{{evt.season}} Season{% endif %})</li>
         <li><b>Entrants:</b> {{evt.players|length}}</li>
         <li><b>Hosted by:</b> {{evt.host}}</li>
         {% if evt.evt.address %}<li><b>Location:</b> {{evt.evt.address}}</li>{% endif %}

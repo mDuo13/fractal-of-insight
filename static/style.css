@@ -1047,6 +1047,19 @@ fieldset label {
     margin-bottom: 100px;
 }
 
+.recent-majors {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 10px;
+}
+
+.h-link {
+    font-family: "Fracturized Biolinum";
+    font-size: 16px;
+    font-weight: normal;
+    margin-left: 20px;
+}
+
 .season-chunk {
     border-bottom: 3px groove black;
     padding: 0 0 20px 0;
@@ -1795,6 +1808,10 @@ a.achievement {
     }
 
     .season {
+        grid-template-columns: 1fr;
+    }
+
+    .recent-majors {
         grid-template-columns: 1fr;
     }
 

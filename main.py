@@ -151,7 +151,7 @@ class PageBuilder:
                     "c_types": {
                         ct.title():cc for ct,cc in deck.card_types.items()
                     },
-                    "hip": ("(Unrated)" if deck.hipster == None else 
+                    "hip": ("(Unrated)" if deck.hipster == None else
                             int(deck.hipster)),
                     "c_els": deck.main_deck_els
                 }
@@ -169,7 +169,7 @@ class PageBuilder:
 
         # New JS-powered sightings section
         self.render("archetype.html.jinja2", arche_path, arche=archetype,
-                    players=self.players, seasons=self.seasons, 
+                    players=self.players, seasons=self.seasons,
                     wins=self.aew[archetype.name], asj=json.dumps(asj)
         )
         ## Old pre-generated, paginated sightings section
@@ -184,7 +184,7 @@ class PageBuilder:
         # if max_page > 1:
         #     for i in range(1, max_page):
         #         page_number = i+1
-        #         self.render("archetype-sightings-page.html.jinja2", 
+        #         self.render("archetype-sightings-page.html.jinja2",
         #                 f"deck/{slug}-{page_number}.html",
         #                 arche=archetype, players=self.players,
         #                 events=self.events, seasons=self.seasons,
@@ -237,7 +237,7 @@ class PageBuilder:
             for c, cstat in ALL_CARD_STATS
         }
         self.render_json(mcardstats, "card/carddata.json")
-    
+
     def write_card_page(self, cardname, cardstat, price="", events=[]):
         price = pricedb.get_formatted_price(cardname)
         max_page = ceil(len(cardstat.appearances) / CARD_SIGHTINGS_PER_PAGE)
@@ -298,12 +298,19 @@ class PageBuilder:
             "achievement/refracted-about.html",
             REFRACTED_ACHIEVEMENTS=REFRACTED_ACHIEVEMENTS
         )
-    
+
     def write_delta(self):
         self.render("delta.html.jinja2", "delta.html")
-    
+
     def write_index(self):
-        self.render("index.html.jinja2", "index.html", seasons=self.seasons)
+        majors = [e for e in self.events.values()
+                         if e.category['name'] in (
+                            "Ascent",
+                            "Nationals",
+                            "Worlds",
+                         )]
+        majors.sort(key=lambda x:x.date, reverse=True)
+        self.render("index.html.jinja2", "index.html", seasons=self.seasons, majors=majors)
 
     def read_event(self, id_s):
         """
@@ -432,7 +439,7 @@ class PageBuilder:
             p.analyze_hipster(self.hipster_floor)
             p.analyze()
         GAS.total_players = len(self.players)
-    
+
     def analyze_archetypes(self):
         for a in ARCHETYPES.values():
             if not a.matched_decks:
@@ -474,7 +481,7 @@ class PageBuilder:
 
         for cardname, cardstat in ALL_CARD_STATS:
             self.write_card_page(cardname, cardstat, events=self.events)
-        
+
         for a in ARCHETYPES.values():
             if not a.matched_decks:
                 continue
