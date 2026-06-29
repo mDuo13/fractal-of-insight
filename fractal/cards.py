@@ -29,7 +29,7 @@ ERRATA = {
         "before": 1722841200000, # 2024-08-05
         "img": "https://api.gatcg.com/cards/images/stonescale-band-prxy-002.jpg"
     },
-    
+
     "Scepter of Lumina": {
         "before": 1741334400000, #2025-03-07
         "img": "https://api.gatcg.com/cards/images/scepter-of-lumina-prxy-001.jpg"
@@ -43,7 +43,17 @@ ERRATA = {
     "Mantle of the Abyss": {
         "before": 1776661200000, #2026-04-20 in CDT
         "img": "https://api.gatcg.com/cards/images/variants/Px9rTt07vl.jpg"
-    }
+    },
+
+    "Clarent, Reimagined": {
+        "before": 1782709200000, #2026-06-29 in CDT
+        "img": "https://api.gatcg.com/cards/images/variants/ZjCXXfOcPi.jpg"
+    },
+
+    "Reciprocity, Dorumegia's Call": {
+        "before": 1782709200000, # also 2026-06-29 in CDT
+        "img": "https://api.gatcg.com/cards/images/variants/8aOty0f2az.jpg"
+    },
 }
 
 BANLIST = [
@@ -61,6 +71,7 @@ BANLIST = [
     "Baby Green Slime",
     "Carpsong Coda",
     "Grim Pastiche",
+    "Ranger Strides",
 ]
 
 INTRODUCED_IN_PRXY = [
