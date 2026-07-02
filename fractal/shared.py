@@ -27,7 +27,7 @@ def ms_to_date(time_ms):
 
 def date_to_ms(date_string, weebs_time=False):
     if weebs_time: # Weebs' seasons are set by CST in the USA
-        tz = "+0500"
+        tz = "-0500"
     else:
         tz = "+0000"
     d = datetime.strptime(date_string+tz, ISOFMT+"%z")

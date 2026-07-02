@@ -3,7 +3,7 @@ import re
 import requests
 from logging import warning
 from requests.adapters import HTTPAdapter, Retry
-from time import sleep
+from time import sleep, time
 from os import makedirs, scandir, path
 
 from .shared import slugify, fix_case, lineage
@@ -119,6 +119,8 @@ def get_card_img(cardname, at=0, from_set_group=None):
                      corresponding edition if possible.
     """
     # Special case for errata'd Proxia's Vault cards like Stonescale Band
+    if at == 0:
+        at = time()*1000
     if cardname in ERRATA.keys():
         errata = ERRATA[cardname]
         if errata.get("before") > at:
@@ -144,16 +146,6 @@ def get_card_img(cardname, at=0, from_set_group=None):
         exit()
     ed_img = index_json["result_editions"][0]["image"]
     card_img = f"https://api.gatcg.com{ed_img}"
-    # ed_slug = index_json["result_editions"][0]["slug"]
-    #card_img = f"https://ga-index-public.s3.us-west-2.amazonaws.com/cards/{ed_slug}.jpg"
-    # card_img = f"https://api.gatcg.com/cards/images/{ed_slug}.jpg"
-    # print("Saving card data to cache...")
-    # makedirs("data/", exist_ok=True)
-    # carddata[cardname] = {
-    #     "img": card_img
-    # }
-    # with open(f"data/cards.json", "w") as f:
-    #     json.dump(carddata, f)
     return card_img
 
 FM_EFFECT = '**Floating Memory**'
@@ -262,20 +254,6 @@ def get_card_references(cardname):
                 continue
             reflist.append(carddata[r.get("name")])
     return reflist
-
-def is_valid_in_decklists(cardname):
-    """
-    Returns True if the card should appear in decklists.
-    Returns False if the card should not, such as tokens or masteries.
-    """
-    card = carddata[cardname]
-    if "TOKEN" in card["types"]:
-        return False
-    if "MASTERY" in card["types"]:
-        return False
-    if "STATUS" in card["types"]:
-        return False
-    return True
 
 def is_material(cardname):
     """

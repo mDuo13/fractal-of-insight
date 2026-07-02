@@ -3,7 +3,7 @@ from time import time
 
 from .config import HOT_WINDOW, PAD_UNTIL, M_PER_APP, MAX_TOP_USERS, PAD_HOT_MATCHES
 from .season import SEASONS
-from .datalayer import carddata, get_card_img, is_valid_in_decklists
+from .datalayer import carddata, get_card_img
 from .shared import keydefaultdict
 from .stats import ElementStats, ChampStats, ArcheStats, Wielders
 
@@ -185,7 +185,7 @@ class CardStatSet:
         szn = d.entrant.event.season
 
         for cardname in d: # Iterates material and main deck card names
-            if not is_valid_in_decklists(cardname):
+            if not carddata.is_valid_in_decklists(cardname):
                 # Some decklists mistakenly include tokens and masteries. Skip those.
                 continue
             self.items[cardname].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
@@ -194,7 +194,7 @@ class CardStatSet:
             self.seasons[szn][cardname].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)
         for card_o in d.side:
             cardname = card_o["card"]
-            if not is_valid_in_decklists(cardname):
+            if not carddata.is_valid_in_decklists(cardname):
                 continue
             if cardname not in d: # Don't double-add a deck if a card is in main+side
                 self.items[cardname].add_entrant(d.entrant, is_topcut_deck=d.is_topcut_deck)

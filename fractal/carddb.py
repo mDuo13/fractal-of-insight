@@ -1,7 +1,8 @@
 import json
+from logging import warning
 from os import scandir
 
-from .cards import REMOVED_FROM_PRXY, INTRODUCED_IN_PRXY
+from .cards import REMOVED_FROM_PRXY, INTRODUCED_IN_PRXY, BANLIST
 from .shared import fix_case
 
 CARDS_FOLDER = "./data/index/"
@@ -145,6 +146,28 @@ class CardDB:
         if not self.initialized:
             self.load()
         return self.data.items()
+
+    def is_valid_in_decklists(self, cardname):
+        """
+        Returns True if the card should appear in decklists.
+        Returns False if the card should not, such as tokens or masteries.
+        """
+        if cardname not in self.data.keys():
+            logging.warning(f"Checking validity of non-card: {cardname}")
+            return False
+        card = self.data[cardname]
+        if "TOKEN" in card["types"]:
+            return False
+        if "MASTERY" in card["types"]:
+            return False
+        if "STATUS" in card["types"]:
+            return False
+        return True
+    
+    def standard_legal(self):
+        for cardname, card in self.data.items():
+            if self.is_valid_in_decklists(cardname) and cardname not in BANLIST:
+                yield cardname, card
     
     def get(self, item, default=None):
         if not self.initialized:

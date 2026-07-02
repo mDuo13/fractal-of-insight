@@ -3,7 +3,7 @@ from collections import defaultdict
 from xxhash import xxh64
 
 from .shared import slugify, fix_case, lineage, element_sortkey, ms_to_date, rank_card
-from .datalayer import get_card_img, carddata, card_is_floating, get_card_references, pricedb, get_cached_similarity, store_similarity, is_valid_in_decklists, is_material
+from .datalayer import get_card_img, carddata, card_is_floating, get_card_references, pricedb, get_cached_similarity, store_similarity, is_material
 from .cards import ELEMENTS, SPIRITTYPES, LINEAGE_BREAK, BANLIST, REMOVED_FROM_PRXY
 from .archetypes import ARCHETYPES, SUBTYPES, NO_ARCHETYPE
 from .cardstats import ALL_CARD_STATS
@@ -190,7 +190,7 @@ class Deck:
             # Some people list tokens/masteries in their deck list by accident.
             # Remove those, after normalizing card names
             self.dl[section] = [card_o for card_o in self.dl[section]
-                                if is_valid_in_decklists(card_o["card"])]
+                            if carddata.is_valid_in_decklists(card_o["card"])]
             self.dl[section].sort(key=rank_card_o)
 
         if len(self.dl["material"]) > 12:

@@ -289,6 +289,13 @@ add_format("RDO Release",
 )
 add_format("RDO Post-April Bans",
     start="2026-04-20",
+    end="2026-06-29",
     season="RDO",
     desc="Baby Green Slime, Carpsong Coda, and Grim Pastiche banned; Baby Gray Slime unbanned; Mantle of the Abyss received errata."
 )
+add_format("RDO Post-June Ban",
+    start="2026-06-29",
+    season="RDO",
+    desc="Ranger Strides banned; Clarent, Reimagined and Reciprocity, Dorumegia's Call received errata; Endura, Reimagined added to Proxia's Vault."
+)
+

@@ -98,12 +98,12 @@ class PageBuilder:
         szn_path = f"{season.code}/index.html"
         self.render("season.html.jinja2", szn_path, szn=season)
 
-    def write_formats(self, formats, parent_szn):
+    def write_subseasons(self, parent_szn):
         """
         Write a summary of different formats (by card legality)
         """
-        fmt_path = f"{parent_szn}/subformats.html"
-        self.render("formats.html.jinja2", fmt_path, formats=formats, szn=parent_szn)
+        fmt_path = f"{parent_szn.code}/subformats.html"
+        self.render("formats.html.jinja2", fmt_path, formats=parent_szn.subformats, szn=parent_szn)
 
     def write_player(self, player):
         plr_path = f"player/{player.id}.html"
@@ -474,6 +474,7 @@ class PageBuilder:
 
         for season in self.seasons.values():
             self.write_season(season)
+            self.write_subseasons(season)
 
         for p in self.players.values():
             self.write_player(p)
