@@ -41,7 +41,7 @@ class CardDB:
         for cardname, card in self.data.items():
             self.set_card_defaults(cardname, card)
         self.initialized = True
-    
+
     def load_set_groups(self):
         try:
             with open("data/index/_set-groups.json") as f:
@@ -52,7 +52,7 @@ class CardDB:
 
             for card in self.data.values():
                 self.add_set_introduced(card)
-        
+
         except FileNotFoundError:
             print("No data on set groups. Can't determine oldest edition of cards accurately")
             # Fallback method relies on set release_date field which is not a reliable
@@ -61,7 +61,7 @@ class CardDB:
                 eds = sorted(card["editions"], key=lambda x:x["set"]["release_date"])
                 oldest_ed = eds[0]
                 card["set_introduced"] = oldest_ed["set"]["prefix"]
-    
+
     def add_removed_cards(self):
         """
         Add legacy card data for cards that have been removed from Proxia's Vault
@@ -75,8 +75,12 @@ class CardDB:
                         oldcard["removed"] = True
                         self.data[cardname] = oldcard
                         break
-    
+
     def add_set_introduced(self, card):
+        """
+        Add a "set_introduced" field to each card entry with the name of the
+        set group/family where the card was first released.
+        """
         if card["name"] in INTRODUCED_IN_PRXY:
             card["set_introduced"] = "Other"
             return
@@ -97,7 +101,7 @@ class CardDB:
         if not found_sg:
             #print("Couldn't find set group for card:", card["name"])
             card["set_introduced"] = "Other"
-    
+
     def set_card_defaults(self, cardname, card):
         """
         Pick default card image based on lowest rarity edition of card
@@ -121,8 +125,11 @@ class CardDB:
             card["fullname"] = f"{card['name']} // {card['back']['name']}"
         else:
             card["fullname"] = card["name"]
-    
+
     def get_set_groups(self):
+        """
+        Return a list of set groups / families from Index.
+        """
         if not self.initialized:
             self.load()
         return self.set_groups
@@ -131,6 +138,12 @@ class CardDB:
         if not self.initialized:
             self.load()
         return self.data[item]
+
+    def __iter__(self):
+        if not self.initialized:
+            self.load()
+        for cardname, card in self.data.items():
+            yield cardname, card
 
     def keys(self):
         if not self.initialized:
@@ -141,7 +154,7 @@ class CardDB:
         if not self.initialized:
             self.load()
         return self.data.values()
-    
+
     def items(self):
         if not self.initialized:
             self.load()
@@ -163,12 +176,38 @@ class CardDB:
         if "STATUS" in card["types"]:
             return False
         return True
-    
+
     def standard_legal(self):
+        """
+        Iterate over all standard-legal cards in the index.
+        """
         for cardname, card in self.data.items():
             if self.is_valid_in_decklists(cardname) and cardname not in BANLIST:
                 yield cardname, card
-    
+
+    def has_cr(self, cardname):
+        """
+        If the card has a collector rare (CSR/CUR/CPR) edition, return the set
+        prefix of the set the CR appears in. If a card has multiple CRs, returns
+        an arbitrary result out of the possibilities.
+        If the card does not have a collector rare, returns an empty string.
+        """
+        card = self.data[cardname]
+        for res in card["result_editions"]:
+            if res["rarity"] >= 7:
+                return res["set"]["prefix"]
+        return ""
+
+    def editions(self, cardname):
+        """
+        Return a list of set prefixes (e.g. 'RDO 1st') that a card appears in.
+        A prefix can appear twice if a card has multiple versions in the set,
+        like Overlapping Visages.
+        """
+        card = self.data[cardname]
+        res = card.get("result_editions",[])
+        return [red.get("set",{}).get("prefix","") for red in res]
+
     def get(self, item, default=None):
         if not self.initialized:
             self.load()

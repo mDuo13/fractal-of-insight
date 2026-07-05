@@ -783,11 +783,11 @@ async function loaddecklist(deck) {
                         <h4>Card Counts</h4>
                         <p class="explanation">(Main deck cards only. Cards with multiple types count for each type. Floating memory counts if the deck has any champion that can use it.)</p>
                         <ul class="deck-stats">
-                            <li><b>Floating Memory:</b> ${deck.stats.fm}</li>
+                            <li><b>Floating Memory:</b> ${dl.stats.fm}</li>
                         </ul>
                         <h4>Other Stats</h4>
                         <ul>
-                            <li><b>Hipster rating:</b> ${deck.stats.hip}</li>
+                            <li><b>Hipster rating:</b> ${dl.stats.hip}</li>
                             <li><b>Price on TCGPlayer:</b>
                                 <span class="deck-price" data-deckid="${d_id}">(Loading)</span>
                                 <span class="explanation">(Prices are approximate.)</span>
@@ -808,7 +808,7 @@ async function loaddecklist(deck) {
         <button class="next-deck-btn" onclick="show_next_deck_dyn(this)" title="Next deck">⏭</button>
     `
     dlel.querySelector(".counts-by-element").appendChild(
-        deck_elementpie(deck.stats.c_els)
+        deck_elementpie(dl.stats.c_els)
     )
     for (const card_o of dl.cards.material) {
         dlel.querySelector(".deck_gfx.material").appendChild(
@@ -834,9 +834,9 @@ async function loaddecklist(deck) {
             <li>${card_o.quantity}× ${card_o.name}</li>
         `
     }
-    for (const ct in deck.stats.c_types) {
+    for (const ct in dl.stats.c_types) {
         dlel.querySelector(".deck-stats").innerHTML += `
-        <li><b>${ct}</b>: ${deck.stats.c_types[ct]}</li>`
+        <li><b>${ct}</b>: ${dl.stats.c_types[ct]}</li>`
     }
     if (dl.cards.references) {
         dlel.querySelector(".refs-area").innerHTML = `
@@ -849,35 +849,35 @@ async function loaddecklist(deck) {
             )
         }
     }
-    if (deck.sim.before?.length) {
+    if (dl.sim.before?.length) {
         dlel.querySelector(".similar-decks").innerHTML += `<h5>Before this</h5>`
         const ul = document.createElement("ul")
-        for (const sim of deck.sim.before) {
+        for (const sim of dl.sim.before) {
             // FF: have delta handle topcut
             let oid = `deck_${sim.p_id}${sim.topcut ? '_topcut' : ''}`
             ul.innerHTML += `<li><a href="/${sim.szn}/${sim.evt_id}.html#${oid}">${sim.p_name} in ${sim.evt_name} (${sim.pct}%) <a class="delta-button" href="/delta.html?e1=${sim.evt_id}&p1=${sim.p_id}&e2=${deck.evt_id}&p2=${deck.p_id}">δ</a></li>`
         }
         dlel.querySelector(".similar-decks").appendChild(ul)
     }
-    if (deck.sim.sameday?.length) {
+    if (dl.sim.sameday?.length) {
         dlel.querySelector(".similar-decks").innerHTML += `<h5>Same day</h5>`
         const ul = document.createElement("ul")
-        for (const sim of deck.sim.sameday) {
+        for (const sim of dl.sim.sameday) {
             let oid = `deck_${sim.p_id}${sim.topcut ? '_topcut' : ''}`
             ul.innerHTML += `<li><a href="/${sim.szn}/${sim.evt_id}.html#${oid}">${sim.p_name} in ${sim.evt_name} (${sim.pct}%) <a class="delta-button" href="/delta.html?e1=${deck.evt_id}&p1=${deck.p_id}&e2=${sim.evt_id}&p2=${sim.p_id}">δ</a></li>`
         }
         dlel.querySelector(".similar-decks").appendChild(ul)
     }
-    if (deck.sim.after?.length) {
+    if (dl.sim.after?.length) {
         dlel.querySelector(".similar-decks").innerHTML += `<h5>After this</h5>`
         const ul = document.createElement("ul")
-        for (const sim of deck.sim.after) {
+        for (const sim of dl.sim.after) {
             let oid = `deck_${sim.p_id}${sim.topcut ? '_topcut' : ''}`
             ul.innerHTML += `<li><a href="/${sim.szn}/${sim.evt_id}.html#${oid}">${sim.p_name} in ${sim.evt_name} (${sim.pct}%) <a class="delta-button" href="/delta.html?e1=${deck.evt_id}&p1=${deck.p_id}&e2=${sim.evt_id}&p2=${sim.p_id}">δ</a></li>`
         }
         dlel.querySelector(".similar-decks").appendChild(ul)
     }
-    if (!deck.sim.before?.length && !deck.sim.sameday?.length && !deck.sim.after?.length) {
+    if (!dl.sim.before?.length && !dl.sim.sameday?.length && !dl.sim.after?.length) {
         dlel.querySelector(".similar-decks").innerHTML += `<p>(None)</p>`
     }
     attach_decklist_closer(dlel)

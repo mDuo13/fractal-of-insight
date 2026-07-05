@@ -471,7 +471,9 @@ class Deck:
 
     def tts_json(self):
         """
-        JSON decklist formatted for Tabletop Simulator import
+        JSON decklist. Originally formatted for Tabletop Simulator import, but
+        later extended with more data for loading in the dynamic parts of the
+        site as well.
         """
         j = {
             "cards": {
@@ -508,6 +510,17 @@ class Deck:
                 "name": r["name"],
                 "image": r["img"]
             })
+        j["stats"] = {
+            # The key names here are short to save on storage
+            "fm": self.floating,
+            "c_types": {
+                ct.title():cc for ct,cc in self.card_types.items()
+            },
+            "hip": ("(Unrated)" if self.hipster == None else
+                    int(self.hipster)),
+            "c_els": self.main_deck_els
+        }
+        j["sim"] = self.split_similar_decks(as_json=True)
         return j
 
     def __str__(self):

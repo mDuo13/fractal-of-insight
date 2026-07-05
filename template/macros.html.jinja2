@@ -278,67 +278,97 @@
 </form>
 {% endmacro %}
 
+{% macro event_types_filters(event_types) %}
+<legend>Filter events</legend>
+{% for cat in event_types.values() %}
+<label for="cb_cat_{{cat.shortname}}">
+    <input type="checkbox" name="category" id="cb_cat_{{cat.shortname}}" value="{{cat.shortname}}" checked="checked" onclick="update_sighting_filtering()" />
+    {{cat.name}}
+</label>
+{% endfor %}
+{% endmacro %}
+
+{% macro outcome_filters() %}
+<fieldset>
+    <legend>Outcomes</legend>
+    <label for="any-outcome">
+        <input type="radio" name="outcome" id="any-outcome" value="any" onclick="update_sighting_filtering()" checked="checked" />
+        (Any result)
+    </label>
+    <label for="wins-filter">
+        <input type="radio" name="outcome" id="wins-filter" value="wins" onclick="update_sighting_filtering()" />
+        Event winners only
+    </label>
+    <label for="high-scoring" title="A good result means the player earned more than half the maximum possible points from the Swiss stage">
+        <input type="radio" name="outcome" id="high-scoring"
+        value="high" onclick="update_sighting_filtering()" />
+        Good results only
+    </label>
+</fieldset>
+{% endmacro %}
+
+{% macro type_filter(name) %}
+<label for="rd_st_{{slugify(name)}}">
+    <input type="radio" name="subtype" id="rd_st_{{slugify(name)}}" value="{{name}}" onclick="update_sighting_filtering()" />
+    {{name}}
+</label>
+{% endmacro %}
+
 {% macro arche_sightings_filters(event_types, arche) %}
 <form class="event-filtering">
     <fieldset>
-        <legend>Filter events</legend>
-        {% for cat in event_types.values() %}
-        <label for="cb_cat_{{cat.shortname}}">
-            <input type="checkbox" name="category" id="cb_cat_{{cat.shortname}}" value="{{cat.shortname}}" checked="checked" onclick="update_sighting_filtering()" />
-            {{cat.name}}
-        </label>
-        {% endfor %}
+        {{ event_types_filters(event_types) }}
         <fieldset class="subtypes-radios">
             <legend>Deck subtypes</legend>
-                <label for="rd_all_st">
-                    <input type="radio" name="subtype" id="rd_all_st" value="(All)" onclick="update_sighting_filtering()" checked />
-                    (All)
-                </label>
+                {{ type_filter("(All)") }}
             {% for st in arche.subtypes %}
-                <label for="rd_st_{{slugify(st.name)}}">
-                    <input type="radio" name="subtype" id="rd_st_{{slugify(st.name)}}" value="{{st.name}}" onclick="update_sighting_filtering()" />
-                    {{st.name}}
-                </label>
+                {{ type_filter(st.name) }}
             {% endfor %}
             {% if not arche.require_element %}
                 {% for et in arche.el_subtypes.values() %}
                     {% if et.matched_decks|length > 1 %}
-                <label for="rd_et_{{slugify(et.name)}}">
-                    <input type="radio" name="subtype" id="rd_et_{{slugify(et.name)}}" value="{{et.name}}" onclick="update_sighting_filtering()" />
-                    {{et.name}}
-                </label>
+                {{ type_filter(et.name) }}
                     {% endif %}
                 {% endfor %}
             {% endif %}
             {% for c,ct in arche.champ_subtypes.items() %}
                 {% if ct.matched_decks|length > 1 %}
-                <label for="rd_ct_{{slugify(ct.name)}}">
-                    <input type="radio" name="subtype" id="rd_ct_{{slugify(ct.name)}}" value="{{ct.name}}" onclick="update_sighting_filtering()" />
-                    {{ct.name}}
-                </label>
+                {{ type_filter(ct.name) }}
                 {% endif %}
             {% endfor %}
         </fieldset>
-        <fieldset>
-            <legend>Outcomes</legend>
-            <label for="any-outcome">
-                <input type="radio" name="outcome" id="any-outcome" value="any" onclick="update_sighting_filtering()" checked="checked" />
-                (Any result)
-            </label>
-            <label for="wins-filter">
-                <input type="radio" name="outcome" id="wins-filter" value="wins" onclick="update_sighting_filtering()" />
-                Event winners only
-            </label>
-            <label for="high-scoring" title="A good result means the player earned more than half the maximum possible points from the Swiss stage">
-                <input type="radio" name="outcome" id="high-scoring"
-                value="high" onclick="update_sighting_filtering()" />
-                Good results only
-            </label>
-        </fieldset>
+        {{ outcome_filters() }}
     </fieldset>
 </form>
 {% endmacro %}
 
+{% macro card_sightings_filters(event_types, cardstat) %}
+<form class="event-filtering">
+    <fieldset>
+        {{ event_types_filters(event_types) }}
+        <fieldset class="subtypes-radios">
+            <legend>Deck types</legend>
+            {{ type_filter("(All)") }}
+            {% for el,quant,pct in cardstat.elements %}
+                {% if quant > 0 %}
+            {{ type_filter(el) }}
+                {% endif %}
+            {% endfor %}
+            {% for archename,quant,pct,elstats in cardstat.archedata %}
+                {% if quant > 0 %}
+            {{ type_filter(archename) }}
+                {% endif %}
+            {% endfor %}
+            {% for champ,quant,pct,elstats in cardstat.champdata %}
+                {% if quant > 0 %}
+            {{ type_filter(champ) }}
+                {% endif %}
+            {% endfor %}
+        </fieldset>
+        {{ outcome_filters() }}
+    </fieldset>
+</form>
+{% endmacro %}
 
 {% macro battlechart(bc, only_show=False, link_matches=False, collapse=True) %}
 <table class="battlechart {% if collapse %}collapse togglable{% endif %}">

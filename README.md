@@ -22,6 +22,23 @@ Use `./crawl-omni.py` to iterate through Omnidex IDs looking for events, or pass
 
 You can start a local dev server to preview the site by going to your configured output directory and running `python -m http.server`. You can of course use something more powerful like Apache HTTPD, Nginx, etc.
 
+### Interactive Usage
+
+When you have the necessary data downloaded, you can do interactive queries in the Python interpreter. For example, to figure out the median and mean number of players in a store champs:
+
+```
+>>> from main import PageBuilder
+>>> pb = PageBuilder() # This may take a while to read all the events from the data folder
+>>> store_champs = [e for e in pb.events.values() if e.category['shortname'] == 'store-champs']
+>>> len(store_champs)
+1400
+>>> from statistics import mean, median
+>>> mean([len(e.players) for e in store_champs])
+17.339285714285715
+>>> median([len(e.players) for e in store_champs])
+15.0
+```
+
 ## TODO / Planned Features
 
 - refine archetype classification
@@ -36,7 +53,6 @@ You can start a local dev server to preview the site by going to your configured
 - more achievements in general
 - improve presentation of price data
     - maybe show average or median price per archetype?
-    - maybe optimize it to load a price sheet dynamically to reduce churn on page builds?
     - add historical price data (timed by major events?)
 - maybe make more tables sortable.
 - report even more stats in a rolling window or seasonal basis
@@ -56,9 +72,7 @@ You can start a local dev server to preview the site by going to your configured
 - update FRCTL to show RDO spoilers directly now that they're not hidden in the main site anymore
 - improve reliability / resilience to bad/unexpected/missing data
 - improve experience / instructions for building with a fresh clone of the repo
-- improve sorting of events on main page to sort by close time (not just date)
-- save event filtering settings to browser storage
-- add vods for ascent Icebound Slam Cup
+- add vods for OCE Nats, Icebound Slam Cup
 - make condensed view of battlechart with top 10-ish archetypes only
 - archetype head-to-head analysis: cards more/less prevalent in winning lists?
 - improve pagination & filtering on players page
@@ -71,5 +85,4 @@ You can start a local dev server to preview the site by going to your configured
     - update query params when you run a comparison?
     - collapse controls?
     - better graphics for ⇒?
-- switch to dynamic sightings on more pages (cards, champs)
-    - look into saving data?
+- switch to dynamic sightings/decklists on more pages (champs, large events)

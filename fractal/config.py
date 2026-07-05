@@ -21,6 +21,9 @@ MAIN_DIFF_CARD_LIMIT = 15
 SIDE_DIFF_CARD_LIMIT = 8
 RISING_CARD_LIMIT = 10
 
+# Cutoffs for dynamic data objects
+MAX_SIGHTINGS = 5000
+
 # Crawler settings
 CRAWLER_FILE = "./data/crawler.json"
 INTERESTING_PLAYER_COUNT = 20 # Crawler skips events with less than this number

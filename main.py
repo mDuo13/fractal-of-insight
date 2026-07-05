@@ -22,8 +22,6 @@ from fractal.achievements import ACHIEVEMENTS, GAS, REFRACTED_ACHIEVEMENTS, REFR
 from fractal.champs import CHAMP_DATA
 from fractal.hipster import HipsterDB
 
-SIGHTINGS_PER_PAGE = 200
-CARD_SIGHTINGS_PER_PAGE = 100
 FAST_CUTOFF = 5 # process a minimal number of events for "fast" mode (testing purposes)
 
 class PageBuilder:
@@ -49,6 +47,7 @@ class PageBuilder:
         self.players = {}
         self.events = {}
         self.cards = ALL_CARD_STATS
+        self.index = carddata
         self.known_judges = defaultdict(list)
         self.hipster_floor = 99999 # minimum Hipster rating of any deck
 
@@ -79,6 +78,49 @@ class PageBuilder:
         print("Writing to", whole_out_file)
         with open(whole_out_file, "w") as f:
             f.write(html)
+
+    def format_sightings_json(self, sightings):
+        """
+        Turns a list of Deck entries into JSON data that can be inlined into
+        a page for dynamically loading sightings of a given archetype/card/etc.
+        """
+        sj = []
+        for deck in sightings:
+            entrant = deck.entrant
+            event = self.events[entrant.evt_id]
+            if entrant.dq:
+                placement = "DQ"
+            elif event.format == TEAM_STANDARD:
+                t = event.teams[entrant.team.lower()]
+                placement = f"{t.placement}/{len(event.teams)} teams"
+            else:
+                placement = f"{entrant.placement}/{len(event.players)}"
+            de = {
+                "date": deck.date,
+                "p_id": entrant.id,
+                "p_name": entrant.username,
+                "evt_id": int(entrant.evt_id),
+                "evt_name": event.name,
+                "evt_cat": event.category['shortname'],
+                "szn": event.season,
+                "d_name": str(deck),
+                "place": placement,
+                "record": entrant.record,
+                "els": deck.els,
+                "arches": deck.archetypes,
+                "lineages": deck.lineages,
+                "subtypes": deck.subtypes,
+            }
+            if event.format != "standard":
+                de["evt_fmt"] = event.format
+            if event.winner and (event.winner.deck == deck or event.winner.topcut_deck == deck):
+                de["winner"] = 1
+            if deck.is_topcut_deck:
+                de["topcut"] = 1
+            if deck.entrant.score > event.fiftypct_points:
+                de["high"] = 1
+            sj.append(de)
+        return json.dumps(sj)
 
     def write_event(self, e):
         """
@@ -121,78 +163,13 @@ class PageBuilder:
     def write_archetype(self, archetype):
         slug = slugify(archetype.name)
         arche_path = f"deck/{slug}.html"
-        asj = [] # Archetype Sightings JSON
-        for deck in archetype.matched_decks:
-            event = self.events[deck.entrant.evt_id]
-            if deck.entrant.dq:
-                placement = "DQ"
-            elif event.format == TEAM_STANDARD:
-                t = event.teams[deck.entrant.team.lower()]
-                placement = f"{t.placement}/{len(event.teams)} teams"
-            else:
-                placement = f"{deck.entrant.placement}/{len(event.players)}"
-            de = {
-                "date": deck.date,
-                "p_id": deck.entrant.id,
-                "p_name": deck.entrant.username,
-                "evt_id": int(deck.entrant.evt_id),
-                "evt_name": event.name,
-                "evt_cat": event.category['shortname'],
-                "szn": event.season,
-                "d_name": str(deck),
-                "place": placement,
-                "record": deck.entrant.record,
-                "els": deck.els,
-                "arches": deck.archetypes,
-                "lineages": deck.lineages,
-                "subtypes": deck.subtypes,
-                "stats": {
-                    "fm": deck.floating,
-                    "c_types": {
-                        ct.title():cc for ct,cc in deck.card_types.items()
-                    },
-                    "hip": ("(Unrated)" if deck.hipster == None else
-                            int(deck.hipster)),
-                    "c_els": deck.main_deck_els
-                }
-            }
-            if event.format != "standard":
-                de["evt_fmt"] = event.format
-            if event.winner and event.winner.deck == deck:
-                de["winner"] = 1
-            if deck.is_topcut_deck:
-                de["topcut"] = 1
-            if deck.entrant.score > event.fiftypct_points:
-                de["high"] = 1
-            de["sim"] = deck.split_similar_decks(as_json=True)
-            asj.append(de)
+        sightings_json = self.format_sightings_json(archetype.matched_decks[:config.MAX_SIGHTINGS])
 
         # New JS-powered sightings section
         self.render("archetype.html.jinja2", arche_path, arche=archetype,
                     players=self.players, seasons=self.seasons,
-                    wins=self.aew[archetype.name], asj=json.dumps(asj)
+                    wins=self.aew[archetype.name], sightings_json=sightings_json
         )
-        ## Old pre-generated, paginated sightings section
-        # # The "Sightings" table is too much, so paginate it.
-        # max_page = ceil(len(archetype.matched_decks) / SIGHTINGS_PER_PAGE)
-        # self.render("archetype.html.jinja2", arche_path, arche=archetype,
-        #             players=self.players, events=self.events,
-        #             seasons=self.seasons, wins=self.aew[archetype.name],
-        #             page_number=1, page_start=0, page_end=SIGHTINGS_PER_PAGE,
-        #             max_page=max_page
-        # )
-        # if max_page > 1:
-        #     for i in range(1, max_page):
-        #         page_number = i+1
-        #         self.render("archetype-sightings-page.html.jinja2",
-        #                 f"deck/{slug}-{page_number}.html",
-        #                 arche=archetype, players=self.players,
-        #                 events=self.events, seasons=self.seasons,
-        #                 wins=self.aew[archetype.name],
-        #                 page_number=page_number, max_page=max_page,
-        #                 page_start=(i*SIGHTINGS_PER_PAGE),
-        #                 page_end=((i+1)*SIGHTINGS_PER_PAGE)
-        #         )
 
     def write_archetype_index(self):
         archetypes = [a for a in ARCHETYPES.values()]
@@ -240,15 +217,8 @@ class PageBuilder:
 
     def write_card_page(self, cardname, cardstat, price="", events=[]):
         price = pricedb.get_formatted_price(cardname)
-        max_page = ceil(len(cardstat.appearances) / CARD_SIGHTINGS_PER_PAGE)
-
-        self.render("card.html.jinja2", f"card/{slugify(cardname)}.html", card=carddata[cardname], cardstat=cardstat, events=events, ERRATA=ERRATA, BANLIST=BANLIST, card_price=price, page_number=1, page_start=0, page_end=CARD_SIGHTINGS_PER_PAGE, max_page=max_page)
-
-        # Actually printing all these sightings is like 4.5 gigs of data oops
-        # if max_page > 1:
-        #     for i in range(1, max_page):
-        #         page_number = i+1
-        #         self.render("card-sightings-page.html.jinja2", f"card/{slugify(cardname)}-{page_number}.html", card=carddata[cardname], cardstat=cardstat, events=events, page_number=page_number, page_start=(i*CARD_SIGHTINGS_PER_PAGE), page_end=((i+1)*CARD_SIGHTINGS_PER_PAGE), max_page=max_page)
+        sightings_json = self.format_sightings_json([p.deck for p in cardstat.appearances[:config.MAX_SIGHTINGS]])
+        self.render("card.html.jinja2", f"card/{slugify(cardname)}.html", card=carddata[cardname], cardstat=cardstat, events=events, ERRATA=ERRATA, BANLIST=BANLIST, card_price=price, sightings_json=sightings_json)
 
     def write_decklist_tts(self, deck):
         if deck.is_topcut_deck:
@@ -312,6 +282,18 @@ class PageBuilder:
         majors.sort(key=lambda x:x.date, reverse=True)
         self.render("index.html.jinja2", "index.html", seasons=self.seasons, majors=majors)
 
+    def write_decklist_jsons(self):
+        """
+        Write decklists in JSON format which are used not only for TTS export
+        but also for dynamic loading in sightings on the site.
+        """
+        for e in self.events.values():
+            for entrant in e.players:
+                if entrant.deck:
+                    self.write_decklist_tts(entrant.deck)
+                if entrant.topcut_deck:
+                    self.write_decklist_tts(entrant.topcut_deck)
+
     def read_event(self, id_s):
         """
         Instantiate a single event from an ID (int string) and add it to the
@@ -337,10 +319,6 @@ class PageBuilder:
                 self.players[entrant.id].add_entry(entrant)
             else:
                 self.players[entrant.id] = Player(entrant)
-            if entrant.deck:
-                self.write_decklist_tts(entrant.deck)
-            if entrant.topcut_deck:
-                self.write_decklist_tts(entrant.topcut_deck)
         for judge in e.judges:
             self.known_judges[judge.id].append(judge)
 
@@ -471,6 +449,7 @@ class PageBuilder:
         """
         Write all parts of the site, including known event pages, homepage, season landings, player profiles, and the rest.
         """
+        self.write_decklist_jsons()
 
         for season in self.seasons.values():
             self.write_season(season)
