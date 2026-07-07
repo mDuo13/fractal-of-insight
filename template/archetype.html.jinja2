@@ -44,14 +44,18 @@
 
 {% macro vidplayer(p, d) %}
 <span class="p-avatar">
+    {% if d %}
     <img src="/static/icon/icon-{{d.els[0]|slugify}}.png" alt="" />
-    {% if d.representative_champion %}
+        {% if d.representative_champion %}
     <img src="/static/icon/icon-{{d.representative_champion|slugify}}.png" alt="" />
+        {% endif %}
+    {% else %}
+    <img src="/static/icon/icon-unknown.png" alt="" />
     {% endif %}
     <span class="p-region">{{macros.flag(p.region)}}</span>
 </span>
 <span class="p-name">{{p}}</span>
-<span class="deckname">{{d}}</span>
+<span class="deckname">{% if d %}{{d}}{% else %}(Unknown deck){% endif %}</span>
 {% endmacro %}
 
 {% block body %}
