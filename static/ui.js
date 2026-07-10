@@ -1198,8 +1198,6 @@ ready(() => {
     document.querySelectorAll(".player-omni-avatar").forEach(populate_avatar)
     make_tables_sortable()
 
-    document.querySelectorAll(".gallery").forEach(h_scrollable)
-
     document.addEventListener('keydown', close_all)
 })
 

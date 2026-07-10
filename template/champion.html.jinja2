@@ -23,9 +23,9 @@
             <li><b>All-time win rate</b>: {{stats.winrate}}%</li>
             <li><b>Total events won</b>: {{wins|length}}</li>
         </ul>
-        <div class="lineage-display gallery">
+        <div class="lineage-display">
             {% for card in champlineage %}
-            <div class="cardimg"><img src="{{card.img}}" alt="{{card.name}}" loading="eager" width="200" height="280" /></div>
+            <a class="cardimg" href="/card/{{slugify(card['name'])}}.html"><img src="{{card.img}}" alt="{{card.name}}" loading="eager" width="200" height="280" /></a>
             {% endfor %}
         </div>
     </div>
@@ -40,7 +40,7 @@
     </div>
 
     <h3 class="togglable collapse">Archetypes</h3>
-    {{ macros.elementbars(stats.archedata, True) }}
+    {{ macros.elementbars(stats.archedata, link="deck") }}
 </section>
 
 <section id="top-cards">
@@ -103,8 +103,49 @@
     </table>
 </section>
 
-<!-- TODO: sightings -->
+<section id="sightings">
+    <h2>Sightings</h2>
+    <button onclick="toggle('#sightings > .togglable')">Glimpse sightings</button>
+    <div class="togglable collapse event-filters">
+        <form class="event-filtering">
+            <fieldset>
+                {{ macros.event_types_filters(EVENT_TYPES) }}
+                <fieldset class="subtypes-radios">
+                    <legend>Deck subtypes</legend>
+                        {{ macros.type_filter("(All)", checked=True) }}
+                    {% for et in stats.el_subtypes.keys() %}
+                        {{ macros.type_filter(et) }}
+                    {% endfor %}
+                    {% for st in stats.arche_subtypes.keys() %}
+                        {{ macros.type_filter(st) }}
+                    {% endfor %}
+                </fieldset>
+                {{ macros.outcome_filters() }}
+            </fieldset>
+        </form>
+    </div>
+    <p class="togglable collapse explanation">(Only the most recent {{config.MAX_SIGHTINGS}} appearances are available.)</p>
+    <table class="togglable collapse">
+        <thead><tr>
+            <th>Date</th><th>Player</th><th>Event</th><th>Deck</th><th>Placement</th><th>Swiss Record</th>
+        </tr></thead>
+        <tbody id="sightings-body">
+        </tbody>
+    </table>
 
+    <div class="togglable collapse sightings-pagination">
+        <button id="prev-sightings-btn" class="sightings prevnext" onclick="prev_sightings_page()">« Prev</button>
+        <button id="next-sightings-btn" class="sightings prevnext" onclick="next_sightings_page()">Next »</button>
+    </div>
+</section>
 
+<!-- DECKLISTS -->
+<div id="dynamic-decklists"></div>
+<script>
+const all_sightings = {{sightings_json|safe}}
+ready(() => {
+    populate_sightings()
+})
+</script>
 
 {% endblock %}

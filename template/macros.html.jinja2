@@ -307,67 +307,11 @@
 </fieldset>
 {% endmacro %}
 
-{% macro type_filter(name) %}
+{% macro type_filter(name, checked=False) %}
 <label for="rd_st_{{slugify(name)}}">
-    <input type="radio" name="subtype" id="rd_st_{{slugify(name)}}" value="{{name}}" onclick="update_sighting_filtering()" />
+    <input type="radio" name="subtype" id="rd_st_{{slugify(name)}}" value="{{name}}" onclick="update_sighting_filtering()"{% if checked %} checked="checked"{% endif %} />
     {{name}}
 </label>
-{% endmacro %}
-
-{% macro arche_sightings_filters(event_types, arche) %}
-<form class="event-filtering">
-    <fieldset>
-        {{ event_types_filters(event_types) }}
-        <fieldset class="subtypes-radios">
-            <legend>Deck subtypes</legend>
-                {{ type_filter("(All)") }}
-            {% for st in arche.subtypes %}
-                {{ type_filter(st.name) }}
-            {% endfor %}
-            {% if not arche.require_element %}
-                {% for et in arche.el_subtypes.values() %}
-                    {% if et.matched_decks|length > 1 %}
-                {{ type_filter(et.name) }}
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-            {% for c,ct in arche.champ_subtypes.items() %}
-                {% if ct.matched_decks|length > 1 %}
-                {{ type_filter(ct.name) }}
-                {% endif %}
-            {% endfor %}
-        </fieldset>
-        {{ outcome_filters() }}
-    </fieldset>
-</form>
-{% endmacro %}
-
-{% macro card_sightings_filters(event_types, cardstat) %}
-<form class="event-filtering">
-    <fieldset>
-        {{ event_types_filters(event_types) }}
-        <fieldset class="subtypes-radios">
-            <legend>Deck types</legend>
-            {{ type_filter("(All)") }}
-            {% for el,quant,pct in cardstat.elements %}
-                {% if quant > 0 %}
-            {{ type_filter(el) }}
-                {% endif %}
-            {% endfor %}
-            {% for archename,quant,pct,elstats in cardstat.archedata %}
-                {% if quant > 0 %}
-            {{ type_filter(archename) }}
-                {% endif %}
-            {% endfor %}
-            {% for champ,quant,pct,elstats in cardstat.champdata %}
-                {% if quant > 0 %}
-            {{ type_filter(champ) }}
-                {% endif %}
-            {% endfor %}
-        </fieldset>
-        {{ outcome_filters() }}
-    </fieldset>
-</form>
 {% endmacro %}
 
 {% macro battlechart(bc, only_show=False, link_matches=False, collapse=True) %}
@@ -481,7 +425,7 @@
                     <div class="el-bar {{el|lower}}" style="height: {% if elpct > 0 %}{{elpct+0.1}}{% else %}0{% endif %}%" title="{{elpct}}% {{el}}">&nbsp;</div>
                 {% endfor %}
             </div>
-        <h4>{% if link %}<a href="/deck/{{slugify(label)}}.html">{{label}}</a>{% else %}{{label}}{% endif %}</h4>
+        <h4>{% if link %}<a href="/{{link}}/{{slugify(label)}}.html">{{label}}</a>{% else %}{{label}}{% endif %}</h4>
         </div>
     {% endif %}
     {% endfor %}

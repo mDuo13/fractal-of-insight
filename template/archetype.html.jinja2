@@ -117,7 +117,7 @@
     {% endif %}
 
     <h3 class="togglable collapse">Champions</h3>
-    {{ macros.elementbars(arche.champdata) }}
+    {{ macros.elementbars(arche.champdata, link="champion") }}
 
     <h3 class="togglable collapse">Averages</h3>
     <p class="explanation togglable collapse">(Maindeck cards only. Cards with multiple types count for each type. Floating memory counts if a deck has any champion that can use it.)</p>
@@ -202,7 +202,31 @@
     <h2>Sightings</h2>
     <button onclick="toggle('#sightings > .togglable')">Glimpse sightings</button>
     <div class="togglable collapse event-filters">
-        {{ macros.arche_sightings_filters(EVENT_TYPES, arche=arche) }}
+        <form class="event-filtering">
+            <fieldset>
+                {{ macros.event_types_filters(EVENT_TYPES) }}
+                <fieldset class="subtypes-radios">
+                    <legend>Deck subtypes</legend>
+                        {{ macros.type_filter("(All)", checked=True) }}
+                    {% for st in arche.subtypes %}
+                        {{ macros.type_filter(st.name) }}
+                    {% endfor %}
+                    {% if not arche.require_element %}
+                        {% for et in arche.el_subtypes.values() %}
+                            {% if et.matched_decks|length > 1 %}
+                        {{ macros.type_filter(et.name) }}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% for c,ct in arche.champ_subtypes.items() %}
+                        {% if ct.matched_decks|length > 1 %}
+                        {{ macros.type_filter(ct.name) }}
+                        {% endif %}
+                    {% endfor %}
+                </fieldset>
+                {{ macros.outcome_filters() }}
+            </fieldset>
+        </form>
     </div>
     <p class="togglable collapse explanation">(Only the most recent {{config.MAX_SIGHTINGS}} appearances are available.)</p>
     <table class="togglable collapse">
@@ -210,9 +234,6 @@
             <th>Date</th><th>Player</th><th>Event</th><th>Deck</th><th>Placement</th><th>Swiss Record</th>
         </tr></thead>
         <tbody id="sightings-body">
-{#        {% for deck in arche.matched_decks[0:page_end] %}
-            {{ macros.p_row_arche(deck, loop, events) }}
-        {% endfor %}#}
         </tbody>
     </table>
     <div class="togglable collapse sightings-pagination">

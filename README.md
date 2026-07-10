@@ -60,8 +60,6 @@ When you have the necessary data downloaded, you can do interactive queries in t
 - backfill old store champs
 - improve champion pages:
     - seasonal data
-    - link cards in lineage to their card pages
-    - link to champion pages from other pages
 - Show timeline of meta (within a season?) w/ major events and archetype share marked
 - adjust conversion rate stats to better handle players who qualified but dropped?
 - on card pages, show other arts for card

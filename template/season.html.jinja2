@@ -56,11 +56,11 @@
     </div>
 
     <h3 class="togglable collapse">Archetypes</h3>
-    {{ macros.elementbars(szn.archedata, True) }}
+    {{ macros.elementbars(szn.archedata, link="deck") }}
     <p class="togglable collapse">Archetypes don't sum to 100% because decks can qualify as multiple or zero archetypes.</p>
 
     <h3 class="togglable collapse">Champions</h3>
-    {{ macros.elementbars(szn.champdata) }}
+    {{ macros.elementbars(szn.champdata, link="champion") }}
     <p class="togglable collapse">This breakdown only shows the basic elements from a deck's spirit(s), not elements added by Lv1+ champions. Decks with multiple lineages count fully toward each, which can cause the total to be over 100%.</p>
 </section>
 

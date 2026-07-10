@@ -183,16 +183,16 @@
 
     <div class="tabwrapper togglable collapse">
         <div class="tabcontent togglable" id="archedata-overall">
-            {{ macros.elementbars(evt.archedata, link=True, collapse=False) }}
+            {{ macros.elementbars(evt.archedata, link="deck", collapse=False) }}
         </div>
         {% if evt.day2stats %}
         <div class="tabcontent togglable collapse" id="archedata-day2">
-            {{ macros.elementbars(evt.day2stats.archedata, link=True, collapse=False) }}
+            {{ macros.elementbars(evt.day2stats.archedata, link="deck", collapse=False) }}
         </div>
         {% endif %}
         {% if evt.topcutstats %}
         <div class="tabcontent togglable collapse" id="archedata-topcut">
-            {{ macros.elementbars(evt.topcutstats.archedata, link=True, collapse=False) }}
+            {{ macros.elementbars(evt.topcutstats.archedata, link="deck", collapse=False) }}
         </div>
         {% endif %}
     </div>
@@ -214,16 +214,16 @@
 
     <div class="tabwrapper togglable collapse">
         <div class="tabcontent togglable" id="champdata-overall">
-            {{ macros.elementbars(evt.champdata, link=False, collapse=False) }}
+            {{ macros.elementbars(evt.champdata, link="champion", collapse=False) }}
         </div>
         {% if evt.day2stats %}
         <div class="tabcontent togglable collapse" id="champdata-day2">
-            {{ macros.elementbars(evt.day2stats.champdata, link=False, collapse=False) }}
+            {{ macros.elementbars(evt.day2stats.champdata, link="champion", collapse=False) }}
         </div>
         {% endif %}
         {% if evt.topcutstats %}
         <div class="tabcontent togglable collapse" id="champdata-topcut">
-            {{ macros.elementbars(evt.topcutstats.champdata, link=False, collapse=False) }}
+            {{ macros.elementbars(evt.topcutstats.champdata, link="champion", collapse=False) }}
         </div>
         {% endif %}
     </div>

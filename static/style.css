@@ -678,9 +678,8 @@ fieldset label {
 
 .lineage-display {
     display: flex;
-    overflow-x: hidden;
-    touch-action: none;
-    user-select: none;
+    overflow-x: auto;
+    padding-bottom: 1px;
 }
 
 .match {

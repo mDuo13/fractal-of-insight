@@ -123,6 +123,8 @@ class Deck:
             spirit_els = [e.title() for e in spiritcard.get("elements",[])]
             elset.update(spirit_els)
         if not elset:
+            if not len(self.spirits):
+                self.invalid_decklist = True
             # probably a spiritless decklist error
             elset = {"Norm"}
         self.els = list(elset)

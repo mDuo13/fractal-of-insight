@@ -75,10 +75,10 @@
     </div>
 
     <h3 class="togglable collapse">Champions</h3>
-    {{ macros.elementbars(cardstat.champdata) }}
+    {{ macros.elementbars(cardstat.champdata, link="champion") }}
 
     <h3 class="togglable collapse">Archetypes</h3>
-    {{ macros.elementbars(cardstat.archedata, True) }}
+    {{ macros.elementbars(cardstat.archedata, link="deck") }}
 </section>
 
 <section id="buddy-cards">
@@ -118,7 +118,31 @@
     <h2>Sightings</h2>
     <button onclick="toggle('#sightings > .togglable')">Glimpse sightings</button>
     <div class="togglable collapse event-filters">
-        {{ macros.card_sightings_filters(EVENT_TYPES, cardstat) }}
+        <form class="event-filtering">
+            <fieldset>
+                {{ macros.event_types_filters(EVENT_TYPES) }}
+                <fieldset class="subtypes-radios">
+                    <legend>Deck types</legend>
+                    {{ macros.type_filter("(All)", checked=True) }}
+                    {% for el,quant,pct in cardstat.elements %}
+                        {% if quant > 0 %}
+                    {{ macros.type_filter(el) }}
+                        {% endif %}
+                    {% endfor %}
+                    {% for archename,quant,pct,elstats in cardstat.archedata %}
+                        {% if quant > 0 %}
+                    {{ macros.type_filter(archename) }}
+                        {% endif %}
+                    {% endfor %}
+                    {% for champ,quant,pct,elstats in cardstat.champdata %}
+                        {% if quant > 0 %}
+                    {{ macros.type_filter(champ) }}
+                        {% endif %}
+                    {% endfor %}
+                </fieldset>
+                {{ macros.outcome_filters() }}
+            </fieldset>
+        </form>
     </div>
     <p class="togglable collapse explanation">(Only the most recent {{config.MAX_SIGHTINGS}} appearances are available.)</p>
     <table class="togglable collapse">
@@ -126,9 +150,6 @@
             <th>Date</th><th>Player</th><th>Event</th><th>Deck</th><th>Placement</th><th>Swiss Record</th>
         </tr></thead>
         <tbody id="sightings-body">
-{#        {% for e in cardstat.appearances[0:page_end] %}
-            {{ macros.p_row_arche(e.deck, loop, events) }}
-        {% endfor %}#}
         </tbody>
     </table>
 

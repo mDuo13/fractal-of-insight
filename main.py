@@ -184,8 +184,10 @@ class PageBuilder:
     def write_champ(self, champstats):
         write_to = f"champion/{slugify(champstats.name)}.html"
         wins = self.cew.get(champstats.name,[])
+        sightings_json = self.format_sightings_json(champstats.matched_decks[:config.MAX_SIGHTINGS])
         self.render("champion.html.jinja2", write_to, champion=champstats.name,
-            stats=champstats, champlineage=champstats.cards, wins=wins)
+            stats=champstats, champlineage=champstats.cards, wins=wins,
+            sightings_json=sightings_json)
 
     def write_champ_index(self):
         champs_sorted = [(k,v) for k,v in CHAMP_DATA.items()]

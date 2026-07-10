@@ -77,10 +77,10 @@
     </div>
 
     <h3 class="togglable collapse">Champions</h3>
-    {{ macros.elementbars(player.champdata) }}
+    {{ macros.elementbars(player.champdata, link="champion") }}
 
     <h3 class="togglable collapse">Archetypes</h3>
-    {{ macros.elementbars(player.archedata, True) }}
+    {{ macros.elementbars(player.archedata, link="deck") }}
 </section>
 {% endif %}
 

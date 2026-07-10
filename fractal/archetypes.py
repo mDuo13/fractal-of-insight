@@ -1065,14 +1065,17 @@ umbra_guardian = add_archetype(
         "Pouvoir Absolu",
         "Nocturne's Oblivion",
         "Sinistre Stab",
+        "Abnegation",
     ],
     exclude_cards=[
         "Diana, Duskstalker",
         "Diana, Cursebreaker",
         "Alice, Phantom Monarch",
         "Tristan, Shadowdancer",
+        "Tristan, Shadowreaver",
         "Advent of the Stormcaller", # Separate out Oblation decks
         "Golden Checkmate", # Again, remove oblation
+        "Ionized Asceticism", # oblation
     ],
     shortname="Umbra",
 )
@@ -1240,6 +1243,8 @@ umbra_alice = add_archetype(
         "Ciel, Mirage's Grave",
         "Diana, Cursebreaker",
         "Diana, Duskstalker",
+        "Tristan, Shadowreaver",
+        "Tristan, Shadowdancer",
     ]
 )
 
