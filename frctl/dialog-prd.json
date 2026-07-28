@@ -1,0 +1,74 @@
+{
+    "startup": [
+        {
+            "speaker": "Augustine",
+            "lines": ["Oho, a new-come challenger appears?",
+                      "If it's a game of wits that you should seek,",
+                      "Let's pray you're up to it, my dears.",
+                      "I warn: my rhetoric is anything but meek."
+                    ]
+        },
+        {
+            "speaker": "Augustine",
+            "lines": ["Though, if instead you're looking to be spoiled",
+                      "On cards upcoming, from the land of Asphodel,",
+                      "Your inclinations for such shall be foiled.",
+                      "The shroud upon those, even I cannot dispel."
+                    ]
+        },
+        {
+            "speaker": "Augustine",
+            "lines": ["But nonetheless, I know a man who went,",
+                      "In search of some lost child who calms his pains.",
+                      "A spoiler then, I'll give, for his descent:",
+                      "The child is gone; naught but a Venous Core remains."
+                    ]
+        },
+        {
+            "speaker": "Augustine",
+            "lines": ["So stick around, my dears, if you would like to play,",
+                      "A game of guessing cards, with ✅ when right, and ❌ amiss,",
+                      "A 🔶 for partly, or ⬆️ or ⬇️ to show the way.",
+                      "But if it's previews that you seek, then head to Dis."
+                    ]
+        }
+    ],
+    "hint": [
+        {
+            "speaker": "Augustine",
+            "lines": ["Among the __EDCOUNT__ edition(s) that exist,",
+                      "The art that's done by __ILLUST__ can't be missed."
+                     ],
+            "needs": ["__EDCOUNT__","__ILLUST__"]
+        },
+        {
+            "speaker": "Augustine",
+            "lines": ["Perhaps you'll recognize this text that's on the card.",
+                      "If so, then from here it won't be hard:",
+                      "「__TEXT__」"],
+            "needs": ["__TEXT__"]
+        },
+        {
+            "speaker": "Augustine",
+            "lines": ["A __RARITY__ this card seems to be,",
+                      "where it appears in __SET__, you see."],
+            "needs": ["__SET__", "__RARITY__"]
+        },
+        {
+            "speaker": "Augustine",
+            "lines": ["Oh dears, you'll need to be a little braver,",
+                      "And guess a card whose __EDCOUNT__ edition(s)",
+                      "include this flavor:",
+                      "「__FLAVOR__」"],
+            "needs": ["__EDCOUNT__","__FLAVOR__"]
+        }
+    ],
+    "nohints": [
+        {
+            "speaker": "Augustine",
+            "lines": ["We've reached the end of this cascade.",
+                      "I've nothing more to say to lend you aid."
+                    ]
+        }
+    ]
+}

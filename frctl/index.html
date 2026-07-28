@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>FR♦CTL</title>
+    <title>.frctl/</title>
     <link rel="stylesheet" href="frctl.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -11,7 +11,7 @@
     <link rel="icon" href="/favicon_32.png" sizes="32x32">
 </head>
 <body>
-    <h1>FR♦CTL <a class="return-link" href="/">⮤ Return to the Archive</a></h1>
+    <h1>.frctl/ <a class="return-link" href="/">⮤ Return to the Archive</a></h1>
     <div id="ui-tabs-mobile">
         <button id="tab-guess" class="active-tab" data-tabfor="#guessing-area">Guess</button>
         <button id="tab-difficulty" data-tabfor="#difficulty-select">Difficulty</button>
@@ -41,7 +41,7 @@
         </fieldset>
         <fieldset id="prize-area" class="mobile-inactive">
             <h3>🎁 Prizes</h3>
-            <p class="explanation">(Earn up to 3 spoilers by solving puzzles.)</p>
+            <p class="explanation">(Spoilers for PRD season are found in <a href="../dis-game/">Dis</a>.)</p>
             <button id="replay-intro">Replay intro</button>
         </fieldset>
     </form>
@@ -54,9 +54,7 @@
     <div id="dialog-overlay" class="overlay-animated collapse">
         <div id="dialog-contain">
             <button id="close-dialog-button">✖️</button>
-            <img class="speaker-image" id="tweedledee" src="tweedledee-cutout.png" alt="Tweedledee" />
-            <img class="speaker-image" id="tweedledum" src="tweedledum-cutout.png" alt="Tweedledum" />
-            <img class="speaker-image" id="edelstein" src="edelstein-sprite.png" alt="Edelstein" />
+            <img class="speaker-image" id="augustine" src="augustine-cutout.png" alt="Augustine" />
             <img id="spoiler-img" src="" alt="" class="collapse" />
             <div id="dialog-box">
                 <div id="speaker-name">
@@ -67,6 +65,6 @@
             <button id="next-button" data-dname="startup" data-nextpage="0">»</button>
         </div>
     </div>
-    <script src="frctl-v2.js"></script>
+    <script src="frctl-v3.js"></script>
 </body>
 </html>

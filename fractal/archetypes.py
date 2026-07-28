@@ -481,6 +481,7 @@ add_archetype(
         "Astral Seal",
         "Prima Materia",
         "Astromech Attendant",
+        "Supernova Divination",
     ],
     exclude_cards=[
         "Diana, Moonpiercer",
@@ -868,6 +869,7 @@ add_archetype(
         "Conduit of Seasons",
         "Sempiternal Sage",
         "Bagua of Vital Demise",
+        "Xukong, Shifted Fates",
     ],
     exclude_cards=[
         "Silvie, Loved by All",

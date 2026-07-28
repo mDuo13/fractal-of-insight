@@ -1,4 +1,6 @@
-# Create a slugs json file for FRⱯCTL
+#!/usr/bin/env python
+
+# Create a slugs json file for .frctl/
 import json
 
 from main import PageBuilder
