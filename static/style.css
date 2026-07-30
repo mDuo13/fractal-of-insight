@@ -1030,13 +1030,13 @@ fieldset label {
     background-color: #03B;
 }
 .store-champs .event-category {
-    background-color: #297;
+    background-color: #135D48;
 }
 .nationals .event-category {
     background-color: #811;
 }
 .worlds .event-category {
-    background-color: #973;
+    background-color: #6B5213;
 }
 
 .season {
@@ -1983,6 +1983,60 @@ a.achievement {
 
     .prev-deck-btn, .next-deck-btn {
         display: none;
+    }
+
+    #teams .n-styles-2 .deck-bg {
+        height: 100%;
+        width: auto;
+        mask-image: linear-gradient(to right, transparent, #000 0%, transparent 50%);
+    }
+    #teams .n-styles-2 .deck-bg:nth-child(2) {
+        position: absolute;
+        left: 0;
+        mask-image: linear-gradient(to right, transparent, #000 50%, transparent 100%);
+    }#teams .n-styles-3 .deck-bg {
+        height: 100%;
+        width: auto;
+        mask-image: linear-gradient(to right, transparent, #000 0%, transparent 50%);
+    }
+    #teams .n-styles-3 .deck-bg:nth-child(2) {
+        display: none; /* there's just no room for 3+ champs. This is probably a Merlin deck so show the last one in the lineage */
+    }
+    #teams .n-styles-3 .deck-bg:nth-child(3) {
+        position: absolute;
+        left: 0;
+        mask-image: linear-gradient(to right, transparent, #000 50%, transparent 75%);
+    }
+    #teams td:first-child {
+        font-size: 12px;
+    }
+    #teams td:nth-child(2),
+    #teams td:nth-child(3),
+    #teams td:nth-child(4),
+    #teams td:nth-child(5) {
+        word-break: break-all;
+        min-width: 5em;
+        font-size: 14px;
+        letter-spacing: -1.1px;
+    }
+
+    #teams th:first-child {
+        font-size: 0;
+    }
+
+    #teams .p-row td, .team-member {
+        font-size: 14px;
+    }
+
+    #teams td:nth-child(3), #teams th:nth-child(3) {
+        display: none;
+    }
+
+    #teams td, #teams th {
+        padding: 3px;
+    }
+    #teams tbody button {
+        font-size: 12px;
     }
 }
 

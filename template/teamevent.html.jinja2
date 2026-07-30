@@ -66,7 +66,10 @@
             {% if not evt.top_cut|length or loop.index > evt.top_cut|length %}
             <tr>
                 <td>{{loop.index}}</td>
-                <td>{{t.name}}</td>
+                <td>{{t.name}}<br/>
+                    <span class="mobile-only">{{t.record}}</span>
+                    <button class="mobile-only" onclick="showteammatches('{{slugify(t.name)}}')">Glimpse</button>
+                </td>
                 <td>{{t.record}}</td>
                 {% for member in t.members %}
                 {{macros.team_member_cell(member)}}
