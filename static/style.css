@@ -1,10 +1,13 @@
 @font-face {
     font-family: "Fracturized-Biolinum";
     src: url(./FracturizedBiolinum.woff) format("woff");
+    font-display: swap;
+
 }
 @font-face {
     font-family: "Adobe Garamod Pro Semibold";
     src: url(./AGaramondPro-Semibold.otf);
+    font-display: swap;
 }
 body {
     background: url("tile2.png") #c7c6c1;

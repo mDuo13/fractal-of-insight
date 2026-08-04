@@ -340,6 +340,7 @@ water_allies = add_archetype(
         "Spirit Blade: Ensoul",
         "Dawn of Ashes",
         "Fabled Sapphire Fatestone",
+        "Sacrifice Play",
     ],
     require_types={
         "ALLY": 20
@@ -1226,7 +1227,8 @@ add_archetype(
         "Field of Ranks and Files",
         "Dropped Band",
         "Summon Pawn",
-        "March On"
+        "March On",
+        "Sacrifice Play",
     ]
 )
 

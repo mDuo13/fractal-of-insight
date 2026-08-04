@@ -88,6 +88,14 @@ TCGP_CARDNAMES = {
     ],
 }
 
+# Fix cases where TCGP has a card edition listed in a different set than
+# Index has that edition in:
+TCGP_ED_ADJUSTMENTS = {
+    "Lorraine, Ascendant Wings": {
+        "P25": "SP3"
+    }
+}
+
 class PriceDB:
     def __init__(self, prices_folder, carddata):
         self.pricedata = {}
@@ -161,6 +169,11 @@ class PriceDB:
                 tcgp_names = [TCGP_CARDNAMES[fullname]]
         else:
             tcgp_names = [fullname]
+
+        # Remap prefix if TCGP has this edition in a different place than Index
+        if fullname in TCGP_ED_ADJUSTMENTS.keys():
+            if prefix in TCGP_ED_ADJUSTMENTS[fullname].keys():
+                prefix = TCGP_ED_ADJUSTMENTS[fullname][prefix]
 
         low_price = None
         if prefix in TCG_ABBR.keys():
