@@ -6,6 +6,7 @@ import requests
 from time import sleep, time
 
 from fractal import config
+from fractal.shared import ms_from_dt
 from fractal.datalayer import get_event, get_deck, save_event_json, EventNotFound, NoDeck
 
 try:
@@ -47,7 +48,10 @@ def due_for_update(evt_data, refresh_all_stale=False):
     #     return True
 
     if evt_data.get("status") == "rsvp":
-        start_time = evt_data.get("startAt", 0) / 1000
+        if type(evt_data.get("startAt")) == str:
+            start_time = ms_from_dt(evt_data["startAt"]) / 1000
+        else:
+            start_time = evt_data.get("startAt", 0) / 1000
         if start_time > time() + 86400:
             # Scheduled for more than 1 day in future, don't bother updating yet
             return False
@@ -59,7 +63,7 @@ def crawl_event(i, force_redownload=False, refresh_all_stale=False):
 
     if force_redownload or due_for_update(evt_data, refresh_all_stale):
         try:
-            evt_full = get_event(i, force_redownload=True, save=False)
+            evt_full = get_event(i, force_redownload=True, save=False, short_circuit_fn=worth_investigating)
             if i > crawldata["max_crawled"]:
                 crawldata["max_crawled"] = i
             updated = True
@@ -103,13 +107,23 @@ def get_decks_from_event(evt):
                 print(f"Decklist public but not? Evt #{evt['id']} {p['username']}#{p['id']}")
 
 def is_interesting(evt):
+    if evt.get("status") == "404":
+        return 0
+    if evt['format'] == "free-play":
+        return 0
+    if evt["api_version"] == "hybrid_v1":
+        start_s = ms_from_dt(evt["date"]) / 1000
+    elif evt["api_version"] == "internal_v1":
+        start_s = evt["startAt"]/1000
+    else:
+        print("Unknown API version used for event:", evt["api_version"])
     if evt.get("status") == "rsvp":
-        if time() - (evt["startAt"]/1000) > config.STALE_GRACE_PERIOD:
+        if time() - start_s > config.STALE_GRACE_PERIOD:
             print("Event is scheduled in the past; marking stale.")
             evt["status"] = "stale"
             return 0
     if evt.get("status") in ("started", "completable"):
-        if time() - (evt["startAt"]/1000) > config.EVT_MAX_LENGTH:
+        if time() - start_s > config.EVT_MAX_LENGTH:
             print("Event has been ongoing too long; marking stale.")
             evt["status"] = "stale"
             return 0
@@ -136,7 +150,7 @@ def is_interesting(evt):
     if evt.get("category") == "regular" and not evt.get("decklists"):
         if len(players) >= config.INTERESTING_PLAYER_COUNT:
             print(f"Big locals? #{evt['id']} ({len(players)} players): {evt['name']}")
-        if len(players) > config.REALLY_INTERESTING_PLAYER_COUNT:
+        if len(players) >= config.REALLY_INTERESTING_PLAYER_COUNT:
             return 1
         return 0
 
@@ -147,6 +161,21 @@ def is_interesting(evt):
 
     return 1
 
+
+def worth_investigating(evt):
+    """
+    Simplified logic "is_interesting" logic to be passed to get_event(...) so 
+    it can skip fetching the rest of the event details if it's obviously a 
+    plain locals. Returns 1 if the event might be worth further investigation or
+    0 if fetching the rest of the event can be short-circuited.
+    """
+    if evt['format'] == "free-play" or evt['status'] in (
+        "rsvp","canceled","canceled-reset","canceled-suspended"):
+        return 0
+    if evt.get("category") == "regular" and not evt.get("decklists"):
+        if len(evt["players"]) < config.REALLY_INTERESTING_PLAYER_COUNT:
+            return 0
+    return 1
 
 def main(args):
     interesting_events = {}

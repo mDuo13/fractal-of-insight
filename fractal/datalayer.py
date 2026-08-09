@@ -6,7 +6,7 @@ from requests.adapters import HTTPAdapter, Retry
 from time import sleep, time
 from os import makedirs, scandir, path
 
-from .shared import slugify, fix_case, lineage
+from .shared import slugify, fix_case, lineage, ms_from_dt
 from .cards import ERRATA, REMOVED_FROM_PRXY
 from .carddb import CardDB
 from .decksim import DeckSim
@@ -51,14 +51,25 @@ def get_deck(p_id, evt_id, public_on_omni):
             if not public_on_omni or int(evt_id) == 384: #Special case for Ascent Ontario which was before Omni supported decklists
                 raise NoDeck()
             print(f"Downloading #{p_id}'s decklist...")
-            dl_raw = fetch(f"https://omni.gatcg.com/api/events/decklist?id={evt_id}&player={p_id}")
+            ## Old (Omnidex API v1) way to get one dl:
+            # dl_raw = fetch(f"https://omni.gatcg.com/api/events/decklist?id={evt_id}&player={p_id}")
+            ## New way gets all decklists for event using official API
+            dl_raw = fetch(f"https://api.gatcg.com/omnidex/events/{evt_id}/decklists")
             print("...done.")
-            dl = dl_raw.json()
-            if dl_raw.status_code != 200 or dl.get("error"):
-                raise NoDeck(f"Status code {dl_raw.status_code} fetching evt {evt_id} deck for player #{p_id}")
-            # cache deck to reduce HTTP requests to omni
-            with open(f"data/event_{evt_id}/deck_{p_id}.json", "w") as f:
-                json.dump(dl, f)
+            all_dls = dl_raw.json()
+            if dl_raw.status_code != 200 or (type(all_dls)==dict and all_dls.get("error")):
+                raise NoDeck(f"Status code {dl_raw.status_code} fetching evt {evt_id} decklists")
+
+            # Save *all* the decklists to disk, then return the requested one
+            dl = None # The decklist we're actually looking for
+            for dlw in all_dls:
+                assert type(dlw['player']) == int
+                with open(f"data/event_{evt_id}/deck_{dlw['player']}.json", "w") as f:
+                    json.dump(dlw['decklist'], f)
+                if p_id == dlw['player']:
+                    dl = dlw['decklist']
+            if not dl:
+                raise NoDeck(f"Decklist for player #{p_id} not found in event #{evt_id}")
             sleep(API_DELAY)
     return dl
 
@@ -177,19 +188,14 @@ def card_is_floating(card, champs=[]):
             return True
     return False
 
-def get_event(evt_id, force_redownload=False, save=True, dl_decklists=False):
+def get_event(evt_id, force_redownload=False, save=True, dl_decklists=False, short_circuit_fn=None):
     try:
         if force_redownload:
             raise ForceReDL
         with open(f"data/event_{evt_id}/event.json") as f:
             evt = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError, ForceReDL):
-        print(f"Downloading event #{evt_id} JSON...")
-        evt_raw = fetch(f"https://omni.gatcg.com/api/events/event?id={evt_id}")
-        #print("...done.")
-        if evt_raw.status_code == 404:
-            raise EventNotFound
-        evt = evt_raw.json()
+        evt = collate_event_from_apis(evt_id, short_circuit_fn=short_circuit_fn)
         if save:
             save_event_json(evt)
         sleep(API_DELAY)
@@ -200,7 +206,140 @@ def get_event(evt_id, force_redownload=False, save=True, dl_decklists=False):
                 get_deck(pdata["id"], evt["id"], is_public)
             except NoDeck:
                 pass
+    if "api_version" not in evt.keys():
+        if "matchConfigSwiss" in evt.keys():
+            evt["api_version"] = "internal_v1"
+        elif "swissMatchConfig" in evt.keys():
+            evt["api_version"] = "hybrid_v1"
+        else:
+            print(f"Unknown API version for event #{evt['id']}")
+            exit(1)
     return evt
+
+def fetch_json(url):
+    r = fetch(url)
+    if r.status_code == 404:
+        raise EventNotFound
+    return r.json()
+
+def collate_event_from_apis(evt_id, short_circuit_fn=None):
+    """
+    Download an event from multiple APIs (mostly the official Omnidex API where
+    possible) and combining the result into one JSON file sorta resembling
+    the old Omnidex API format for convenience. Throw EventNotFound if any of
+    the API requests fails.
+    """
+    print(f"Downloading event #{evt_id} base JSON...")
+    evt = fetch_json(f"https://api.gatcg.com/omnidex/events/{evt_id}")
+    evt["api_version"] = "hybrid_v1"
+
+    if short_circuit_fn: # If a function that returns 0 for uninteresting evts
+        if not short_circuit_fn(evt):
+            return evt
+
+    print(f"Downloading player data for event #{evt_id}")
+    evt["players"] = fetch_json(f"https://api.gatcg.com/omnidex/events/{evt_id}/players")
+    
+    # Short-circuit for events that haven't at least started
+    if evt["status"] not in ("completable","complete","started"):
+        return evt
+    # Also short-cut freeplay events
+    if evt["format"] == "free-play":
+        return evt
+
+    print(f"Downloading internal API player data for event #{evt_id}...")
+    iplayers = fetch_json(f"https://omni.gatcg.com/api/v2/events/users?id={evt_id}")
+    for ipl in iplayers:
+        ipl_id = int(ipl['id'])
+        for pl in evt["players"]:
+            if ipl_id == pl['id']:
+                pl['scoreElo'] = ipl['scores']['player']['elo']['value']
+                pl['rankElo'] = ipl['scores']['player']['elo']['rank']
+                pl['scoreVP'] = ipl['scores']['player']['vp']['value']
+                if ipl.get('suspended'):
+                    pl['suspendedUntil'] = ms_from_dt(ipl['suspended']['expires'])
+                break
+    
+    if evt.get("judges", []):
+        print(f"Downloading judge information for event #{evt_id}...")
+        evt["judges"] = fetch_json(f"https://api.gatcg.com/omnidex/events/{evt_id}/judges")
+        for ipl in iplayers:
+            # add scoreVP and suspendedUntil data, if available, for judges too
+            ipl_id = int(ipl['id'])
+            for jd in evt["judges"]:
+                if ipl_id == jd['id']:
+                    jd['scoreVP'] = ipl['scores']['player']['vp']['value']
+                if ipl.get('suspended'):
+                    jd['suspendedUntil'] = ms_from_dt(ipl['suspended']['expires'])
+                break
+
+    if evt.get("teams"):
+        print(f"Downloading team information for event #{evt_id}...")
+        teams = fetch_json(f"https://api.gatcg.com/omnidex/events/{evt_id}/teams")
+        evt["teams"] = teams
+        for tm in teams:
+            for seat in tm["players"]:
+                # Find matching player and add their team info for backwards compat
+                for pl in evt["players"]:
+                    if pl["id"] == seat["id"]:
+                        pl["team"] = tm["name"]
+                        pl["teamSlot"] = int(seat["slot"]) # Hopefully this doesn't break in the future
+                        break
+        
+        print(f"Downloading team standings for event #{evt_id}")
+        standings = fetch_json(f"https://api.gatcg.com/omnidex/events/{evt_id}/standings")
+        for st in standings["standings"]:
+            for tm in evt["teams"]:
+                if tm["name"] == st["name"]:
+                    # Add standings info to team dict
+                    tm.update(st)
+                    break
+            else:
+                print(f"Standings not found for team: {st['name']}")
+    
+    else:
+        print(f"Downloading player standings for event #{evt_id}")
+        standings = fetch_json(f"https://api.gatcg.com/omnidex/events/{evt_id}/standings")
+        for st in standings["standings"]:
+            for pl in evt["players"]:
+                if pl["id"] == st["id"]:
+                    # Add standings information to player dict
+                    pl.update(st)
+                    break
+            else:
+                print(f"Standings not found for player #{pl['id']}?")
+
+    
+    for stage in evt["stages"]:
+        stage["rounds"] = []
+        roundn = 1
+        while True:
+            print(f"Downloading pairings for stage {stage['id']} ({stage['type']}) round {roundn}")
+            pairings_r = fetch(f"https://api.gatcg.com/omnidex/events/{evt_id}/pairings?stage={stage['id']}&round={roundn}")
+            if pairings_r.status_code == 404:
+                print(f"Couldn't find pairings for stage {stage['id']} round {roundn}. Maybe it's ongoing?")
+                break
+            prdata = pairings_r.json()
+            thisround = {
+                "id": prdata["round"]["id"],
+                "pairings": {},
+                "matches": prdata["pairings"],
+                "status": prdata["round"]["status"]
+            }
+            # Re-create the simple 'ID':ID pairings mapping from the old API
+            for m in prdata["pairings"]:
+                if len(m["pairing"]) > 1: #Not a bye
+                    p1id = m["pairing"][0]["id"]
+                    p2id = m["pairing"][1]["id"]
+                    thisround["pairings"][str(p1id)] = p2id
+                    thisround["pairings"][str(p2id)] = p1id
+            stage["rounds"].append(thisround)
+            roundn += 1
+            if roundn > prdata["round"]["total"]:
+                break
+    
+    return evt
+
 
 def get_event_videos(evt_id):
     try:

@@ -21,6 +21,7 @@ def lineage(champname):
     return champname.split(",",1)[0]
 
 ISOFMT = r"%Y-%m-%d"
+ISOFMT_DT = r"%Y-%m-%dT%H:%M:%S.%f%z"
 
 def ms_to_date(time_ms):
     return strftime(ISOFMT, gmtime(time_ms/1000))
@@ -33,6 +34,15 @@ def date_to_ms(date_string, weebs_time=False):
     d = datetime.strptime(date_string+tz, ISOFMT+"%z")
     ts = d.timestamp()
     return int(ts*1000)
+
+def date_from_isodt(date_string):
+    return date_string.split("T")[0]
+
+def ms_from_dt(datetime_string):
+    d = datetime.strptime(datetime_string, ISOFMT_DT)
+    ts = d.timestamp()
+    return int(ts*1000)
+
 
 def fix_case(cardname):
     repls = {

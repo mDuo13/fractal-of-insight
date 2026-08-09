@@ -1,38 +1,51 @@
 from collections import defaultdict
 
-from .shared import date_to_ms, ms_to_date
+from .shared import date_to_ms, ms_to_date, date_from_isodt
 from .stats import ElementStats, ArcheStats, ChampStats
 from .battlechart import BattleChart
 
 class Season:
-    def __init__(self, season):
-        self.code = season
+    def __init__(self, season_code):
+        self.code = season_code
         self.events = []
-        self.data = {}
         self.pdict = defaultdict(list) # list of events entered by player ID
         self.subformats = []
+        self.season_guide = None
+        if self.code == "OFF":
+            self.name = "Offseason"
+            self.id = 0
+            self.start_time = "N/A"
+            self.end_time = "N/A"
+        else:
+            # Wait until an event is added and use the data from there if avail
+            self.name = ""
+            self.id = None
+            self.start_time = ""
+            self.end_time = ""
 
     def add_event(self, e):
         if e in self.events:
             raise ValueError(f"Duplicate event: {e}")
         self.events.append(e)
 
-        if not self.data:
-            if self.code == "OFF":
-                self.name = "Offseason"
-                self.id = 0
-                self.start_time = "N/A"
-                self.end_time = "N/A"
-                self.season_guide = None
-            else:
-                # There's no good API method to look up season data,
-                # but we can save it from the first event to get added
-                data = e.evt["season"]
-                self.name = data["name"]
-                self.id = data["id"]
-                self.start_time = ms_to_date(data["startsAt"])
-                self.end_time = ms_to_date(data["endsAt"])
-                self.season_guide = data["file"]
+        # If event provides some season data we don't have yet, save it.
+        if not self.name and "name" in e.season_data:
+            self.name = e.season_data["name"]
+        if not self.id and "id" in e.season_data:
+            self.id = e.season_data["id"]
+        if not self.start_time and "startsAt" in e.season_data:
+            # Internal v1 format
+            self.start_time = ms_to_date(e.season_data["startsAt"])
+        elif not self.start_time and "dateStart" in e.season_data:
+            # Official v1 format
+            self.start_time = date_from_isodt(e.season_data["dateStart"])
+        if not self.end_time and "endsAt" in e.season_data:
+            # Internal v1 format
+            self.end_time = ms_to_date(e.season_data["endsAt"])
+        elif not self.end_time and "dateEnd" in e.season_data:
+            self.end_time = date_from_isodt(e.season_data["dateEnd"])
+        if not self.season_guide and "file" in e.season_data:
+            self.season_guide = e.season_data["file"]
 
     def analyze(self):
         # Call after all events have been added & analyzed
@@ -116,7 +129,6 @@ class Format(Season):
         self.parent_season = season
         self.desc = desc
         self.events = []
-        self.data = None
         self.pdict = defaultdict(list)
 
     def add_event(self, e):
@@ -126,15 +138,15 @@ class Format(Season):
         """
         Returns True if evt occurs during this format's timeframe.
         """
-        if evt.evt["format"] != "standard":
-            # Omit Team Standard from stats because it's weird.
+        if evt.format != "standard":
+            # Stats only include regular standard, not Teams, draft, etc.
             return False
 
         fmt_start = date_to_ms(self.start_time, weebs_time=True)
         if self.end_time:
             fmt_end = date_to_ms(self.end_time, weebs_time=True)
 
-        evt_start = evt.evt["startAt"]
+        evt_start = evt.start_time
         if fmt_start <= evt_start and (not self.end_time or evt_start < fmt_end):
             return True
         return False

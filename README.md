@@ -67,7 +67,6 @@ When you have the necessary data downloaded, you can do interactive queries in t
 - add a wielder points section to player profiles
 - improve display of About Refracted Events page.
 - add an icon & other styles to highlight Refracted events
-- update FRCTL to show RDO spoilers directly now that they're not hidden in the main site anymore
 - improve reliability / resilience to bad/unexpected/missing data
 - improve experience / instructions for building with a fresh clone of the repo
 - add vods for OCE Nats, Icebound Slam Cup
@@ -84,3 +83,4 @@ When you have the necessary data downloaded, you can do interactive queries in t
     - collapse controls?
     - better graphics for ⇒?
 - switch to dynamic sightings/decklists on more pages (champs, large events)
+- refactor more for API v2 changes; add abstraction layer for stages/rounds/pairings

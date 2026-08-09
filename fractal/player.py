@@ -21,7 +21,7 @@ class Entrant:
         self.id = data["id"]
         self.evt_id = evt_id
         self.event = evt
-        self.evt_time = evt.evt["startAt"]
+        self.evt_time = evt.start_time #TODO: does this not work because Entrants are instantiated during OmniEvent init?
         self.wins = data["statsWins"]
         self.losses = data["statsLosses"]
         self.ties = data["statsTies"]
@@ -104,13 +104,14 @@ class JudgeEvt:
     def __init__(self, data, evt):
         self.id = data["id"]
         self.username = data["username"]
-        self.events_judged = data.get("judgeEvents", 0)
-        if not self.events_judged:
-            warning("judge with no events judged?", data)
         self.exp = data.get("judgeExperience", 0)
         self.event = evt
-        self.evt_time = evt.evt["startAt"]
-        self.region = data.get("addressCountryCode")
+        self.evt_time = evt.start_time # used in merging judging/playing events
+        self.evt_rounds = evt.rounds
+        if "country" in data: # official Omnidex API format
+            self.region = data["country"]
+        elif "addressCountryCode" in data:
+            self.region = data["addressCountryCode"] # old API format
         self.vp = round(data.get("scoreVP",0))
 
         # I would hope that judges aren't likely to get banned, but...
@@ -392,9 +393,9 @@ class Player:
                 if e.placement == 1 and len(e.event.players) >= 40:
                     self.achievements.add("Big Chillin'", e, details=f"{len(e.event.players)} players")
             elif e.event.category["name"] == "Store Champs":
-                self.achievements.add("Throw Down", e, details=e.event.evt["store"]["name"])
+                self.achievements.add("Throw Down", e, details=e.event.host)
                 if e.placement == 1:
-                    self.achievements.add("This Is My House", e, details=e.event.evt["store"]["name"])
+                    self.achievements.add("This Is My House", e, details=e.event.host)
             elif e.event.category["name"] == "Regionals":
                 self.achievements.add("Turf Warrior", e)
                 if e.placement == 1:
@@ -412,8 +413,8 @@ class Player:
                 # Don't award top performances for ongoing Ascents/etc.
                 # Only finished events will have a non-None winner
                 if e.event.winner and \
-                   (e.placement <= 8 and e.event.evt["format"] != TEAM_STANDARD) or \
-                   (e.placement <= 4 and e.event.evt["format"] == TEAM_STANDARD):
+                   (e.placement <= 8 and e.event.format != TEAM_STANDARD) or \
+                   (e.placement <= 4 and e.event.format == TEAM_STANDARD):
                     self.achievements.add("Spirited Competitor", e)
                 if e.event.winner and e.placement == 1:
                     self.achievements.add("View from the Top", e)
@@ -541,7 +542,7 @@ class Player:
         if self.events_judged:
             self.achievements.add("JUDGE!", self.events_judged[0])
             for j in self.events_judged:
-                if j.event.evt.get("rounds",0) >= 7:
+                if j.event.rounds >= 7:
                     self.achievements.add("Juuuuuuudge!", j)
                 if j.event.category["name"] == "Ascent":
                     self.achievements.add("Wisdom of the Mountain", j)
@@ -569,7 +570,7 @@ class Player:
                         stg = ra.get("stage",1)
                         if stg > 1:
                             rnd = ra['round']
-                            if stg == 2 and e.event.evt.get("cutSize") == "8" and rnd <= 3:
+                            if stg == 2 and e.event.topCutSize == 8 and rnd <= 3:
                                 if rnd == 1:
                                     rndname = "Quarterfinals"
                                 elif rnd == 2:

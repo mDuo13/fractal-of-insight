@@ -22,7 +22,7 @@
         <li><b>Date:</b> {{evt.date}}</li>
         <li><b>Format:</b> Team Standard (3v3)</li>
         <li><b>Entrants:</b> {{evt.players|length}}</li>
-        {% if evt.evt.address %}<li><b>Location:</b> {{evt.evt.address}}</li>{% endif %}
+        {% if evt.address %}<li><b>Location:</b> {{evt.address}}</li>{% endif %}
         <li><b>Omnidex ID:</b> <a href="https://omni.gatcg.com/events/{{evt.id}}">{{evt.id}}</a></li>
     </ul>
 </section>

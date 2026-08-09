@@ -1,0 +1,57 @@
+This file attempts to correlate data sources from different Omnidex sources and
+track which ones Fractal uses for future reference.
+
+OmniEvent and Season class usage:
+
+internal v1 (retired)               official api                    internal v2
+----------                          ------------                    ------------
+status                              ✅same                          ✅same
+format                              ✅same                          ✅same
+matchConfigSwiss                    swissMatchConfig                ???
+matchConfigSingleElim          singleEliminationMatchConfig         stages[#].bestOf (int)
+name                                ✅same                          ✅same
+store.name                          host.name                       host.name
+startAt (int_ms)                    date (datestring)
+stages[0].startedAt (int_ms)        dateStarted (datestring)        ??
+season.name                         ✅same                          ✅same
+season.startsAt (int_ms)            season.dateStart (datestring)   ??
+season.endsAt (int_ms)              season.dateEnd (datestring)     ??
+season.file                         (not available)                 ??
+category                            ✅same                          ✅same
+addressCountryCode                  host.addressCountryCode         legacyAddress...?       
+keepN (str)                         singleEliminationCutSize (int)  stages[#].cutSize (int)
+rounds                              swissRounds                     stages[#].roundTotal 
+judges (populated)                  → judges endpoint               (unsure)
+players (populated)                 → players/standings endpoints   (it's complicated)
+
+---------------------
+
+Entrant and JudgeEvt class usage of player data:
+
+internal v1 (retired)               official api                    internal v2
+                                    [s] = standings.standings[#]    [u] = https://omni.gatcg.com/api/v2/events/users?id={evt_id} [#]
+                                    [p] = players[#]                
+                                    [t] = teams[#]
+----------                          ------------                    ------------
+id                                  [p].id / [s].id                 ???
+statsWins                           [s].statsWins
+statsLosses                         
+statsTies
+statsByes
+statsScore
+statsPercentOMW
+statsPercentGW
+statsPercentOGW
+username                             [p].username
+scoreElo                             (not available?)               [u].player.elo.value
+scoreVP                              (not available?)               [u].player.vp.value
+rankElo                              (not available?)               [u].player.elo.rank
+addressCountryCode                   [p].country                    [u].countryCode
+suspendedUntil (int_ms)              (not available?)               [u].suspended?.expires
+team                                 teams[#].name                  ???
+teamSlot                             teams[#].players[#].slot
+
+---------------------
+Stages
+
+stages[#].rounds[#].matches[#].pairing[#].*

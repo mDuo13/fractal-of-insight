@@ -8,7 +8,7 @@ from .datalayer import get_event, get_event_videos, get_card_img, get_event_refr
 from .archetypes import ARCHETYPES
 from .cards import ELEMENTS
 from .season import SEASONS
-from .shared import EVENT_TYPES, TEAM_STANDARD, ms_to_date
+from .shared import EVENT_TYPES, TEAM_STANDARD, ms_to_date, date_from_isodt, ms_from_dt
 from .stats import ElementStats, ArcheStats, ChampStats, RegionStats
 from .config import TOP_CUTOFF
 
@@ -42,13 +42,78 @@ def calc_conversion(d1_quant, d2_quant, bcr):
     }
 
 class OmniEvent:
-    def __init__(self, evt_id, force_redownload=False):
+    def __init__(self, evt_id, force_redownload=False, save=True):
         self.id = evt_id
-        self.evt = get_event(self.id, force_redownload)
+        self.evt = get_event(self.id, force_redownload=force_redownload, save=save)
         if self.evt["status"] not in ("started", "completable", "complete"):
             raise NotStarted
         if self.evt["format"] == TEAM_STANDARD and not isinstance(self, Team3v3Event):
             raise IsTeamEvent
+        if self.evt["api_version"] == "internal_v1":
+            self.load_from_v1()
+        elif self.evt["api_version"] == "hybrid_v1":
+            self.load_from_hybrid()
+        else:
+            raise Exception(f"Unknown api_version: {self.evt['api_version']}")
+    
+    def load_from_hybrid(self):
+        self.status = self.evt["status"]
+        self.format = self.evt["format"]
+        self.matchformat_swiss = self.evt["swissMatchConfig"]
+        self.matchformat_topcut = self.evt["singleEliminationMatchConfig"]
+        self.name = self.evt["name"]
+        self.host = self.evt["host"]["name"]
+        self.fix_generic_name()
+        
+        if self.evt.get("dateStarted"):
+            self.date = date_from_isodt(self.evt["dateStarted"])
+            self.start_time = ms_from_dt(self.evt["dateStarted"])
+        else:
+            self.date = date_from_isodt(self.evt["date"])
+            self.start_time = ms_from_dt(self.evt["date"])
+
+        if "season" in self.evt:
+            self.season_data = self.evt["season"]
+            self.track_elo = True
+            if self.evt["season"]["name"] in SEASONS.keys():
+                self.season = SEASONS[self.evt["season"]["name"]]
+            else:
+                warning(f"Unknown season: {self.evt['season']['name']}")
+                self.season = 'OTHER'
+        else:
+            self.season_data = {}
+            self.season = "OFF"
+            self.track_elo = False
+        
+        self.category = EVENT_TYPES.get(self.evt["category"], {"name": "Unknown"})
+        self.country = self.evt["host"].get("addressCountryCode", "")
+        self.address = self.evt["host"]["address"]
+        self.rounds = self.evt["swissRounds"]
+        self.topCutSize = self.evt["singleEliminationCutSize"]
+        # At 3pts/win and 1pt/draw, anyone with over 1.5 points/rnd
+        # has a theoretical "win rate" of > 50% of possible matches
+        # (e.g. missing day 2 is like losing all your day 2 games)
+        self.fiftypct_points = self.rounds * 1.5
+
+        self.judges = [JudgeEvt(jdata, self) for jdata in self.evt.get("judges", [])]
+
+
+        self.winner = None
+        self.load_players() # populates self.players, self.num_decklists, self.decklist_status
+
+        #TODO: check each of these
+        self.load_videos()
+        self.load_refracted_achievements() # populates self.is_refracted
+        self.analyze() #populates self.elements, archedata, champdata, draw_pct, nat_draw_pct
+        self.battlechart = self.calc_headtohead(track_elo=self.track_elo)
+        self.bc_top = self.calc_headtohead(TOP_CUTOFF)
+        if not isinstance(self, Team3v3Event):
+            self.parse_top_cut() # populates self.top_cut
+            # For Team3v3, this needs to happen after parse_teams()
+        self.analyze_day2()
+
+    def load_from_v1(self):
+        self.status = self.evt["status"]
         self.format = self.evt["format"]
         self.matchformat_swiss = self.evt["matchConfigSwiss"]
         self.matchformat_topcut = self.evt.get("matchConfigSingleElim")
@@ -62,6 +127,7 @@ class OmniEvent:
         else:
             self.start_time = self.evt["startAt"] # Scheduled start time
         if "season" in self.evt:
+            self.season_data = self.evt["season"]
             self.track_elo = True
             if self.evt["season"]["name"] in SEASONS.keys():
                 self.season = SEASONS[self.evt["season"]["name"]]
@@ -70,13 +136,17 @@ class OmniEvent:
                 self.season = 'OTHER'
         else:
             self.season = "OFF"
+            self.season_data = {}
             self.track_elo = False
         self.category = EVENT_TYPES.get(self.evt["category"], {"name": "Unknown"})
         self.country = self.evt.get("addressCountryCode", "")
+        self.address = self.evt.get("address")
+        self.rounds = self.evt["rounds"]
+        self.topCutSize = int(self.evt.get("cutSize", 0))
         # At 3pts/win and 1pt/draw, anyone with over 1.5 points/rnd
         # has a theoretical "win rate" of > 50% of possible matches
         # (e.g. missing day 2 is like losing all your day 2 games)
-        self.fiftypct_points = self.evt["rounds"] * 1.5
+        self.fiftypct_points = self.rounds * 1.5
 
         self.judges = [JudgeEvt(jdata, self) for jdata in self.evt.get("judges", [])]
 
@@ -131,7 +201,7 @@ class OmniEvent:
                 testname += word
         if not testname:
             # add the store name to make it less generic
-            self.name = self.evt["store"]["name"] + " " + self.name
+            self.name = self.host + " " + self.name
 
     def load_players(self):
         self.num_decklists = 0
@@ -217,6 +287,8 @@ class OmniEvent:
         keepN = self.evt.get("keepN")
         # TODO: maybe use "prior drops" data to include players who
         # qualified but dropped without playing in day 2?
+        #TODO: can't analyze day 2 stats with the new API because it doesn't
+        # return a keepN value indicating where the day 2 cutoff is!
         if keepN:
             day2_start = keepN[0]['round']
             stage1 = self.evt['stages'][0]
@@ -303,14 +375,10 @@ class OmniEvent:
                 self.topcutstats['regiondata'].add_player(p)
 
     def parse_top_cut(self):
+        # Known bug: top cut wrong if Fractal updates while top cut is ongoing
         self.top_cut = []
-        try:
-            cutsize = int(self.evt.get("cutSize", "0"))
-        except ValueError:
-            print("Unknown cutSize value:", self.evt.get("cutSize"))
-            cutsize = 0
-        if not cutsize:
-            if self.evt["status"] != "complete":
+        if not self.topCutSize: # Swiss rounds only
+            if self.status != "complete":
                 self.winner = None
             elif self.format != TEAM_STANDARD:
                 self.winner = self.players[0]
@@ -423,7 +491,7 @@ class OmniEvent:
         # Correct placement for top cut
         for i,p in enumerate(self.top_cut):
             p.placement = i+1
-        if self.evt["status"] == "complete":
+        if self.status == "complete":
             self.winner = self.top_cut[0]
         if self.format == TEAM_STANDARD:
             self.winner = None # use self.winning_team instead
@@ -480,11 +548,6 @@ class OmniEvent:
 
     def calc_headtohead(self, threshold=None, track_elo=False):
         return BattleChart.from_event(self, threshold=threshold, track_elo=track_elo)
-
-    # def calc_conversion_rates(self):
-    #     if len(self.evt['stages']) <= 1:
-    #         return
-
 
 
     def __repr__(self):
