@@ -83,4 +83,8 @@ When you have the necessary data downloaded, you can do interactive queries in t
     - collapse controls?
     - better graphics for ⇒?
 - switch to dynamic sightings/decklists on more pages (champs, large events)
-- refactor more for API v2 changes; add abstraction layer for stages/rounds/pairings
+- refactor more for API v2 changes:
+    - add abstraction layer for stages/rounds/pairings
+    - fix day 2 cut support
+    - migrate away from internal API where possible
+    - make official API use more natural and deprecate the old internal v1 format

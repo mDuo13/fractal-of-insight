@@ -35,21 +35,21 @@ internal v1 (retired)               official api                    internal v2
 ----------                          ------------                    ------------
 id                                  [p].id / [s].id                 ???
 statsWins                           [s].statsWins
-statsLosses                         
-statsTies
-statsByes
-statsScore
-statsPercentOMW
-statsPercentGW
-statsPercentOGW
-username                             [p].username
-scoreElo                             (not available?)               [u].player.elo.value
-scoreVP                              (not available?)               [u].player.vp.value
-rankElo                              (not available?)               [u].player.elo.rank
-addressCountryCode                   [p].country                    [u].countryCode
-suspendedUntil (int_ms)              (not available?)               [u].suspended?.expires
-team                                 teams[#].name                  ???
-teamSlot                             teams[#].players[#].slot
+statsLosses                         ^^
+statsTies                           ^^
+statsByes                           ^^
+statsScore                          ^^
+statsPercentOMW                     ^^
+statsPercentGW                      ^^
+statsPercentOGW                     ^^
+username                            [p].username
+scoreElo                            (not available?)               [u].player.elo.value
+scoreVP                             (not available?)               [u].player.vp.value
+rankElo                             (not available?)               [u].player.elo.rank
+addressCountryCode                  [p].country                    [u].countryCode
+suspendedUntil (int_ms)             (not available?)               [u].suspended?.expires
+team                                teams[#].name                  ???
+teamSlot                            teams[#].players[#].slot
 
 ---------------------
 Stages
