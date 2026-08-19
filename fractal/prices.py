@@ -23,6 +23,9 @@ TCG_ABBR = {
     "P24": ["P"],
     "P25": ["P"],
     "P26": ["P"],
+    "PRD 1st": ["PRD"],
+    "PRDG": ["PRD"],
+    #TODO: see where PRDEVP ends up
     "PTMEVP": ["PHME"],
     "PTM 1st": ["PTM"],
     "PTMLGS": ["PTM"],
@@ -186,7 +189,8 @@ class PriceDB:
                         if not low_price or new_price < low_price:
                             low_price = new_price
         elif prefix not in self.pricedata.keys():
-            print(f"No tcgp data for set '{prefix}'")
+            #print(f"No tcgp data for set '{prefix}'")
+            pass
         else: # Prefix should match
             for item in self.pricedata[prefix].values():
                 trimmed_name = re.sub(r"\(\w+\)", "", item.get("name","")).strip()

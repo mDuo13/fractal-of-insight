@@ -189,10 +189,12 @@ class OmniEvent:
             "Distorted", "Reflections",
             "Phantom", "Monarch", "Monarchs",
             "Radiant", "Origin", "Origins",
+            "Asphodel", "Paradise",
             "Standard",
             "Constructed",
             "DOA", "FTC", "ALC", "MRC", "AMB", "HVN", "DTR", "PTM", "RDO",
             "Season",
+            "3v3","Team"
         ]]
         name_words = re.split(r"\W+", self.name.lower())
         testname = ""
@@ -593,6 +595,13 @@ class Team3v3Event(OmniEvent):
     def parse_teams(self):
         teams = []
         for teamdata in self.evt["teams"]:
+            # Sanity check team data because Omni includes bunk teams sometimes now...
+            if teamdata.get("statsWins") == None:
+                # Probably a team that got dropped?
+                continue
+            if teamdata.get("players") == []:
+                # Team whose players never showed?
+                continue
             team = Team(teamdata)
             teamplayers = []
             for p in self.players:

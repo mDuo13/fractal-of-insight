@@ -85,6 +85,6 @@ When you have the necessary data downloaded, you can do interactive queries in t
 - switch to dynamic sightings/decklists on more pages (champs, large events)
 - refactor more for API v2 changes:
     - add abstraction layer for stages/rounds/pairings
-    - fix day 2 cut support
+    - fix day 2 cut support. Possibly use hard-coded point thresholds as a stopgap?
     - migrate away from internal API where possible
     - make official API use more natural and deprecate the old internal v1 format

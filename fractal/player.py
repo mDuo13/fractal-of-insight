@@ -21,25 +21,42 @@ class Entrant:
         self.id = data["id"]
         self.evt_id = evt_id
         self.event = evt
-        self.evt_time = evt.start_time #TODO: does this not work because Entrants are instantiated during OmniEvent init?
-        self.wins = data["statsWins"]
-        self.losses = data["statsLosses"]
-        self.ties = data["statsTies"]
-        self.byes = data["statsByes"]
-        self.score = data["statsScore"]
+        self.evt_time = evt.start_time
         self.topcut_wins = 0 # populated by OmniEvent's parse_top_cut()
-        self.omw = data["statsPercentOMW"]
-        self.gwp = data["statsPercentGW"]
-        self.ogw = data["statsPercentOGW"]
         self.username = data["username"]
         self.elo = round(data["scoreElo"]) # seems this is the player's "current" elo at the time of looking up the event??
         self.vp = round(data["scoreVP"])
         self.elo_diff = 0 # modified when analyzing matchups
         self.rank_elo = data["rankElo"]
-        self.region = data.get("addressCountryCode")
+        if "addressCountryCode" in data.keys():
+            self.region = data["addressCountryCode"]
+        elif "country" in data.keys():
+            self.region = data["country"]
+        else:
+            self.region = ""
+        
         if "team" in data:
             self.team = data["team"]
             self.seat = data["teamSlot"]
+            # Wins/losses are per team not per player
+            self.wins = 0
+            self.losses = 0
+            self.ties = 0
+            self.byes = 0
+            self.score = 0
+            self.omw = 0
+            self.gwp = 0
+            self.ogw = 0
+        else: # Standard solo score stats
+            self.wins = data["statsWins"]
+            self.losses = data["statsLosses"]
+            self.ties = data["statsTies"]
+            self.byes = data["statsByes"]
+            self.score = data["statsScore"]
+            self.omw = data["statsPercentOMW"]
+            self.gwp = data["statsPercentGW"]
+            self.ogw = data["statsPercentOGW"]
+            
         self.dq = data.get("disqualified", False)
         ban = data.get("suspendedUntil", 0)
         if ban > time()*1000:
@@ -61,7 +78,11 @@ class Entrant:
                 exit(1)
 
         try:
-            is_public = data.get("isDecklistPublic")
+            # Omni no longer provides "isDecklistPublic", but we can still use it to bypass a lookup with old data
+            if evt.evt["api_version"] == "internal_v1":
+                is_public = data.get("isDecklistPublic", False)
+            else:
+                is_public = True
             dl = get_deck(self.id, evt_id, is_public)
             self.deck = Deck(dl, self)
         except (NoDeck):

@@ -47,6 +47,8 @@ def get_deck(p_id, evt_id, public_on_omni):
         try:
             with open(f"data/event_{evt_id}/deck_{p_id}.json") as f:
                 dl = json.load(f)
+            if dl and dl.get('visible') == False:
+                raise NoDeck()
         except (FileNotFoundError, json.JSONDecodeError):
             if not public_on_omni or int(evt_id) == 384: #Special case for Ascent Ontario which was before Omni supported decklists
                 raise NoDeck()
@@ -276,7 +278,6 @@ def collate_event_from_apis(evt_id, short_circuit_fn=None):
     if evt.get("teams"):
         print(f"Downloading team information for event #{evt_id}...")
         teams = fetch_json(f"https://api.gatcg.com/omnidex/events/{evt_id}/teams")
-        evt["teams"] = teams
         for tm in teams:
             for seat in tm["players"]:
                 # Find matching player and add their team info for backwards compat
