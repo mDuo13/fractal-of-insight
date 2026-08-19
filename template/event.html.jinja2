@@ -2,23 +2,6 @@
 
 {% block subtitle %}{{evt.name}} Analysis - {% endblock %}
 
-{% macro regiontable(regiondata, id, collapse=True) %}
-<table class="tabcontent togglable {% if collapse %}collapse{% endif %}" id="{{id}}">
-    <thead><tr>
-        <th>Region</th><th># Entrants</th><th>%</th>
-    </tr></thead>
-    <tbody>
-        {% for region, quant, pct in regiondata %}
-        <tr>
-            <td>{{macros.flag(region, True)}}</td>
-            <td>{{quant}}</td>
-            <td>{{pct}}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% endmacro %}
-
 {% block body %}
 <nav id="main-nav">
     <a class="nav-item" href="/">⌂ Home</a>
@@ -125,12 +108,12 @@
         </div>
         {% endif %}
         <div class="tabwrapper togglable collapse">
-            {{regiontable(evt.regiondata, "regions-overall", collapse=False)}}
+            {{macros.regiontable(evt.regiondata, "regions-overall", collapse=False)}}
             {% if evt.day2stats %}
-            {{regiontable(evt.day2stats.regiondata, "regions-day2")}}
+            {{macros.regiontable(evt.day2stats.regiondata, "regions-day2")}}
             {% endif %}
             {% if evt.topcutstats %}
-            {{regiontable(evt.topcutstats.regiondata, "regions-topcut")}}
+            {{macros.regiontable(evt.topcutstats.regiondata, "regions-topcut")}}
             {% endif %}
         </div>
     </div>

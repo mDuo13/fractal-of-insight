@@ -723,3 +723,20 @@
         </div>
     </div>
 {% endmacro %}
+
+{% macro regiontable(regiondata, id, collapse=True) %}
+<table class="tabcontent togglable {% if collapse %}collapse{% endif %}" id="{{id}}">
+    <thead><tr>
+        <th>Region</th><th># Entrants</th><th>%</th>
+    </tr></thead>
+    <tbody>
+        {% for region, quant, pct in regiondata %}
+        <tr>
+            <td>{{flag(region, True)}}</td>
+            <td>{{quant}}</td>
+            <td>{{pct}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endmacro %}

@@ -83,6 +83,32 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <div class="player-regions">
+        <h3>Home Region Breakdown</h3>
+        <button onclick="toggle('.player-regions > .togglable')">Glimpse Region Data</button>
+
+        {% if evt.day2stats or evt.topcutstats %}
+        <div class="tabs togglable collapse">
+            <button class="tab activetab" onclick="opentab(this, '#regions-overall')">Overall</button>
+            {% if evt.day2stats %}
+            <button class="tab" onclick="opentab(this, '#regions-day2')">Day 2</button>
+            {% endif %}
+            {% if evt.topcutstats %}
+            <button class="tab" onclick="opentab(this, '#regions-topcut')">Top Cut</button>
+            {% endif %}
+        </div>
+        {% endif %}
+        <div class="tabwrapper togglable collapse">
+            {{macros.regiontable(evt.regiondata, "regions-overall", collapse=False)}}
+            {% if evt.day2stats %}
+            {{macros.regiontable(evt.day2stats.regiondata, "regions-day2")}}
+            {% endif %}
+            {% if evt.topcutstats %}
+            {{macros.regiontable(evt.topcutstats.regiondata, "regions-topcut")}}
+            {% endif %}
+        </div>
+    </div>
 </section>
 
 {% if evt.num_decklists %}

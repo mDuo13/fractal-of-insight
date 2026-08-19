@@ -384,6 +384,8 @@ class OmniEvent:
                 self.winner = None
             elif self.format != TEAM_STANDARD:
                 self.winner = self.players[0]
+            elif self.format == TEAM_STANDARD:
+                self.winning_team = self.top_swiss_team
             return
 
         finalstage = self.evt["stages"][-1]
@@ -497,6 +499,7 @@ class OmniEvent:
             self.winner = self.top_cut[0]
         if self.format == TEAM_STANDARD:
             self.winner = None # use self.winning_team instead
+            self.winning_team = self.top_cut[0]
 
     def calc_draw_pct(self):
         total_matches = 0
@@ -587,6 +590,7 @@ class SeatIn3v3:
 class Team3v3Event(OmniEvent):
     def __init__(self, evt_id, force_redownload=False):
         super().__init__(evt_id, force_redownload)
+        self.winning_team = None
         self.parse_teams()
         self.fix_placement()
         self.parse_top_cut()
@@ -613,7 +617,7 @@ class Team3v3Event(OmniEvent):
 
         teams.sort(key=lambda x:x.sortkey(), reverse=True)
         self.teams = {t.name.lower(): t for t in teams}
-        self.winning_team = teams[0]
+        self.top_swiss_team = teams[0]
 
     def fix_placement(self):
         for i, team in enumerate(self.teams.values()):
