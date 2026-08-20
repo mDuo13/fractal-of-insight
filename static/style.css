@@ -2078,7 +2078,7 @@ a.achievement {
     width: 75vw;
     height: 75vh;
     padding: 2.5vh 2.5vw 2.5vh 2.5vw;
-    background-color: var(--ui-bg-2);
+    background: var(--ui-bg-2);
 }
 #add-achievement-popup > * {
     display: block;
