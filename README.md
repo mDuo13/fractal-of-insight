@@ -82,7 +82,7 @@ When you have the necessary data downloaded, you can do interactive queries in t
     - update query params when you run a comparison?
     - collapse controls?
     - better graphics for ⇒?
-- switch to dynamic sightings/decklists on more pages (champs, large events)
+- switch to dynamic sightings/decklists on more pages (like large events)
 - refactor more for API v2 changes:
     - add abstraction layer for stages/rounds/pairings
     - fix day 2 cut support. Possibly use hard-coded point thresholds as a stopgap?

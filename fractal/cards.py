@@ -72,6 +72,10 @@ BANLIST = [
     "Carpsong Coda",
     "Grim Pastiche",
     "Ranger Strides",
+    # Seasonal banlist:
+    "Baleful Oblation",
+    "Spirit Blade: Ascension",
+    "Fabled Azurite Fatestone",
 ]
 
 INTRODUCED_IN_PRXY = [
@@ -91,6 +95,7 @@ REMOVED_FROM_PRXY = {
 PRIZE_EQUIVALENTS = {
     "Apotheosis Rite": "Grand Crusader's Ring",
     "Sacramental Rite": "Quicksilver Grail",
+    "Transcendental Rite": "Imperial Seal",
     "Morrigan, Lost Spirit": "Lost Spirit",
     "Priscilla, Lost Spirit": "Lost Spirit",
     "Dinah, Lost Spirit": "Lost Spirit",

@@ -614,7 +614,7 @@ add_archetype(
 )
 
 add_archetype(
-    "Arcane",
+    "Arcane Mage",
     [
         "Rai, Storm Seer",
         "Arcane Blast",
@@ -627,6 +627,24 @@ add_archetype(
         "Baleful Oblation",
         "Guo Jia, Heaven's Favored",
         "Ciel, Mirage's Grave",
+        "Lorraine, Blademaster",
+        "Lorraine, Honed Operative",
+    ]
+)
+
+add_archetype(
+    "Arcane Warrior",
+    [
+        "Staves X Ultra",
+        "Piccarda, Night Rider",
+        "Conductive Strike",
+        "Rumble Coordinator",
+        "Capacitance X Psycho",
+    ],
+    exclude_cards=[
+        "Rai, Archmage",
+        "Lorraine, Spirit Ruler",
+        "Sabela, Gossamer Penance",
     ]
 )
 
@@ -848,14 +866,29 @@ add_archetype(
 )
 
 add_archetype(
-    "Exia",
+    "Exia Warrior",
     [
         "Enrage",
         "Relentless Outburst",
         "Exia Sight",
         "Mend Flesh",
         "Proof of Life",
-        "Seize Fate",
+    ],
+    exclude_cards=[
+        "Dante, Hemomancer"
+    ]
+)
+
+add_archetype(
+    "Exia Mage",
+    [
+        "Hemoflux Drain",
+        "Rhesus Eradication",
+        "Blood Surge",
+        "Unruled Bereavement",
+    ],
+    exclude_cards=[
+        "Jin, Undying Resolve"
     ]
 )
 
@@ -873,10 +906,8 @@ add_archetype(
         "Xukong, Shifted Fates",
     ],
     exclude_cards=[
-        "Silvie, Loved by All",
-        "Silvie, Earth's Tune",
-        "Silvie, Slime Sovereign",
-        "Diao Chan, Idyll Corsage",
+        "Silvie, with the Pack", # Exclude the Lv2 in case people run the Lv3 to banish with Weight of Looking Up
+        "Diao Chan, Dreaming Wish",
     ],
     shortname = "Tera",
 )
@@ -996,7 +1027,9 @@ teradiao = add_archetype(
         "Maiden of Primal Virtue",
     ],
     exclude_cards=[
-        "Kongming, Fel Eidolon",
+        "Kongming, Ascetic Vice", # Exclude Lv2s in case people run the Lv3 to banish with Weight of Looking Up
+        "Kongming, Erudite Strategist",
+        "Silvie, with the Pack",
     ],
     shortname="Tera",
 )

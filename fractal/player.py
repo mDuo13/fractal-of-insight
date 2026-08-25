@@ -477,21 +477,22 @@ class Player:
                     self.achievements.add("We Need Guns. Lots of Guns", e, details=str(e.deck))
 
                 # Advanced element achievements
-                if "Arcane" in e.deck.archetypes:
+                eda_set = set(e.deck.archetypes)
+                if eda_set & {"Arcane Mage", "Arcane Warrior"}:
                     self.achievements.add("Stormchaser", e, details=str(e.deck))
-                if "Astra Cleric" in e.deck.archetypes or "Astra Ranger" in e.deck.archetypes:
+                if eda_set & {"Astra Cleric", "Astra Ranger"}:
                     self.achievements.add("The Best at Space", e, details=str(e.deck))
-                if {"Crux Lorraine", "Crux Assassin", "Crux Mage", "Crux Hybrid"} & set(e.deck.archetypes):
+                if eda_set & {"Crux Lorraine", "Crux Assassin", "Crux Mage", "Crux Hybrid"}:
                     self.achievements.add("Crux is Fine", e, details=str(e.deck))
-                if "Exia" in e.deck.archetypes:
+                if eda_set & {"Exia Warrior", "Exia Mage"}:
                     self.achievements.add("Too Angry to Die", e, details=str(e.deck))
-                if "Luxem Assassin" in e.deck.archetypes or "Luxem Tamer" in e.deck.archetypes:
+                if eda_set & {"Luxem Assassin", "Luxem Tamer", "Luxem Mordred"}:
                     self.achievements.add("Flashy", e,  details=str(e.deck))
-                if "Neos" in e.deck.archetypes:
+                if eda_set & {"Neos"}:
                     self.achievements.add("Is that Jimmy Le?", e,  details=str(e.deck))
-                if "Tera Tamer" in e.deck.archetypes or "Tera Mage" in e.deck.archetypes or "Tera Cleric" in e.deck.archetypes:
+                if eda_set & {"Tera Tamer", "Tera Mage", "Tera Cleric"}:
                     self.achievements.add("One with Nature", e,  details=str(e.deck))
-                if {"Umbra Ranger", "Shadowstrike", "Umbra Guardian", "Oblation", "Umbra Alice"} & set(e.deck.archetypes):
+                if eda_set & {"Umbra Ranger", "Shadowstrike", "Umbra Guardian", "Oblation", "Umbra Alice"}:
                     self.achievements.add("In the Shadows", e,  details=str(e.deck))
 
         # Four Seasons
