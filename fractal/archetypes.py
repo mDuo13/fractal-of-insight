@@ -629,7 +629,8 @@ add_archetype(
         "Ciel, Mirage's Grave",
         "Lorraine, Blademaster",
         "Lorraine, Honed Operative",
-    ]
+    ],
+    shortname="Arcane"
 )
 
 add_archetype(
@@ -645,7 +646,8 @@ add_archetype(
         "Rai, Archmage",
         "Lorraine, Spirit Ruler",
         "Sabela, Gossamer Penance",
-    ]
+    ],
+    shortname="Arcane"
 )
 
 add_archetype(
@@ -835,6 +837,7 @@ add_archetype(
         "Spirit Blade: Ascension",
         "Storm Slime",
         "Ethereal Slime",
+        "Jinzhuo, Bands of Virtue", # Separate Byakko decks
     ]
 )
 
@@ -876,7 +879,8 @@ add_archetype(
     ],
     exclude_cards=[
         "Dante, Hemomancer"
-    ]
+    ],
+    shortname="Exia"
 )
 
 add_archetype(
@@ -889,7 +893,8 @@ add_archetype(
     ],
     exclude_cards=[
         "Jin, Undying Resolve"
-    ]
+    ],
+    shortname="Exia"
 )
 
 add_archetype(

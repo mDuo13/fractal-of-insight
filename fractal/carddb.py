@@ -162,8 +162,8 @@ class CardDB:
 
     def is_valid_in_decklists(self, cardname):
         """
-        Returns True if the card should appear in decklists.
-        Returns False if the card should not, such as tokens or masteries.
+        Return True if the card should appear in decklists.
+        Return False if the card should not, such as tokens or masteries.
         """
         if cardname not in self.data.keys():
             logging.warning(f"Checking validity of non-card: {cardname}")
@@ -174,6 +174,18 @@ class CardDB:
         if "MASTERY" in card["types"]:
             return False
         if "STATUS" in card["types"]:
+            return False
+        return True
+    
+    def is_standard_legal(self, cardname):
+        """
+        Return True if the card is currently legal in Standard. Use a hard-coded
+        BANLIST in addition to Index because Index is sometimes behind.
+        """
+        if cardname in BANLIST:
+            return False
+        card = self.data[cardname]
+        if card["legality"] and card["legality"].get("STANDARD"):
             return False
         return True
 
