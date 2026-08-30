@@ -1465,6 +1465,9 @@ a.achievement {
 .champslice.champ-ciel .champdisplay-inner {
     background-image: url("champ/ciel.png");
 }
+.champslice.champ-dante .champdisplay-inner {
+    background-image: url("champ/dante.png");
+}
 .champslice.champ-diana .champdisplay-inner {
     background-image: url("champ/diana.png");
 }
@@ -1552,8 +1555,11 @@ a.achievement {
 .arche-penguin-mill {
     background-image: url("bg/penguin-mill.jpg");
 }
-.arche-arcane {
-    background-image: url("bg/arcane.jpg");
+.arche-arcane-mage {
+    background-image: url("bg/arcane-mage.jpg");
+}
+.arche-arcane-warrior {
+    background-image: url("bg/arcane-warrior.jpg");
 }
 .arche-slimes {
     background-image: url("bg/slimes.jpg");
@@ -1588,8 +1594,11 @@ a.achievement {
 .arche-domains {
     background-image: url("bg/domains.jpg");
 }
-.arche-exia {
-    background-image: url("bg/exia.jpg");
+.arche-exia-warrior {
+    background-image: url("bg/exia-warrior.jpg");
+}
+.arche-exia-mage {
+    background-image: url("bg/exia-mage.jpg");
 }
 .arche-tera-mage {
     background-image: url("bg/tera-mage.jpg");
