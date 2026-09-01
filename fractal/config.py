@@ -31,7 +31,7 @@ REALLY_INTERESTING_PLAYER_COUNT = 60 # Crawler includes events with at least thi
 CRAWL_SAVE_INTERVAL = 50
 EVT_MAX_LENGTH = 60*60*24*3 # Consider an event stale if it's "started" but at least this many seconds ago (3 days)
 STALE_GRACE_PERIOD = EVT_MAX_LENGTH # Consider an event stale if it hasn't started this long after its scheduled start time
-MAX_404_STREAK = 5 # If there are this many 404s in a row it probably means we've hit the end of registered events
+MAX_404_STREAK = 5 # If there are this many 404s in a row it probably means we've hit the end of registered events. Except in the case of 60730 through 60758.
 SHOW_RDO_SPOILERS = True
 
 class SharedConfig:

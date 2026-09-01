@@ -484,7 +484,7 @@ class Player:
                     self.achievements.add("The Best at Space", e, details=str(e.deck))
                 if eda_set & {"Crux Lorraine", "Crux Assassin", "Crux Mage", "Crux Hybrid"}:
                     self.achievements.add("Crux is Fine", e, details=str(e.deck))
-                if eda_set & {"Exia Warrior", "Exia Mage"}:
+                if eda_set & {"Exia Warrior", "Exia Mage", "Divine Comedy"}:
                     self.achievements.add("Too Angry to Die", e, details=str(e.deck))
                 if eda_set & {"Luxem Assassin", "Luxem Tamer", "Luxem Mordred"}:
                     self.achievements.add("Flashy", e,  details=str(e.deck))

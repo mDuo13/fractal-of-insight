@@ -890,12 +890,22 @@ add_archetype(
         "Rhesus Eradication",
         "Blood Surge",
         "Unruled Bereavement",
+        "Thanatotic Hemosynth",
     ],
     exclude_cards=[
-        "Jin, Undying Resolve"
+        "Jin, Zealous Maverick", # use the Lv2 just in case of Weight of Looking Up type shenanigans
+        #"Dante, Hematic Overdrive", # Separate out Divine Comedy decks (maybe)
     ],
     shortname="Exia"
 )
+
+# Keeping an eye on this as a possible separate archetype:
+# add_archetype(
+#     "Divine Comedy",
+#     [
+#         "Dante, Hematic Overdrive",
+#     ]
+# )
 
 add_archetype(
     "Tera Mage",
