@@ -76,19 +76,7 @@ TCGP_CARDNAMES = {
         "Fabled Azurite Fatestone",
         "Fabled Azurite Fatestone // Seiryuu, Azure Dragon",
     ],
-    "Overlapping Visages": [
-        "Overlapping Visages (025A)",
-        "Overlapping Visages (025B)",
-    ],
     "Gemini Starbearer": "Gemini StarBearer",
-    "Angelic Channeling": [
-        "Angelic Channeling (044A)",
-        "Angelic Channeling (044B)",
-    ],
-    "Seraphic Legion's Descent": [
-        "Seraphic Legion's Descent (139A)",
-        "Seraphic Legion's Descent (139B)",
-    ],
 }
 
 # Fix cases where TCGP has a card edition listed in a different set than
@@ -100,6 +88,8 @@ TCGP_ED_ADJUSTMENTS = {
 }
 
 class PriceDB:
+    name_suffix_regex = re.compile(r"(?P<cardname>.*) (?P<suffix>\(\w+\))$")
+    
     def __init__(self, prices_folder, carddata):
         self.pricedata = {}
         self.carddata = carddata # pass card db from datalayer
@@ -111,13 +101,6 @@ class PriceDB:
                     self.pricedata[entry.name[:-5]] = pricelist
         except FileNotFoundError:
             print("Didn't find cached price data")
-
-        # try:
-        #     with open(path.join(prices_folder, "price-meta.json")) as f:
-        #         PRICE_META = json.load(f)
-        # except FileNotFoundError:
-        #     print("Didn't find price metadata")
-        #     PRICE_META = {"Updated": "Never", "prefixes": []}
     
     def get_card_price(self, cardname, sub_prizes=False):
         """
@@ -146,6 +129,16 @@ class PriceDB:
 
         #print(f"Couldn't get a price for {fullname}.")
         return None
+    
+    def without_suffixes(self, cardname):
+        """
+        Return the name of the card without the various edition suffixes that
+        TCGP often adds to cards such as (UR), (CSR), (044A), etc.
+        """
+        m = self.name_suffix_regex.match(cardname)
+        if m:
+            return m.group("cardname")
+        return cardname
     
     def get_formatted_price(self, cardname):
         """
@@ -182,7 +175,8 @@ class PriceDB:
         if prefix in TCG_ABBR.keys():
             for abbr in TCG_ABBR[prefix]:
                 for item in self.pricedata[abbr].values():
-                    if item.get("name") in tcgp_names:
+                    itemname = self.without_suffixes(item.get("name",""))
+                    if itemname in tcgp_names:
                         new_price = self.low_price_for_product(item)
                         if not new_price: # could be None for no listings
                             continue

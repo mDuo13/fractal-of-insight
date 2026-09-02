@@ -49,7 +49,6 @@ When you have the necessary data downloaded, you can do interactive queries in t
 - make dynamic sections, i.e. flask app or something, for showing individual events or doing dynamic queries
 - track invite points/cards, if possible? (might require sideloading number of invites per event)
 - sideboard / tech cards prevalence rate (season/format)
-- path of silver data
 - more achievements in general
 - improve presentation of price data
     - maybe show average or median price per archetype?

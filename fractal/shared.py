@@ -44,6 +44,8 @@ def ms_from_dt(datetime_string):
     return int(ts*1000)
 
 
+prdTech_regex = re.compile(r"(\w)tech(\W)")
+prdTech_repl = r"\1Tech\2"
 def fix_case(cardname):
     repls = {
         "'S":"'s",
@@ -65,10 +67,15 @@ def fix_case(cardname):
         " To ":" to ",
         " With ":" with ",
         ", with ": ", With ", # "Silvie, With the Pack" vs "Smack with Flute"
+        " Qa ": " QA ",
+        "Vel-Ocity": "Vel-ocity",
+        "Zena, ": "ZENA, ",
     }
     cardname = cardname.title()
     for k,v in repls.items():
         cardname = cardname.replace(k,v)
+    # Fix examples like "Veltech"→"VelTech", etc.
+    cardname = prdTech_regex.sub(prdTech_repl, cardname)
 
     # Exceptions to the typical title casing for prepositions
     if cardname == "Claimed from Beyond":
