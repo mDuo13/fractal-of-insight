@@ -58,6 +58,24 @@
 <span class="deckname">{% if d %}{{d}}{% else %}(Unknown deck){% endif %}</span>
 {% endmacro %}
 
+{% macro pricedata(a, active=false) %}
+<div id="price-data-{{slugify(a.name)}}" class="tabcontent {% if active %}activetab{% else %}collapse{% endif %}">
+    <p class="explanation">(Based on {{a.matched_decks|length}} decks.)</p>
+    <ul>
+        <li><b>Median price:</b> ${{a.median_price}}</li>
+        <li><b>Typical range:</b> {{a.price_range}}</li>
+    </ul>
+
+    <h3>Most expensive cards</h3>
+    <p class="explanation">(Costing at least $5.00 USD.)</p>
+    <div class="top-cards">
+        {% for card_o in a.money_cards.values() %}
+            {{ macros.cardimg(card_o, link=True)}}
+        {% endfor %}
+    </div>
+</div>
+{% endmacro %}
+
 {% block body %}
 <nav id="main-nav">
     <a class="nav-item" href="/">⌂ Home</a>
@@ -77,6 +95,7 @@
         <li><b>Earliest appearance</b>: {{arche.earliest}}</li>
         <li><b>All-time win rate</b>: {{arche.winrate}}%</li>
         <li><b>Total events won</b>: {{wins|length}}</li>
+        <li><b>Typical price range:</b>: {{arche.price_range}}</li>
     </ul>
 </section>
 
@@ -197,6 +216,48 @@
     {% endfor %}
 </section>
 {% endif %}
+
+<section id="pricing">
+    <h2>Pricing</h2>
+    <button onclick="toggle('#pricing > .togglable')">Glimpse price info</button>
+
+    <div class="tabs togglable collapse">
+        <button class="tab activetab" onclick="opentab(this, '#price-data-{{slugify(arche.name)}}')">Overall</button>
+        {% for st in arche.subtypes %}
+            <button class="tab" onclick="opentab(this, '#price-data-{{slugify(st.name)}}')">{% if st.shortname %}{{st.shortname}}{% else %}{{st.name}}{% endif %}</button>
+        {% endfor %}
+        {% if not arche.require_element %}
+        {% for et in arche.el_subtypes.values() %}
+            {% if et.matched_decks|length > 1 %}
+            <button class="tab" onclick="opentab(this, '#price-data-{{slugify(et.name)}}')">{{et.name}}</button>
+            {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% for c,ct in arche.champ_subtypes.items() %}
+            {% if ct.matched_decks|length > 1 %}
+            <button class="tab" onclick="opentab(this, '#price-data-{{slugify(ct.name)}}')">{{ct.name}}</button>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="tabwrapper togglable collapse">
+        {{ pricedata(arche, active=true) }}
+        {% for st in arche.subtypes %}
+        {{ pricedata(st) }}
+        {% endfor %}
+        {% if not arche.require_element %}
+        {% for et in arche.el_subtypes.values() %}
+        {% if et.matched_decks|length > 1 %}
+        {{ pricedata(et) }}
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% for c,ct in arche.champ_subtypes.items() %}
+        {% if ct.matched_decks|length > 1 %}
+        {{ pricedata(ct) }}
+        {% endif %}
+        {% endfor %}
+    </div>
+</section>
 
 <section id="sightings">
     <h2>Sightings</h2>

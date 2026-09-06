@@ -705,13 +705,6 @@
             {% endif %}
         {% endfor %}
         </div>
-        <h3>Most expensive cards</h3>
-        <div class="top-cards">
-        <p class="explanation">(Costing at least $5.00 USD.)</p>
-        {% for card_o in a.money_cards.values() %}
-            {{ cardimg(card_o, link=True)}}
-        {% endfor %}
-        </div>
         <h3>Rising Cards</h3>
         <div class="top-cards">
         <p class="explanation">(Cards with the biggest percentage increase in appearances in the past ~60 days compared with before, excluding sideboards.)</p>

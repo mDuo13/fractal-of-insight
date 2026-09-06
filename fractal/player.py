@@ -99,6 +99,15 @@ class Entrant:
         self.first_plays = [] # List of card names first played in this deck.
                               # Populated by cardstats.
         self.top_cards = []
+    
+    def is_high_scoring(self):
+        """
+        Return True if the entrant scored more than half the possible points in
+        the Swiss stage of this event.
+        """
+        if self.score > self.event.fiftypct_points:
+            return True
+        return False
 
     def sortkey(self):
         if self.dq:

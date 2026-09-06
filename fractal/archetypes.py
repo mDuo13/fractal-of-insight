@@ -1,6 +1,7 @@
 from collections import defaultdict
 from bisect import insort
 from logging import warning
+from statistics import median, quantiles, pstdev
 from time import time
 
 from .config import SharedConfig, HOT_WINDOW, SIMILAR_DECKS_CUTOFF, MONEY_CARD_COUNT, MONEY_CARD_PRICE_CUTOFF, RISING_CARDS_CUTOFF_PCT, MAT_DIFF_CARD_LIMIT, MAIN_DIFF_CARD_LIMIT, SIDE_DIFF_CARD_LIMIT, RISING_CARD_LIMIT
@@ -136,6 +137,7 @@ class Archetype:
         self.analyze_hot_cards()
         self.analyze_card_stats()
         self.analyze_money_cards()
+        self.analyze_affordability()
         if self.subtypes:
             self.subtypes.sort(key=lambda x: len(x.matched_decks), reverse=True)
             for st in self.subtypes:
@@ -258,6 +260,30 @@ class Archetype:
                     "img": get_card_img(cardname)
                 }
 
+    def analyze_affordability(self):
+        deck_prices = [d.price_num for d in self.matched_decks]
+        if not deck_prices:
+            self.median_price = 0.0
+            #self.budget_heroes = []
+            self.price_range = "(No data)"
+            return
+
+        self.median_price = round(median(deck_prices), 2)
+        # Calculate a "typical" price range as median ± standard deviation
+        # with each end clamped to the observed min/max deck price
+        std_dev = pstdev(deck_prices)
+        min_price = min(deck_prices)
+        max_price = max(deck_prices)
+        low_bound = max(min_price, self.median_price-std_dev)
+        high_bound = min(max_price, self.median_price+std_dev)
+        self.price_range = f"${int(low_bound)}–${int(high_bound)}"
+
+        ## The following "Budget Heroes" calculation wasn't that useful.
+        ## In the case of Fractals, the standard deviation is rather small.
+        # q25 = quantiles(deck_prices)[0]
+        # cheap_decks = [d for d in self.matched_decks if d.price_num <= q25]
+        # cheap_good_decks = [d for d in cheap_decks if d.entrant.is_high_scoring()]
+        # self.budget_heroes = cheap_good_decks
 
     def load_videos(self):
         videos = []
@@ -854,6 +880,7 @@ add_archetype(
         "Diao Chan, Idyll Corsage",
         "Ciel, Mirage's Grave",
         "Alice, Phantom Monarch",
+        "Lamentation's Toll", # Sometimes uses Vertus for its power stat
     ],
     shortname="Tera"
 )
@@ -878,7 +905,8 @@ add_archetype(
         "Proof of Life",
     ],
     exclude_cards=[
-        "Dante, Hemomancer"
+        "Dante, Hemomancer",
+        "Dynastic Whirlpool",
     ],
     shortname="Exia"
 )
@@ -921,7 +949,7 @@ add_archetype(
         "Xukong, Shifted Fates",
     ],
     exclude_cards=[
-        "Silvie, with the Pack", # Exclude the Lv2 in case people run the Lv3 to banish with Weight of Looking Up
+        "Silvie, With the Pack", # Exclude the Lv2 in case people run the Lv3 to banish with Weight of Looking Up
         "Diao Chan, Dreaming Wish",
     ],
     shortname = "Tera",

@@ -88,3 +88,4 @@ When you have the necessary data downloaded, you can do interactive queries in t
     - migrate away from internal API where possible
     - make official API use more natural and deprecate the old internal v1 format
 - make the crawler by default handle the big gap from events 60730 through 60758 correctly?
+- display archetype price info, broken down by season or format

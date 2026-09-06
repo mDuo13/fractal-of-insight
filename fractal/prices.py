@@ -13,7 +13,7 @@ TCG_ABBR = {
     "AMB": ["AMB1E"],
     "DTR 1st": ["DTR1E"],
     "DTR": ["DTR1E"],
-    "EVP": ["EVP","EVP2","EVP3","EVP4"],
+    "EVP": ["EVP","EVP2","EVP3","EVP4", "PRDEVP"],
     "FTCA": ["FTC"],
     "HVN 1st": ["HVN"],
     "MRC 1st": ["MRC"],
@@ -25,7 +25,6 @@ TCG_ABBR = {
     "P26": ["P"],
     "PRD 1st": ["PRD"],
     "PRDG": ["PRD"],
-    #TODO: see where PRDEVP ends up
     "PTMEVP": ["PHME"],
     "PTM 1st": ["PTM"],
     "PTMLGS": ["PTM"],
@@ -89,7 +88,7 @@ TCGP_ED_ADJUSTMENTS = {
 
 class PriceDB:
     name_suffix_regex = re.compile(r"(?P<cardname>.*) (?P<suffix>\(\w+\))$")
-    
+
     def __init__(self, prices_folder, carddata):
         self.pricedata = {}
         self.carddata = carddata # pass card db from datalayer

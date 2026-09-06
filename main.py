@@ -117,7 +117,7 @@ class PageBuilder:
                 de["winner"] = 1
             if deck.is_topcut_deck:
                 de["topcut"] = 1
-            if deck.entrant.score > event.fiftypct_points:
+            if deck.entrant.is_high_scoring():
                 de["high"] = 1
             sj.append(de)
         return json.dumps(sj)
