@@ -406,6 +406,8 @@ wind_allies = add_archetype(
         "Banner Knight",
         "Windrider Vanguard",
         "Axis Gale Scholar",
+        "Sun Ce, Weaponsmaster",
+        "Charged Mannequin",
     ],
     exclude_cards=[
         "Spirit Blade: Ascension",
@@ -840,16 +842,16 @@ neos = add_archetype(
         "Beguiling Coup", # Aside: this doesn't even work the way you want it to
     ]
 )
-neos.add_subtype(
-    "Domains",
-    [
-        "Wayfinder's Map",
-        "The Eternal Kingdom",
-    ],
-    require_types={
-        "DOMAIN": 10
-    },
-)
+# neos.add_subtype(
+#     "Domains",
+#     [
+#         "Wayfinder's Map",
+#         "The Eternal Kingdom",
+#     ],
+#     require_types={
+#         "DOMAIN": 10
+#     },
+# )
 
 add_archetype(
     "Beast",
@@ -892,7 +894,12 @@ add_archetype(
         "Mary Ann, Maladroit Maid",
         "Awaken Ombre",
         "Spectral Haunting"
-    ]
+    ],
+    require_types={
+        # Try to separate from Wind Robo Allies by defining these as decks with
+        # not enough allies to qualify there.
+        "ALLY": -21
+    },
 )
 
 add_archetype(

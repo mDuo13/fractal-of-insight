@@ -68,7 +68,6 @@ When you have the necessary data downloaded, you can do interactive queries in t
 - add an icon & other styles to highlight Refracted events
 - improve reliability / resilience to bad/unexpected/missing data
 - improve experience / instructions for building with a fresh clone of the repo
-- add vods for OCE Nats, Icebound Slam Cup
 - make condensed view of battlechart with top 10-ish archetypes only
 - archetype head-to-head analysis: cards more/less prevalent in winning lists?
 - improve pagination & filtering on players page

@@ -503,6 +503,13 @@ class Player:
                     self.achievements.add("One with Nature", e,  details=str(e.deck))
                 if eda_set & {"Umbra Ranger", "Shadowstrike", "Umbra Guardian", "Oblation", "Umbra Alice"}:
                     self.achievements.add("In the Shadows", e,  details=str(e.deck))
+                if eda_set & {"Whirlpool Mill"}:
+                    # Credit these decks for the appropriate advanced element
+                    # since the archetype def may exclude the typical ones
+                    if "Jin, Undying Resolve" in e.deck.champs:
+                        self.achievements.add("Too Angry to Die", e, details=str(e.deck))
+                    if "Alice, Phantom Monarch" in e.deck.champs:
+                        self.achievements.add("In the Shadows", e,  details=str(e.deck))
 
         # Four Seasons
         seasons_played = set()
