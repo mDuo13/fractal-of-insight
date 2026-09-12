@@ -481,23 +481,35 @@ fire_aggro = add_archetype(
         "Fabled Ruby Fatestone", # Try separating out Suzaku decks
         "Aetheric Calibration", # Separate out Aetherwing decks
         "Cinderbloom Tender", # Separate out Cinderbloom combo decks
+        "Combustible Potion", #Separate out other Herb Burn decks
         "Erupting Rhapsody", # Separate out Erupting
         "Volcanic Crescendo", # ^^
     ]
 )
 
 add_archetype(
-    "Cinderbloom Combo",
+    "Herb Burn",
     [
         "Cinderbloom Tender",
+        "Combustible Potion",
     ],
     require_combos=[
         [
             "Cinderbloom Tender",
             "Searing Rebuke",
-        ]
+        ],
+        [
+            "Floral Arrangement",
+            "Combustible Potion",
+        ],
     ],
-    shortname="Cinderbloom"
+    require_element="Fire",
+    exclude_cards=[
+        "Dungeon Guide",
+        "Volcanic Crescendo",
+        "Firebloom Flourish",
+    ],
+    shortname="Burn"
 )
 
 add_archetype(
@@ -731,6 +743,16 @@ crux_lorraine.add_subtype(
     "Crux Knight",
     ["Lorraine, Crux Knight"],
     shortname=""
+)
+crux_lorraine.add_subtype(
+    "Pyscho Ruler",
+    ["Capacitance X Psycho"],
+    require_combos=[
+        [
+            "Capacitance X Psycho",
+            "Numinous Monk",
+        ],
+    ]
 )
 
 crux_mage = add_archetype(
