@@ -269,7 +269,7 @@ class OmniEvent:
     
     def day2players(self):
         if self.evt.get("keepN"): # Has API v1 style day 2 data
-            keepN = self.evt.get("keepN")
+            keepN = self.evt["keepN"]
             # TODO: maybe use "prior drops" data to include players who
             # qualified but dropped without playing in day 2?
             day2_start = keepN[0]['round']
@@ -279,7 +279,11 @@ class OmniEvent:
                 print("Day 2 cutoff not ready yet")
                 return
             d2r1pairings = stage1['rounds'][day2_start]["pairings"]
-            return [self.pdict[pid] for pid in d2r1pairings.values()]
+            d2players = [self.pdict[pid] for pid in d2r1pairings.values()]
+            # Add players who qualified but dropped
+            for pid in keepN[0].get("priorDrops", []):
+                d2players.append(self.pdict[pid]) #TODO: string or int?
+            return d2players
 
         elif self.category['shortname'] in ('ascent', 'nationals'):
             n = len(self.players)
