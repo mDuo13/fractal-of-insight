@@ -397,6 +397,7 @@ wind_allies = add_archetype(
         "Trained Sharpshooter",
         "Vigilant Sentry",
         "Shimmercloak Assassin",
+        "Haze Droid",
         "Dilu, Auspicious Charger",
         "Oath of the Sakura",
         "Liu Bei, Oathkeeper",

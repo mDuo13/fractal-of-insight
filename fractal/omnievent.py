@@ -94,6 +94,7 @@ class OmniEvent:
         # has a theoretical "win rate" of > 50% of possible matches
         # (e.g. missing day 2 is like losing all your day 2 games)
         self.fiftypct_points = self.rounds * 1.5
+        
 
         self.judges = [JudgeEvt(jdata, self) for jdata in self.evt.get("judges", [])]
 
@@ -265,6 +266,33 @@ class OmniEvent:
                 print(f"Refracted: bad player ID #{pid} for this event?")
                 continue
             # TODO: validate round/stage data for achievement
+    
+    def day2players(self):
+        if self.evt.get("keepN"): # Has API v1 style day 2 data
+            keepN = self.evt.get("keepN")
+            # TODO: maybe use "prior drops" data to include players who
+            # qualified but dropped without playing in day 2?
+            day2_start = keepN[0]['round']
+            stage1 = self.evt['stages'][0]
+            if len(stage1['rounds']) <= day2_start:
+                # TODO: is event 52638 an exception? what's up with that?
+                print("Day 2 cutoff not ready yet")
+                return
+            d2r1pairings = stage1['rounds'][day2_start]["pairings"]
+            return [self.pdict[pid] for pid in d2r1pairings.values()]
+
+        elif self.category['shortname'] in ('ascent', 'nationals'):
+            n = len(self.players)
+            if n < 257:
+                cutoff = 16
+            if 256 < n < 513:
+                cutoff = 18
+            if n >= 512:
+                cutoff = 18 # but there are 5 Swiss rounds on day 2
+            return [p for p in self.players if p.score >= cutoff]
+        
+        else:
+            return []
 
     def analyze(self):
         self.elements = ElementStats()
@@ -285,22 +313,8 @@ class OmniEvent:
         self.calc_sideboards()
 
     def analyze_day2(self):
-        # TODO: maybe turn this into a list of stages?
-        keepN = self.evt.get("keepN")
-        # TODO: maybe use "prior drops" data to include players who
-        # qualified but dropped without playing in day 2?
-        #TODO: can't analyze day 2 stats with the new API because it doesn't
-        # return a keepN value indicating where the day 2 cutoff is!
-        if keepN:
-            day2_start = keepN[0]['round']
-            stage1 = self.evt['stages'][0]
-            if len(stage1['rounds']) <= day2_start:
-                # TODO: is event 52638 an exception? what's up with that?
-                print("Day 2 cutoff not ready yet")
-                return
-            d2r1pairings = stage1['rounds'][day2_start]["pairings"]
-            day2players = [self.pdict[pid] for pid in d2r1pairings.values()]
-
+        day2players = self.day2players()
+        if day2players:
             self.day2stats = {
                 "elements": ElementStats(),
                 "archedata": ArcheStats(),
