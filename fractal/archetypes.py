@@ -746,7 +746,7 @@ crux_lorraine.add_subtype(
     shortname=""
 )
 crux_lorraine.add_subtype(
-    "Pyscho Ruler",
+    "Psycho",
     ["Capacitance X Psycho"],
     require_combos=[
         [
