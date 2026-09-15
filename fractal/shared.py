@@ -70,6 +70,7 @@ def fix_case(cardname):
         " Qa ": " QA ",
         "Vel-Ocity": "Vel-ocity",
         "Zena, ": "ZENA, ",
+        "Bladecore": "BladeCore",
     }
     cardname = cardname.title()
     for k,v in repls.items():

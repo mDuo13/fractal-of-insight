@@ -51,6 +51,7 @@ function fix_case(cardname) {
         " Qa ": " QA ",
         "Vel-Ocity": "Vel-ocity",
         "Zena, ": "ZENA, ",
+        "Bladecore": "BladeCore",
     }
     cardname = titleCase(cardname)
     for (const k in repls) {
