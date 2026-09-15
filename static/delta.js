@@ -6,6 +6,13 @@ function show_delta_error(msg) {
 
 function cmp_card_o(a,b) {
     // requires carddata to be preloaded
+    if (!CARDDATA[a["card"]]) {
+        console.warn(`Missing card data for card ${a['card']}...`)
+        return -1
+    } else if (!CARDDATA[b["card"]]) {
+        console.warn(`Missing card data for card ${b['card']}...`)
+        return 1
+    }
     if (CARDDATA[a["card"]].rank == CARDDATA[b["card"]].rank) {
         return 0
     } else if (CARDDATA[a["card"]].rank > CARDDATA[b["card"]].rank) {
@@ -41,11 +48,16 @@ function fix_case(cardname) {
         " To ":" to ",
         " With ":" with ",
         ", with ": ", With ", // "Silvie, With the Pack" vs "Smack with Flute"
+        " Qa ": " QA ",
+        "Vel-Ocity": "Vel-ocity",
+        "Zena, ": "ZENA, ",
     }
     cardname = titleCase(cardname)
     for (const k in repls) {
         cardname = cardname.replace(k, repls[k])
     }
+    // Fix examples like "Veltech"→"VelTech", etc.
+    cardname = cardname.replace(/(\w)tech(\W)/, "$1Tech$2")
     // Exceptions to the typical title casing for prepositions
     if (cardname == "Claimed from Beyond") return "Claimed From Beyond"
     if (cardname == "Protect Her at All Costs") return "Protect Her At All Costs"
