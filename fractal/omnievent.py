@@ -193,7 +193,7 @@ class OmniEvent:
             "Asphodel", "Paradise",
             "Standard",
             "Constructed",
-            "DOA", "FTC", "ALC", "MRC", "AMB", "HVN", "DTR", "PTM", "RDO",
+            "DOA", "FTC", "ALC", "MRC", "AMB", "HVN", "DTR", "PTM", "RDO", "PRD",
             "Season",
             "3v3","Team"
         ]]
@@ -514,7 +514,11 @@ class OmniEvent:
         for i,p in enumerate(self.top_cut):
             p.placement = i+1
         if self.status == "complete":
-            self.winner = self.top_cut[0]
+            if self.top_cut:
+                self.winner = self.top_cut[0]
+            else:
+                print(f"No top cut for finished event with scheduled top cut? Omni ID #{self.id}")
+                self.winner = self.players[0]
         if self.format == TEAM_STANDARD:
             self.winner = None # use self.winning_team instead
             self.winning_team = self.top_cut[0]

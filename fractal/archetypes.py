@@ -381,7 +381,7 @@ water_allies.add_subtype(
         "Jueying, Shadowmare"
     ],
     require_types={
-        "UNIQUE": 12
+        "UNIQUE": 16
     },
     shortname="Unique"
 )
@@ -805,6 +805,10 @@ crux_hybrid = add_archetype(
         [
             "Lorraine, Blademaster",
             "Merlin, Memory Thief",
+        ],
+        [
+            "Merlin, Brilliant Vestige",
+            "Merlin, Kingslayer",
         ]
     ],
     shortname="Crux"
@@ -906,6 +910,7 @@ add_archetype(
         "Ciel, Mirage's Grave",
         "Alice, Phantom Monarch",
         "Lamentation's Toll", # Sometimes uses Vertus for its power stat
+        "Spirit Blade: Retribution", # same as above
     ],
     shortname="Tera"
 )
@@ -1229,6 +1234,24 @@ water_aetherwing = add_archetype(
     [
         "Aquamirage Whisper"
     ],
+    require_combos=[
+        [
+            "Aquamirage Whisper",
+            "Diana, Aether Dilettante",
+        ],
+        [
+            "Aquamirage Whisper",
+            "Diana, Keen Huntress",
+        ],
+        [
+            "Aquamirage Whisper",
+            "Polkhawk, Boisterous Riot",
+        ],
+        [
+            "Aquamirage Whisper",
+            "Polkhawk, Bombastic Shot",
+        ]
+    ],
     exclude_cards=astra_ranger.require,
     require_types={
         "ACTION": 30,
@@ -1369,7 +1392,13 @@ add_archetype(
 add_archetype(
     "Luxem Mordred",
     [
-        "Luminescent Slash"
+        "Luminescent Slash",
+        "Excalibur, Cleansing Light",
+    ],
+    exclude_cards=[
+        "Guo Jia, Heaven's Favored",
+        "Zander, Blinding Steel",
+        "Zander, Corhazi's Chosen",
     ],
     shortname="Luxem",
 )
