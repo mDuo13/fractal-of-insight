@@ -1225,6 +1225,8 @@ astra_ranger = add_archetype(
         "Meteoric Volley",
         "Sidereal Spellshot",
         "Poised Occlusion",
+        "Cosmic Focus",
+        "Cometary Vantage",
     ],
     shortname="Astra",
 )
