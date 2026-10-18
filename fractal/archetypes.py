@@ -409,6 +409,8 @@ wind_allies = add_archetype(
         "Axis Gale Scholar",
         "Sun Ce, Weaponsmaster",
         "Charged Mannequin",
+        "Wicked Gildbreaker",
+        "Hulking Rearguard",
     ],
     exclude_cards=[
         "Spirit Blade: Ascension",
@@ -765,7 +767,8 @@ crux_mage = add_archetype(
     exclude_cards=[
         "Lorraine, Crux Knight",
         "Lorraine, Spirit Ruler",
-        "Merlin, Brilliant Vestige",
+        "Coruscation",
+        "Shattered Hope",
     ],
     shortname="Crux"
 )
@@ -805,10 +808,6 @@ crux_hybrid = add_archetype(
         [
             "Lorraine, Blademaster",
             "Merlin, Memory Thief",
-        ],
-        [
-            "Merlin, Brilliant Vestige",
-            "Merlin, Kingslayer",
         ]
     ],
     shortname="Crux"
@@ -827,10 +826,15 @@ add_archetype(
         "Luminous Quartz",
         "Soultrace Tesselation",
     ],
+    require_combos=[
+        [
+            "Merlin, Memorite Vassal",
+            "Merlin, Brilliant Vestige",
+        ]
+    ],
     exclude_cards=[
         "Lorraine, Crux Knight",
         "Lorraine, Spirit Ruler",
-        "Merlin, Kingslayer",
     ],
     shortname="Crux Sheen"
 )

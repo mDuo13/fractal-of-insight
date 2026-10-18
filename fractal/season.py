@@ -313,6 +313,12 @@ add_format("RDO Post-June Ban",
 )
 add_format("PRD Release",
     start="2026-08-21",
+    end="2026-10-16",
     season="PRD",
     desc=".asphodel/paradise released; Seasonal Banlist implemented with Baleful Oblation, Spirit Blade: Ascension, and Fabled Azurite Fatestone; Jinzhuo, Bands of Virtue added to Proxia's Vault."
+)
+add_format("PRD + DTR Alter",
+    start="2026-10-16",
+    season="PRD",
+    desc="DTR Alter Edition released."
 )
