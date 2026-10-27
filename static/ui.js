@@ -556,6 +556,17 @@ function filter_class(filt_class, card) {
     }
 }
 
+function filter_type(filt_type, card) {
+    if (filt_type == "any") {
+        return true
+    } else {
+        if (card.types.includes(filt_type)) {
+            return true
+        }
+        return false
+    }
+}
+
 function filter_arche(filt_arche, card) {
     if (filt_arche == "any") {
         return true
@@ -651,6 +662,7 @@ const CARD_FILTERS = {
     "#filt-fromset": filter_from_set,
     "#filt-el": filter_element,
     "#filt-class": filter_class,
+    "#filt-type": filter_type,
     "#filt-effect": filter_effect,
     "#filt-arche": filter_arche,
     "#filt-minapps": filter_min_appearances,
@@ -724,7 +736,9 @@ async function update_card_explore_filters() {
     }
 
     result_cards.sort((a,b) => {
-        return a.sortquantity > b.sortquantity
+        if (a.sortquantity > b.sortquantity) return 1
+        if (a.sortquantity == b.sortquantity) return 0
+        return -1
     })
     // TODO: allow choosing ascending/descending
     result_cards.reverse()
@@ -735,7 +749,7 @@ async function update_card_explore_filters() {
 
 function reset_explore_filters() {
     for (filt of ["#filt-inset", "#filt-fromset", "#filt-el", 
-        "#filt-rarity", "#filt-class", "#filt-arche"]) {
+        "#filt-rarity", "#filt-class", "#filt-type", "#filt-arche"]) {
         document.querySelector(filt).value = "any"
     }
     document.querySelector("#filt-effect").value = ""

@@ -89,6 +89,16 @@
             {% endfor %}
             </select>
         </label>
+        <label for="filt-type">Type:
+            <select id="filt-type">
+                <option value="any">(Any)</option>
+            {% for type_ in ['CHAMPION', 'REGALIA', 'ALLY', 'DOMAIN', 'WEAPON',
+                             'ITEM', 'UNIQUE', 'ACTION', 'PHANTASIA', 'ATTACK'
+            ] %}
+                <option value="{{type_}}">{{type_|title}}</option>
+            {% endfor %}
+            </select>
+        </label>
         <label for="filt-rarity">Rarity:
             <select id="filtop-rarity">
                 <option value="eq">=</option>
