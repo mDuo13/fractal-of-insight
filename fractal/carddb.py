@@ -50,8 +50,19 @@ class CardDB:
             self.set_groups = {s["name"]:s for s in set_groups_list}
             self.set_groups["Other"] = {"name": "Other", "sets": []}
 
+            grouped_sets = []
+            for sg in self.set_groups.values():
+                for s in sg["sets"]:
+                    if s["prefix"] not in grouped_sets:
+                        grouped_sets.append(s["prefix"])
+
             for card in self.data.values():
                 self.add_set_introduced(card)
+                for ed in card["result_editions"]:
+                    if ed["set"]["prefix"] not in grouped_sets:
+                        self.set_groups["Other"]["sets"].append(ed["set"])
+                        grouped_sets.append(ed["set"]["prefix"])
+            self.set_groups["Other"]["sets"].sort(key=lambda x:x["prefix"])
 
         except FileNotFoundError:
             print("No data on set groups. Can't determine oldest edition of cards accurately")
@@ -162,7 +173,7 @@ class CardDB:
 
     def is_valid_in_decklists(self, cardname):
         """
-        Return True if the card should appear in decklists.
+        Return True if the card should appear in standard decklists.
         Return False if the card should not, such as tokens or masteries.
         """
         if cardname not in self.data.keys():
@@ -174,6 +185,10 @@ class CardDB:
         if "MASTERY" in card["types"]:
             return False
         if "STATUS" in card["types"]:
+            return False
+        if "GREATER BOON" in card["types"]:
+            return False
+        if "LESSER BOON" in card["types"]:
             return False
         return True
     
@@ -224,3 +239,51 @@ class CardDB:
         if not self.initialized:
             self.load()
         return self.data.get(item, default)
+    
+    def get_mindex(self):
+        """
+        Return a reduced-size version of the full Index data, suitable for
+        loading as a JSON dependency for webapps.
+        """
+        mindex = {}
+        for cardname, c in self.data.items():
+            if not self.is_valid_in_decklists(cardname):
+                continue
+            m = {
+                "n": c["name"],
+                "cl": c["classes"],
+                "t": c["types"] or [],
+                "st": c["subtypes"] or [],
+                "ef": c["effect"] or "",
+                "el": c["elements"] or [],
+                "i": c["img"],
+                "fr": c["set_introduced"],
+            }
+            if c["speed"]:
+                m["fs"] = 1
+            if cardname in BANLIST:
+                m["bn"] = 1
+            
+            m["in"] = []
+            m["rs"] = [] #available rarities
+            for ed in c["editions"]:
+                if ed["set"]["prefix"] not in m["in"]:
+                    m["in"].append(ed["set"]["prefix"])
+                if ed["rarity"] not in m["rs"]:
+                    m["rs"].append(ed["rarity"])
+            
+            for nullable_field, abbr in (
+                ("durability", "d"),
+                ("level", "lv"),
+                ("life", "li"),
+                ("power", "p"),
+                ("cost_memory", "cm"),
+                ("cost_reserve", "cr"),
+            ):
+                if c[nullable_field] is not None:
+                    m[abbr] = c[nullable_field]
+
+            mindex[cardname] = m
+        mindex["__SET_GROUPS"] = {sg["name"]: [s["prefix"] for s in sg["sets"]]
+                                  for sg in self.set_groups.values()}
+        return mindex

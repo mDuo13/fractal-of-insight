@@ -16,7 +16,7 @@ from fractal.omnievent import OmniEvent, Team3v3Event, IsTeamEvent, NotStarted
 from fractal.season import Season, SEASONS, FORMATS
 from fractal.player import Player
 from fractal.archetypes import ARCHETYPES, NO_ARCHETYPE, MAT_DIFF_CARD_LIMIT, MAIN_DIFF_CARD_LIMIT, SIDE_DIFF_CARD_LIMIT, RISING_CARD_LIMIT
-from fractal.cards import ERRATA, BANLIST
+from fractal.cards import ERRATA, BANLIST, RARITIES
 from fractal.cardstats import ALL_CARD_STATS, PAD_UNTIL
 from fractal.achievements import ACHIEVEMENTS, GAS, REFRACTED_ACHIEVEMENTS, REFRACTED_ARTISTS
 from fractal.champs import CHAMP_DATA
@@ -180,6 +180,18 @@ class PageBuilder:
     def write_card_index(self):
         card_stats_by_set = ALL_CARD_STATS.split_by_set()
         self.render("cards.html.jinja2", "card/index.html", cardstats=ALL_CARD_STATS, carddata=carddata, set_groups=carddata.get_set_groups(), get_card_img=get_card_img, card_stats_by_set=card_stats_by_set, card_prices=pricedb, PAD_UNTIL=PAD_UNTIL)
+    
+    def write_mindex(self):
+        self.render_json(carddata.get_mindex(), "card/mindex.json")
+    
+    def write_card_explorer(self):
+        self.render("cardexplorer.html.jinja2", "card/explorer/index.html",
+            # carddata=carddata, 
+            set_groups=carddata.get_set_groups(), 
+            #get_card_img=get_card_img,
+            ARCHETYPES=ARCHETYPES,
+            RARITIES=RARITIES,
+        )
 
     def write_champ(self, champstats):
         write_to = f"champion/{slugify(champstats.name)}.html"
@@ -211,7 +223,8 @@ class PageBuilder:
                 "mat": (1 if is_material(c) else 0),
                 "rank": rank_card(carddata[c]),
                 "img": carddata[c]["img"],
-                "hipster": cstat.hipster
+                "hipster": cstat.hipster,
+                "top_arche": cstat.top_archetype()
             }
             for c, cstat in ALL_CARD_STATS
         }
@@ -475,6 +488,8 @@ class PageBuilder:
             self.write_event(e)
 
         self.write_card_index()
+        self.write_card_explorer()
+        self.write_mindex()
         self.write_card_data()
 
         for achievement in ACHIEVEMENTS.values():

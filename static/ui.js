@@ -417,6 +417,386 @@ async function load_carddata() {
         console.error("Error loading data files. Price/frequency information may not load correctly.", err)
     }
 }
+const NMF = { // Nullable Minified Fields
+    "d": "durability",
+    "lv": "level",
+    "li": "life",
+    "p": "power",
+    "cm": "cost_memory",
+    "cr": "cost_reserve",
+    "fs": "fast",
+    "bn": "banned",
+    "rs": "rarities",
+}
+let MINDEX
+let SET_GROUPS
+async function load_mindex() {
+    // Load a minified version of index
+    try {
+        const minified_data = await (await fetch("/card/mindex.json")).json()
+        SET_GROUPS = minified_data["__SET_GROUPS"]
+        const full_index = {}
+        for (cardname in minified_data) {
+            if (cardname == "__SET_GROUPS") {
+                continue
+            }
+            const c = minified_data[cardname]
+            full_index[cardname] = {
+                name: c.n,
+                classes: c.cl,
+                types: c.t,
+                subtypes: c.st,
+                effect: c.ef,
+                elements: c.el,
+                image: c.i,
+                in_sets: c.in,
+            }
+            for (mf in NMF) {
+                if (c.hasOwnProperty(mf)) {
+                    const ff = NMF[mf]
+                    // set full field value to minified field value
+                    full_index[cardname][ff] = c[mf]
+                }
+            }
+            // "fr" is from set family, but we can guess what exact set it's
+            // actually from by looking at the set codes in that family.
+            // It's almost always the shortest one.
+            const matching_sets = SET_GROUPS[c.fr].filter(x => c.in.includes(x))
+            if (matching_sets.length) {
+                const shortest_setcode = matching_sets.reduce((a, b) => a.length <= b.length ? a : b)
+                full_index[cardname].from_set = shortest_setcode
+            }
+        }
+        MINDEX = full_index
+    } catch (err) {
+        console.error("Error loading data files. Card list may not load correctly.", err)
+    }
+}
+
+function cmpable_price(cardname) {
+    // Requires CARDDATA to be loaded
+    let price = CARDDATA[cardname]?.price
+    if (!price) return -1
+    if (price == "N/A (Proxia's Vault)") return 0
+    if (price == "Unavailable") return 99999
+    if (price.slice(0,1) == "$") return parseFloat(price.slice(1))
+    return price
+}
+
+function filter_in_set(filt_in_set, card) {
+    if (filt_in_set == "any") {
+        return true
+    } else if (filt_in_set.slice(0,4) == "set:") {
+        if (!card.in_sets.includes(filt_in_set.slice(4))) {
+            return false
+        }
+    } else { // set family filter
+        const sg = SET_GROUPS[filt_in_set.slice(4)]
+        const set_overlap = sg.filter(x => card.in_sets.includes(x))
+        if (!set_overlap.length) {
+            return false
+        }
+    }
+    return true
+}
+
+function filter_from_set(filt_from_set, card) {
+    if (filt_from_set == "any") {
+        return true
+    } else if (filt_from_set.slice(0,4) == "set:") {
+        if (card.from_set != filt_from_set.slice(4)) {
+            return false
+        }
+    } else { // set family filter
+        const sg = SET_GROUPS[filt_from_set.slice(4)]
+        if (!sg || !sg.includes(card.from_set)) {
+            return false
+        }
+    }
+    return true
+}
+
+const ADVANCED_ELS = [
+    "EXALTED", "ARCANE", "ASTRA", "CRUX", "EXIA",
+    "LUXEM", "NEOS", "TERA", "UMBRA"
+]
+function filter_element(filt_el, card) {
+    if (filt_el == "any") {
+        return true
+    } else if (filt_el == "basic") {
+        for (el of card.elements) {
+            if (ADVANCED_ELS.includes(el)) {
+                return false
+            }
+        }
+        return true
+    } else if (filt_el == "advanced") {
+        for (el of card.elements) {
+            if (ADVANCED_ELS.includes(el)) {
+                return true
+            }
+        }
+        return false
+    } else {
+        if (card.elements.includes(filt_el)) {
+            return true
+        }
+        return false
+    }
+}
+
+function filter_class(filt_class, card) {
+    if (filt_class == "any") {
+        return true
+    } else {
+        if (card.classes.includes(filt_class)) {
+            return true
+        }
+        return false
+    }
+}
+
+function filter_arche(filt_arche, card) {
+    if (filt_arche == "any") {
+        return true
+    } else {
+        const cardstat = CARDDATA[card.name]
+        if (!cardstat) {
+            // console.warn(`No cardstat data for ${card.name}`)
+            return false
+        }
+        if (cardstat.top_arche == filt_arche) {
+            return true
+        }
+        return false
+    }
+}
+
+function filter_min_appearances(filt_minapps, card) {
+    const mina = parseInt(filt_minapps)
+    const cardstat = CARDDATA[card.name]
+    if (!cardstat) {
+        // console.warn(`No cardstat data for ${card.name}`)
+        return false
+    }
+    if (cardstat.a >= mina) {
+        return true
+    }
+    return false
+}
+
+const RARITIES = {
+    1: "C",
+    2: "U",
+    3: "R",
+    4: "SR",
+    5: "UR",
+    6: "PR",
+    7: "CSR",
+    8: "CUR",
+    9: "CPR"
+}
+function filter_rarity(filt_rarity, filt_operator, card) {
+    if (filt_rarity == "any") {
+        return true
+    } else {
+        const rv = parseInt(filt_rarity)
+        if (filt_operator == "eq") {
+            if (card.rarities.includes(rv)) {
+                return true
+            }
+            return false
+        } else if (filt_operator == "le") {
+            if (card.rarities.filter(x => x <= filt_rarity).length) {
+                return true
+            }
+            return false
+        } else if (filt_operator == "ge") {
+            if (card.rarities.filter(x => x >= filt_rarity).length) {
+                return true
+            }
+            return false
+        } else if (filt_operator == "ne") {
+            if (card.rarities.includes(rv)) {
+                return false
+            }
+            return true
+        } else if (filt_operator == "nl") {
+            if (card.rarities.filter(x => x < filt_rarity).length) {
+                return false
+            }
+            return true
+        } else if (filt_operator == "ng") {
+            if (card.rarities.filter(x => x > filt_rarity).length) {
+                return false
+            }
+            return true
+        }
+    }
+}
+
+function filter_effect(filt_ef, card) {
+    filt_ef = filt_ef.trim().toLowerCase()
+    if (!filt_ef) {
+        return true
+    }
+    if (card.effect.toLowerCase().includes(filt_ef)) {
+        return true
+    }
+    return false
+}
+
+const CARD_FILTERS = {
+    "#filt-inset": filter_in_set,
+    "#filt-fromset": filter_from_set,
+    "#filt-el": filter_element,
+    "#filt-class": filter_class,
+    "#filt-effect": filter_effect,
+    "#filt-arche": filter_arche,
+    "#filt-minapps": filter_min_appearances,
+}
+
+async function update_card_explore_filters() {
+    if (!MINDEX) { await load_mindex() }
+    if (!CARDDATA) { await load_carddata() }
+
+    // Filter cards according to the selected filter(s) -----------------
+    let result_cards = Object.values(MINDEX)
+    
+    for ( filt_q in CARD_FILTERS ) {
+        result_cards = result_cards.filter( (card) => CARD_FILTERS[filt_q](
+            document.querySelector(filt_q).value,
+            card
+        ))
+    }
+    result_cards = result_cards.filter( (card) => filter_rarity(
+        document.querySelector("#filt-rarity").value,
+        document.querySelector("#filtop-rarity").value,
+        card
+    ))
+
+    // Sort cards by the chosen stat ------------------------------------
+    const sort_radios = document.getElementsByName("card-sort")
+    let sort_stat = ""
+    for (const el of sort_radios) {
+        if (el.checked) {
+            sort_stat = el.value
+            break
+        }
+    }
+
+    for (card of result_cards) {
+        if (!CARDDATA[card.name]) {
+            // console.warn(`Missing carddata for "${card.name}"`)
+            card.quantity="N/A"
+            card.sortquantity=""
+            continue
+        }
+        if (sort_stat == "price") {
+            card.quantity = CARDDATA[card.name]?.price || "?"
+            card.sortquantity = cmpable_price(card.name)
+        } else if (sort_stat == "wr-alltime") {
+            card.quantity = CARDDATA[card.name]?.wr + "%" || "N/A"
+            card.sortquantity = CARDDATA[card.name]?.wr || 0
+        } else if (sort_stat == "wr-60d") {
+            if (card.quantity = CARDDATA[card.name]?.wr60 == -1) {
+                card.quantity = "N/A"
+                card.sortquantity = -1
+            } else {
+                card.quantity = CARDDATA[card.name]?.wr60 + "%" || "N/A"
+                card.sortquantity = CARDDATA[card.name]?.wr60 || -2
+            }
+        } else if (sort_stat == "appr-alltime") {
+            card.quantity = CARDDATA[card.name]?.a || 0
+            card.sortquantity = CARDDATA[card.name]?.a || 0
+        } else if (sort_stat == "appr-60d") {
+            card.quantity = CARDDATA[card.name]?.a60 || 0
+            card.sortquantity = CARDDATA[card.name]?.a60 || 0
+        } else if (sort_stat == "hipster") {
+            if (!card.quantity == CARDDATA[card.name]) {
+                card.quantity = "N/A"
+                card.sortquantity = -1
+            } else {
+                card.quantity = CARDDATA[card.name].hipster
+                card.sortquantity = CARDDATA[card.name].hipster
+            }
+        }
+    }
+
+    result_cards.sort((a,b) => {
+        return a.sortquantity > b.sortquantity
+    })
+    // TODO: allow choosing ascending/descending
+    result_cards.reverse()
+    
+    // Display the results
+    display_explore_results(result_cards)
+}
+
+function reset_explore_filters() {
+    for (filt of ["#filt-inset", "#filt-fromset", "#filt-el", 
+        "#filt-rarity", "#filt-class", "#filt-arche"]) {
+        document.querySelector(filt).value = "any"
+    }
+    document.querySelector("#filt-effect").value = ""
+    document.querySelector("#filt-minapps").value = 0
+    update_card_explore_filters()
+}
+
+function display_explore_results(cardlist) {
+    const results_area = document.querySelector("#card-result-list")
+    results_area.innerHTML = ""
+    let i = 0
+    for (card of cardlist) {
+        i += 1
+        results_area.appendChild(result_card(card, i))
+    }
+}
+
+
+function result_card(card, rank) {
+    const el = document.createElement("div")
+    el.classList.add("cardimg")
+    if (card.banned) {
+        el.classList.add("banned")
+    }
+    if (card.removed) {
+        el.classList.add("removed")
+    }
+    el.onclick = () => carddetail(el)
+    // TODO: provide back info in Mindex for card-flipping purposes?
+    // let back_img = ""
+    // if (card.orientations) {
+    //     const back = card.orientations[0]
+    //     back_img = `<img src="${back.image}" alt="${back.name}" class="cardback flipped"  /><span class="flipper" onclick="flipcard(event, this.parentElement)">↩️</span>`
+    // }
+    const quant = `<span class="quant">${card.quantity}</span>`
+
+    const cardstat = CARDDATA[card.name]
+    let deets2 = ""
+    if (cardstat) {
+        deets2 = `<ul class="card-deets-list">
+            <li><b>Appearances (all time):</b> ${cardstat.a}</li>
+            <li><b>Appearances (~60 days):</b> ${cardstat.a60}</li>
+            <li><b>Win rate (all time):</b> ${cardstat.wr}</li>
+            <li><b>Win rate (~60d, weighted):</b> ${cardstat.wr60 == -1 ? "N/A" : cardstat.wr60}</li>
+            <li><b>Hipster rating:</b> ${cardstat.hipster}</li>
+            <li><b>TCGP low:</b> ${cardstat.price}</li>
+            <li><b>Top archetype:</b> ${cardstat.top_arche ? cardstat.top_arche : "(No data)"}</li>
+        </ul>`
+    }
+    const deets1 = `<div class="carddeets collapse">
+        ${rank}. 
+        <a href="/card/${slugify(card.name)}.html">${card.name}</a>
+        ${ deets2 }
+    </div>`
+    el.innerHTML = `
+        <img class="cardfront" src="${card.image}" loading="lazy" alt="${card.name}" />
+        ${quant}
+        ${deets1}
+    `
+    return el
+}
 
 function str_thirds(num) {
     // Assuming a float that's in increments of ⅓ (possibly imprecise)
@@ -1191,6 +1571,17 @@ ready(() => {
             typingTimer = setTimeout(() => {player_search()}, typeInterval)
         })
         selected_players_list = playerdata
+    }
+
+    const explorercontrols = document.querySelector("#explorer-controls")
+    if (explorercontrols) {
+        explorercontrols.querySelectorAll("input").forEach(
+            el => el.addEventListener("change", update_card_explore_filters)
+        )
+        explorercontrols.querySelectorAll("select").forEach(
+            el => el.addEventListener("change", update_card_explore_filters)
+        )
+        update_card_explore_filters()
     }
 
     fill_price_and_hipster()

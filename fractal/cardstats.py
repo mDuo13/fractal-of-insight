@@ -63,6 +63,12 @@ class CardWielders(Wielders):
         usage_score = game_score * card_score
         super().add(entrant, usage_score)
 
+def cardapp_sortkey(e):
+    if hasattr(e, "evt_time") and hasattr(e, "placement"):
+        return e.evt_time*1000 + 9999-e.placement
+    elif hasattr(e, "evt_time"):
+        return e.evt_time*1000 + 9999
+
 class CardStats:
     def __init__(self, cardname):
         self.name = cardname
@@ -86,7 +92,7 @@ class CardStats:
         self.ties += e.ties
 
     def analyze(self, grant_achievements=True):
-        self.appearances.sort(key=lambda e: e.evt_time*1000 + 9999-e.placement, reverse=True)
+        self.appearances.sort(key=cardapp_sortkey, reverse=True)
         if grant_achievements and self.num_appearances:
             self.first_users = [self.appearances[-1]]
             self.appearances[-1].first_plays.append(self.name)
@@ -169,6 +175,12 @@ class CardStats:
                 "img": get_card_img(c)
             } for c,f in cf_sorted
         }
+    
+    def top_archetype(self):
+        top_arches = self.archedata.top() # list, maybe a tie or empty
+        if not top_arches:
+            return ""
+        return top_arches[0]
 
 
 class CardStatSet:

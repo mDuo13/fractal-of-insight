@@ -1,0 +1,132 @@
+{% extends "base.html.jinja2" %}
+
+{% block subtitle %}Card Explorer - {% endblock %}
+
+{% block body %}
+<nav id="main-nav">
+    <a class="nav-item" href="/">⌂ Home</a>
+    <a class="nav-item" href="/player/">→ Players</a>
+    <a class="nav-item" href="/deck/">→ Decks</a>
+    <a class="nav-item" href="/champion/">→ Champions</a>
+    <a class="nav-item" href="/card/">⮤ Cards</a>
+    <b class="nav-item">↓ Explorer</b>
+    <a class="nav-item" href="/achievement/">→ Achievements</a>
+</nav>
+<h1>Card Stat Explorer</h1>
+
+<section id="explorer-controls">
+    <fieldset>
+        <legend>Sort by...</legend>
+        <label for="sort-appr-alltime">
+            <input type="radio" name="card-sort" id="sort-appr-alltime" value="appr-alltime" checked="checked" />
+            Appearances (All time)
+        </label>
+        <label for="sort-appr-60d">
+            <input type="radio" name="card-sort" id="sort-appr-60d" value="appr-60d" />
+            Appearances (~60 days)
+        </label>
+        <label for="sort-wr-alltime">
+            <input type="radio" name="card-sort" id="sort-wr-alltime" value="wr-alltime" />
+            Win rate (All time)
+        </label>
+        <label for="sort-wr-60d">
+            <input type="radio" name="card-sort" id="sort-wr-60d" value="wr-60d" />
+            Win rate (~60 days, weighted)
+        </label>
+        <label for="sort-price">
+            <input type="radio" name="card-sort" id="sort-price" value="price" />
+            Price
+        </label>
+        <label for="sort-hip">
+            <input type="radio" name="card-sort" id="sort-hip" value="hipster" />
+            Hipster Rating
+        </label>
+    </fieldset>
+    <fieldset id="explorer-filters">
+        <legend>Filter to...</legend>
+        <label for="filt-inset">In set:
+            <select id="filt-inset">
+                <option value="any">(Any)</option>
+            {% for setfam in set_groups.keys() %}
+                <option value="fam:{{setfam}}">{{setfam}}</option>
+                {% for singleset in set_groups[setfam].sets %}
+                <option value="set:{{singleset.prefix}}">&nbsp;&nbsp;&nbsp;&nbsp;{{singleset.prefix}}</option>
+                {% endfor %}
+            {% endfor %}
+            </select>
+        </label>
+        <label for="filt-fromset">First appeared in set:
+            <select id="filt-fromset">
+                <option value="any">(Any)</option>
+            {% for setfam in set_groups.keys() %}
+                <option value="fam:{{setfam}}">{{setfam}}</option>
+                {% for singleset in set_groups[setfam].sets %}
+                <option value="set:{{singleset.prefix}}">&nbsp;&nbsp;&nbsp;&nbsp;{{singleset.prefix}}</option>
+                {% endfor %}
+            {% endfor %}
+            </select>
+        </label>
+        <label for="filt-el">Element(s):
+            <select id="filt-el">
+                <option value="any">(Any)</option>
+                <option value="basic">(Non-advanced)</option>
+                <option value="advanced">(Advanced)</option>
+            {% for el in ["NORM","FIRE","WATER","WIND", "EXALTED",
+                "ARCANE", "ASTRA", "CRUX", "EXIA",
+                "LUXEM", "NEOS", "TERA", "UMBRA"
+            ] %}
+                <option value="{{el}}">{{el|title}}</option>
+            {% endfor %}
+            </select>
+        </label>
+        <label for="filt-class">Class:
+            <select id="filt-class">
+                <option value="any">(Any)</option>
+            {% for class_ in ["ASSASSIN", "CLERIC", "GUARDIAN", "MAGE",
+                "RANGER", "TAMER", "WARRIOR", "ANOMALY"
+            ] %}
+                <option value="{{class_}}">{{class_|title}}</option>
+            {% endfor %}
+            </select>
+        </label>
+        <label for="filt-rarity">Rarity:
+            <select id="filtop-rarity">
+                <option value="eq">=</option>
+                <option value="le">≤</option>
+                <option value="ge">≥</option>
+                <option value="ne">≠</option>
+                <option value="nl">≮</option>
+                <option value="ng">≯</option>
+            </select>
+            <select id="filt-rarity">
+                <option value="any">(Any)</option>
+            {% for rv,rn in RARITIES.items() %}
+                <option value="{{rv}}">{{rn}}</option>
+            {% endfor %}
+            </select>
+        </label>
+        <label for="filt-arche">Most played in archetype:
+            <select id="filt-arche">
+                <option value="any">(Any)</option>
+            {% for arche in ARCHETYPES.keys()|sort %}
+                <option value="{{arche}}">{{arche}}</option>
+            {% endfor %}
+            </select>
+        <label for="filt-effect">Has text:
+            <input id="filt-effect" type="text" value="" />
+        </label>
+        <label for="filt-minapps">Min appearances (all-time):
+            <input id="filt-minapps" type="number" value="0" min="0" />
+        </label>
+        <button id="filt-reset" onclick="reset_explore_filters()">(❌ Reset)</button>
+    </fieldset>
+</section>
+
+<section>
+    <p class="explanation">(Card images may represent a different edition than the selected set or displayed price.)</p>
+    <div id="card-result-list" class="top-cards">
+    </div>
+</section>
+
+
+{% endblock %}

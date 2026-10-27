@@ -24,6 +24,18 @@ SPIRITTYPES = [
     "Fortuitous",
 ]
 
+RARITIES = {
+    1: "C",
+    2: "U",
+    3: "R",
+    4: "SR",
+    5: "UR",
+    6: "PR",
+    7: "CSR",
+    8: "CUR",
+    9: "CPR"
+}
+
 ERRATA = {
     "Stonescale Band": {
         "before": 1722841200000, # 2024-08-05

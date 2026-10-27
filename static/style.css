@@ -1314,9 +1314,50 @@ a.achievement {
 }
 
 .event-filtering label,
-.subtypes-radios label {
+.subtypes-radios label,
+#explorer-controls label {
     white-space: nowrap;
     line-height: 30px;
+}
+
+#explorer-filters {
+    position: relative;
+}
+
+#filt-reset {
+    position: absolute;
+    top: -16px;
+    right: 0;
+}
+
+#card-result-list .cardimg {
+    vertical-align: bottom;
+    padding: 5px;
+}
+#card-result-list .cardimg.dblclicked {
+    width: auto;
+}
+#card-result-list .cardimg.dblclicked > img {
+    float: left;
+}
+#card-result-list .cardimg.banned::after {
+    left: 6px;
+}
+#card-result-list .cardimg .quant {
+    min-width: 50px;
+    margin-left: 35px;
+    margin-right: 0;
+}
+#card-result-list .carddeets {
+    display: inline-block;
+    margin-left: 5px;
+    font-size: 16px;
+    line-height: 18px;
+    vertical-align: top;
+}
+#card-result-list .card-deets-list {
+    list-style-type: none;
+    padding-left: 12px;
 }
 
 .searchbox, .smartsearch {

@@ -761,8 +761,11 @@ crux_lorraine.add_subtype(
 crux_mage = add_archetype(
     "Crux Mage",
     [
-        "Merlin, Kingslayer",
         "Incarnate Majesty",
+        "Ghosts of Pendragon",
+    ],
+    require_combos=[
+        ["Merlin, Kingslayer"]
     ],
     exclude_cards=[
         "Lorraine, Crux Knight",
