@@ -1337,6 +1337,9 @@ a.achievement {
 #card-result-list .cardimg.dblclicked {
     width: auto;
 }
+#card-result-list .cardimg.dblclicked .quant {
+    display: none;
+}
 #card-result-list .cardimg.dblclicked > img {
     float: left;
 }
@@ -1901,7 +1904,7 @@ a.achievement {
     .top-cards .cardimg,
     .top-cards .cardimg img {
         width: 100%;
-        height: 100%;
+        height: auto;
     }
 
     #all-cards th:nth-child(2) {
@@ -2094,6 +2097,37 @@ a.achievement {
     }
     #teams tbody button {
         font-size: 12px;
+    }
+    #explorer-filters {
+        font-size: 17px;
+    }
+    #filt-reset {
+        position: absolute;
+        top: -16px;
+        right: 0;
+    }
+    #filt-minapps {
+        width: 6em;
+    }
+    #card-result-list .cardimg.dblclicked {
+        grid-column: span 2;
+    }
+    #card-result-list .cardimg.dblclicked img {
+        width: calc(50% + 4px);
+        height: auto;
+    }
+    #card-result-list .cardimg.dblclicked .carddeets {
+        width: calc(50% - 10px);
+        font-size: 16px;
+    }
+    #card-result-list .cardimg .quant {
+        width: calc(30% - 12px);
+        margin-left: 35%;
+        margin-right: 35%;
+        bottom: 5px;
+    }
+    #card-result-list .card-deets-list {
+        margin: 5px 0 0 0;
     }
 }
 

@@ -55,7 +55,7 @@
             {% endfor %}
             </select>
         </label>
-        <label for="filt-fromset">First appeared in set:
+        <label for="filt-fromset" title="The set that first introduced the card, where available. Some sets have no new cards.">From set:
             <select id="filt-fromset">
                 <option value="any">(Any)</option>
             {% for setfam in set_groups.keys() %}
@@ -115,7 +115,7 @@
             {% endfor %}
             </select>
         </label>
-        <label for="filt-arche">Most played in archetype:
+        <label for="filt-arche">Most played in:
             <select id="filt-arche">
                 <option value="any">(Any)</option>
             {% for arche in ARCHETYPES.keys()|sort %}
@@ -126,7 +126,7 @@
         <label for="filt-effect">Has text:
             <input id="filt-effect" type="text" value="" />
         </label>
-        <label for="filt-minapps">Min appearances (all-time):
+        <label for="filt-minapps">Min appearances:
             <input id="filt-minapps" type="number" value="0" min="0" />
         </label>
         <button id="filt-reset" onclick="reset_explore_filters()">(❌ Reset)</button>
