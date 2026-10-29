@@ -646,6 +646,17 @@ function filter_rarity(filt_rarity, filt_operator, card) {
     }
 }
 
+function filter_name(filt_name, card) {
+    filt_name = filt_name.trim().toLowerCase()
+    if (!filt_name) {
+        return true
+    }
+    if (card.name.toLowerCase().includes(filt_name)) {
+        return true
+    }
+    return false
+}
+
 function filter_effect(filt_ef, card) {
     filt_ef = filt_ef.trim().toLowerCase()
     if (!filt_ef) {
@@ -663,10 +674,18 @@ const CARD_FILTERS = {
     "#filt-el": filter_element,
     "#filt-class": filter_class,
     "#filt-type": filter_type,
+    "#filt-name": filter_name,
     "#filt-effect": filter_effect,
     "#filt-arche": filter_arche,
     "#filt-minapps": filter_min_appearances,
 }
+const MORE_CARD_FILTERS = {
+    // More complex than a single step filter
+    "#filt-rarity": filter_rarity,
+}
+const FILTER_MODS = [
+    "#filtop-rarity-op"
+]
 
 async function update_card_explore_filters() {
     if (!MINDEX) { await load_mindex() }
@@ -683,7 +702,7 @@ async function update_card_explore_filters() {
     }
     result_cards = result_cards.filter( (card) => filter_rarity(
         document.querySelector("#filt-rarity").value,
-        document.querySelector("#filtop-rarity").value,
+        document.querySelector("#filtop-rarity-op").value,
         card
     ))
 
@@ -745,6 +764,42 @@ async function update_card_explore_filters() {
     
     // Display the results
     display_explore_results(result_cards)
+
+    update_explorer_url()
+}
+
+function update_explorer_url() {
+    const params = new URLSearchParams()
+    for (filt in CARD_FILTERS) {
+        const qp = filt.slice(6)
+        const el = document.querySelector(filt)
+        set_param_from_field(params, qp, el)
+    }
+    for (filt in MORE_CARD_FILTERS) {
+        const qp = filt.slice(6)
+        const el = document.querySelector(filt)
+        set_param_from_field(params, qp, el)
+    }
+    for (filt of FILTER_MODS) {
+        const qp = filt.slice(8)
+        const el = document.querySelector(filt)
+        set_param_from_field(params, qp, el)
+    }
+    const sort_radios = document.getElementsByName("card-sort")
+    if (!sort_radios[0].checked) { // assuming first sort option is the default
+        for (srad of sort_radios) {
+            if (srad.checked) {
+                params.set("sort", srad.value)
+                break
+            }
+        }
+    }
+
+    if (params.toString()) {
+        history.replaceState(null, "", window.location.pathname+"?"+params)
+    } else {
+        history.replaceState(null, "", window.location.pathname)
+    }
 }
 
 function reset_explore_filters() {
@@ -752,7 +807,9 @@ function reset_explore_filters() {
         "#filt-rarity", "#filt-class", "#filt-type", "#filt-arche"]) {
         document.querySelector(filt).value = "any"
     }
-    document.querySelector("#filt-effect").value = ""
+    for (filt of ["#filt-effect", "#filt-name"]) {
+        document.querySelector(filt).value = ""
+    }
     document.querySelector("#filt-minapps").value = 0
     update_card_explore_filters()
 }
@@ -766,6 +823,85 @@ function display_explore_results(cardlist) {
         results_area.appendChild(result_card(card, i))
     }
 }
+
+function set_field_from_param(el, val) {
+    if (el.nodeName == "SELECT") {
+        // Don't try to set a select to an option that's not in the list
+        if (Array.from(el.options).map(x => x.value).includes(val)) {
+            el.value = val
+        }
+    } else if (el.type == "number") {
+        if (isNaN(val)) {
+            console.warn("Can't set non-numerical query param.")
+        } else {
+            el.value = val
+        }
+    } else {
+        // Can just set it directly for text fields
+        el.value = val
+    }
+}
+
+function set_param_from_field(params, qp, el) {
+    if (el.nodeName == "SELECT") {
+        if (el.value != el.options[0].value) {
+            params.set(qp, el.value)
+        }
+    } else if (el.type == "text") {
+        let qv = el.value.trim()
+        if (qv) {
+            params.set(qp, qv)
+        }
+    } else if (el.type == "number") {
+        // FF: support defaults other than 0?
+        if (el.valueAsNumber != 0) {
+            params.set(qp, el.value)
+        }
+    }
+}
+
+function load_explorer_query() {
+    // Read query parameters to set a saved query.
+    const params = new URLSearchParams(window.location.search)
+    for (filt in CARD_FILTERS) {
+        const qp = filt.slice(6)
+        if (params.has(qp)) {
+            set_field_from_param(
+                document.querySelector(filt),
+                params.get(qp)
+            )
+        }
+    }
+    for (filt in MORE_CARD_FILTERS) {
+        const qp = filt.slice(6)
+        if (params.has(qp)) {
+            set_field_from_param(
+                document.querySelector(filt),
+                params.get(qp)
+            )
+        }
+    }
+    for (filt of FILTER_MODS) {
+        const qp = filt.slice(8)
+        if (params.has(qp)) {
+            set_field_from_param(
+                document.querySelector(filt),
+                params.get(qp)
+            )
+        }
+    }
+    if (params.has("sort")) {
+        const sort_radios = document.getElementsByName("card-sort")
+        const sortid = "sort-" + params.get("sort")
+        for (const el of sort_radios) {
+            if (el.id == sortid) {
+                el.checked = true
+                break
+            }
+        }
+    }
+}
+
 
 
 function result_card(card, rank) {
@@ -1595,6 +1731,7 @@ ready(() => {
         explorercontrols.querySelectorAll("select").forEach(
             el => el.addEventListener("change", update_card_explore_filters)
         )
+        load_explorer_query()
         update_card_explore_filters()
     }
 

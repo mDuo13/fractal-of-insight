@@ -1,4 +1,5 @@
 import json
+import re
 from logging import warning
 from os import scandir
 
@@ -6,6 +7,11 @@ from .cards import REMOVED_FROM_PRXY, INTRODUCED_IN_PRXY, BANLIST
 from .shared import fix_case
 
 CARDS_FOLDER = "./data/index/"
+
+REMINDER_TEXT_REGEX = re.compile(r"\([^)]{10,}\)") # 10+ is a magic number;
+# reserve costs are written in a similar format but the shortest reminder text
+# I've found is 15 characters long while the longest reserve cost I've seen
+# is 4 characters.
 
 class CardDB:
     """
@@ -263,6 +269,7 @@ class CardDB:
                 m["fs"] = 1
             if cardname in BANLIST:
                 m["bn"] = 1
+            m["ef"] = re.sub(REMINDER_TEXT_REGEX, "", m["ef"])
             
             m["in"] = []
             m["rs"] = [] #available rarities

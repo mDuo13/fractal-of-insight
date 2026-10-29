@@ -100,7 +100,7 @@
             </select>
         </label>
         <label for="filt-rarity">Rarity:
-            <select id="filtop-rarity">
+            <select id="filtop-rarity-op">
                 <option value="eq">=</option>
                 <option value="le">≤</option>
                 <option value="ge">≥</option>
@@ -122,6 +122,9 @@
                 <option value="{{arche}}">{{arche}}</option>
             {% endfor %}
             </select>
+        </label>
+        <label for="filt-name">Name:
+            <input id="filt-name" type="text" value="" />
         </label>
         <label for="filt-effect">Has text:
             <input id="filt-effect" type="text" value="" />
