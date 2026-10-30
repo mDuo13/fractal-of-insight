@@ -79,6 +79,16 @@
 
     <h3 class="togglable collapse">Archetypes</h3>
     {{ macros.elementbars(cardstat.archedata, link="deck") }}
+
+    <h3 class="togglable collapse">Sideboard Usage</h3>
+    <div class="sideboard-pcts collapse togglable">
+        <div class="bar-chart" style="background: linear-gradient(to right, var(--vpal-1) {{cardstat.sideboard_pcts.main_only}}%, var(--vpal-3) {{cardstat.sideboard_pcts.main_only}}%, var(--vpal-3) {{cardstat.sideboard_pcts.main_only + cardstat.sideboard_pcts.both}}%, var(--vpal-5) {{cardstat.sideboard_pcts.main_only + cardstat.sideboard_pcts.both}}%)">&nbsp;</div>
+        <div class="bar-chart-labels">
+            <span style="flex-grow: {{cardstat.sideboard_pcts.main_only}}">Mainboard: {{cardstat.sideboard_pcts.main_only}}%</span>
+            <span style="flex-grow: {{cardstat.sideboard_pcts.both}}; text-align: center;">Both: {{cardstat.sideboard_pcts.both}}%</span>
+            <span style="flex-grow: {{cardstat.sideboard_pcts.side_only}}; text-align: right;">Sideboard: {{cardstat.sideboard_pcts.side_only}}%</span>
+        </div>
+    </div>
 </section>
 
 <section id="buddy-cards">
@@ -161,15 +171,6 @@
 
 <!-- DECKLISTS -->
 <div id="dynamic-decklists"></div>
-{#
-{% for e in cardstat.appearances[page_start:page_end] %}
-{% if e.deck and e.deck.is_topcut_deck %}
-{{ macros.decklist(e, "deck_"~e.evt_id~"_"~e.id, events[e.evt_id], True, use_topcut_deck=True, is_first=loop.first, is_last=loop.last) }}
-{% else %}
-{{ macros.decklist(e, "deck_"~e.evt_id~"_"~e.id, events[e.evt_id], True, is_first=loop.first, is_last=loop.last) }}
-{% endif %}
-{% endfor %}
-#}
 <script>
 const all_sightings = {{sightings_json|safe}}
 ready(() => {

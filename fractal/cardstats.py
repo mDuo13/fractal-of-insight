@@ -1,7 +1,7 @@
 from collections import defaultdict
 from time import time
 
-from .config import HOT_WINDOW, PAD_UNTIL, M_PER_APP, MAX_TOP_USERS, PAD_HOT_MATCHES
+from .config import HOT_WINDOW, PAD_UNTIL, M_PER_APP, MAX_TOP_USERS, PAD_HOT_MATCHES, COMMONLY_SIDEBOARDED
 from .season import SEASONS
 from .datalayer import carddata, get_card_img
 from .shared import keydefaultdict
@@ -153,6 +153,7 @@ class CardStats:
             self.hot_rating = round(100*(hot_w + (hot_t / 2)) / hot_matches, 1)
 
         self.analyze_associated_cards()
+        self.calc_sideboard_freq()
 
         if grant_achievements:
             self.top_users.sort()
@@ -181,6 +182,31 @@ class CardStats:
         if not top_arches:
             return ""
         return top_arches[0]
+    
+    def calc_sideboard_freq(self):
+        side_only_count = 0
+        split_side_count = 0
+        for entrant in self.appearances:
+            main_cc = entrant.deck.quantity_of(self.name)
+            side_cc = entrant.deck.quantity_of(self.name, search_sections=("sideboard",))
+            if side_cc and not main_cc:
+                side_only_count += 1
+            elif side_cc and main_cc:
+                split_side_count += 1
+            # split_side_count += (1 if main_cc and side_cc else 0)
+            # side_only_count += (1 if side_cc and not main_cc else 0)
+        
+        self.sideboard_counts = {
+            "side_only": side_only_count,
+            "both": split_side_count,
+            "main_only": len(self.appearances) - side_only_count - split_side_count
+        }
+        self.sideboard_pcts = {
+            k: round(100*v/len(self.appearances), 1)
+            for k,v in self.sideboard_counts.items()
+        }
+        self.commonly_sideboarded = (self.sideboard_pcts["side_only"] >= COMMONLY_SIDEBOARDED)
+            
 
 
 class CardStatSet:

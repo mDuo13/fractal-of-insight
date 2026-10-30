@@ -10,6 +10,8 @@ PAD_UNTIL = 500 # Minimum number of appearances for a card to be eligible for "w
 M_PER_APP = 6 # Empirically, an average "appearance" consists of ~5.9 matches.
 MAX_TOP_USERS = 10 # How many players can be considered "top users" of a card.
 PAD_HOT_MATCHES = 500 # for hot cards, weight for this many *matches* (not appearances)
+COMMONLY_SIDEBOARDED = 30 # Percentage of appearances that have to be in the
+# sideboard for the card to count as "commonly sideboarded"
 
 # Archetype & champ stats settings
 SIMILAR_DECKS_CUTOFF = 85

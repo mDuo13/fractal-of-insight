@@ -668,6 +668,23 @@ function filter_effect(filt_ef, card) {
     return false
 }
 
+function filter_sideboard(filt_sb, card) {
+    if (filt_sb == "any") {
+        return true
+    } else {
+        const cardstat = CARDDATA[card.name]
+        if (!cardstat) {
+            // console.warn(`No cardstat data for ${card.name}`)
+            return false
+        }
+        const commonly_sideboarded = filt_sb == "side" ? 1 : 0
+        if (cardstat.sb == commonly_sideboarded) {
+            return true
+        }
+        return false
+    }
+}
+
 const CARD_FILTERS = {
     "#filt-inset": filter_in_set,
     "#filt-fromset": filter_from_set,
@@ -677,6 +694,7 @@ const CARD_FILTERS = {
     "#filt-name": filter_name,
     "#filt-effect": filter_effect,
     "#filt-arche": filter_arche,
+    "#filt-sideboard": filter_sideboard,
     "#filt-minapps": filter_min_appearances,
 }
 const MORE_CARD_FILTERS = {
@@ -804,11 +822,14 @@ function update_explorer_url() {
 
 function reset_explore_filters() {
     for (filt of ["#filt-inset", "#filt-fromset", "#filt-el", 
-        "#filt-rarity", "#filt-class", "#filt-type", "#filt-arche"]) {
-        document.querySelector(filt).value = "any"
+        "#filt-rarity", "#filt-class", "#filt-type", "#filt-arche",
+        "#filt-sideboard"]) {
+        const el = document.querySelector(filt)
+        if (el) { el.value = "any" }
     }
     for (filt of ["#filt-effect", "#filt-name"]) {
-        document.querySelector(filt).value = ""
+        const el = document.querySelector(filt)
+        if (el) { el.value = "" }
     }
     document.querySelector("#filt-minapps").value = 0
     update_card_explore_filters()

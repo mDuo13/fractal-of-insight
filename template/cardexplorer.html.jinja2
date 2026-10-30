@@ -123,6 +123,13 @@
             {% endfor %}
             </select>
         </label>
+        <label for="filt-sideboard" title="A card is considered often sideboarded if it's in the sideboard for at least 30% of its appearances.">Side/mainboard?
+            <select id="filt-sideboard">
+                <option value="any">(Any)</option>
+                <option value="main">(Usually mainboarded)</option>
+                <option value="side">(Often sideboarded)</option>
+            </select>
+        </label>
         <label for="filt-name">Name:
             <input id="filt-name" type="text" value="" />
         </label>

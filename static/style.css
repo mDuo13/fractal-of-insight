@@ -1728,6 +1728,12 @@ a.achievement {
     margin: 10px 0;
 }
 
+.bar-chart-labels {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .holo::after {
     content: "";
     background-image: repeating-linear-gradient( 110deg, var(--violet), var(--blue), var(--green), var(--yellow), var(--red), var(--violet), var(--blue), var(--green), var(--yellow), var(--red), var(--violet), var(--blue), var(--green), var(--yellow), var(--red) );
@@ -1754,6 +1760,13 @@ a.achievement {
     --green: #21e985;
     --blue: #0dbde9;
     --violet: #c929f1;
+
+    /* Viridis color palette for gradients */
+    --vpal-1: #fde725;
+    --vpal-2: #5ec962;
+    --vpal-3: #21918c;
+    --vpal-4: #3b528b;
+    --vpal-5: #440154;
 }
 
 

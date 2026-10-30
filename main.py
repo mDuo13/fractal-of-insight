@@ -224,7 +224,8 @@ class PageBuilder:
                 "rank": rank_card(carddata[c]),
                 "img": carddata[c]["img"],
                 "hipster": cstat.hipster,
-                "top_arche": cstat.top_archetype()
+                "top_arche": cstat.top_archetype(),
+                "sb": 1 if cstat.commonly_sideboarded else 0,
             }
             for c, cstat in ALL_CARD_STATS
         }
