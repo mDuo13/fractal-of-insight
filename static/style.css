@@ -252,6 +252,7 @@ table {
 .cr-row {
     position: relative;
     height: 50px;
+    z-index: 0;
 }
 .cr-element-row td:first-child {
     background-color: white;

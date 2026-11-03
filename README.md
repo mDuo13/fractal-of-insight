@@ -70,6 +70,7 @@ When you have the necessary data downloaded, you can do interactive queries in t
 - improve experience / instructions for building with a fresh clone of the repo
 - make condensed view of battlechart with top 10-ish archetypes only
 - archetype head-to-head analysis: cards more/less prevalent in winning lists?
+- track down why some subtypes are showing more plays in battlechart than the parent type
 - improve pagination & filtering on players page
     - filter by region
     - jump to start/end/middle?

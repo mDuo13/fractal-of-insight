@@ -4,7 +4,7 @@ import re
 
 from .player import Entrant, JudgeEvt
 from .battlechart import BattleChart
-from .datalayer import get_event, get_event_videos, get_card_img, get_event_refracted_achievements
+from .datalayer import get_event, get_event_videos, get_card_img, get_event_refracted_achievements, get_invite_points
 from .archetypes import ARCHETYPES
 from .cards import ELEMENTS
 from .season import SEASONS
@@ -55,6 +55,7 @@ class OmniEvent:
             self.load_from_hybrid()
         else:
             raise Exception(f"Unknown api_version: {self.evt['api_version']}")
+        self.load_invite_points()
     
     def load_from_hybrid(self):
         self.status = self.evt["status"]
@@ -297,6 +298,56 @@ class OmniEvent:
         
         else:
             return []
+    
+    def load_invite_points(self):
+        if self.status != "complete":
+            self.invites = 0
+            self.invites_estimated = True
+            return
+        cat = self.category["shortname"]
+        invites = get_invite_points(self.id)
+        if invites is None:
+            # Estimate how many invites were given out
+            if cat == "store-champs":
+                self.invites = 1
+                self.invites_estimated = False
+                # self.players[0].invited = True
+                if self.winner:
+                    self.winner.invited = True
+            elif cat == "ascent":
+                d2p = self.day2players()
+                self.invites = len(d2p)
+                for p in d2p:
+                    p.invited = True
+                self.invites_estimated = False
+            elif cat == "regionals":
+                n = len(self.players)
+                # Estimate invites given out based on event size, per
+                # https://ga-mainsite-common.s3.us-west-2.amazonaws.com/media/GA_Regionals_Operations_Doc_PRD_15cfe8b3de.pdf?updated_at=2026-09-14T17:37:05.489Z
+                if n < 32:
+                    self.invites = 4
+                elif n <= 85: # Official policy is 85
+                    self.invites = 8
+                elif n <= 220:
+                    self.invites = 16
+                elif n <= 499:
+                    self.invites = 32
+                else:
+                    self.invites = 64
+                
+                for p in self.players[:self.invites]:
+                    p.invited = True
+                self.invites_estimated = True
+            else:
+                self.invites = 0
+                self.invites_estimated = False
+        else:
+            # Invites were given out to the top-placing N players.
+            self.invites_estimated = False
+            self.invites = invites
+            for p in self.players[:self.invites]:
+                p.invited = True
+        
 
     def analyze(self):
         self.elements = ElementStats()
@@ -393,6 +444,33 @@ class OmniEvent:
                     self.topcutstats['archedata'].add_unknown()
                     self.topcutstats['champdata'].add_unknown()
                 self.topcutstats['regiondata'].add_player(p)
+        
+    def analyze_invites(self):
+        """
+        Add analysis of players who earned invites, in cases where that's not
+        a day 2, i.e. for most regionals. To be called after load_invite_points()
+        """
+        if self.invites > 1 and not self.day2players():
+            #TODO: handle cases with a top cut also, if those exist.
+            self.invitecutstats = {
+                "elements": ElementStats(),
+                "archedata": ArcheStats(),
+                "champdata": ChampStats(),
+                "regiondata": RegionStats(),
+            }
+            for p in self.players:
+                if p.invited:
+                    if p.deck:
+                        self.invitecutstats['elements'].add_deck(p.deck)
+                        self.invitecutstats['archedata'].add_deck(p.deck)
+                        self.invitecutstats['champdata'].add_deck(p.deck)
+                    else:
+                        self.invitecutstats['elements'].add_unknown()
+                        self.invitecutstats['archedata'].add_unknown()
+                        self.invitecutstats['champdata'].add_unknown()
+                    self.invitecutstats['regiondata'].add_player(p)
+            
+            # TODO: calculate conversion rates to invite cut
 
     def parse_top_cut(self):
         # Known bug: top cut wrong if Fractal updates while top cut is ongoing
@@ -665,6 +743,11 @@ class Team3v3Event(OmniEvent):
     def calc_headtohead(self, threshold=None, track_elo=False):
         # Nah, it's just team standard.
         return {}
+    
+    def load_invite_points(self):
+        # TODO: maybe eventually
+        self.invites = 0
+        self.invites_estimated = True
 
     def analyze_day2(self):
         # Maybe someday.

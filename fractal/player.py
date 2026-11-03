@@ -63,6 +63,10 @@ class Entrant:
             self.banned_until = ban
         else:
             self.banned_until = 0
+        
+        # Whether player (probably) earned NQP from this event. Set to True
+        # in OmniEvent.load_invite_points()
+        self.invited = False
 
         # At some point Omnidex changed from the "wins" number being inclusive of byes
         # to it not being.

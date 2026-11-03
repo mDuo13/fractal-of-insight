@@ -224,6 +224,33 @@ def fetch_json(url):
         raise EventNotFound
     return r.json()
 
+def get_decklist_metadata(evt_id, p_id):
+    """
+    Download 'decklist metadata' (i.e. a preview of the cards in the decklist,
+    pre-published for fairness, consisting of just the champions).
+    """
+    #TODO: actually use this method
+    mtdt = fetch_json(f"https://api.gatcg.com/omnidex/events/{evt_id}/decklists/metadata")
+    for pdm in mtdt:
+        if pdm["player"] == p_id:
+            # elements and "named"/primary champion are available too, but
+            # may as well just use the full lineage
+            return pdm["champions"]["cards"]
+    raise NoDeck(f"Metadata for player #{p_id} not found in event #{evt_id}")
+
+def get_invite_points(evt_id):
+    """
+    Load a sideloaded invite point count from file. Return None if there is no
+    such file or it was not parsed successfully.
+
+    """
+    try:
+        with open(f"data/event_{evt_id}/sideload/invites.txt") as f:
+            invites_text = f.read()
+            return int(invites_text.strip())
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
+
 def collate_event_from_apis(evt_id, short_circuit_fn=None):
     """
     Download an event from multiple APIs (mostly the official Omnidex API where

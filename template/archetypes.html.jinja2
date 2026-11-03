@@ -61,6 +61,7 @@
                     <th>Meta Share</th>
                     <th>Win rate</th>
                     <th>Events won</th>
+                    <th>NQP earned <br />(of {{szn.nqp_total}} total)</th>
                 </tr></thead>
                 <tbody>
                     {% for archename, pct, quant, elstats in szn.archedata %}
@@ -75,6 +76,7 @@
                         <td>{{pct}}%</td>
                         <td>{% if szn.battlechart.has_data_for(archename) %}{{szn.battlechart[archename].overall_pct}}%{% else %}N/A{% endif %}</td>
                         <td>{{szn.arche_wins[archename]|length}}</td>
+                        <td>{% if archename in szn.nqp_by_arche.keys() %}{{szn.nqp_by_arche[archename]}}{% else %}0{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -83,6 +85,6 @@
         {% endif %}
         {% endfor %}
     </div>
-    <p class="explanation">(Meta shares don't add up to 100% because a deck can be multiple or zero archetypes.)</p>
+    <p class="explanation">(Meta shares and NQP totals may not add up to 100% because a deck can be multiple or zero archetypes.)</p>
 </section>
 {% endblock %}

@@ -56,6 +56,7 @@ class Season:
         self.bc_top = self.calc_headtohead(True)
         self.analyze_finishes()
         self.analyze_draws()
+        self.analyze_invites()
 
     def analyze_players(self):
         for e in self.events:
@@ -99,6 +100,26 @@ class Season:
                         self.champ_wins[champ].append(e)
                     else:
                         self.champ_wins[champ] = [e]
+    
+    def analyze_invites(self):
+        nqp_by_arche = defaultdict(int)
+        total_nqp = 0
+        for e in self.events:
+            if e.invites:
+                nqp = e.category.get('nqp',0)
+                for p in e.players:
+                    if p.invited:
+                        total_nqp += nqp
+                        if p.deck:
+                            for aname in p.deck.archetypes:
+                                # Note: this double-counts NQP when a multi-arche
+                                # deck earns them
+                                nqp_by_arche[aname] += nqp
+                        else:
+                            nqp_by_arche["Unknown"] += nqp
+        self.nqp_by_arche = nqp_by_arche
+        self.nqp_total = total_nqp
+
 
     def analyze_draws(self):
         if not self.events:
