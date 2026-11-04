@@ -208,6 +208,7 @@
                 {{szn.arche_wins[arche.name]|length}} events
                 {% else %}None{% endif %}
             </li>
+            <li><b>Nationals Qualifier Points earned</b>: {% if arche.name in szn.nqp_by_arche.keys() %}{{szn.nqp_by_arche[arche.name][1]}} ({{szn.nqp_by_arche[arche.name][0]}}% of total){% else %}None{% endif %}<p class="explanation">(NQP totals are approximate, and do not include team events; actual amounts may vary based on regional invites awarded.)</p></li>
         </ul>
         <h4>Matchups</h4>
         {{ macros.battlechart(szn.battlechart, only_show=arche.name, collapse=False) }}

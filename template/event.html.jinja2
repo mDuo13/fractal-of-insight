@@ -239,16 +239,40 @@
 
     <div class="tabwrapper togglable collapse">
         <div class="tabcontent togglable" id="conversion-rate-arche">
-        {{macros.cr_table("Archetype", evt.conversion_rate["archedata"].items())}}
+        {{macros.cr_table("Archetype", evt.conversion_rate["archedata"])}}
         </div>
         <div class="tabcontent togglable collapse" id="conversion-rate-champ">
-        {{macros.cr_table("Champion", evt.conversion_rate["champdata"].items())}}
+        {{macros.cr_table("Champion", evt.conversion_rate["champdata"])}}
         </div>
         <div class="tabcontent togglable collapse" id="conversion-rate-el">
-        {{macros.cr_table("Element", evt.conversion_rate["elements"].items())}}
+        {{macros.cr_table("Element", evt.conversion_rate["elements"])}}
         </div>
     </div>
+</section>
+{% elif evt.invite_conversions %}
+<section id="conversion-rate">
+    <h2>Conversion Rate</h2>
+    <button onclick="toggle('#conversion-rate > .togglable')">Glimpse conversion rates</button>
+    <p class="togglable collapse explanation">(Percentage of decks earning invite cards.{% if evt.invites_estimated %} Note, the total number of invites given out for this event is estimated from event size.){% endif %}</p>
+    <p class="togglable collapse"><strong>Baseline:</strong> {{evt.invite_bcr}}%</p>
 
+    <div class="tabs togglable collapse">
+        <button class="tab activetab" onclick="opentab(this, '#conversion-rate-arche')">By Archetype</button>
+        <button class="tab" onclick="opentab(this, '#conversion-rate-champ')">By Champion</button>
+        <button class="tab" onclick="opentab(this, '#conversion-rate-el')">By Element</button>
+    </div>
+
+    <div class="tabwrapper togglable collapse">
+        <div class="tabcontent togglable" id="conversion-rate-arche">
+        {{macros.cr_table("Archetype", evt.invite_conversions["archedata"])}}
+        </div>
+        <div class="tabcontent togglable collapse" id="conversion-rate-champ">
+        {{macros.cr_table("Champion", evt.invite_conversions["champdata"])}}
+        </div>
+        <div class="tabcontent togglable collapse" id="conversion-rate-el">
+        {{macros.cr_table("Element", evt.invite_conversions["elements"])}}
+        </div>
+    </div>
 </section>
 {% endif %}
 

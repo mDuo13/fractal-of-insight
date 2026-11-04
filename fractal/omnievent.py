@@ -9,7 +9,7 @@ from .archetypes import ARCHETYPES
 from .cards import ELEMENTS
 from .season import SEASONS
 from .shared import EVENT_TYPES, TEAM_STANDARD, ms_to_date, date_from_isodt, ms_from_dt
-from .stats import ElementStats, ArcheStats, ChampStats, RegionStats
+from .stats import ElementStats, ArcheStats, ChampStats, RegionStats, ConvRateStats
 from .config import TOP_CUTOFF
 
 class IsTeamEvent(Exception):
@@ -26,21 +26,6 @@ def pct_with_archetype(players, arche):
     dec = nom / len(players)
     return round(dec*100, 1)
 
-def calc_conversion(d1_quant, d2_quant, bcr):
-    if d1_quant == 0:
-        cr = 0.0
-    else:
-        cr = d2_quant / d1_quant
-    rate_multiplier = cr / bcr
-    vs_expected_decks = d2_quant - (d1_quant * bcr)
-    return {
-        "rate": round(100*cr, 1),
-        "mult": round(rate_multiplier, 2),
-        "quant": round(vs_expected_decks, 1),
-        "day1": int(d1_quant),
-        "day2": int(d2_quant),
-    }
-
 class OmniEvent:
     def __init__(self, evt_id, force_redownload=False, save=True):
         self.id = evt_id
@@ -56,6 +41,7 @@ class OmniEvent:
         else:
             raise Exception(f"Unknown api_version: {self.evt['api_version']}")
         self.load_invite_points()
+        self.analyze_invites()
     
     def load_from_hybrid(self):
         self.status = self.evt["status"]
@@ -103,7 +89,6 @@ class OmniEvent:
         self.winner = None
         self.load_players() # populates self.players, self.num_decklists, self.decklist_status
 
-        #TODO: check each of these
         self.load_videos()
         self.load_refracted_achievements() # populates self.is_refracted
         self.analyze() #populates self.elements, archedata, champdata, draw_pct, nat_draw_pct
@@ -396,35 +381,50 @@ class OmniEvent:
             bcr = len(day2players) / len(self.players) # base conversion rate
             self.bcr = round(100*bcr, 1)
 
-            for el, d2_quant, d2_pct in self.day2stats["elements"]:
-                d1_quant, d1_pct = self.elements[el]
-                self.conversion_rate["elements"][el] = calc_conversion(
-                    d1_quant, d2_quant, bcr
-                )
+            self.conversion_rate["elements"] = ConvRateStats(
+                self.elements,
+                self.day2stats["elements"],
+                bcr
+            )
+            # for el, d2_quant, d2_pct in self.day2stats["elements"]:
+            #     d1_quant, d1_pct = self.elements[el]
+            #     self.conversion_rate["elements"][el] = calc_conversion(
+            #         d1_quant, d2_quant, bcr
+            #     )
             
-            conversions_arche = []
-            for arche, d1_pct, d1_quant, d1_elstats in self.archedata:
-                if self.day2stats["archedata"].exists_for(arche):
-                    d2_quant, d2_pct, d2_elstats = self.day2stats["archedata"][arche]
-                else:
-                    d2_quant = 0
-                conversions_arche.append( (arche, calc_conversion(
-                    d1_quant, d2_quant, bcr
-                )) )
-            conversions_arche.sort(key=lambda x:x[1]["day2"], reverse=True)
-            self.conversion_rate["archedata"] = {k:v for k,v in conversions_arche}
+            self.conversion_rate["archedata"] = ConvRateStats(
+                self.archedata,
+                self.day2stats["archedata"],
+                bcr
+            )
+            # conversions_arche = []
+            # for arche, d1_pct, d1_quant, d1_elstats in self.archedata:
+            #     if self.day2stats["archedata"].exists_for(arche):
+            #         d2_quant, d2_pct, d2_elstats = self.day2stats["archedata"][arche]
+            #     else:
+            #         d2_quant = 0
+            #     conversions_arche.append( (arche, calc_conversion(
+            #         d1_quant, d2_quant, bcr
+            #     )) )
+            # conversions_arche.sort(key=lambda x:x[1]["day2"], reverse=True)
+            # self.conversion_rate["archedata"] = {k:v for k,v in conversions_arche}
             
-            conversions_champ = []
-            for champ, d1_pct, d1_quant, d1_elstats in self.champdata:
-                if self.day2stats["champdata"].exists_for(champ):
-                    d2_quant, d2_pct, d2_elstats = self.day2stats["champdata"][champ]
-                else:
-                    d2_quant = 0
-                conversions_champ.append( (champ, calc_conversion(
-                    d1_quant, d2_quant, bcr
-                )) )
-            conversions_champ.sort(key=lambda x:x[1]["day2"], reverse=True)
-            self.conversion_rate["champdata"] = {k:v for k,v in conversions_champ}
+            self.conversion_rate["champdata"] = ConvRateStats(
+                self.champdata,
+                self.day2stats["champdata"],
+                bcr
+            )
+            # conversions_champ = []
+            # for champ, d1_pct, d1_quant, d1_elstats in self.champdata:
+            #     if self.day2stats["champdata"].exists_for(champ):
+            #         d2_quant, d2_pct, d2_elstats = self.day2stats["champdata"][champ]
+            #     else:
+            #         d2_quant = 0
+            #     conversions_champ.append( (champ, calc_conversion(
+            #         d1_quant, d2_quant, bcr
+            #     )) )
+            # conversions_champ.sort(key=lambda x:x[1]["day2"], reverse=True)
+            # self.conversion_rate["champdata"] = {k:v for k,v in conversions_champ}
 
 
         if self.top_cut:
@@ -470,7 +470,27 @@ class OmniEvent:
                         self.invitecutstats['champdata'].add_unknown()
                     self.invitecutstats['regiondata'].add_player(p)
             
-            # TODO: calculate conversion rates to invite cut
+            bcr = self.invites / len(self.players)
+            self.invite_conversions = {}
+            self.invite_conversions["elements"] = ConvRateStats(
+                self.elements,
+                self.invitecutstats["elements"],
+                bcr
+            )
+            self.invite_conversions["archedata"] = ConvRateStats(
+                self.archedata,
+                self.invitecutstats["archedata"],
+                bcr
+            )
+            self.invite_conversions["champdata"] = ConvRateStats(
+                self.champdata,
+                self.invitecutstats["champdata"],
+                bcr
+            )
+            self.invite_bcr = round(100 * bcr, 1)
+        else:
+            self.invite_conversions = {}
+
 
     def parse_top_cut(self):
         # Known bug: top cut wrong if Fractal updates while top cut is ongoing

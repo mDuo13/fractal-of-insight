@@ -25,7 +25,7 @@
     </div>
     <div class="tabwrapper">
         <div class="tabcontent collapse" data-tabof="all-time">
-            <table class="archetypes">
+            <table class="archetypes sortable">
                 <thead><tr>
                     <th>Name</th>
                     <th>Appearances</th>
@@ -54,14 +54,14 @@
         {% for season, szn in seasons.items() %}
         {% if szn.code != "OFF" %}
         <div class="tabcontent{% if loop.index0 != 0 %} collapse{% endif %}" data-tabof="{{szn.code}}">
-            <table class="archetypes">
+            <table class="archetypes sortable">
                 <thead><tr>
                     <th>Name</th>
                     <th>Appearances</th>
                     <th>Meta Share</th>
                     <th>Win rate</th>
                     <th>Events won</th>
-                    <th>NQP earned <br />(of {{szn.nqp_total}} total)</th>
+                    <th>% of <abbr title="Nationals qualifier points earned by decks that include this archetype">NQP</abbr></th>
                 </tr></thead>
                 <tbody>
                     {% for archename, pct, quant, elstats in szn.archedata %}
@@ -76,7 +76,7 @@
                         <td>{{pct}}%</td>
                         <td>{% if szn.battlechart.has_data_for(archename) %}{{szn.battlechart[archename].overall_pct}}%{% else %}N/A{% endif %}</td>
                         <td>{{szn.arche_wins[archename]|length}}</td>
-                        <td>{% if archename in szn.nqp_by_arche.keys() %}{{szn.nqp_by_arche[archename]}}{% else %}0{% endif %}</td>
+                        <td>{% if archename in szn.nqp_by_arche.keys() %}{{szn.nqp_by_arche[archename][0]}}%{% else %}-{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -85,6 +85,6 @@
         {% endif %}
         {% endfor %}
     </div>
-    <p class="explanation">(Meta shares and NQP totals may not add up to 100% because a deck can be multiple or zero archetypes.)</p>
+    <p class="explanation">(Meta shares and NQP may not add up to 100% because a deck can be multiple or zero archetypes. NQP totals are approximate, and do not include team events.)</p>
 </section>
 {% endblock %}

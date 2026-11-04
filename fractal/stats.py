@@ -49,6 +49,11 @@ class ElementStats:
         top_quant = typedata[0][1]
         tied_top = [t[0] for t in typedata if t[1] >= top_quant]
         return tied_top
+    
+    def exists_for(self, item):
+        if item in self.elements.keys():
+            return True
+        return False
 
 class TypeStats:
     def __init__(self):
@@ -154,6 +159,53 @@ class ArcheStats(TypeStats):
                 continue
             yield item, pct, quant, elstats
 
+class ConvRateStats:
+    def __init__(self, stats_before, stats_after, bcr):
+        self.bcr = bcr
+        conversions = []
+        if isinstance(stats_before, TypeStats):
+            # These have pct/quant/elstats data
+            for name, pre_pct, pre_quant, pre_elstats in stats_before:
+                if stats_after.exists_for(name):
+                    after_quant = stats_after[name][0]
+                else:
+                    after_quant = 0
+                conversions.append( (name, self.calc_conversion(
+                    pre_quant, after_quant, bcr
+                )) )
+        elif isinstance(stats_before, ElementStats):
+            # These have only quant/pct data.
+            for name, pre_quant, pre_pct in stats_before:
+                if stats_after.exists_for(name):
+                    after_quant = stats_after[name][0]
+                else:
+                    after_quant = 0
+                conversions.append( (name, self.calc_conversion(
+                    pre_quant, after_quant, bcr
+                )) )
+        else:
+            raise TypeError("Unexpected conversion rate stats type: "+type(stats_before))
+        conversions.sort(key=lambda x:x[1]["after"], reverse=True)
+        self.data = {k:v for k,v in conversions}
+    
+    def calc_conversion(self, pre_quant, after_quant, bcr):
+        if pre_quant == 0:
+            cr = 0.0
+        else:
+            cr = after_quant / pre_quant
+        rate_multiplier = cr / bcr
+        vs_expected_decks = after_quant - (pre_quant * bcr)
+        return {
+            "rate": round(100*cr, 1),
+            "mult": round(rate_multiplier, 2),
+            "quant": round(vs_expected_decks, 1),
+            "before": int(pre_quant),
+            "after": int(after_quant),
+        }
+    
+    def __iter__(self):
+        for name, cr in self.data.items():
+            yield name, cr
 
 class RegionStats:
     def __init__(self):

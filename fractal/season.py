@@ -117,7 +117,10 @@ class Season:
                                 nqp_by_arche[aname] += nqp
                         else:
                             nqp_by_arche["Unknown"] += nqp
-        self.nqp_by_arche = nqp_by_arche
+        
+        nqp_pcts = [(arche, round(100*quant/total_nqp,1), quant)
+                    for arche,quant in nqp_by_arche.items()]
+        self.nqp_by_arche = {arche:(pct,quant) for (arche,pct,quant) in nqp_pcts}
         self.nqp_total = total_nqp
 
 
