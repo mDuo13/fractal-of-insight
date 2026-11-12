@@ -196,6 +196,7 @@ REGIONS = {
     "AU": {"name": "Australia", "flag": "🇦🇺"},
     "BE": {"name": "Belgium", "flag": "🇧🇪"},
     "BN": {"name": "Brunei", "flag": "🇧🇳"},
+    "BR": {"name": "Brazil", "flag": "🇧🇷"},
     "CA": {"name": "Canada", "flag": "🇨🇦"},
     "CH": {"name": "Switzerland", "flag": "🇨🇭"},
     "CL": {"name": "Chile", "flag": "🇨🇱"},

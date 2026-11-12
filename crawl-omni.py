@@ -49,8 +49,8 @@ def due_for_update(evt_data, refresh_all_stale=False):
         return True
     if refresh_all_stale and evt_data.get("status") == "stale":
         return True
-    if evt_data.get("status") in ("complete", "stale", "canceled", "deleted", "canceled-suspended", "canceled-reset"):
-        logger.info(f"Not due for update: status is {evt_data['status']}")
+    if evt_data.get("status") in ("complete", "stale", "canceled", "deleted", "canceled-suspended", "canceled-reset", "free-play"):
+        logger.debug(f"Not due for update: status is {evt_data['status']}")
         return False
 
     ## Old logic: didn't update in-progress events, sometimes fooled by
@@ -107,7 +107,11 @@ Decklists? {"Yes" if evt_full.get("decklists") else "No"}
             "status": evt_full["status"],
             "interesting": interesting
         }
-        if evt_data["status"] == "rsvp":
+        if evt_full.get("format") == "free-play":
+            # Don't re-crawl free-play events
+            evt_data["status"] = "free-play"
+            updated = True
+        elif evt_data["status"] == "rsvp":
             evt_data["startAt"] = evt_full.get("startAt", 0)
         crawldata["events"][str(i)] = evt_data
 
@@ -126,7 +130,7 @@ def is_interesting(evt):
     if evt.get("status") in ("404", "deleted"):
         logger.debug(f"Uninteresting: {evt['status']}")
         return 0
-    if evt.get('format') == "free-play":
+    if evt.get('format') == "free-play" or evt.get("status") == "free-play":
         logger.info("Uninteresting: Event is free-play format")
         return 0
 
@@ -238,6 +242,7 @@ def check_event(event_id):
     """
     logger.setLevel(logging.DEBUG)
     evt_data, updated = crawl_event(event_id)
+    save_crawldata()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Iterate over Omnidex events to look for interesting ones")
@@ -245,7 +250,10 @@ if __name__ == "__main__":
     parser.add_argument("-u", "--update", action="store_true", help="Redownload events regardless of cached status")
     parser.add_argument("-s", "--stale",  action="store_true", help="Redownload all stale events (in case they were updated)")
     parser.add_argument("-c", "--check", nargs="?", type=int, help="Check a specific event ID and explain if/why it's interesting or not.")
+    parser.add_argument("-q", "--quiet", action="store_true", help="Print fewer status messages")
     args = parser.parse_args()
+    if args.quiet:
+        logger.setLevel(logging.WARNING)
     load_crawldata()
     if args.check:
         check_event(args.check)
