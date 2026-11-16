@@ -757,6 +757,16 @@ crux_lorraine.add_subtype(
         ],
     ]
 )
+crux_lorraine.add_subtype(
+    "Vertus",
+    ["Vertus, Gaia's Roar"],
+    require_combos=[
+        [
+            "Vertus, Gaia's Roar",
+            "Spirit Blade: Retribution",
+        ]
+    ]
+)
 
 crux_mage = add_archetype(
     "Crux Mage",
