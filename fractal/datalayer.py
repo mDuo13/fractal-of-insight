@@ -282,9 +282,6 @@ def collate_event_from_apis(evt_id, short_circuit_fn=None):
         ipl_id = int(ipl['id'])
         for pl in evt["players"]:
             if ipl_id == pl['id']:
-                pl['scoreElo'] = ipl['scores']['player']['elo']['value']
-                pl['rankElo'] = ipl['scores']['player']['elo']['rank']
-                pl['scoreVP'] = ipl['scores']['player']['vp']['value']
                 if ipl.get('suspended'):
                     pl['suspendedUntil'] = ms_from_dt(ipl['suspended']['expires'])
                 break
@@ -296,7 +293,7 @@ def collate_event_from_apis(evt_id, short_circuit_fn=None):
             # add scoreVP and suspendedUntil data, if available, for judges too
             ipl_id = int(ipl['id'])
             for jd in evt["judges"]:
-                if ipl_id == jd['id']:
+                if ipl_id == jd['id'] and 'vp' in ipl['scores']['player'].keys():
                     jd['scoreVP'] = ipl['scores']['player']['vp']['value']
                 if ipl.get('suspended'):
                     jd['suspendedUntil'] = ms_from_dt(ipl['suspended']['expires'])

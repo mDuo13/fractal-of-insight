@@ -211,7 +211,7 @@ class OmniEvent:
         else:
             self.decklist_status = "partial"
         if self.track_elo:
-            self.average_elo = round(sum([p.elo for p in self.players]) / len(self.players), 1)
+            self.average_elo = round(sum([p.elo for p in self.players if p.elo != "Unknown"]) / len(self.players), 1)
 
     def load_videos(self):
         self.videos = get_event_videos(self.id)

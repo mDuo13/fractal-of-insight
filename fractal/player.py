@@ -8,10 +8,7 @@ from .cards import ELEMENTS
 from .shared import keydefaultdict, ms_to_date, cjoin, slugify, TEAM_STANDARD, REGIONS
 from .stats import ElementStats, ChampStats, ArcheStats
 from .achievements import AchievementSet, REFRACTED_ACHIEVEMENTS
-from .config import UPSET_CUTOFF
-
-RIVAL_THRESHOLD = 3 # min matches to count as a rival
-RIVAL_MAXCOUNT = 5 # trim rivals list if it's over this size
+from .config import UPSET_CUTOFF, RIVAL_THRESHOLD, RIVAL_MAXCOUNT
 
 class Entrant:
     """
@@ -24,10 +21,27 @@ class Entrant:
         self.evt_time = evt.start_time
         self.topcut_wins = 0 # populated by OmniEvent's parse_top_cut()
         self.username = data["username"]
-        self.elo = round(data["scoreElo"]) # seems this is the player's "current" elo at the time of looking up the event??
-        self.vp = round(data["scoreVP"])
+        # Elo/VP data is sometimes provided in the old format, sometimes
+        # added to the new format scores object
+        if "scoreElo" in data.keys():
+            self.elo = round(data["scoreElo"]) # seems this is the player's "current" elo at the time of looking up the event??
+        elif data.get("scores",{}).get("elo"):
+            self.elo = round(data["scores"]["elo"]["value"])
+        else:
+            self.elo = "Unknown"
+        if "rankElo" in data.keys():
+            self.rank_elo = data["rankElo"]
+        elif data.get("scores",{}).get("elo"):
+            self.rank_elo = data["scores"]["elo"]["rank"]
+        else:
+            self.rank_elo = 999999 # Unavailable
+        if "scoreVP" in data.keys():
+            self.vp = round(data["scoreVP"])
+        elif data.get("scores",{}).get("vp"):
+            self.vp = round(data["scores"]["vp"]["value"])
+        else:
+            self.vp = 0
         self.elo_diff = 0 # modified when analyzing matchups
-        self.rank_elo = data["rankElo"]
         if "addressCountryCode" in data.keys():
             self.region = data["addressCountryCode"]
         elif "country" in data.keys():
@@ -138,7 +152,12 @@ class JudgeEvt:
     def __init__(self, data, evt):
         self.id = data["id"]
         self.username = data["username"]
-        self.exp = data.get("judgeExperience", 0)
+        if "judgeExperience" in data.keys():
+            self.exp = data["judgeExperience"]
+        elif data.get("scores",{}).get("xp"):
+            self.exp = data["scores"]["xp"]["value"]
+        else:
+            self.exp = 0
         self.event = evt
         self.evt_time = evt.start_time # used in merging judging/playing events
         self.evt_rounds = evt.rounds
@@ -146,7 +165,13 @@ class JudgeEvt:
             self.region = data["country"]
         elif "addressCountryCode" in data:
             self.region = data["addressCountryCode"] # old API format
-        self.vp = round(data.get("scoreVP",0))
+        
+        if "scoreVP" in data.keys():
+            self.vp = round(data["scoreVP"])
+        elif data.get("scores",{}).get("vp"):
+            self.vp = round(data["scores"]["vp"]["value"])
+        else:
+            self.vp = 0
 
         # I would hope that judges aren't likely to get banned, but...
         ban = data.get("suspendedUntil", 0)
@@ -199,6 +224,9 @@ def is_upset(event, pairing):
     else:
         winner = event.pdict[p2["id"]]
         loser = event.pdict[p1["id"]]
+    if winner.elo == "Unknown" or loser.elo == "Unknown":
+        # Can't tell in this case...
+        return False
     if winner.elo - loser.elo >= UPSET_CUTOFF:
         return True
     return False
@@ -223,7 +251,11 @@ class Player:
         self.past_regions = []
         self.region_time = entrant.evt_time
         self.achievements = AchievementSet()
-        self.vp = entrant.vp
+        if hasattr(entrant, "elo"):
+            self.recent_elo = entrant.elo
+        else:
+            self.recent_elo = "Unknown"
+        self.elo_time = entrant.evt_time
         self.banned_until = ""
         if entrant.banned_until:
             if entrant.banned_until > time()*1000:
@@ -261,6 +293,13 @@ class Player:
             else:
                 #print(f"Ban served: {self.username} #{self.id} until {entrant.banned_until}")
                 pass
+        if entrant.elo != "Unknown":
+            if self.recent_elo == "Unknown":
+                self.recent_elo = entrant.elo
+                self.elo_time = entrant.evt_time
+            elif entrant.evt_time > self.elo_time:
+                self.recent_elo = entrant.elo
+                self.elo_time = entrant.evt_time
 
     def analyze(self):
         # To be called after all event entries have been added
@@ -415,7 +454,7 @@ class Player:
                                 self.achievements.add("Hand Shaker", e, details=f"Round {rnd_num+1}")
                             if p["status"] == "winner" and is_upset(e.event, match["pairing"]):
                                 self.achievements.add("Titan Slayer", e, details=f"Round {rnd_num+1} vs {opp.username}")
-                            if p["status"] == "winner" and round(opp.elo, 0) >= 1600:
+                            if p["status"] == "winner" and opp.elo != "Unknown" and round(opp.elo, 0) >= 1600:
                                 self.achievements.add("Attack and Dethrone God", e, details=f"Round {rnd_num+1} vs {opp.username}")
 
         # Achievements for entering & winning different event types
@@ -559,9 +598,9 @@ class Player:
         for e in events_chrono:
             if round(e.elo_diff,0) >= 50:
                 self.achievements.add("Ladder Leaper", e)
-            if round(e.elo, 0) >= 1400:
+            if e.elo != "Unknown" and round(e.elo, 0) >= 1400:
                 self.achievements.add("Deadly Duelist", e)
-            if round(e.elo, 0) >= 1600:
+            if e.elo != "Unknown" and round(e.elo, 0) >= 1600:
                 self.achievements.add("Demigod", e)
 
         # Capped Veteran

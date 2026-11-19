@@ -971,6 +971,9 @@ add_archetype(
         "Blood Surge",
         "Unruled Bereavement",
         "Thanatotic Hemosynth",
+        "Elysian Aspirant",
+        "Vascular Collapse",
+        "Spellshield: Exia",
     ],
     exclude_cards=[
         "Jin, Zealous Maverick", # use the Lv2 just in case of Weight of Looking Up type shenanigans

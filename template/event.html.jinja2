@@ -356,7 +356,7 @@
                 <div class="match p_{{p1.id}} {% if p2 %}p_{{p2.id}} {{iskeymatch}} {% endif %}{% if match.video %} hasvideo{% endif %}" data-p1-archetypes="{{p1_archetypes}}" data-p2-archetypes="{{p2_archetypes}}">
                     <div class="player">
                         {{macros.pname_w_dl(p1, use_topcut_deck)}}
-                        {% if p2 and p2.elo - config.UPSET_CUTOFF > p1.elo and match["pairing"][0]["score"] > match["pairing"][1]["score"] %}{{macros.upset()}}{% endif %}
+                        {% if p2 and p2.elo != "Unknown" and p1.elo != "Unknown" and p2.elo - config.UPSET_CUTOFF > p1.elo and match["pairing"][0]["score"] > match["pairing"][1]["score"] %}{{macros.upset()}}{% endif %}
                         {% if match["pairing"]|length > 1 %}
                         <span class="matchscore {{match['pairing'][0]['status']}}">{{match["pairing"][0]["score"]}}</span>
                         {% endif %}
@@ -364,7 +364,7 @@
                     {% if match["pairing"]|length > 1 %}
                     <div class="player">
                         {{macros.pname_w_dl(p2, use_topcut_deck)}}
-                        {% if p1.elo - config.UPSET_CUTOFF > p2.elo and match["pairing"][1]["score"] > match["pairing"][0]["score"] %}{{macros.upset()}}{% endif %}
+                        {% if p2.elo != "Unknown" and p1.elo != "Unknown" and p1.elo - config.UPSET_CUTOFF > p2.elo and match["pairing"][1]["score"] > match["pairing"][0]["score"] %}{{macros.upset()}}{% endif %}
                         <span class="matchscore {{match['pairing'][1]['status']}}">{{match["pairing"][1]["score"]}}</span>
                     </div>
                         {% if match.video %}

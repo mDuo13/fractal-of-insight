@@ -13,6 +13,10 @@ PAD_HOT_MATCHES = 500 # for hot cards, weight for this many *matches* (not appea
 COMMONLY_SIDEBOARDED = 30 # Percentage of appearances that have to be in the
 # sideboard for the card to count as "commonly sideboarded"
 
+# Entrant / Player / Judge settings
+RIVAL_THRESHOLD = 3 # min matches to count as a rival
+RIVAL_MAXCOUNT = 5 # trim rivals list if it's over this size
+
 # Archetype & champ stats settings
 SIMILAR_DECKS_CUTOFF = 85
 MONEY_CARD_COUNT = 20

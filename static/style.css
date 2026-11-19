@@ -1735,6 +1735,10 @@ a.achievement {
     justify-content: space-between;
 }
 
+.minigame-list li {
+    margin-bottom: 12px;
+}
+
 .holo::after {
     content: "";
     background-image: repeating-linear-gradient( 110deg, var(--violet), var(--blue), var(--green), var(--yellow), var(--red), var(--violet), var(--blue), var(--green), var(--yellow), var(--red), var(--violet), var(--blue), var(--green), var(--yellow), var(--red) );
