@@ -302,6 +302,7 @@ def collate_event_from_apis(evt_id, short_circuit_fn=None):
     if evt.get("teams"):
         print(f"Downloading team information for event #{evt_id}...")
         teams = fetch_json(f"https://api.gatcg.com/omnidex/events/{evt_id}/teams")
+        evt["teams"] = teams #Replace raw team list with detailed list
         for tm in teams:
             for seat in tm["players"]:
                 # Find matching player and add their team info for backwards compat
